@@ -1,0 +1,38 @@
+/*============================================================================================*/
+/* Your custom styles below */
+/*============================================================================================*/
+@media (min-width: 768px){
+.btn_search{
+    background: none !important;
+    color: rgba(36, 76, 154, 0.89) !important;
+}
+}
+@media (max-width: 768px){
+.btn_search{
+    background:url(../img/search.svg) no-repeat center center rgba(0, 147, 131, 0.15) !important;
+}
+}
+
+
+.hero_home .content h4 {
+  margin: 0 0 0 0;
+  font-size: 30px;
+  font-size: 2.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #fff;
+}
+@media (max-width: 767px) {
+  .hero_home .content h4 {
+    /* For less than 767px */
+    font-size: 30px;
+    font-size: 1.625rem;
+  }
+}
+@media (max-width: 575px) {
+  .hero_home .content h4 {
+    /* For less than 575px */
+    font-size: 32px;
+    font-size: 2rem;
+  }
+}
