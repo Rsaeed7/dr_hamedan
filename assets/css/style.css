@@ -1483,7 +1483,7 @@ a.box_cat_home ul li strong {
 }
 
 #app_section {
-  background: #3f4079 url(../img/hero_bg_1.svg) repeat fixed;
+  background: rgba(36, 154, 150, 0.49);
   padding: 90px 0 60px 0;
   color: #fff;
 }
@@ -4171,22 +4171,21 @@ ul.bullets li:before {
 #toTop {
   width: 40px;
   height: 40px;
-  background-color: black;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.05);
   text-align: center;
   padding: 10px;
   line-height: 20px;
   position: fixed;
-  bottom: 15px;
+  bottom: 25px;
   right: 15px;
   cursor: pointer;
   display: none;
-  color: #fff;
+  color: #343333;
   font-size: 20px;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   -ms-border-radius: 3px;
-  border-radius: 3px;
+  border-radius: 50px;
   z-index: 99;
 }
 #toTop:before {
