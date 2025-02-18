@@ -31,9 +31,9 @@
 	<div class="layer"></div>
 	<!-- Mobile menu overlay mask -->
 
-	<div id="preloader">
-		<div data-loader="circle-side"></div>
-	</div>
+{#	<div id="preloader">#}
+{#		<div data-loader="circle-side"></div>#}
+{#	</div>#}
 	<!-- End Preload -->
 
 	<header class="header_sticky">
@@ -87,6 +87,29 @@
 		<!-- /container -->
 	</header>
 	<!-- /header -->
+	<!-- mobile footer -->
+<div class="bottom-nav" id="bottom-nav">
+    <a href="/" class="nav-item active">
+        <i class="icon-hospital text-dr"></i>
+        <span>خانه</span>
+    </a>
+
+    <a href="" class="nav-item">
+        <i class="icon-medkit text-dr"></i>
+        <span>وبلاگ</span>
+    </a>
+    <a href="" class="nav-item {% if request.resolver_match.url_name == 'turn_days' %}active{% endif %}">
+        <i class="icon-pagelines text-dr"></i>
+        <span>نوبت ها</span>
+    </a>
+    <a href="" class="nav-item">
+        <i class="icon-users-2 text-dr"></i>
+        <span>پروفایل</span>
+    </a>
+</div>
+
+
+	<!-- /mobile footer -->
 
 	<main>
 		<div class="hero_home version_2">
@@ -120,71 +143,131 @@
 			</div>
 		</div>
 		<!-- /Hero -->
-<div class="container margin_120_95">
-			<div class="main_title">
-				<p>دنبال چه تخصصی میگردید؟</p>
-			</div>
-			<div class="row">
-				<div class="col-lg-3 col-md-6">
-					<a href="list.html" class="box_cat_home">
-						<i class="icon-search-outline"></i>
-						<img src="{% static 'img/pic/x-ray_18237493.png' %}" width="60" height="60" alt="">
-						<h3>رادیولوژی</h3>
-					</a>
-				</div>
-				<div class="col-lg-3 col-md-6">
-					<a href="list.html" class="box_cat_home">
-						<i class="icon-search-outline"></i>
-						<img src="{% static 'img/pic/kidney_12773133.png' %}" width="60" height="60" alt="">
-						<h3>اورولوژی</h3>
-					</a>
-				</div>
-				<div class="col-lg-3 col-md-6">
-					<a href="list.html" class="box_cat_home">
-						<i class="icon-search-outline"></i>
-						<img src="{% static 'img/pic/radiotherapy_8358522.png' %}" width="60" height="60" alt="">
-						<h3>آنژیوگرافی</h3>
-					</a>
-				</div>
-				<div class="col-lg-3 col-md-6">
-					<a href="list.html" class="box_cat_home">
-						<i class="icon-search-outline"></i>
-						<img src="{% static 'img/pic/baby_14153313.png' %}" width="60" height="60" alt="">
-						<h3>نوزادان</h3>
-					</a>
-				</div>
-				<div class="col-lg-3 col-md-6">
-					<a href="list.html" class="box_cat_home">
-						<i class="icon-search-outline"></i>
-						<img src="{% static 'img/pic/hydration-bladder_1810047.png' %}" width="60" height="60" alt="">
-						<h3>مجاری</h3>
-					</a>
-				</div>
-				<div class="col-lg-3 col-md-6">
-					<a href="list.html" class="box_cat_home">
-						<i class="icon-search-outline"></i>
-						<img src="{% static 'img/pic/medical_16649783.png' %}" width="60" height="60" alt="">
-						<h3>متخصص زنان</h3>
-					</a>
-				</div>
-				<div class="col-lg-3 col-md-6">
-					<a href="list.html" class="box_cat_home">
-						<i class="icon-search-outline"></i>
-						<img src="{% static 'img/pic/ultrasound_9599497.png' %}" width="60" height="60" alt="">
-						<h3>سونوگرافی</h3>
-					</a>
-				</div>
-				<div class="col-lg-3 col-md-6">
-					<a href="list.html" class="box_cat_home">
-						<i class="icon-search-outline"></i>
-						<img src="{% static 'img/pic/8358615.png' %}" width="60" height="60" alt="">
-						<h3>نمونه برداری</h3>
-					</a>
-				</div>
-			</div>
-			<!-- /row -->
-		</div>
-		<div class="container margin_120_95">
+<div class="container margin_120_95 bg-gradiant">
+    <div class="main_title">
+        <p>دنبال چه تخصصی میگردید؟</p>
+    </div>
+    <div class="row">
+        <!-- آیتم‌های اولیه -->
+        <div class="col-lg-3 col-md-6">
+            <a href="list.html" class="box_cat_home">
+                <img src="{% static 'img/pic/x-ray_18237493.png' %}" width="60" height="60" alt="">
+                <h3>رادیولوژی</h3>
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <a href="list.html" class="box_cat_home">
+                <img src="{% static 'img/pic/kidney_2518743.png' %}" width="60" height="60" alt="">
+                <h3>اورولوژی</h3>
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <a href="list.html" class="box_cat_home">
+                <img src="{% static 'img/pic/jaw-contouring_3828729.png' %}" width="60" height="60" alt="">
+                <h3>فک و صورت</h3>
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <a href="list.html" class="box_cat_home">
+                <img src="{% static 'img/pic/heart_8358516.png' %}" width="60" height="60" alt="">
+                <h3>قلب و عروق</h3>
+            </a>
+        </div>
+                  <div class="col-lg-3 col-md-6">
+            <a href="list.html" class="box_cat_home">
+                <img src="{% static 'img/pic/stethoscope_4068895.png' %}" width="60" height="60" alt="">
+                <h3>پزشک عمومی</h3>
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <a href="list.html" class="box_cat_home">
+                <img src="{% static 'img/pic/medical_16649783.png' %}" width="60" height="60" alt="">
+                <h3>متخصص زنان</h3>
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <a href="list.html" class="box_cat_home">
+                <img src="{% static 'img/pic/science_10666848.png' %}" width="60" height="60" alt="">
+                <h3>دندانپزشکی</h3>
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <a href="list.html" class="box_cat_home">
+                <img src="{% static 'img/pic/creativity_15557951.png' %}" width="60" height="60" alt="">
+                <h3>مغز و اعصاب</h3>
+            </a>
+        </div>
+    </div>
+
+    <!-- آیتم‌های مخفی (داخل یک div با افکت نرم) -->
+    <div id="extraItems" class="row p-t-10" style="height: 0; opacity: 0; overflow: hidden; transition: height 0.7s ease, opacity 0.5s ease;">
+        <div class="col-lg-3 col-md-6">
+            <a href="list.html" class="box_cat_home">
+                <img src="{% static 'img/pic/hydration-bladder_1810047.png' %}" width="60" height="60" alt="">
+                <h3>تعبیه سوند</h3>
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <a href="list.html" class="box_cat_home">
+                <img src="{% static 'img/pic/ultrasound_9599497.png' %}" width="60" height="60" alt="">
+                <h3>سونوگرافی</h3>
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <a href="list.html" class="box_cat_home">
+                <img src="{% static 'img/pic/kidney_12773133.png' %}" width="60" height="60" alt="">
+                <h3>مجاری</h3>
+            </a>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <a href="list.html" class="box_cat_home">
+                <img src="{% static 'img/pic/radiotherapy_8358522.png' %}" width="60" height="60" alt="">
+                <h3>رادیوتراپی</h3>
+            </a>
+        </div>
+    </div>
+
+    <!-- دکمه نمایش بیشتر -->
+    <div class="text-center mt-4">
+        <button id="showMoreBtn" class="btn btn-sm" style="background: none">
+            <i id="arrowIcon" class="icon-down-open" style="transition: transform 0.3s ease;"></i>
+        </button>
+    </div>
+</div>
+
+<!-- اسکریپت نمایش آیتم‌ها -->
+<script>
+    document.getElementById("showMoreBtn").addEventListener("click", function () {
+        let extraItems = document.getElementById("extraItems");
+        let arrowIcon = document.getElementById("arrowIcon");
+
+        if (extraItems.style.height === "0px" || extraItems.style.height === "") {
+            let fullHeight = extraItems.scrollHeight + "px"; // گرفتن ارتفاع واقعی
+            extraItems.style.height = fullHeight;
+            extraItems.style.opacity = "1"; // نمایان شدن
+            arrowIcon.className = "icon-up-open";
+            this.appendChild(arrowIcon);
+            arrowIcon.style.transform = "rotate(180deg)";
+
+            // بعد از پایان انیمیشن ارتفاع رو auto میکنیم
+            setTimeout(() => {
+                extraItems.style.height = "auto";
+            }, 600);
+        } else {
+            extraItems.style.height = extraItems.scrollHeight + "px"; // تنظیم مقدار فعلی
+            setTimeout(() => {
+                extraItems.style.height = "0";
+            }, 10); // مقدار height رو بعد از لحظه‌ای تغییر می‌دیم که مرورگر تغییر رو بفهمه
+            extraItems.style.opacity = "0"; // محو شدن
+            arrowIcon.className = "icon-down-open";
+            this.appendChild(arrowIcon);
+            arrowIcon.style.transform = "rotate(0deg)";
+        }
+    });
+</script>
+
+
+		<div class="container margin_120_95 bg-gradiant2">
 			<div class="main_title">
 				<h2>کشف سریع <strong>آنلاین</strong> وقت ملاقات!</h2>
 				<p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک است. </p>

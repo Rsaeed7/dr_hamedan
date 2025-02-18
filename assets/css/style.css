@@ -1429,6 +1429,7 @@ a.box_cat_home {
   -moz-box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.05);
   box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.05);
   color: #999;
+  border: solid rgba(36, 76, 154, 0.38) 1px;
 }
 a.box_cat_home i {
   position: absolute;
