@@ -3,91 +3,122 @@
 <html lang="en">
 
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<meta name="description" content="Find easily a doctor and book online an appointment">
-	<meta name="author" content="Ansonika">
-	<title>دکتر همدان نوبت گیری آنلاین</title>
-	<!-- Favicons-->
-	<link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
-	<link rel="apple-touch-icon" type="image/x-icon" href="{% static 'img/apple-touch-icon-57x57-precomposed.png' %}">
-	<link rel="apple-touch-icon" type="image/x-icon" sizes="72x72" href="{% static 'img/apple-touch-icon-72x72-precomposed.png' %}">
-	<link rel="apple-touch-icon" type="image/x-icon" sizes="114x114" href="{% static 'img/apple-touch-icon-114x114-precomposed.png' %}">
-	<link rel="apple-touch-icon" type="image/x-icon" sizes="144x144" href="{% static 'img/apple-touch-icon-144x144-precomposed.png' %}">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Find easily a doctor and book online an appointment">
+    <meta name="author" content="Ansonika">
+    <title>دکتر همدان نوبت گیری آنلاین</title>
+    <!-- Favicons-->
+    <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+    <link rel="apple-touch-icon" type="image/x-icon" href="{% static 'img/apple-touch-icon-57x57-precomposed.png' %}">
+    <link rel="apple-touch-icon" type="image/x-icon" sizes="72x72"
+          href="{% static 'img/apple-touch-icon-72x72-precomposed.png' %}">
+    <link rel="apple-touch-icon" type="image/x-icon" sizes="114x114"
+          href="{% static 'img/apple-touch-icon-114x114-precomposed.png' %}">
+    <link rel="apple-touch-icon" type="image/x-icon" sizes="144x144"
+          href="{% static 'img/apple-touch-icon-144x144-precomposed.png' %}">
 
-	<!-- BASE CSS -->
-	<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-	<link href="{% static 'css/style.css' %}" rel="stylesheet">
-	<link href="{% static 'css/menu.css' %}" rel="stylesheet">
-	<link href="{% static 'css/vendors.css' %}" rel="stylesheet">
-	<link href="{% static 'css/icon_fonts/css/all_icons_min.css' %}" rel="stylesheet">
-	<!-- YOUR CUSTOM CSS -->
-	<link href="{% static 'css/custom.css' %}" rel="stylesheet">
+    <!-- BASE CSS -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/menu.css' %}" rel="stylesheet">
+    <link href="{% static 'css/vendors.css' %}" rel="stylesheet">
+    <link href="{% static 'css/icon_fonts/css/all_icons_min.css' %}" rel="stylesheet">
+    <!-- YOUR CUSTOM CSS -->
+    <link href="{% static 'css/custom.css' %}" rel="stylesheet">
 </head>
+    <style>
+/* مخفی کردن اسکرول بار */
+    .scroll-container {
+        overflow: auto; /* اجازه اسکرول */
+        -ms-overflow-style: none;  /* برای اینترنت اکسپلورر */
+        scrollbar-width: none;  /* برای Firefox */
+    }
 
+    .scroll-container::-webkit-scrollbar {
+        display: none; /* مخفی کردن اسکرول بار در Webkit */
+    }
+
+
+        .flex {
+            display: flex;
+        }
+
+        .scroll-wrapper {
+            display: flex;
+            gap: 15px;
+        }
+
+        .box_cat_home {
+            display: inline-block;
+            min-width: 200px;
+            text-align: center;
+        }
+
+    </style>
 <body>
 
-	<div class="layer"></div>
-	<!-- Mobile menu overlay mask -->
+<div class="layer"></div>
+<!-- Mobile menu overlay mask -->
 
 {#	<div id="preloader">#}
 {#		<div data-loader="circle-side"></div>#}
 {#	</div>#}
-	<!-- End Preload -->
+<!-- End Preload -->
 
-	<header class="header_sticky">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-3 col-6">
-					<div id="logo_home">
-						<h1><a href="index.html" title="Findoctor">Findoctor</a></h1>
-					</div>
-				</div>
-				<nav class="col-lg-9 col-6">
-					<a class="cmn-toggle-switch cmn-toggle-switch__htx open_close" href="#0"><span>Menu mobile</span></a>
-					<ul id="top_access">
-						<li><a href="login.html"><i class="pe-7s-user text-success"></i></a></li>
-					</ul>
-					<div class="main-menu">
-						<ul>
-							<li>
-								<a href="#0" >نوبت دهی آنلاین</a>
-							</li>
-							<li>
-								<a href="#0">مشاوره آنلاین</a>
+<header class="header_sticky">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-6">
+                <div id="logo_home">
+                    <h1><a href="index.html" title="Findoctor">Findoctor</a></h1>
+                </div>
+            </div>
+            <nav class="col-lg-9 col-6">
+                <a class="cmn-toggle-switch cmn-toggle-switch__htx open_close" href="#0"><span>Menu mobile</span></a>
+                <ul id="top_access">
+                    <li><a href="login.html"><i class="pe-7s-user text-success"></i></a></li>
+                </ul>
+                <div class="main-menu">
+                    <ul>
+                        <li>
+                            <a href="#0">نوبت دهی آنلاین</a>
+                        </li>
+                        <li>
+                            <a href="#0">مشاوره آنلاین</a>
 
-							</li>
-							<li class="submenu">
-								<a href="#0" class="show-submenu">تخصص ها<i class="icon-down-open-mini"></i></a>
-								<ul>
-                                	<li><a href="detail-page-working-booking.html">جزئیات رزرو کار</a></li>
-                                    <li><a href="booking-page.html">صفحه رزرو</a></li>
-                                    <li><a href="confirm.html">صفحه تایید</a></li>
-                                	<li><a href="faq.html">سوالات متداول</a></li>
-                                    <li><a href="coming_soon/index.html">به زودی</a></li>
-                                     <li><a href="pricing-tables.html">جداول قیمت گذاری پاسخگو</a></li>
-                                     <li><a href="pricing-tables-2.html">جداول قیمت گذاری پاسخگو 2</a></li>
-                                     <li><a href="register-doctor-working.html">ثبت نام کار دکتر</a></li>
-									<li><a href="icon-pack-1.html">بسته آیکن 1</a></li>
-									<li><a href="icon-pack-2.html">بسته آیکن 2</a></li>
-									<li><a href="icon-pack-3.html">بسته آیکن 3</a></li>
-									<li><a href="404.html">404 صفحه</a></li>
-								</ul>
-							</li>
-							<li><a href="">مجله پزشکی</a></li>
-							<li><a href="">مراکز درمانی</a></li>
-							<li><a href="" class="text-success">برای پزشکان</a></li>
-						</ul>
-					</div>
-					<!-- /main-menu -->
-				</nav>
-			</div>
-		</div>
-		<!-- /container -->
-	</header>
-	<!-- /header -->
-	<!-- mobile footer -->
+                        </li>
+                        <li class="submenu">
+                            <a href="#0" class="show-submenu">تخصص ها<i class="icon-down-open-mini"></i></a>
+                            <ul>
+                                <li><a href="detail-page-working-booking.html">جزئیات رزرو کار</a></li>
+                                <li><a href="booking-page.html">صفحه رزرو</a></li>
+                                <li><a href="confirm.html">صفحه تایید</a></li>
+                                <li><a href="faq.html">سوالات متداول</a></li>
+                                <li><a href="coming_soon/index.html">به زودی</a></li>
+                                <li><a href="pricing-tables.html">جداول قیمت گذاری پاسخگو</a></li>
+                                <li><a href="pricing-tables-2.html">جداول قیمت گذاری پاسخگو 2</a></li>
+                                <li><a href="register-doctor-working.html">ثبت نام کار دکتر</a></li>
+                                <li><a href="icon-pack-1.html">بسته آیکن 1</a></li>
+                                <li><a href="icon-pack-2.html">بسته آیکن 2</a></li>
+                                <li><a href="icon-pack-3.html">بسته آیکن 3</a></li>
+                                <li><a href="404.html">404 صفحه</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="">مجله پزشکی</a></li>
+                        <li><a href="">مراکز درمانی</a></li>
+                        <li><a href="" class="text-success">برای پزشکان</a></li>
+                    </ul>
+                </div>
+                <!-- /main-menu -->
+            </nav>
+        </div>
+    </div>
+    <!-- /container -->
+</header>
+<!-- /header -->
+<!-- mobile footer -->
 <div class="bottom-nav" id="bottom-nav">
     <a href="/" class="nav-item active">
         <i class="icon-hospital text-dr"></i>
@@ -109,132 +140,422 @@
 </div>
 
 
-	<!-- /mobile footer -->
+<!-- /mobile footer -->
 
-	<main>
-		<div class="hero_home version_2">
-			<div class="content text-dark">
-				<h4 class="text-info text-xl-center">نوبت آنلاین در دکتر همدان</h4>
-				<p>
-					برای  پیدا کردن پزشک مورد نظر جست و جو کنید
-				</p>
-				<form method="post" action="list.html">
-					<div id="custom-search-input">
-						<div class="input-group">
-							<input type="text" class="search-query" placeholder="نام یا تخصص....">
-							<input type="submit" class="btn_search" style="border-radius: 50px" value="جستجو">
-						</div>
-						<ul>
-							<li>
-								<input type="radio" id="all" name="radio_search" value="all" checked>
-								<label for="all">همه</label>
-							</li>
-							<li>
-								<input type="radio" id="doctor" name="radio_search" value="doctor">
-								<label for="doctor">دکتر</label>
-							</li>
-							<li>
-								<input type="radio" id="clinic" name="radio_search" value="clinic">
-								<label for="clinic">کلنیک</label>
-							</li>
-						</ul>
-					</div>
-				</form>
-			</div>
-		</div>
-		<!-- /Hero -->
-<div class="container margin_120_95 bg-gradiant">
-    <div class="main_title">
-        <p>دنبال چه تخصصی میگردید؟</p>
-    </div>
-    <div class="row">
-        <!-- آیتم‌های اولیه -->
-        <div class="col-lg-3 col-md-6">
-            <a href="list.html" class="box_cat_home">
-                <img src="{% static 'img/pic/x-ray_18237493.png' %}" width="60" height="60" alt="">
-                <h3>رادیولوژی</h3>
-            </a>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <a href="list.html" class="box_cat_home">
-                <img src="{% static 'img/pic/kidney_2518743.png' %}" width="60" height="60" alt="">
-                <h3>اورولوژی</h3>
-            </a>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <a href="list.html" class="box_cat_home">
-                <img src="{% static 'img/pic/jaw-contouring_3828729.png' %}" width="60" height="60" alt="">
-                <h3>فک و صورت</h3>
-            </a>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <a href="list.html" class="box_cat_home">
-                <img src="{% static 'img/pic/heart_8358516.png' %}" width="60" height="60" alt="">
-                <h3>قلب و عروق</h3>
-            </a>
-        </div>
-                  <div class="col-lg-3 col-md-6">
-            <a href="list.html" class="box_cat_home">
-                <img src="{% static 'img/pic/stethoscope_4068895.png' %}" width="60" height="60" alt="">
-                <h3>پزشک عمومی</h3>
-            </a>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <a href="list.html" class="box_cat_home">
-                <img src="{% static 'img/pic/medical_16649783.png' %}" width="60" height="60" alt="">
-                <h3>متخصص زنان</h3>
-            </a>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <a href="list.html" class="box_cat_home">
-                <img src="{% static 'img/pic/science_10666848.png' %}" width="60" height="60" alt="">
-                <h3>دندانپزشکی</h3>
-            </a>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <a href="list.html" class="box_cat_home">
-                <img src="{% static 'img/pic/creativity_15557951.png' %}" width="60" height="60" alt="">
-                <h3>مغز و اعصاب</h3>
-            </a>
+<main>
+    <div class="hero_home version_2">
+        <div class="content text-dark">
+            <h4 class="text-info text-xl-center">نوبت آنلاین در دکتر همدان</h4>
+            <p>
+                برای پیدا کردن پزشک مورد نظر جست و جو کنید
+            </p>
+            <form method="post" action="list.html">
+                <div id="custom-search-input">
+                    <div class="input-group">
+                        <input type="text" class="search-query" placeholder="نام یا تخصص....">
+                        <input type="submit" class="btn_search" style="border-radius: 50px" value="جستجو">
+                    </div>
+                    <ul>
+                        <li>
+                            <input type="radio" id="all" name="radio_search" value="all" checked>
+                            <label for="all">همه</label>
+                        </li>
+                        <li>
+                            <input type="radio" id="doctor" name="radio_search" value="doctor">
+                            <label for="doctor">دکتر</label>
+                        </li>
+                        <li>
+                            <input type="radio" id="clinic" name="radio_search" value="clinic">
+                            <label for="clinic">کلنیک</label>
+                        </li>
+                    </ul>
+                </div>
+            </form>
         </div>
     </div>
+    <!-- /Hero -->
+    <div class="container margin_120_95 bg-gradiant">
+        <div class="main_title">
+            <p>دنبال چه تخصصی میگردید؟</p>
+        </div>
+        <div class="row">
+            <!-- آیتم‌های اولیه -->
+            <div class="col-lg-3 col-md-6">
+                <a href="list.html" class="box_cat_home">
+                    <i class="icon-search-7"></i>
+                    <img src="{% static 'img/pic/x-ray_18237493.png' %}" width="60" height="60" alt="">
+                    <h3>رادیولوژی</h3>
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <a href="list.html" class="box_cat_home">
+                    <i class="icon-search-7"></i>
+                    <img src="{% static 'img/pic/kidney_2518743.png' %}" width="60" height="60" alt="">
+                    <h3>اورولوژی</h3>
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <a href="list.html" class="box_cat_home">
+                    <i class="icon-search-7"></i>
+                    <img src="{% static 'img/pic/jaw-contouring_3828729.png' %}" width="60" height="60" alt="">
+                    <h3>فک و صورت</h3>
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <a href="list.html" class="box_cat_home">
+                    <i class="icon-search-7"></i>
+                    <img src="{% static 'img/pic/heart_8358516.png' %}" width="60" height="60" alt="">
+                    <h3>قلب و عروق</h3>
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <a href="list.html" class="box_cat_home">
+                    <i class="icon-search-7"></i>
+                    <img src="{% static 'img/pic/stethoscope_4068895.png' %}" width="60" height="60" alt="">
+                    <h3>پزشک عمومی</h3>
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <a href="list.html" class="box_cat_home">
+                    <i class="icon-search-7"></i>
+                    <img src="{% static 'img/pic/medical_16649783.png' %}" width="60" height="60" alt="">
+                    <h3>متخصص زنان</h3>
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <a href="list.html" class="box_cat_home">
+                    <i class="icon-search-7"></i>
+                    <img src="{% static 'img/pic/science_10666848.png' %}" width="60" height="60" alt="">
+                    <h3>دندانپزشکی</h3>
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <a href="list.html" class="box_cat_home">
+                    <i class="icon-search-7"></i>
+                    <img src="{% static 'img/pic/creativity_15557951.png' %}" width="60" height="60" alt="">
+                    <h3>مغز و اعصاب</h3>
+                </a>
+            </div>
+        </div>
 
-    <!-- آیتم‌های مخفی (داخل یک div با افکت نرم) -->
-    <div id="extraItems" class="row p-t-10" style="height: 0; opacity: 0; overflow: hidden; transition: height 0.7s ease, opacity 0.5s ease;">
-        <div class="col-lg-3 col-md-6">
-            <a href="list.html" class="box_cat_home">
-                <img src="{% static 'img/pic/hydration-bladder_1810047.png' %}" width="60" height="60" alt="">
-                <h3>تعبیه سوند</h3>
-            </a>
+        <!-- آیتم‌های مخفی (داخل یک div با افکت نرم) -->
+        <div id="extraItems" class="row p-t-10"
+             style="height: 0; opacity: 0; overflow: hidden; transition: height 0.7s ease, opacity 0.5s ease;">
+            <div class="col-lg-3 col-md-6">
+                <a href="list.html" class="box_cat_home">
+                    <i class="icon-search-7"></i>
+                    <img src="{% static 'img/pic/hydration-bladder_1810047.png' %}" width="60" height="60" alt="">
+                    <h3>تعبیه سوند</h3>
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <a href="list.html" class="box_cat_home">
+                    <i class="icon-search-7"></i>
+                    <img src="{% static 'img/pic/ultrasound_9599497.png' %}" width="60" height="60" alt="">
+                    <h3>سونوگرافی</h3>
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <a href="list.html" class="box_cat_home">
+                    <i class="icon-search-7"></i>
+                    <img src="{% static 'img/pic/kidney_12773133.png' %}" width="60" height="60" alt="">
+                    <h3>مجاری</h3>
+                </a>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <a href="list.html" class="box_cat_home">
+                    <i class="icon-search-7"></i>
+                    <img src="{% static 'img/pic/radiotherapy_8358522.png' %}" width="60" height="60" alt="">
+                    <h3>رادیوتراپی</h3>
+                </a>
+            </div>
         </div>
-        <div class="col-lg-3 col-md-6">
-            <a href="list.html" class="box_cat_home">
-                <img src="{% static 'img/pic/ultrasound_9599497.png' %}" width="60" height="60" alt="">
-                <h3>سونوگرافی</h3>
-            </a>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <a href="list.html" class="box_cat_home">
-                <img src="{% static 'img/pic/kidney_12773133.png' %}" width="60" height="60" alt="">
-                <h3>مجاری</h3>
-            </a>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <a href="list.html" class="box_cat_home">
-                <img src="{% static 'img/pic/radiotherapy_8358522.png' %}" width="60" height="60" alt="">
-                <h3>رادیوتراپی</h3>
-            </a>
+
+        <!-- دکمه نمایش بیشتر -->
+        <div class="text-center mt-4">
+            <button id="showMoreBtn" class="btn btn-scroll" style="background: none">
+                <i id="arrowIcon" class="icon-down-open" style="transition: transform 0.3s ease;"></i>
+            </button>
         </div>
     </div>
 
-    <!-- دکمه نمایش بیشتر -->
-    <div class="text-center mt-4">
-        <button id="showMoreBtn" class="btn btn-sm" style="background: none">
-            <i id="arrowIcon" class="icon-down-open" style="transition: transform 0.3s ease;"></i>
-        </button>
+    <div class="container margin_120_95 bg-gradiant2">
+        <div class="main_title">
+            <h2>کشف سریع <strong>آنلاین</strong> وقت ملاقات!</h2>
+            <p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک است. </p>
+        </div>
+        <div class="row add_bottom_30">
+            <div class="col-lg-4">
+                <div class="box_feat" id="icon_1">
+                    <span></span>
+                    <h3>یافتن دکتر</h3>
+                    <p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک است. </p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="box_feat" id="icon_2">
+                    <span></span>
+                    <h3>مشاهده پروفایل</h3>
+                    <p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک است. </p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="box_feat" id="icon_3">
+                    <h3>رزرو ملاقات</h3>
+                    <p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک است. </p>
+                </div>
+            </div>
+        </div>
+        <!-- End row -->
+        <p class="text-center"><a href="list.html" class="btn_1 medium">یافتن دکتر</a></p>
     </div>
-</div>
+    <!-- End container -->
 
+    <div class="bg_color_1">
+        <div class="container margin_120_95">
+            <div class="main_title">
+                <h2>پزشکان بیشتر بازدید شده</h2>
+                <p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک است. </p>
+            </div>
+            <div id="reccomended" class="owl-carousel owl-theme">
+                <div class="item">
+                    <a href="detail-page.html">
+                        <div class="views"><i class="icon-eye-7"></i>140</div>
+                        <div class="title">
+                            <h4>دکتر جولیا هولمز<em>متخصص اطفال</em></h4>
+                        </div>
+                        <img src="http://via.placeholder.com/350x500.jpg" alt="">
+                    </a>
+                </div>
+                <div class="item">
+                    <a href="detail-page.html">
+                        <div class="views"><i class="icon-eye-7"></i>120</div>
+                        <div class="title">
+                            <h4>دکتر جولیا هولمز<em>متخصص اطفال</em></h4>
+                        </div>
+                        <img src="http://via.placeholder.com/350x500.jpg" alt="">
+                    </a>
+                </div>
+                <div class="item">
+                    <a href="detail-page.html">
+                        <div class="views"><i class="icon-eye-7"></i>115</div>
+                        <div class="title">
+                            <h4>دکتر جولیا هولمز<em>متخصص اطفال</em></h4>
+                        </div>
+                        <img src="http://via.placeholder.com/350x500.jpg" alt="">
+                    </a>
+                </div>
+                <div class="item">
+                    <a href="detail-page.html">
+                        <div class="views"><i class="icon-eye-7"></i>98</div>
+                        <div class="title">
+                            <h4>دکتر جولیا هولمز<em>متخصص اطفال</em></h4>
+                        </div>
+                        <img src="http://via.placeholder.com/350x500.jpg" alt="">
+                    </a>
+                </div>
+                <div class="item">
+                    <a href="detail-page.html">
+                        <div class="views"><i class="icon-eye-7"></i>98</div>
+                        <div class="title">
+                            <h4>دکتر جولیا هولمز<em>متخصص اطفال</em></h4>
+                        </div>
+                        <img src="http://via.placeholder.com/350x500.jpg" alt="">
+                    </a>
+                </div>
+            </div>
+            <!-- /carousel -->
+        </div>
+        <!-- /container -->
+    </div>
+    <!-- /white_bg -->
+
+
+    <div>
+        <div class="container margin_120_95">
+            <div class="main_title text-right">
+                <h3 class="text-success">مجله سلامت</h3>
+            </div>
+            <div class="flex article_bg">
+                <button id="btnLeft" class="left btn-scroll"><i class="icon-right-open-4"></i></button>
+                <div class="scroll-container p-15" id="scrollContainer">
+                    <div class="scroll-wrapper">
+                        <a href="list.html" class="box_cat_home article_box">
+                            <img src="{% static 'img/pic/R.png' %}" class="rounded" width="150" height="100" alt="">
+                            <h3>مراقبت های اولیه</h3>
+                            <p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک
+                                است.</p>
+                        </a>
+                        <a href="list.html" class="box_cat_home  article_box">
+                            <img src="{% static 'img/pic/R (1).png' %}" class="rounded" width="150" height="100" alt="">
+                            <h3>مراقبت های اولیه</h3>
+                            <p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک
+                                است.</p>
+                        </a>
+                        <a href="list.html" class="box_cat_home article_box">
+                            <img src="{% static 'img/pic/OIP (1).jfif' %}" class="rounded" width="150" height="100" alt="">
+                            <h3>مراقبت های اولیه</h3>
+                            <p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک
+                                است.</p>
+                        </a>
+                        <a href="list.html" class="box_cat_home article_box">
+                            <img src="{% static 'img/pic/OIF (1).jfif' %}" class="rounded" width="150" height="100" alt="">
+                            <h3>مراقبت های اولیه</h3>
+                            <p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک
+                                است.</p>
+                        </a>
+                        <a href="list.html" class="box_cat_home article_box">
+                            <img src="{% static 'img/pic/download (1).jfif' %}" class="rounded" width="150" height="100" alt="">
+                            <h3>مراقبت های اولیه</h3>
+                            <p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک
+                                است.</p>
+                        </a> <a href="list.html" class="box_cat_home article_box">
+                        <img src="{% static 'img/pic/download.jfif' %}" class="rounded" width="150" height="100" alt="">
+                        <h3>مراقبت های اولیه</h3>
+                        <p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک
+                            است.</p>
+                    </a> <a href="list.html" class="box_cat_home article_box">
+                        <img src="{% static 'img/pic/OIP.jfif' %}" class="rounded" width="150" height="100" alt="">
+                        <h3>مراقبت های اولیه</h3>
+                        <p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک
+                            است.</p>
+                    </a> <a href="list.html" class="box_cat_home article_box">
+                        <img src="{% static 'img/pic/OIF.jfif' %}" class="rounded" width="150" height="100" alt="">
+                        <h3>مراقبت های اولیه</h3>
+                        <p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک
+                            است.</p>
+                    </a> <a href="list.html" class="box_cat_home article_box">
+                        <img src="{% static 'img/pic/baby_14153313.png' %}" class="rounded" width="150" height="100" alt="">
+                        <h3>مراقبت های اولیه</h3>
+                        <p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک
+                            است.</p>
+                    </a>
+                    </div>
+                </div>
+                <button id="btnRight" class="right btn-scroll"><i class="icon-left-open-4"></i></button>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let container = document.getElementById("scrollContainer");
+            let isRTL = getComputedStyle(container).direction === "rtl";
+
+            document.getElementById("btnLeft").addEventListener("click", function () {
+                container.scrollBy({left: isRTL ? 400 : -400, behavior: "smooth"});
+            });
+
+            document.getElementById("btnRight").addEventListener("click", function () {
+                container.scrollBy({left: isRTL ? -400 : 400, behavior: "smooth"});
+            });
+        });
+
+    </script>
+    <!-- /container -->
+
+    <div id="app_section">
+        <div class="container">
+            <div class="row justify-content-around">
+                <div class="col-md-5">
+                    <p><img src="{% static 'img/app_img.svg' %}" alt="" class="img-fluid" width="500" height="433"></p>
+                </div>
+                <div class="col-md-6">
+                    <small>نرم افزار</small>
+                    <h3>دانلود <strong>نرم افزار</strong> ما!</h3>
+                    <p class="lead">ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب
+                        گرافیک است. </p>
+                    <div class="app_buttons wow" data-wow-offset="100">
+                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                             x="0px" y="0px" viewBox="0 0 43.1 85.9" style="enable-background:new 0 0 43.1 85.9;"
+                             xml:space="preserve">
+							<path stroke-linecap="round" stroke-linejoin="round" class="st0 draw-arrow"
+                                  d="M11.3,2.5c-5.8,5-8.7,12.7-9,20.3s2,15.1,5.3,22c6.7,14,18,25.8,31.7,33.1"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" class="draw-arrow tail-1"
+                                  d="M40.6,78.1C39,71.3,37.2,64.6,35.2,58"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" class="draw-arrow tail-2"
+                                  d="M39.8,78.5c-7.2,1.7-14.3,3.3-21.5,4.9"/>
+						</svg>
+                        <a href="#0" class="fadeIn"><img class="rounded" src="{% static 'img/pic/OIP (2).jfif' %}" alt="" width="150"
+                                                         height="50" data-retina="true"></a>
+                        <a href="#0" class="fadeIn"><img src="{% static 'img/google_play_app.png' %}" alt="" width="150"
+                                                         height="50" data-retina="true"></a>
+                    </div>
+                </div>
+            </div>
+            <!-- /row -->
+        </div>
+        <!-- /container -->
+    </div>
+    <!-- /app_section -->
+</main>
+<!-- /main content -->
+<footer>
+    <div class="container margin_60_35">
+        <div class="row">
+            <div class="col-lg-3 col-md-12">
+                <p>
+                    <a href="index.html" title="Findoctor">
+                        <img src="{% static 'img/logo.png' %}" data-retina="true" alt="" width="163" height="36"
+                             class="img-fluid">
+                    </a>
+                </p>
+            </div>
+            <div class="col-lg-3 col-md-4">
+                <h5>درباره ما</h5>
+                <ul class="links">
+                    <li><a href="#0">درباره ما</a></li>
+                    <li><a href="blog.html">وبلاگ</a></li>
+                    <li><a href="#0">سوالات متداول</a></li>
+                    <li><a href="login.html">ورود</a></li>
+                    <li><a href="register.html">ثبت نام</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3 col-md-4">
+                <h5>لینک های مفید</h5>
+                <ul class="links">
+                    <li><a href="#0">دکترها</a></li>
+                    <li><a href="#0">کلینیک</a></li>
+                    <li><a href="#0">تخصص</a></li>
+                    <li><a href="#0">رزرو ملاقات</a></li>
+                    <li><a href="#0">دانلود</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3 col-md-4">
+                <h5>تماس با ما</h5>
+                <ul class="contacts">
+                    <li><a href="tel://61280932400"><i class="icon_mobile"></i> + 61 23 8093 3400</a></li>
+                    <li><a href="mailto:info@findoctor.com"><i class="icon_mail_alt"></i> help@findoctor.com</a></li>
+                </ul>
+                <div class="follow_us">
+                    <h5>دنبال کردن ما</h5>
+                    <ul>
+                        <li><a href="#0"><i class="social_facebook"></i></a></li>
+                        <li><a href="#0"><i class="social_twitter"></i></a></li>
+                        <li><a href="#0"><i class="social_linkedin"></i></a></li>
+                        <li><a href="#0"><i class="social_instagram"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!--/row-->
+        <hr>
+        <div class="row">
+            <div class="col-md-8">
+                <ul id="additional_links">
+                    <li><a href="#0">شرایط و ضوابط</a></li>
+                    <li><a href="#0">حریم خصوصی</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <div id="copy">© ملت وب</div>
+            </div>
+        </div>
+    </div>
+</footer>
+<!--/footer-->
+
+<div id="toTop"></div>
+<!-- Back to top button -->
 <!-- اسکریپت نمایش آیتم‌ها -->
 <script>
     document.getElementById("showMoreBtn").addEventListener("click", function () {
@@ -265,292 +586,10 @@
         }
     });
 </script>
-
-
-		<div class="container margin_120_95 bg-gradiant2">
-			<div class="main_title">
-				<h2>کشف سریع <strong>آنلاین</strong> وقت ملاقات!</h2>
-				<p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک است. </p>
-			</div>
-			<div class="row add_bottom_30">
-				<div class="col-lg-4">
-					<div class="box_feat" id="icon_1">
-						<span></span>
-						<h3>یافتن دکتر</h3>
-						<p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک است. </p>
-					</div>
-				</div>
-				<div class="col-lg-4">
-					<div class="box_feat" id="icon_2">
-						<span></span>
-						<h3>مشاهده پروفایل</h3>
-						<p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک است. </p>
-					</div>
-				</div>
-				<div class="col-lg-4">
-					<div class="box_feat" id="icon_3">
-						<h3>رزرو ملاقات</h3>
-						<p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک است. </p>
-					</div>
-				</div>
-			</div>
-			<!-- End row -->
-			<p class="text-center"><a href="list.html" class="btn_1 medium">یافتن دکتر</a></p>
-		</div>
-		<!-- End container -->
-
-		<div class="bg_color_1">
-			<div class="container margin_120_95">
-				<div class="main_title">
-					<h2>پزشکان بیشتر بازدید شده</h2>
-					<p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک است. </p>
-				</div>
-				<div id="reccomended" class="owl-carousel owl-theme">
-					<div class="item">
-						<a href="detail-page.html">
-							<div class="views"><i class="icon-eye-7"></i>140</div>
-							<div class="title">
-								<h4>دکتر جولیا هولمز<em>متخصص اطفال</em></h4>
-							</div><img src="http://via.placeholder.com/350x500.jpg" alt="">
-						</a>
-					</div>
-					<div class="item">
-						<a href="detail-page.html">
-							<div class="views"><i class="icon-eye-7"></i>120</div>
-							<div class="title">
-								<h4>دکتر جولیا هولمز<em>متخصص اطفال</em></h4>
-							</div><img src="http://via.placeholder.com/350x500.jpg" alt="">
-						</a>
-					</div>
-					<div class="item">
-						<a href="detail-page.html">
-							<div class="views"><i class="icon-eye-7"></i>115</div>
-							<div class="title">
-								<h4>دکتر جولیا هولمز<em>متخصص اطفال</em></h4>
-							</div><img src="http://via.placeholder.com/350x500.jpg" alt="">
-						</a>
-					</div>
-					<div class="item">
-						<a href="detail-page.html">
-							<div class="views"><i class="icon-eye-7"></i>98</div>
-							<div class="title">
-								<h4>دکتر جولیا هولمز<em>متخصص اطفال</em></h4>
-							</div><img src="http://via.placeholder.com/350x500.jpg" alt="">
-						</a>
-					</div>
-					<div class="item">
-						<a href="detail-page.html">
-							<div class="views"><i class="icon-eye-7"></i>98</div>
-							<div class="title">
-								<h4>دکتر جولیا هولمز<em>متخصص اطفال</em></h4>
-							</div><img src="http://via.placeholder.com/350x500.jpg" alt="">
-						</a>
-					</div>
-				</div>
-				<!-- /carousel -->
-			</div>
-			<!-- /container -->
-		</div>
-		<!-- /white_bg -->
-
-		<div class="container margin_120_95">
-			<div class="main_title">
-				<h2>یافتن توسط تخصص</h2>
-				<p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک است. </p>
-			</div>
-			<div class="row">
-				<div class="col-lg-3 col-md-6">
-					<a href="list.html" class="box_cat_home">
-						<i class="icon-info-4"></i>
-						<img src="{% static 'img/icon_cat_1.svg' %}" width="60" height="60" alt="">
-						<h3>مراقبت های اولیه</h3>
-						<ul class="clearfix">
-							<li><strong>124</strong>دکتر</li>
-							<li><strong>60</strong>کلنیک</li>
-						</ul>
-					</a>
-				</div>
-				<div class="col-lg-3 col-md-6">
-					<a href="list.html" class="box_cat_home">
-						<i class="icon-info-4"></i>
-						<img src="{% static 'img/icon_cat_2.svg' %}" width="60" height="60" alt="">
-						<h3>مراقبت های اولیه</h3>
-						<ul class="clearfix">
-							<li><strong>124</strong>دکتر</li>
-							<li><strong>60</strong>کلنیک</li>
-						</ul>
-					</a>
-				</div>
-				<div class="col-lg-3 col-md-6">
-					<a href="list.html" class="box_cat_home">
-						<i class="icon-info-4"></i>
-						<img src="{% static 'img/icon_cat_3.svg' %}" width="60" height="60" alt="">
-						<h3>مراقبت های اولیه</h3>
-						<ul class="clearfix">
-							<li><strong>124</strong>دکتر</li>
-							<li><strong>60</strong>کلنیک</li>
-						</ul>
-					</a>
-				</div>
-				<div class="col-lg-3 col-md-6">
-					<a href="list.html" class="box_cat_home">
-						<i class="icon-info-4"></i>
-						<img src="{% static 'img/icon_cat_4.svg' %}" width="60" height="60" alt="">
-						<h3>مراقبت های اولیه</h3>
-						<ul class="clearfix">
-							<li><strong>124</strong>دکتر</li>
-							<li><strong>60</strong>کلنیک</li>
-						</ul>
-					</a>
-				</div>
-				<div class="col-lg-3 col-md-6">
-					<a href="list.html" class="box_cat_home">
-						<i class="icon-info-4"></i>
-						<img src="{% static 'img/icon_cat_7.svg' %}" width="60" height="60" alt="">
-						<h3>مراقبت های اولیه</h3>
-						<ul class="clearfix">
-							<li><strong>124</strong>دکتر</li>
-							<li><strong>60</strong>کلنیک</li>
-						</ul>
-					</a>
-				</div>
-				<div class="col-lg-3 col-md-6">
-					<a href="list.html" class="box_cat_home">
-						<i class="icon-info-4"></i>
-						<img src="{% static 'img/icon_cat_5.svg' %}" width="60" height="60" alt="">
-						<h3>مراقبت های اولیه</h3>
-						<ul class="clearfix">
-							<li><strong>124</strong>دکتر</li>
-							<li><strong>60</strong>کلنیک</li>
-						</ul>
-					</a>
-				</div>
-				<div class="col-lg-3 col-md-6">
-					<a href="list.html" class="box_cat_home">
-						<i class="icon-info-4"></i>
-						<img src="{% static 'img/icon_cat_6.svg' %}" width="60" height="60" alt="">
-						<h3>مراقبت های اولیه</h3>
-						<ul class="clearfix">
-							<li><strong>124</strong>دکتر</li>
-							<li><strong>60</strong>کلنیک</li>
-						</ul>
-					</a>
-				</div>
-				<div class="col-lg-3 col-md-6">
-					<a href="list.html" class="box_cat_home">
-						<i class="icon-info-4"></i>
-						<img src="{% static 'img/icon_cat_8.svg' %}" width="60" height="60" alt="">
-						<h3>مراقبت های اولیه</h3>
-						<ul class="clearfix">
-							<li><strong>124</strong>دکتر</li>
-							<li><strong>60</strong>کلنیک</li>
-						</ul>
-					</a>
-				</div>
-			</div>
-			<!-- /row -->
-		</div>
-		<!-- /container -->
-
-		<div id="app_section">
-			<div class="container">
-				<div class="row justify-content-around">
-					<div class="col-md-5">
-						<p><img src="{% static 'img/app_img.svg' %}" alt="" class="img-fluid" width="500" height="433"></p>
-					</div>
-					<div class="col-md-6">
-						<small>نرم افزار</small>
-						<h3>دانلود <strong>نرم افزار</strong> ما!</h3>
-						<p class="lead">ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک است. </p>
-						<div class="app_buttons wow" data-wow-offset="100">
-							<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 43.1 85.9" style="enable-background:new 0 0 43.1 85.9;" xml:space="preserve">
-							<path stroke-linecap="round" stroke-linejoin="round" class="st0 draw-arrow" d="M11.3,2.5c-5.8,5-8.7,12.7-9,20.3s2,15.1,5.3,22c6.7,14,18,25.8,31.7,33.1" />
-							<path stroke-linecap="round" stroke-linejoin="round" class="draw-arrow tail-1" d="M40.6,78.1C39,71.3,37.2,64.6,35.2,58" />
-							<path stroke-linecap="round" stroke-linejoin="round" class="draw-arrow tail-2" d="M39.8,78.5c-7.2,1.7-14.3,3.3-21.5,4.9" />
-						</svg>
-							<a href="#0" class="fadeIn"><img src="{% static 'img/apple_app.png' %}" alt="" width="150" height="50" data-retina="true"></a>
-							<a href="#0" class="fadeIn"><img src="{% static 'img/google_play_app.png' %}" alt="" width="150" height="50" data-retina="true"></a>
-						</div>
-					</div>
-				</div>
-				<!-- /row -->
-			</div>
-			<!-- /container -->
-		</div>
-		<!-- /app_section -->
-	</main>
-	<!-- /main content -->
-	<footer>
-		<div class="container margin_60_35">
-			<div class="row">
-				<div class="col-lg-3 col-md-12">
-					<p>
-						<a href="index.html" title="Findoctor">
-							<img src="{% static 'img/logo.png' %}" data-retina="true" alt="" width="163" height="36" class="img-fluid">
-						</a>
-					</p>
-				</div>
-				<div class="col-lg-3 col-md-4">
-					<h5>درباره ما</h5>
-					<ul class="links">
-						<li><a href="#0">درباره ما</a></li>
-						<li><a href="blog.html">وبلاگ</a></li>
-						<li><a href="#0">سوالات متداول</a></li>
-						<li><a href="login.html">ورود</a></li>
-						<li><a href="register.html">ثبت نام</a></li>
-					</ul>
-				</div>
-				<div class="col-lg-3 col-md-4">
-					<h5>لینک های مفید</h5>
-					<ul class="links">
-						<li><a href="#0">دکترها</a></li>
-						<li><a href="#0">کلینیک</a></li>
-						<li><a href="#0">تخصص</a></li>
-						<li><a href="#0">رزرو ملاقات</a></li>
-						<li><a href="#0">دانلود</a></li>
-					</ul>
-				</div>
-				<div class="col-lg-3 col-md-4">
-					<h5>تماس با ما</h5>
-					<ul class="contacts">
-						<li><a href="tel://61280932400"><i class="icon_mobile"></i> + 61 23 8093 3400</a></li>
-						<li><a href="mailto:info@findoctor.com"><i class="icon_mail_alt"></i> help@findoctor.com</a></li>
-					</ul>
-					<div class="follow_us">
-						<h5>دنبال کردن ما</h5>
-						<ul>
-							<li><a href="#0"><i class="social_facebook"></i></a></li>
-							<li><a href="#0"><i class="social_twitter"></i></a></li>
-							<li><a href="#0"><i class="social_linkedin"></i></a></li>
-							<li><a href="#0"><i class="social_instagram"></i></a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-			<!--/row-->
-			<hr>
-			<div class="row">
-				<div class="col-md-8">
-					<ul id="additional_links">
-						<li><a href="#0">شرایط و ضوابط</a></li>
-						<li><a href="#0">حریم خصوصی</a></li>
-					</ul>
-				</div>
-				<div class="col-md-4">
-					<div id="copy">© ملت وب</div>
-				</div>
-			</div>
-		</div>
-	</footer>
-	<!--/footer-->
-
-	<div id="toTop"></div>
-	<!-- Back to top button -->
-
-	<!-- COMMON SCRIPTS -->
-	<script src="{% static 'js/jquery-2.2.4.min.js' %}"></script>
-	<script src="{% static 'js/common_scripts.min.js' %}"></script>
-	<script src="{% static 'js/functions.js' %}"></script>
+<!-- COMMON SCRIPTS -->
+<script src="{% static 'js/jquery-2.2.4.min.js' %}"></script>
+<script src="{% static 'js/common_scripts.min.js' %}"></script>
+<script src="{% static 'js/functions.js' %}"></script>
 
 
 </body>

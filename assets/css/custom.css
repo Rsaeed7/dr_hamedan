@@ -36,10 +36,36 @@
     font-size: 2rem;
   }
 }
+.btn-scroll{
+    color: #d3d3d3;
+    background: none!important;
+    border: none!important;
+    outline: none!important;
+    /*all: unset!important; !* حذف تمامی استایل‌های پیش‌فرض *!*/
+    padding-left: 10px;
+    padding-right: 10px;
+
+}
+.btn-scroll:hover{
+    color: #070000;
+    border: none!important;
+    outline: none!important;
+
+}
+
+
 
 .p-t-10{
     padding-top: 10px!important;
 }
+
+.p-t-15{
+    padding-top: 15px!important;
+}
+.p-15{
+    padding: 15px!important;
+}
+
 
 .bg-gradiant{
   background: linear-gradient(to bottom, rgba(255, 255, 255, 0.05), rgba(144, 185, 227, 0.05));
@@ -92,3 +118,24 @@
             display: none;
         }
     }
+
+
+.article_box{
+    /*border: solid rgba(0, 147, 131, 0.66) 1px!important;*/
+    border: none!important;
+    /*background: linear-gradient(to bottom, rgba(0, 147, 131, 0.02), rgba(86, 143, 63, 0.05))!important;*/
+    background: #ffffff !important;
+
+}
+.article_box:hover{
+  -webkit-transform: translateY(5px)!important;
+  -moz-transform: translateY(5px)!important;
+  -ms-transform: translateY(5px)!important;
+  -o-transform: translateY(5px)!important;
+  transform: translateY(5px)!important;
+}
+
+.article_bg{
+    background: rgba(73, 158, 102, 0.8);
+    border-radius: 2px;
+}
