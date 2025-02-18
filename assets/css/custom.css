@@ -36,3 +36,59 @@
     font-size: 2rem;
   }
 }
+
+.p-t-10{
+    padding-top: 10px!important;
+}
+
+.bg-gradiant{
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.05), rgba(144, 185, 227, 0.05));
+}
+.bg-gradiant2{
+  background: linear-gradient(to bottom, rgba(144, 185, 227, 0.05), rgba(255, 255, 255, 0.05));
+}
+
+/* Bottom Navigation Bar */
+    .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-around;
+        background-color: #ffffff;
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+        padding: 10px 0;
+        z-index: 1000;
+        transition: bottom 0.3s; /* Smooth transition for bottom position */
+    }
+
+    .bottom-nav .nav-item {
+        text-align: center;
+        flex: 1;
+        color: #666;
+        text-decoration: none;
+        font-size: 14px;
+        transition: color 0.3s;
+    }
+
+    .bottom-nav .nav-item i {
+        font-size: 20px;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .bottom-nav .nav-item:hover {
+        color: #007bff;
+    }
+
+    .bottom-nav .nav-item.active {
+        color: #007bff;
+    }
+
+    /* واکنش‌گرایی: نمایش نوار فقط در موبایل */
+    @media (min-width: 768px) {
+        .bottom-nav {
+            display: none;
+        }
+    }
