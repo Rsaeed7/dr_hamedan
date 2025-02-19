@@ -474,7 +474,7 @@ strong {
 /*-------- 1.2 Buttons --------*/
 /*General links color*/
 a {
-  color: #e74e84;
+  color: rgba(36, 154, 64, 0.98);
   text-decoration: none;
   -moz-transition: all 0.5s ease-in-out;
   -o-transition: all 0.5s ease-in-out;
@@ -484,7 +484,7 @@ a {
   outline: none;
 }
 a:hover, a:focus {
-  color: #333;
+  color: rgba(51, 51, 51, 0.73);
   text-decoration: none;
   outline: none;
 }
@@ -671,14 +671,14 @@ ul#top_access li#user figure img {
 /* Footer */
 footer {
   background-color: #fff;
-  color: #555;
+  color: #244c9a;
 }
 footer h5 {
-  font-size: 14px;
-  font-size: 0.875rem;
+  font-size: 17px;
+  font-size: 0.975rem;
   font-weight: 600;
   text-transform: uppercase;
-  color: #999;
+  color: #4a77ce;
   margin-bottom: 20px;
 }
 @media (max-width: 767px) {
@@ -707,25 +707,25 @@ footer ul li a {
   color: #555555;
 }
 footer ul li a:hover {
-  color: #e74e84;
+  color: rgba(41, 154, 115, 0.8);
 }
 footer ul li a i {
   margin-right: 10px;
   color: #fff;
 }
 footer ul.links li a:hover {
-  -webkit-transform: translate(5px, 0);
-  -moz-transform: translate(5px, 0);
-  -ms-transform: translate(5px, 0);
-  -o-transform: translate(5px, 0);
-  transform: translate(5px, 0);
+  -webkit-transform: translate(-5px, 3px);
+  -moz-transform: translate(5px, 3px);
+  -ms-transform: translate(-5px, 3px);
+  -o-transform: translate(5px, 3px);
+  transform: translate(-5px, 3px);
 }
 footer ul.links li a:hover:after {
   opacity: 1;
 }
 footer ul.links li a:after {
   font-family: 'ElegantIcons';
-  content: "\24";
+  content: "\45";
   position: absolute;
   margin-left: 5px;
   top: 1px;
@@ -738,13 +738,13 @@ footer ul.links li a:after {
 }
 footer ul.contacts li a i {
   margin-right: 10px;
-  color: #e74e84;
+  color: rgba(24, 61, 61, 0.7);
 }
 footer #copy {
   text-align: right;
   font-size: 13px;
   font-size: 0.8125rem;
-  color: #999;
+  color: #7d9dc0;
 }
 @media (max-width: 767px) {
   footer #copy {
@@ -764,10 +764,10 @@ footer #copy {
   font-size: 1rem;
 }
 .follow_us ul li a i {
-  color: #555;
+  color: #3e7077;
 }
 .follow_us ul li a i:hover {
-  color: #e74e84;
+  color: #4eace7;
 }
 
 /* Addtional links / Footer */
@@ -1550,8 +1550,14 @@ a.box_cat_home ul li strong {
   font-size: 32px;
   font-size: 2rem;
 }
-#app_section h3 strong {
-  color: #fff02a;
+
+#app_section h5 {
+  color: #fff;
+  font-size: 13px;
+  font-size: 1.8rem;
+}
+#app_section h5 strong {
+  color: #fae900;
 }
 #app_section p {
   margin-bottom: 60px;
