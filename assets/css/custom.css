@@ -152,6 +152,10 @@
     min-width: 280px!important;
 
 }
+a.dr_box i {
+  color: #ffc107;
+  opacity: 1!important;
+}
 .round50{
     border-radius: 50%;
     border: 3px solid rgba(102, 102, 102, 0.18);
@@ -201,6 +205,23 @@
     padding-right: 5px;
 }
 
+.p-l-10{
+    padding-left: 10px;
+}
+.p-r-10{
+    padding-right: 10px;
+}
+
+.p-l-20{
+    padding-left: 20px;
+}
+.p-r-20{
+    padding-right: 20px;
+}
+
+.text-left{
+    text-align: left;
+}
 
 
 .margin_50_35 {
@@ -221,3 +242,4 @@
     padding-bottom: 5px;
   }
 }
+
