@@ -79,10 +79,10 @@
 
 
 .bg-gradiant{
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.05), rgba(144, 185, 227, 0.05));
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.03), rgba(144, 185, 227, 0.03));
 }
 .bg-gradiant2{
-  background: linear-gradient(to bottom, rgba(144, 185, 227, 0.05), rgba(255, 255, 255, 0.05));
+  background: linear-gradient(to bottom, rgba(144, 185, 227, 0.03), rgba(255, 255, 255, 0.04));
 }
 
 /* Bottom Navigation Bar */
@@ -218,6 +218,23 @@ a.dr_box i {
 .p-r-20{
     padding-right: 20px;
 }
+
+@media (min-width: 991px){
+    .p-r-50{
+        padding-right: 50px;
+    }
+    .p-r-100{
+        padding-right: 100px;
+}
+    .p-r-150{
+    padding-right: 150px;
+}
+}
+
+.links li {
+    margin-bottom: 20px;
+}
+
 
 .text-left{
     text-align: left;
