@@ -4725,7 +4725,7 @@ tbody.collapse.show {
   display: flex;
   padding-left: 0;
   list-style: none;
-  border-radius: 0.25rem;
+  border-radius: 0.5rem;
 }
 
 .page-link {
