@@ -110,7 +110,7 @@ Author URI: http://themeforest.net/user/Ansonika/
   width: 100%;
   height: 100%;
   bottom: 0;
-  background-color: #fff;
+  background-color: rgba(36, 76, 154, 0.28);
   z-index: 999999;
 }
 
@@ -126,7 +126,7 @@ Author URI: http://themeforest.net/user/Ansonika/
   -moz-animation: circle infinite .95s linear;
   -o-animation: circle infinite .95s linear;
   animation: circle infinite .95s linear;
-  border: 2px solid #3f4079;
+  border: 2px solid rgba(70, 141, 148, 0.66);
   border-top-color: rgba(0, 0, 0, 0.2);
   border-right-color: rgba(0, 0, 0, 0.2);
   border-bottom-color: rgba(0, 0, 0, 0.2);
@@ -1047,9 +1047,6 @@ ul#additional_links li:after {
   -moz-border-radius: 3px;
   -ms-border-radius: 3px;
   border-radius: 50px;
-  -webkit-box-shadow: 0px 0px 50px 0px rgba(0, 0, 0, 0.35);
-  -moz-box-shadow: 0px 0px 50px 0px rgba(0, 0, 0, 0.35);
-  box-shadow: 0px 0px 50px 0px rgba(0, 0, 0, 0.35);
   font-weight: 500;
   font-size: 16px;
   font-size: 1rem;
@@ -4201,23 +4198,20 @@ ul.bullets li:before {
 
 /*-------- 3.5 Community badges --------*/
 .box_badges {
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  -ms-border-radius: 5px;
-  border-radius: 5px;
-  background-color: #fff;
-  text-align: center;
-  -webkit-box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.1);
-  -moz-box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.1);
-  box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.1);
-  padding: 30px 25px 5px 25px;
-  position: relative;
-  margin-bottom: 30px;
+  padding: 5px 10px !important;
+  border: 1px solid rgba(36, 105, 154, 0.73)!important;
+  transition: background-color 0.5s ease-in-out,
+                color 0.5s ease-in-out,
+                border-color 0.5s ease-in-out !important;
 }
-.box_badges h3 {
-  font-size: 21px;
-  font-size: 1.3125rem;
+
+.box_badges:hover{
+  color: #fff!important;
+  background-color: rgba(19, 132, 150, 0.27)!important;
+  border-color: rgba(17, 122, 139, 0.7)!important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2)!important;
 }
+
 .box_badges ul li {
   display: inline-block;
   background-color: #74d1c6;
