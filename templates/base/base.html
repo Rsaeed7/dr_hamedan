@@ -85,18 +85,27 @@
     });
 </script>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        let container = document.getElementById("scrollContainer");
-        let isRTL = getComputedStyle(container).direction === "rtl";
+document.addEventListener("DOMContentLoaded", function () {
+    // انتخاب همه کانتینرها
+    let containers = document.querySelectorAll(".scroll-container");
 
-        document.getElementById("btnLeft").addEventListener("click", function () {
-            container.scrollBy({left: isRTL ? 400 : -400, behavior: "smooth"});
+    containers.forEach(function (container, index) {
+        let isRTL = getComputedStyle(container).direction === "rtl";
+        let btnLeft = document.getElementById("btnLeft" + (index + 1));
+        let btnRight = document.getElementById("btnRight" + (index + 1));
+
+        // رویداد دکمه چپ
+        btnLeft.addEventListener("click", function () {
+            container.scrollBy({ left: isRTL ? 400 : -400, behavior: "smooth" });
         });
 
-        document.getElementById("btnRight").addEventListener("click", function () {
-            container.scrollBy({left: isRTL ? -400 : 400, behavior: "smooth"});
+        // رویداد دکمه راست
+        btnRight.addEventListener("click", function () {
+            container.scrollBy({ left: isRTL ? -400 : 400, behavior: "smooth" });
         });
     });
+});
+
 
 </script>
 
