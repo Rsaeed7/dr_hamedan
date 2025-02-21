@@ -110,50 +110,59 @@
     background: linear-gradient(to bottom, rgba(144, 185, 227, 0.03), rgba(255, 255, 255, 0.04));
 }
 
-/* Bottom Navigation Bar */
-.bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: space-around;
-    background-color: #ffffff;
-    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-    padding: 10px 0;
-    z-index: 1000;
-    transition: bottom 0.3s; /* Smooth transition for bottom position */
-}
-
-.bottom-nav .nav-item {
-    text-align: center;
-    flex: 1;
-    color: #666;
-    text-decoration: none;
-    font-size: 14px;
-    transition: color 0.3s;
-}
-
-.bottom-nav .nav-item i {
-    font-size: 20px;
-    margin-bottom: 5px;
-    display: block;
-}
-
-.bottom-nav .nav-item:hover {
-    color: #007bff;
-}
-
-.bottom-nav .nav-item.active {
-    color: #007bff;
-}
-
-/* واکنش‌گرایی: نمایش نوار فقط در موبایل */
-@media (min-width: 768px) {
-    .bottom-nav {
-        display: none;
+   .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-around;
+        background-color: rgba(255, 255, 255, 0.89);
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+        padding: 10px 0;
+        z-index: 1000;
+        transition: bottom 0.3s; /* Smooth transition for bottom position */
     }
-}
+
+    .bottom-nav .nav-item {
+        text-align: center;
+        flex: 1;
+        color: #666;
+        text-decoration: none;
+        font-size: 14px;
+        transition: color 0.3s;
+    }
+
+    .bottom-nav .nav-item i {
+        font-size: 20px;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .bottom-nav .nav-item:hover {
+        color: #007bff;
+    }
+
+    .bottom-nav .nav-item.active {
+        color: #163b8d;
+        font-weight: bolder;
+    }
+
+    .text-dr{
+        color: rgba(0, 0, 0, 0.59);
+    }
+
+    /* واکنش‌گرایی: نمایش نوار فقط در موبایل */
+    @media (min-width: 768px) {
+        .bottom-nav {
+            display: none;
+        }
+    }
+
+    .r{
+        border-radius: 20px;
+    }
+
 
 
 .article_box {
@@ -209,6 +218,10 @@ a.dr_box i {
 
 .text_dr {
     color: #263189 !important;
+}
+
+.text_dr_2 {
+    color: #71dd8a !important;
 }
 
 .border_light {
@@ -298,25 +311,13 @@ a.dr_box i {
 }
 
 @media (max-width: 768px) {
-    #btnLeft {
-        display: none; /* دکمه در حالت موبایل مخفی می‌شود */
+    .left {
+        display: none; /* همه دکمه‌ها مخفی می‌شوند */
     }
-
-    #btnRight {
-        display: none; /* دکمه در حالت موبایل مخفی می‌شود */
-    }
-}
-
-@media (min-width: 769px) {
-    #btnLeft {
-        display: block; /* دکمه در حالت دسکتاپ نمایش داده می‌شود */
-    }
-
-    #btnRight {
-        display: block; /* دکمه در حالت دسکتاپ نمایش داده می‌شود */
+    .right {
+        display: none; /* همه دکمه‌ها مخفی می‌شوند */
     }
 }
-
 
 /* مخفی کردن اسکرول بار */
 .scroll-container {
