@@ -1994,14 +1994,12 @@ a.wish_bt:hover:after {
   margin-bottom: 25px;
   background-color: #fff;
   padding: 20px 15px 15px 115px;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  -ms-border-radius: 5px;
-  border-radius: 5px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  border-radius: 10px;
   position: relative;
-  -webkit-box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.05);
-  -moz-box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.05);
-  box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 23, 134, 0.38);
 }
 .strip_list a.wish_bt {
   background-color: black;
@@ -2026,10 +2024,10 @@ a.wish_bt:hover:after {
   height: 80px;
   position: absolute;
   overflow: hidden;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
-  -ms-border-radius: 50%;
-  border-radius: 50%;
+  /*-webkit-border-radius: 50%;*/
+  /*-moz-border-radius: 50%;*/
+  /*-ms-border-radius: 50%;*/
+  border-radius:5px;
   right: 15px;
   top: 15px;
 }
@@ -2077,9 +2075,9 @@ a.wish_bt:hover:after {
   }
 }
 .strip_list small {
-  color: #999;
+  color: rgba(0, 0, 0, 0.59);
   display: block;
-  font-weight: 600;
+  font-weight: 400;
   text-transform: uppercase;
   margin-right: 85px;
 }
@@ -2104,36 +2102,33 @@ a.wish_bt:hover:after {
   cursor: pointer;
 }
 .strip_list ul li a:hover {
-  color: #e74e84;
+  color: #009383;
 }
 .strip_list ul li:first-child:after {
-  content: '|';
   font-weight: 400;
   margin-left: 8px;
-  color: #ccc;
 }
 .strip_list ul li:last-child {
   float: right;
   margin-right: 0;
 }
 .strip_list ul li:last-child a {
-  border: 2px solid #e74e84;
-  color: #e74e84;
+  background-color: #01b821;
+  color: #ffffff;
   cursor: pointer;
-  padding: 5px 20px;
+  padding: 5px 40px;
   -moz-transition: all 0.3s ease-in-out;
   -o-transition: all 0.3s ease-in-out;
   -webkit-transition: all 0.3s ease-in-out;
   -ms-transition: all 0.3s ease-in-out;
   transition: all 0.3s ease-in-out;
-  -webkit-border-radius: 30px;
-  -moz-border-radius: 30px;
-  -ms-border-radius: 30px;
-  border-radius: 30px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+
 }
 .strip_list ul li:last-child a:hover {
-  background-color: #e74e84;
-  color: white !important;
+  background-color: #018d1b;
 }
 @media (max-width: 991px) {
   .strip_list ul li:first-child {
@@ -4313,18 +4308,20 @@ ul.bullets li:before {
 
 .page-item.disabled .page-link {
   color: #999;
-  border-color: #e1e8ed;
+  border: none;
 }
 
 .page-link {
-  color: #e74e84;
-  border: 1px solid #e1e8ed;
+  color: #163b8d;
+  border: 1px solid rgba(36, 76, 154, 0.45);
+  border-radius: 10px;
+  margin: 2px;
 }
 .page-link:focus, .page-link:hover {
   color: #fff;
   text-decoration: none;
-  background-color: #e74e84;
-  border-color: #e74e84;
+  background-color: #244c9a;
+
 }
 
 /*-------- 3.7 Cookie bar --------*/
