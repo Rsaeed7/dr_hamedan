@@ -26,14 +26,14 @@
 
 /*First level styles */
 .main-menu > ul > li > a {
-  color: #333;
+  color: #f8f8f8;
   padding: 0 8px 17px  8px;
   font-size: 14px;
   font-size: 0.875rem;
   font-weight: 500;
 }
 .main-menu > ul > li:hover > a {
-  color: #e74e84;
+  color: #4ee7b9;
 }
 
 /* Opacity mask when left open */
@@ -94,7 +94,7 @@
   /* Submenu*/
   .main-menu ul ul, .main-menu ul li .menu-wrapper {
     position: absolute;
-    border-top: 2px solid #e74e84;
+    border-top: 2px solid #0bd99c;
     z-index: 1;
     text-align: right;
     visibility: hidden;
@@ -183,7 +183,7 @@
 
   .main-menu ul ul li:hover > a {
     background-color: #f9f9f9;
-    color: #e74e84;
+    color: #009383;
     padding-left: 18px;
   }
 
@@ -210,7 +210,7 @@
   a.show-submenu:focus,
   a.show-submenu-mega:hover,
   a.show-submenu-mega:focus {
-    color: #e74e84 !important;
+    color: #009383 !important;
     background-color: #f9f9f9;
   }
 
@@ -333,7 +333,7 @@
     left: 0;
     right: 0;
     height: 2px;
-    background: #333;
+    background: #ffffff;
   }
 
   .cmn-toggle-switch span::before,
@@ -343,7 +343,7 @@
     left: 0;
     width: 100%;
     height: 2px;
-    background-color: #333;
+    background-color: #ffffff;
     content: "";
   }
 
