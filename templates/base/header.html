@@ -1,0 +1,75 @@
+{% load static %}
+<header class="header_sticky">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-6">
+                <div id="logo_home">
+                    <h1><a href="index.html" title="DrHamedan">DrHamedan</a></h1>
+                </div>
+            </div>
+            <nav class="col-lg-9 col-6">
+                <a class="cmn-toggle-switch cmn-toggle-switch__htx open_close" href="#0"><span>Menu mobile</span></a>
+                <ul id="top_access">
+                    <li><a href="login.html"><i class="pe-7s-user text-success"></i></a></li>
+                </ul>
+                <div class="main-menu">
+                    <ul>
+                        <li>
+                            <a href="#0">نوبت دهی آنلاین</a>
+                        </li>
+                        <li>
+                            <a href="#0">مشاوره آنلاین</a>
+
+                        </li>
+                        <li class="submenu">
+                            <a href="#0" class="show-submenu">تخصص ها<i class="icon-down-open-mini"></i></a>
+                            <ul>
+                                <li><a href="detail-page-working-booking.html">جزئیات رزرو کار</a></li>
+                                <li><a href="booking-page.html">صفحه رزرو</a></li>
+                                <li><a href="confirm.html">صفحه تایید</a></li>
+                                <li><a href="faq.html">سوالات متداول</a></li>
+                                <li><a href="coming_soon/index.html">به زودی</a></li>
+                                <li><a href="pricing-tables.html">جداول قیمت گذاری پاسخگو</a></li>
+                                <li><a href="pricing-tables-2.html">جداول قیمت گذاری پاسخگو 2</a></li>
+                                <li><a href="register-doctor-working.html">ثبت نام کار دکتر</a></li>
+                                <li><a href="icon-pack-1.html">بسته آیکن 1</a></li>
+                                <li><a href="icon-pack-2.html">بسته آیکن 2</a></li>
+                                <li><a href="icon-pack-3.html">بسته آیکن 3</a></li>
+                                <li><a href="404.html">404 صفحه</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="">مجله پزشکی</a></li>
+                        <li><a href="">مراکز درمانی</a></li>
+                        <li><a href="" class="text-success">برای پزشکان</a></li>
+                    </ul>
+                </div>
+                <!-- /main-menu -->
+            </nav>
+        </div>
+    </div>
+    <!-- /container -->
+</header>
+<!-- /header -->
+<!-- mobile footer -->
+<div class="bottom-nav" id="bottom-nav">
+    <a href="/" class="nav-item active">
+        <i class="icon-hospital text-dr"></i>
+        <span>خانه</span>
+    </a>
+
+    <a href="" class="nav-item">
+        <i class="icon-medkit text-dr"></i>
+        <span>وبلاگ</span>
+    </a>
+    <a href="" class="nav-item {% if request.resolver_match.url_name == 'turn_days' %}active{% endif %}">
+        <i class="icon-pagelines text-dr"></i>
+        <span>نوبت ها</span>
+    </a>
+    <a href="" class="nav-item">
+        <i class="icon-users-2 text-dr"></i>
+        <span>پروفایل</span>
+    </a>
+</div>
+
+
+<!-- /mobile footer -->

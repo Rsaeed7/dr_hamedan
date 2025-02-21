@@ -1,148 +1,6 @@
+{% extends  'base/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Find easily a doctor and book online an appointment">
-    <meta name="author" content="Ansonika">
-    <title>دکتر همدان نوبت گیری آنلاین</title>
-    <!-- Favicons-->
-    <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
-    <link rel="apple-touch-icon" type="image/x-icon" href="{% static 'img/apple-touch-icon-57x57-precomposed.png' %}">
-    <link rel="apple-touch-icon" type="image/x-icon" sizes="72x72"
-          href="{% static 'img/apple-touch-icon-72x72-precomposed.png' %}">
-    <link rel="apple-touch-icon" type="image/x-icon" sizes="114x114"
-          href="{% static 'img/apple-touch-icon-114x114-precomposed.png' %}">
-    <link rel="apple-touch-icon" type="image/x-icon" sizes="144x144"
-          href="{% static 'img/apple-touch-icon-144x144-precomposed.png' %}">
-
-    <!-- BASE CSS -->
-    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'css/style.css' %}" rel="stylesheet">
-    <link href="{% static 'css/menu.css' %}" rel="stylesheet">
-    <link href="{% static 'css/vendors.css' %}" rel="stylesheet">
-    <link href="{% static 'css/icon_fonts/css/all_icons_min.css' %}" rel="stylesheet">
-    <!-- YOUR CUSTOM CSS -->
-    <link href="{% static 'css/custom.css' %}" rel="stylesheet">
-</head>
-<style>
-    /* مخفی کردن اسکرول بار */
-    .scroll-container {
-        overflow: auto; /* اجازه اسکرول */
-        -ms-overflow-style: none; /* برای اینترنت اکسپلورر */
-        scrollbar-width: none; /* برای Firefox */
-    }
-
-    .scroll-container::-webkit-scrollbar {
-        display: none; /* مخفی کردن اسکرول بار در Webkit */
-    }
-
-
-    .flex {
-        display: flex;
-    }
-
-    .scroll-wrapper {
-        display: flex;
-        gap: 15px;
-    }
-
-    .box_cat_home {
-        display: inline-block;
-        min-width: 200px;
-        text-align: center;
-    }
-
-
-</style>
-<body>
-
-<div class="layer"></div>
-<!-- Mobile menu overlay mask -->
-
-{#	<div id="preloader">#}
-{#		<div data-loader="circle-side"></div>#}
-{#	</div>#}
-<!-- End Preload -->
-
-<header class="header_sticky">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-3 col-6">
-                <div id="logo_home">
-                    <h1><a href="index.html" title="DrHamedan">DrHamedan</a></h1>
-                </div>
-            </div>
-            <nav class="col-lg-9 col-6">
-                <a class="cmn-toggle-switch cmn-toggle-switch__htx open_close" href="#0"><span>Menu mobile</span></a>
-                <ul id="top_access">
-                    <li><a href="login.html"><i class="pe-7s-user text-success"></i></a></li>
-                </ul>
-                <div class="main-menu">
-                    <ul>
-                        <li>
-                            <a href="#0">نوبت دهی آنلاین</a>
-                        </li>
-                        <li>
-                            <a href="#0">مشاوره آنلاین</a>
-
-                        </li>
-                        <li class="submenu">
-                            <a href="#0" class="show-submenu">تخصص ها<i class="icon-down-open-mini"></i></a>
-                            <ul>
-                                <li><a href="detail-page-working-booking.html">جزئیات رزرو کار</a></li>
-                                <li><a href="booking-page.html">صفحه رزرو</a></li>
-                                <li><a href="confirm.html">صفحه تایید</a></li>
-                                <li><a href="faq.html">سوالات متداول</a></li>
-                                <li><a href="coming_soon/index.html">به زودی</a></li>
-                                <li><a href="pricing-tables.html">جداول قیمت گذاری پاسخگو</a></li>
-                                <li><a href="pricing-tables-2.html">جداول قیمت گذاری پاسخگو 2</a></li>
-                                <li><a href="register-doctor-working.html">ثبت نام کار دکتر</a></li>
-                                <li><a href="icon-pack-1.html">بسته آیکن 1</a></li>
-                                <li><a href="icon-pack-2.html">بسته آیکن 2</a></li>
-                                <li><a href="icon-pack-3.html">بسته آیکن 3</a></li>
-                                <li><a href="404.html">404 صفحه</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="">مجله پزشکی</a></li>
-                        <li><a href="">مراکز درمانی</a></li>
-                        <li><a href="" class="text-success">برای پزشکان</a></li>
-                    </ul>
-                </div>
-                <!-- /main-menu -->
-            </nav>
-        </div>
-    </div>
-    <!-- /container -->
-</header>
-<!-- /header -->
-<!-- mobile footer -->
-<div class="bottom-nav" id="bottom-nav">
-    <a href="/" class="nav-item active">
-        <i class="icon-hospital text-dr"></i>
-        <span>خانه</span>
-    </a>
-
-    <a href="" class="nav-item">
-        <i class="icon-medkit text-dr"></i>
-        <span>وبلاگ</span>
-    </a>
-    <a href="" class="nav-item {% if request.resolver_match.url_name == 'turn_days' %}active{% endif %}">
-        <i class="icon-pagelines text-dr"></i>
-        <span>نوبت ها</span>
-    </a>
-    <a href="" class="nav-item">
-        <i class="icon-users-2 text-dr"></i>
-        <span>پروفایل</span>
-    </a>
-</div>
-
-
-<!-- /mobile footer -->
-
+{% block body %}
 <main class="bg-white">
     <div class="hero_home version_2">
         <div class="content text-dark">
@@ -172,7 +30,7 @@
         </div>
     </div>
     <!-- /Hero -->
-    <div class="container margin_60_35 bg-gradiant">
+    <div class="container margin_50_35 bg-gradiant">
         <div class="main_title">
             <p>دنبال چه تخصصی میگردید؟</p>
         </div>
@@ -433,8 +291,7 @@
                             <p>فوق تخصص مغز و اعصاب</p>
                             <div class="text-right text-info">
                                 <i class="icon-star-5"><small>4.3</small></i>
-                                <small class="icon-location">همدان، خیابان تختی ، واحد3</small>
-                                <p class="text-dark small p-t-10">مدت زمان مشاوره <span class="text-info p-r-20">15 دقیقه</span>
+                                <p class="text-dark small">مدت زمان مشاوره <span class="text-info p-r-20">15 دقیقه</span>
                                 <p class="text-dark small">پاسخگویی : <span class="text-info p-r-20">روی خط</span>
                                 </p>
                                 <button class="btn btn-outline-info col-md-12">دریافت مشاوره</button>
@@ -447,8 +304,7 @@
                             <p>فوق مجاری کلیوی</p>
                             <div class="text-right text-info">
                                 <i class="icon-star-5"><small>4.6</small></i>
-                                <small class="icon-location">همدان،خیبان بوعلی ساختمان پاستور</small>
-                                <p class="text-dark small p-t-10">مدت زمان مشاوره <span class="text-info p-r-20">15 دقیقه</span>
+                                <p class="text-dark small">مدت زمان مشاوره <span class="text-info p-r-20">15 دقیقه</span>
                                 <p class="text-dark small">پاسخگویی : <span class="text-info p-r-20">روی خط</span>
                                 </p>
                                 <button class="btn btn-outline-info col-md-12">دریافت مشاوره</button>
@@ -460,8 +316,7 @@
                             <p>فلوشیپ رادیواینترونشن</p>
                             <div class="text-right text-info">
                                 <i class="icon-star-5"><small>4.5</small></i>
-                                <small class="icon-location">همدان،روبه روی استخر آبیاران</small>
-                                <p class="text-dark small p-t-10">مدت زمان مشاوره <span class="text-info p-r-20">15 دقیقه</span>
+                                <p class="text-dark small">مدت زمان مشاوره <span class="text-info p-r-20">15 دقیقه</span>
                                 <p class="text-dark small">پاسخگویی : <span class="text-info p-r-20">روی خط</span>
                                 </p>
                                 <button class="btn btn-outline-info col-md-12">دریافت مشاوره</button>
@@ -473,8 +328,7 @@
                             <p>فوق تخصص قلب و عروق</p>
                             <div class="text-right text-info">
                                 <i class="icon-star-5"><small>4.8</small></i>
-                                <small class="icon-location">همدان،باغ ایرانی ، بلوار بهادر بیگی,کوچه اول</small>
-                                <p class="text-dark small p-t-10">مدت زمان مشاوره <span class="text-info p-r-20">15 دقیقه</span>
+                                <p class="text-dark small">مدت زمان مشاوره <span class="text-info p-r-20">15 دقیقه</span>
                                 <p class="text-dark small">پاسخگویی : <span class="text-info p-r-20">روی خط</span>
                                 </p>
                                 <button class="btn btn-outline-info col-md-12">دریافت مشاوره</button>
@@ -487,8 +341,7 @@
                             <p>فوق تخصص قلب و عروق</p>
                             <div class="text-right text-info">
                                 <i class="icon-star-5"><small>4.8</small></i>
-                                <small class="icon-location">همدان،بلوار بهادر بیگی,کوچه اول</small>
-                                <p class="text-dark small p-t-10">مدت زمان مشاوره <span class="text-info p-r-20">15 دقیقه</span>
+                                <p class="text-dark small">مدت زمان مشاوره <span class="text-info p-r-20">15 دقیقه</span>
                                 <p class="text-dark small">پاسخگویی : <span class="text-info p-r-20">روی خط</span>
                                 </p>
                                 <button class="btn btn-outline-info col-md-12">دریافت مشاوره</button>
@@ -501,8 +354,7 @@
                             <p>فوق تخصص قلب و عروق</p>
                             <div class="text-right text-info">
                                 <i class="icon-star-5"><small>4.8</small></i>
-                                <small class="icon-location">همدان،بلوار بهادر بیگی,کوچه اول</small>
-                                <p class="text-dark small p-t-10">مدت زمان مشاوره <span class="text-info p-r-20">15 دقیقه</span>
+                                <p class="text-dark small">مدت زمان مشاوره <span class="text-info p-r-20">15 دقیقه</span>
                                 <p class="text-dark small">پاسخگویی : <span class="text-info p-r-20">روی خط</span>
                                 </p>
                                 <button class="btn btn-outline-info col-md-12">دریافت مشاوره</button>
@@ -514,8 +366,7 @@
                             <p>فوق تخصص قلب و عروق</p>
                             <div class="text-right text-info">
                                 <i class="icon-star-5"><small>4.8</small></i>
-                                <small class="icon-location">همدان،بلوار بهادر بیگی,کوچه اول</small>
-                                <p class="text-dark small p-t-10">مدت زمان مشاوره <span class="text-info p-r-20">15 دقیقه</span>
+                                <p class="text-dark small">مدت زمان مشاوره <span class="text-info p-r-20">15 دقیقه</span>
                                 <p class="text-dark small">پاسخگویی : <span class="text-info p-r-20">روی خط</span>
                                 </p>
                                 <button class="btn btn-outline-info col-md-12">دریافت مشاوره</button>
@@ -527,8 +378,7 @@
                             <p>فوق تخصص قلب و عروق</p>
                             <div class="text-right text-info">
                                 <i class="icon-star-5"><small>4.8</small></i>
-                                <small class="icon-location">همدان،بلوار بهادر بیگی,کوچه اول</small>
-                                <p class="text-dark small p-t-10">مدت زمان مشاوره <span class="text-info p-r-20">15 دقیقه</span>
+                                <p class="text-dark small">مدت زمان مشاوره <span class="text-info p-r-20">15 دقیقه</span>
                                 <p class="text-dark small">پاسخگویی : <span class="text-info p-r-20">روی خط</span>
                                 </p>
                                 <button class="btn btn-outline-info col-md-12">دریافت مشاوره</button>
@@ -540,8 +390,7 @@
                             <p>فوق تخصص قلب و عروق</p>
                             <div class="text-right text-info">
                                 <i class="icon-star-5"><small>4.8</small></i>
-                                <small class="icon-location">همدان،بلوار بهادر بیگی,کوچه اول</small>
-                                <p class="text-dark small p-t-10">مدت زمان مشاوره <span class="text-info p-r-20">15 دقیقه</span>
+                                <p class="text-dark small">مدت زمان مشاوره <span class="text-info p-r-20">15 دقیقه</span>
                                 <p class="text-dark small">پاسخگویی : <span class="text-info p-r-20">روی خط</span>
                                 </p>
                                 <button class="btn btn-outline-info col-md-12">دریافت مشاوره</button>
@@ -555,9 +404,50 @@
         </div>
     </div>
 
+    <div>
+        <div class="container margin_60_35 bg-gradiant text-center">
+            <h4 class="text-secondary">پزشک های شهر شما</h4>
+            <div class="flex rounded">
+                <button id="btnLeft" class="left btn-scroll2"><i class="icon-right-open-4"></i></button>
+                <div class="scroll-container p-15" id="scrollContainer">
+                    <div class="scroll-wrapper">
+                        <a href="list.html" class="box_cat_home box_badges">
+                            <h3>همدان</h3>
+                        </a>
+                        <a href="list.html" class="box_cat_home box_badges">
+                            <h3>ملایر</h3>
+                        </a>
+                        <a href="list.html" class="box_cat_home box_badges">
+                            <h3>نهاوند</h3>
+                        </a>
+                        <a href="list.html" class="box_cat_home box_badges">
+                            <h3>تویسرکان</h3>
+                        </a>
+                        <a href="list.html" class="box_cat_home box_badges">
+                            <h3>بهار</h3>
+                        </a>
+                        <a href="list.html" class="box_cat_home box_badges">
+                            <h3>اسدآباد</h3>
+                        </a>
+                        <a href="list.html" class="box_cat_home box_badges">
+                            <h3>لالجین</h3>
+                        </a>
+                        <a href="list.html" class="box_cat_home box_badges">
+                            <h3>فامنین</h3>
+                        </a>
+                        <a href="list.html" class="box_cat_home box_badges">
+                            <h3>رزن</h3>
+                        </a>
+                    </div>
+                </div>
+                <button id="btnRight" class="right btn-scroll2"><i class="icon-left-open-4"></i></button>
+            </div>
+        </div>
 
-        <div>
-        <div class="container">
+    </div>
+
+    <div>
+        <div class="container bg-gradiant2">
             <h3 class="text_dr">مراکز درمانی و کلینیک ها</h3>
             <div class="flex rounded">
                 <button id="btnLeft" class="left btn-scroll"><i class="icon-right-open-4"></i></button>
@@ -568,70 +458,85 @@
                             <h3>کلینیک مهدیه</h3>
                             <p>مرکز جراحی محدود</p>
                             <div class="text-right text-info">
-                                <small class="icon-location">همدان، خیابان تختی ، واحد3</small><hr>
+                                <small class="icon-location">همدان، خیابان تختی ، واحد3</small>
+                                <hr>
                                 <button class="btn btn-outline-warning col-md-12">مشاهده پروفایل</button>
                             </div>
                         </a>
                         <a href="list.html" class="box_cat_home dr_box">
-                            <img src="{% static 'img/dr/download (2).jfif' %}" class="rounded" width="250" height="100" alt="">
+                            <img src="{% static 'img/dr/download (2).jfif' %}" class="rounded" width="250" height="100"
+                                 alt="">
                             <h3>درمانگاه بعثت</h3>
                             <p>درمانگاه مغز و اعصاب</p>
                             <div class="text-right text-info">
-                                <small class="icon-location">همدان، خیابان تختی ، واحد3</small><hr>
+                                <small class="icon-location">همدان، خیابان تختی ، واحد3</small>
+                                <hr>
                                 <button class="btn btn-outline-warning col-md-12">مشاهده پروفایل</button>
                             </div>
                         </a>
                         <a href="list.html" class="box_cat_home dr_box">
-                            <img src="{% static 'img/dr/OIP (3).jfif' %}" class="rounded" width="250" height="100" alt="">
+                            <img src="{% static 'img/dr/OIP (3).jfif' %}" class="rounded" width="250" height="100"
+                                 alt="">
                             <h3>کلینیک رژ</h3>
                             <p>مرکز زیبایی و مراقبت پوست </p>
                             <div class="text-right text-info">
-                                <small class="icon-location">همدان، خیابان تختی ، واحد3</small><hr>
+                                <small class="icon-location">همدان، خیابان تختی ، واحد3</small>
+                                <hr>
                                 <button class="btn btn-outline-warning col-md-12">مشاهده پروفایل</button>
                             </div>
                         </a>
                         <a href="list.html" class="box_cat_home dr_box">
-                            <img src="{% static 'img/dr/OIP (4).jfif' %}" class="rounded" width="250" height="100" alt="">
+                            <img src="{% static 'img/dr/OIP (4).jfif' %}" class="rounded" width="250" height="100"
+                                 alt="">
                             <h3>دندانپزشکی سیب</h3>
                             <p>خدمات کامل دندان</p>
                             <div class="text-right text-info">
-                                <small class="icon-location">همدان، خیابان تختی ، واحد3</small><hr>
+                                <small class="icon-location">همدان، خیابان تختی ، واحد3</small>
+                                <hr>
                                 <button class="btn btn-outline-warning col-md-12">مشاهده پروفایل</button>
                             </div>
                         </a>
                         <a href="list.html" class="box_cat_home dr_box">
-                            <img src="{% static 'img/dr/download (1).jfif' %}" class="rounded" width="250" height="100" alt="">
+                            <img src="{% static 'img/dr/download (1).jfif' %}" class="rounded" width="250" height="100"
+                                 alt="">
                             <h3>کلینیک مهدیه</h3>
                             <p>مرکز جراحی محدود</p>
                             <div class="text-right text-info">
-                                <small class="icon-location">همدان، خیابان تختی ، واحد3</small><hr>
+                                <small class="icon-location">همدان، خیابان تختی ، واحد3</small>
+                                <hr>
                                 <button class="btn btn-outline-warning col-md-12">مشاهده پروفایل</button>
                             </div>
                         </a>
                         <a href="list.html" class="box_cat_home dr_box">
-                            <img src="{% static 'img/dr/download.jfif' %}" class="rounded" width="250" height="100" alt="">
+                            <img src="{% static 'img/dr/download.jfif' %}" class="rounded" width="250" height="100"
+                                 alt="">
                             <h3>کلینیک مهدیه</h3>
                             <p>مرکز جراحی محدود</p>
                             <div class="text-right text-info">
-                                <small class="icon-location">همدان، خیابان تختی ، واحد3</small><hr>
+                                <small class="icon-location">همدان، خیابان تختی ، واحد3</small>
+                                <hr>
                                 <button class="btn btn-outline-warning col-md-12">مشاهده پروفایل</button>
                             </div>
                         </a>
                         <a href="list.html" class="box_cat_home dr_box">
-                            <img src="{% static 'img/dr/download (2).jfif' %}" class="rounded" width="250" height="100" alt="">
+                            <img src="{% static 'img/dr/download (2).jfif' %}" class="rounded" width="250" height="100"
+                                 alt="">
                             <h3>کلینیک مهدیه</h3>
                             <p>مرکز جراحی محدود</p>
                             <div class="text-right text-info">
-                                <small class="icon-location">همدان، خیابان تختی ، واحد3</small><hr>
+                                <small class="icon-location">همدان، خیابان تختی ، واحد3</small>
+                                <hr>
                                 <button class="btn btn-outline-warning col-md-12">مشاهده پروفایل</button>
                             </div>
                         </a>
                         <a href="list.html" class="box_cat_home dr_box">
-                            <img src="{% static 'img/dr/download (3).jfif' %}" class="rounded" width="250" height="100" alt="">
+                            <img src="{% static 'img/dr/download (3).jfif' %}" class="rounded" width="250" height="100"
+                                 alt="">
                             <h3>کلینیک مهدیه</h3>
                             <p>مرکز جراحی محدود</p>
                             <div class="text-right text-info">
-                                <small class="icon-location">همدان، خیابان تختی ، واحد3</small><hr>
+                                <small class="icon-location">همدان، خیابان تختی ، واحد3</small>
+                                <hr>
                                 <button class="btn btn-outline-warning col-md-12">مشاهده پروفایل</button>
                             </div>
                         </a>
@@ -640,7 +545,8 @@
                             <h3>کلینیک مهدیه</h3>
                             <p>مرکز جراحی محدود</p>
                             <div class="text-right text-info">
-                                <small class="icon-location">همدان، خیابان تختی ، واحد3</small><hr>
+                                <small class="icon-location">همدان، خیابان تختی ، واحد3</small>
+                                <hr>
                                 <button class="btn btn-outline-warning col-md-12">مشاهده پروفایل</button>
                             </div>
                         </a>
@@ -650,6 +556,7 @@
             </div>
             <p class="text-center text_dr"><a href="#"> مشاهده همه مراکز <i class="icon-left-4"></i> </a></p>
         </div>
+
     </div>
     <!-- End container -->
 
@@ -720,7 +627,8 @@
 
                 <button id="btnRight" class="right btn-scroll"><i class="icon-left-open-4"></i></button>
             </div>
-             <p class="text-left"><a href="#" class="text-success">مشاهده همه مقاله ها <i class="icon-left-dir"></i></a></p>
+            <p class="text-left"><a href="#" class="text-success">مشاهده همه مقاله ها <i class="icon-left-dir"></i></a>
+            </p>
         </div>
     </div>
 
@@ -792,154 +700,6 @@
         <!-- /container -->
     </div>
     <!-- /app_section -->
+
 </main>
-<!-- /main content -->
-<footer>
-    <div class="bg_footer">
-        <div class="container margin_60_35">
-            <div class="row">
-                <div class="col-lg-3 col-md-12">
-                    <p class="text-center">
-                        <a href="index.html" title="Findoctor">
-                            <img src="{% static 'img/logo_bw_2x.png' %}" data-retina="true" alt="" width="233"
-                                 height="36"
-                                 class="img-fluid">
-                        </a>
-                    </p>
-                    <ul class="p-t-20">
-                        <li><span class="text-secondary"><img class="p-l-5"
-                                                              src="{% static 'img/pic/headphones_4936026.png' %}"
-                                                              width="25">پاسخگویی و پشتیبانی 24 ساعت 7 روز هفته</span>
-                        </li>
-                        <li class="p-t-20"><span class="text-secondary"><img class="p-l-5"
-                                                                             src="{% static 'img/pic/pin-point_9753614.png' %}"
-                                                                             width="25">استان همدان ، کوی استادان ، خیابان شرقی اول</span>
-                        </li>
-                    </ul>
-
-                </div>
-                <div class="col-lg-3 col-md-4 p-r-150">
-                    <h5>لینک های مفید</h5>
-                    <div class="row">
-                        <div class="col-6 col-md-12">
-                            <ul class="links">
-                                <li><a href="#0">ورود بیماران</a></li>
-                                <li><a href="#0">ورود پزشکان</a></li>
-                                <li><a href="#0">ثبت نام پزشکان</a></li>
-                                <li><a href="#0">محله سلامت</a></li>
-                                <li><a href="#0">لیست تخصص ها</a></li>
-                                <li><a href="#0">مشاوره تلفنی</a></li>
-                            </ul>
-                        </div>
-                        <div class="col-6 col-md-12">
-                            <ul class="links">
-                                <li><a href="#0">لیست مراکز درمانی</a></li>
-                                <li><a href="#0">فرصت های شغلی</a></li>
-                                <li><a href="#0">درباره ما</a></li>
-                                <li><a href="#0">تماس با ما</a></li>
-                                <li><a href="#0">ثبت شکایت</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4 col-md-4 p-r-100">
-                    <div class="follow_us">
-                        <h5>گواهینامه ها</h5>
-                        <ul>
-                            <li><a href="#0"><img class="border bg-light rounded"
-                                                  src="{% static 'img/dr/samandehi.webp' %}" width="60" height="60"></a>
-                            </li>
-                            <li><a href="#0"><img class="border bg-light rounded"
-                                                  src="{% static 'img/dr/virtual.webp' %}" width="60" height="60"></a>
-                            </li>
-                            <li><a href="#0"><img class="border bg-light rounded"
-                                                  src="{% static 'img/dr/enamad.webp' %}" width="60" height="60"></a>
-                            </li>
-                        </ul>
-                    </div>
-                    <h5 class="p-t-25">راه های ارتباطی</h5>
-                    <ul class="contacts">
-                        <li><a href="tel://61280932400"><i class="icon-phone-squared"></i> 8138227774 +</a></li>
-                        <li><a href="mailto:info@saeedfh074.com">saeedfh074@gmail.com <i
-                                class="icon_mail p-l-5"></i></a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="follow_us text-center">
-                <ul>
-                    <li><a href="#0"><i class="icon-instagram-2"></i></a></li>
-                    <li><a href="#0"><i class="icon_mail"></i></a></li>
-                    <li><a href="#0"><i class="icon-chat-inv"></i></a></li>
-                    <li><a href="#0"><i class=" icon-paper-plane-1"></i></a></li>
-                </ul>
-            </div>
-            <!--/row-->
-            <hr>
-            <div class="row">
-                <div class="col-md-4">
-                    <div id="copy">〄 طراحی، توسعه و پشتیبانی توسط تیم اروسی</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
-<!--/footer-->
-
-<div id="toTop"></div>
-<!-- Back to top button -->
-<!-- اسکریپت نمایش آیتم‌ها -->
-<script>
-    document.getElementById("showMoreBtn").addEventListener("click", function () {
-        let extraItems = document.getElementById("extraItems");
-        let arrowIcon = document.getElementById("arrowIcon");
-
-        if (extraItems.style.height === "0px" || extraItems.style.height === "") {
-            let fullHeight = extraItems.scrollHeight + "px"; // گرفتن ارتفاع واقعی
-            extraItems.style.height = fullHeight;
-            extraItems.style.opacity = "1"; // نمایان شدن
-            arrowIcon.className = "icon-up-open";
-            this.appendChild(arrowIcon);
-            arrowIcon.style.transform = "rotate(180deg)";
-
-            // بعد از پایان انیمیشن ارتفاع رو auto میکنیم
-            setTimeout(() => {
-                extraItems.style.height = "auto";
-            }, 600);
-        } else {
-            extraItems.style.height = extraItems.scrollHeight + "px"; // تنظیم مقدار فعلی
-            setTimeout(() => {
-                extraItems.style.height = "0";
-            }, 10); // مقدار height رو بعد از لحظه‌ای تغییر می‌دیم که مرورگر تغییر رو بفهمه
-            extraItems.style.opacity = "0"; // محو شدن
-            arrowIcon.className = "icon-down-open";
-            this.appendChild(arrowIcon);
-            arrowIcon.style.transform = "rotate(0deg)";
-        }
-    });
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        let container = document.getElementById("scrollContainer");
-        let isRTL = getComputedStyle(container).direction === "rtl";
-
-        document.getElementById("btnLeft").addEventListener("click", function () {
-            container.scrollBy({left: isRTL ? 400 : -400, behavior: "smooth"});
-        });
-
-        document.getElementById("btnRight").addEventListener("click", function () {
-            container.scrollBy({left: isRTL ? -400 : 400, behavior: "smooth"});
-        });
-    });
-
-</script>
-<!-- COMMON SCRIPTS -->
-<script src="{% static 'js/jquery-2.2.4.min.js' %}"></script>
-<script src="{% static 'js/common_scripts.min.js' %}"></script>
-<script src="{% static 'js/functions.js' %}"></script>
-
-
-</body>
-
-</html>
+{% endblock %}
