@@ -4,7 +4,7 @@
         <div class="row">
             <div class="col-lg-3 col-6">
                 <div id="logo_home">
-                    <h1><a href="index.html" title="DrHamedan">DrHamedan</a></h1>
+                    <h1><a href="/" title="DrHamedan">DrHamedan</a></h1>
                 </div>
             </div>
             <nav class="col-lg-9 col-6">
@@ -38,7 +38,7 @@
                                 <li><a href="#">داخلی</a></li>
                             </ul>
                         </li>
-                        <li><a href="">مجله پزشکی</a></li>
+                        <li><a href="{% url 'core:article_list' %}">مجله پزشکی</a></li>
                         <li><a href="{% url 'core:clinic_list' %}">مراکز درمانی</a></li>
                         <li><a href="" class="text_dr_2">برای پزشکان</a></li>
                     </ul>
@@ -59,11 +59,11 @@
     </a>
 
     <a href="" class="nav-item">
-        <i class="icon-medkit text-dr"></i>
+        <i class="icon-blogger text-dr"></i>
         <span>وبلاگ</span>
     </a>
     <a href="" class="nav-item {% if request.resolver_match.url_name == 'turn_days' %}active{% endif %}">
-        <i class="icon-pagelines text-dr"></i>
+        <i class="icon-users text-dr"></i>
         <span>نوبت ها</span>
     </a>
     <a href="" class="nav-item">

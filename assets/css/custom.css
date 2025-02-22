@@ -352,3 +352,22 @@ a.dr_box i {
 .down-3{
     top: 3px;
 }
+
+.banner-blog {
+    width: 100%;
+    max-height: 300px; /* ارتفاع حداکثر در دسکتاپ */
+    object-fit: cover; /* برش دادن تصویر برای پر کردن ظرف */
+    border-radius: 15px;
+}
+
+@media (max-width: 768px) {
+    .banner-blog {
+        height: auto; /* ارتفاع تصویر به اندازه ارتفاع صفحه موبایل */
+    }
+}
+
+.aside-border{
+    border-radius: 10px;
+    background: linear-gradient(to bottom, rgba(144, 185, 227, 0.14), rgba(255, 255, 255, 0.08));
+    border-top: rgba(46, 46, 87, 0.35) 1px solid;
+}

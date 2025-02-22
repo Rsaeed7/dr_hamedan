@@ -1,0 +1,195 @@
+{% extends  'base/base.html' %}
+{% load static %}
+{% block body %}
+    <div class="filters_listing">
+        <div class="container">
+            <ul class="clearfix">
+                <form method="post" action="list.html">
+                    <div id="custom-search-input">
+                        <div class="input-group">
+                            <input type="text" class="search-query" placeholder="جستجو....">
+                            <input type="submit" class="btn_search" style="border-radius: 50px" value="جستجو">
+                        </div>
+                    </div>
+                </form>
+            </ul>
+        </div>
+    </div>
+    <!-- /breadcrumb -->
+    <div class="container margin_60">
+        <div class="main_title">
+            <img class="banner-blog" src="{% static 'img/dr/431-4316672_health-and-wellness-banner.png' %}">
+        </div>
+        <div class="row">
+            <aside class="col-lg-3 aside-border bg-gradiant2">
+                <div class="widget">
+                    <div class="widget-title">
+                        <h4><i class="icon-article-alt-1"></i>آخرین مقاله ها</h4>
+                    </div>
+                    <ul class="comments-list">
+                        <li>
+                            <div class="alignleft">
+                                <a href="#0"><img src="{% static 'img/blog/closeup-image-beautiful-asian-woman-eating-fish-chips-table-restaurant_1048944-27612350.avif' %}" alt=""></a>
+                            </div>
+                            <h3><a href="#" title="">قولنج معده</a></h3>
+                            <small> مشکلات گوارشی مانند نفخ، سوءهاضمه، رفلاکس معده، یبوست و اسهال می‌توانند این ...</small>
+                        </li>
+                        <li>
+                            <div class="alignleft">
+                                <a href="#0"><img src="{% static 'img/blog/close-up-hands-doctor-holding-patient-hand-giving-support-hope-clinic_603656-5478.avif' %}" alt=""></a>
+                            </div>
+                            <h3><a href="#" title="">هضم غذا چگونه انجام میشود</a></h3>
+                            <small>هضم غدا یکی از اساسی‌ترین عملکردهای بدن است که نقش مهمی در سلامت کلی ایفا می‌کند</small>
+                        </li>
+                        <li>
+                            <div class="alignleft">
+                                <a href="#0"><img src="{% static 'img/blog/young-handsome-physician-medical-robe-with-stethoscope_1303-17818.avif' %}" alt=""></a>
+                            </div>
+                            <h3><a href="#" title="">بیماری‌های التهابی روده و روماتیسم مفصلی</a></h3>
+                            <small>بدن مواد مغذی را جذب کرده و انرژی مورد نیاز خود را تأمین می‌کند</small>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /widget -->
+
+                <div class="widget">
+                    <div class="widget-title">
+                        <h4><i class="icon-tags-1"></i>دسته بندی</h4>
+                    </div>
+                    <ul class="cats">
+                        <li><a href="#">درمان ها </a></li>
+                        <li><a href="#">اخبار </a></li>
+                        <li><a href="#">رویداد </a></li>
+                        <li><a href="#">اخبار جدید </a></li>
+                        <li><a href="#">خوددرمانی </a></li>
+                    </ul>
+                </div>
+            </aside>
+            <div class="col-lg-9">
+                <article class="blog wow fadeIn">
+                    <div class="row no-gutters">
+                        <div class="col-lg-4">
+                            <figure>
+                                <a href="#"><img src="{% static 'img/blog/young-handsome-physician-medical-robe-with-stethoscope_1303-17818.avif' %}" alt="">
+                                    <div class="preview"><span>مطالعه مقاله</span></div>
+                                </a>
+                            </figure>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="post_info">
+                                <h3><a href="blog-post.html">قولنج معده </a></h3>
+                                <p>هضم غدا یکی از اساسی‌ترین عملکردهای بدن است که نقش مهمی در سلامت کلی ایفا می‌کند. در این فرآیند، بدن مواد مغذی را جذب کرده و انرژی مورد نیاز خود را تأمین می‌کند. اما مشکلات گوارشی مانند نفخ، 
+                                    سوءهاضمه، رفلاکس معده، یبوست و اسهال می‌توانند این روند را مختل کنند. این مشکلات معمولاً به دلیل تغذیه نامناسب، کمبود تحرک، استرس یا برخی بیماری‌های زمینه‌ای ایجاد می‌شوند. </p>
+                                <ul>
+                                    <li><i class="icon-feather"></i>سعید رحیمی</li>
+                                    <li><i class="icon-calendar-empty"></i>2 بهمن 1403 </li>
+                                    <li><i class="icon-comment-3"></i>2</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                <!-- /article -->
+
+                <article class="blog wow fadeIn">
+                    <div class="row no-gutters">
+                        <div class="col-lg-4">
+                            <figure>
+                                <a href="#"><img src="{% static 'img/blog/hands-holding-water-bottle-slate_23-2147601738.avif' %}" alt="">
+                                    <div class="preview"><span>مطالعه مقاله</span></div>
+                                </a>
+                            </figure>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="post_info">
+                                <h3><a href="blog-post.html">هضم غذا چگونه انجام می‌شود؟</a></h3>
+                                <p>هضم غدا یکی از اساسی‌ترین عملکردهای بدن است که نقش مهمی در سلامت کلی ایفا می‌کند. در این فرآیند، بدن مواد مغذی را جذب کرده و انرژی مورد نیاز خود را تأمین می‌کند. اما مشکلات گوارشی مانند نفخ،
+                                    سوءهاضمه، رفلاکس معده، یبوست و اسهال می‌توانند این روند را مختل کنند. این مشکلات معمولاً به دلیل تغذیه نامناسب، کمبود تحرک، استرس یا برخی بیماری‌های زمینه‌ای ایجاد می‌شوند. </p>
+                                <ul>
+                                    <li><i class="icon-feather"></i>سعید رحیمی</li>
+                                    <li><i class="icon-calendar-empty"></i>2 بهمن 1403 </li>
+                                    <li><i class="icon-comment-3"></i>2</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                <!-- /article -->
+
+                <article class="blog wow fadeIn">
+                    <div class="row no-gutters">
+                        <div class="col-lg-4">
+                            <figure>
+                                <a href="#"><img src="{% static 'img/blog/close-up-hands-doctor-holding-patient-hand-giving-support-hope-clinic_603656-5478.avif' %}" alt="">
+                                    <div class="preview"><span>مطالعه مقاله</span></div>
+                                </a>
+                            </figure>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="post_info">
+                                <h3><a href="blog-post.html">بیماری‌های التهابی روده و روماتیسم مفصلی</a></h3>
+                                <p>هضم غدا یکی از اساسی‌ترین عملکردهای بدن است که نقش مهمی در سلامت کلی ایفا می‌کند. در این فرآیند، بدن مواد مغذی را جذب کرده و انرژی مورد نیاز خود را تأمین می‌کند. اما مشکلات گوارشی مانند نفخ،
+                                    سوءهاضمه، رفلاکس معده، یبوست و اسهال می‌توانند این روند را مختل کنند. این مشکلات معمولاً به دلیل تغذیه نامناسب، کمبود تحرک، استرس یا برخی بیماری‌های زمینه‌ای ایجاد می‌شوند. </p>
+                                <ul>
+                                    <li><i class="icon-feather"></i>سعید رحیمی</li>
+                                    <li><i class="icon-calendar-empty"></i>2 بهمن 1403 </li>
+                                    <li><i class="icon-comment-3"></i>2</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                <!-- /article -->
+
+                <article class="blog wow fadeIn">
+                    <div class="row no-gutters">
+                        <div class="col-lg-4">
+                            <figure>
+                                <a href="#"><img src="{% static 'img/blog/closeup-image-beautiful-asian-woman-eating-fish-chips-table-restaurant_1048944-27612350.avif' %}" alt="">
+                                    <div class="preview"><span>مطالعه مقاله</span></div>
+                                </a>
+                            </figure>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="post_info">
+                                <h3><a href="blog-post.html">شربت لاکتولوز</a></h3>
+                                <p>هضم غدا یکی از اساسی‌ترین عملکردهای بدن است که نقش مهمی در سلامت کلی ایفا می‌کند. در این فرآیند، بدن مواد مغذی را جذب کرده و انرژی مورد نیاز خود را تأمین می‌کند. اما مشکلات گوارشی مانند نفخ،
+                                    سوءهاضمه، رفلاکس معده، یبوست و اسهال می‌توانند این روند را مختل کنند. این مشکلات معمولاً به دلیل تغذیه نامناسب، کمبود تحرک، استرس یا برخی بیماری‌های زمینه‌ای ایجاد می‌شوند. </p>
+                                <ul>
+                                    <li><i class="icon-feather"></i>سعید رحیمی</li>
+                                    <li><i class="icon-calendar-empty"></i>2 بهمن 1403 </li>
+                                    <li><i class="icon-comment-3"></i>2</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                <!-- /article -->
+
+                <nav aria-label="" class="add_top_20">
+                    <ul class="pagination pagination-sm center-content">
+                        <li class="page-item disabled align-center">
+                            <a class="page-link move-down down-3" href="#" tabindex="-1"><i class="icon-right-open-3"></i></a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link" href="#">4</a></li>
+                        <li class="page-item"><a class="page-link" href="#">5</a></li>
+                        <li class="page-item">
+                            <a class="page-link border-0 down-3" href="#"><i class="icon-left-open-3"></i></a>
+                        </li>
+                    </ul>
+                </nav>
+                <!-- /pagination -->
+            </div>
+            <!-- /col -->
+
+
+            <!-- /aside -->
+        </div>
+        <!-- /row -->
+    </div>
+    <!-- /container -->
+
+{% endblock %}
