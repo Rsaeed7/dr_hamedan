@@ -345,3 +345,10 @@ a.dr_box i {
     min-width: 200px;
     text-align: center;
 }
+
+.center-content{
+    justify-content: center;
+}
+.down-3{
+    top: 3px;
+}

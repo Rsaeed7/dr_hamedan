@@ -4312,15 +4312,19 @@ ul.bullets li:before {
 }
 
 .page-link {
+
   color: #163b8d;
   border: 1px solid rgba(36, 76, 154, 0.45);
   border-radius: 10px;
   margin: 2px;
 }
 .page-link:focus, .page-link:hover {
-  color: #fff;
+  color: #090909;
   text-decoration: none;
-  background-color: #244c9a;
+  border-color: #0b1260;
+  /*background-color: #244c9a;*/
+  background: none;
+  top: 3px !important;
 
 }
 
