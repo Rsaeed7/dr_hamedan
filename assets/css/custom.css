@@ -182,7 +182,7 @@
 }
 
 .dr_box {
-    border: rgba(129, 129, 129, 0.16) solid 1px !important;
+    border: rgba(36, 76, 154, 0.55) solid 1px !important;
     background: #ffffff !important;
     min-width: 280px !important;
 
@@ -222,6 +222,10 @@ a.dr_box i {
 
 .text_dr_2 {
     color: #71dd8a !important;
+}
+
+.text_dr_3{
+    color: #3f4079!important;
 }
 
 .border_light {
@@ -346,9 +350,92 @@ a.dr_box i {
     text-align: center;
 }
 
+
 .center-content{
     justify-content: center;
 }
 .down-3{
     top: 3px;
+}
+
+.banner-blog {
+    width: 100%;
+    max-height: 300px; /* ارتفاع حداکثر در دسکتاپ */
+    object-fit: cover; /* برش دادن تصویر برای پر کردن ظرف */
+    border-radius: 15px;
+}
+
+.clinic_img {
+    width: 100%;
+    max-height: 250px; /* ارتفاع حداکثر در دسکتاپ */
+    max-width: 250px;
+    object-fit: fill; /* برش دادن تصویر برای پر کردن ظرف */
+    border-radius: 50%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border: 3px solid rgba(0, 0, 0, 0.13);
+}
+
+@media (max-width: 768px) {
+    .banner-blog {
+        height: auto; /* ارتفاع تصویر به اندازه ارتفاع صفحه موبایل */
+    }
+    .clinic_img {
+        /*max-height: 150px;*/
+    }
+
+    .main-menu {
+        transform: translateX(100%); /* منو را به خارج از صفحه در سمت راست منتقل می‌کند */
+    }
+
+    .nav.center-content li {
+    margin: 0 15px!important; /* ایجاد فاصله افقی بین دو آیتم منوی ناوبری */
+}
+
+
+}
+
+.aside-border{
+    border-radius: 10px;
+    background: linear-gradient(to bottom, rgba(144, 185, 227, 0.14), rgba(255, 255, 255, 0.08));
+    border-top: rgba(46, 46, 87, 0.35) 1px solid;
+}
+
+
+a.clinic_box i {
+    position: absolute;
+    right: 3px;
+    top: 3px;
+    font-size: 13px;
+    color: #858585 !important;
+    opacity: 1 !important;
+}
+
+
+.nav.center-content {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    border-bottom: 2px solid rgba(133, 133, 133, 0.3); /* اضافه کردن خط زیر کل داستان */
+    margin-bottom: 10px; /* ایجاد فاصله بین خط زیرین و محتوای زیر آن */
+}
+
+.nav-link {
+    padding: 10px 20px;
+    text-decoration: none;
+    color: #000;
+    border-bottom: 2px solid transparent; /* خط زیرین شفاف به طور پیش‌فرض */
+    transition: border-bottom 0.3s ease; /* انیمیشن نرم برای خط زیرین */
+}
+
+.nav-link.active {
+    font-weight: bold;
+    color: rgb(39, 100, 129);
+    border-bottom: 2px solid rgba(36, 76, 154, 0.57); /* خط زیرین رنگی به تب فعال */
+}
+
+.nav.center-content li {
+    margin: 0 70px; /* ایجاد فاصله افقی بین دو آیتم منوی ناوبری */
 }
