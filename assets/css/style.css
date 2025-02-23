@@ -1414,7 +1414,7 @@ a.box_cat_home {
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   -ms-border-radius: 5px;
-  border-radius: 5px;
+  border-radius: 15px;
   text-align: center;
   margin-bottom: 25px;
   position: relative;
@@ -2674,8 +2674,6 @@ a.wish_bt:hover:after {
 .tabs_styled_2 .nav-tabs .nav-link.active {
   color: #333333;
   background-color: #fff;
-  border-color: #e1e8ed;
-  border-bottom: 1px solid transparent;
 }
 @media (max-width: 767px) {
   .tabs_styled_2 .nav-tabs .nav-item.show .nav-link,
@@ -2705,7 +2703,7 @@ a.wish_bt:hover:after {
     display: block;
     width: 100%;
     margin-bottom: 5px;
-    border: 1px solid #e1e8ed;
+    border: 1px solid #ede1e3;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     -ms-border-radius: 5px;
@@ -2753,10 +2751,10 @@ a.wish_bt:hover:after {
   }
 }
 .indent_title_in i {
-  font-size: 40px;
+  font-size: 35px;
   position: absolute;
-  left: 0;
-  color: #3f4079;
+  right: 10px;
+  color: #3bbd42;
   top: 0;
 }
 @media (max-width: 767px) {
@@ -2992,8 +2990,6 @@ ul.treatments li {
 
 input[type=checkbox].css-checkbox {
   position: absolute;
-  z-index: -1000;
-  left: -1000px;
   overflow: hidden;
   clip: rect(0 0 0 0);
   height: 1px;
@@ -4009,13 +4005,14 @@ ul.treatments.checkout li.total {
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   -ms-border-radius: 5px;
-  border-radius: 5px;
+  border-radius: 15px;
   margin-bottom: 15px;
-  border: 1px solid #e1e8ed;
+  border: 1px solid rgba(36, 76, 154, 0.44);
 }
 .box_general_3 hr {
   margin: 30px -30px 30px -30px;
 }
+
 
 /*-------- 3.2 List --------*/
 ul.bullets {
@@ -4030,9 +4027,9 @@ ul.bullets li:before {
   font-style: normal;
   font-weight: normal;
   font-family: 'ElegantIcons';
-  font-size: 14px;
-  content: "\5c";
-  color: #ccc;
+  font-size: 16px;
+  content: "\4e";
+  color: #42b602;
   position: absolute;
   left: 0;
   top: 0;

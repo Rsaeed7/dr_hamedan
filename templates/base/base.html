@@ -27,6 +27,7 @@
     <link href="{% static 'css/icon_fonts/css/all_icons_min.css' %}" rel="stylesheet">
     <!-- YOUR CUSTOM CSS -->
     <link href="{% static 'css/custom.css' %}" rel="stylesheet">
+    <link href="{% static 'css/blog.css' %}" rel="stylesheet">
 </head>
 
 <body>
@@ -98,12 +99,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // رویداد دکمه چپ
         btnLeft.addEventListener("click", function () {
-            container.scrollBy({ left: isRTL ? 400 : -400, behavior: "smooth" });
+            container.scrollBy({ left: isRTL ? 800 : -800, behavior: "smooth" });
         });
 
         // رویداد دکمه راست
         btnRight.addEventListener("click", function () {
-            container.scrollBy({ left: isRTL ? -400 : 400, behavior: "smooth" });
+            container.scrollBy({ left: isRTL ? -800 : 800, behavior: "smooth" });
         });
     });
 });

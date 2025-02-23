@@ -11,6 +11,7 @@
   -ms-transition: all 0.3s ease-in-out;
   transition: all 0.3s ease-in-out;
 }
+
 .main-menu ul, .main-menu ul li {
   position: relative;
   margin: 0;
@@ -349,10 +350,12 @@
 
   .cmn-toggle-switch span::before {
     top: -10px;
+    background-color: #ffffff;
   }
 
   .cmn-toggle-switch span::after {
     bottom: -10px;
+    background-color: #ffffff;
   }
 
   .cmn-toggle-switch__htx span::before,
@@ -361,11 +364,13 @@
     transition-duration: 0.3s, 0.3s;
     -webkit-transition-delay: 0.3s, 0;
     transition-delay: 0.3s, 0;
+
   }
 
   .cmn-toggle-switch__htx span::before {
     -webkit-transition-property: top, -webkit-transform;
     transition-property: top, transform;
+
   }
 
   .cmn-toggle-switch__htx span::after {
