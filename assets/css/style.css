@@ -2748,6 +2748,7 @@ a.wish_bt:hover:after {
   .indent_title_in {
     /* For less than 767px */
     padding-left: 0;
+    margin-bottom: 5px;
   }
 }
 .indent_title_in i {
@@ -2830,7 +2831,6 @@ ul.list_edu li strong {
 .reviews-container .review-box {
   position: relative;
   margin-bottom: 25px;
-  padding-left: 100px;
   min-height: 100px;
 }
 @media (max-width: 767px) {
@@ -2865,18 +2865,19 @@ ul.list_edu li strong {
 }
 .reviews-container .rev-content {
   position: relative;
-  padding: 25px 25px 0 25px;
-  border: 1px solid #ededed;
+  padding: 10px 25px 0 25px;
+  border: 1px solid #244c9a;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   -ms-border-radius: 5px;
-  border-radius: 5px;
+  border-radius: 10px;
 }
 .reviews-container .rev-info {
-  font-size: 0.75rem;
-  font-style: italic;
-  color: #777;
+  font-size: 0.85rem;
+  font-weight: bolder;
+  color: #7c7c7c;
   margin-bottom: 10px;
+
 }
 
 #calendar {
@@ -3500,8 +3501,8 @@ a.social_bt.linkedin:before {
   background: transparent;
 }
 .checkbox_2 input[type=checkbox]:focus + label:before {
-  background-color: #e53c78;
-  background-color: rgba(231, 78, 132, 0.2);
+  background-color: #009383;
+  background-color: rgba(0, 147, 131, 0.25);
 }
 .checkbox_2 label:after {
   content: '';
@@ -3511,7 +3512,7 @@ a.social_bt.linkedin:before {
   width: 8px;
   height: 8px;
   opacity: 0;
-  background: #e74e84;
+  background: #163b8d;
   -moz-transition: all 0.3s ease-in-out;
   -o-transition: all 0.3s ease-in-out;
   -webkit-transition: all 0.3s ease-in-out;
@@ -4008,11 +4009,18 @@ ul.treatments.checkout li.total {
   border-radius: 15px;
   margin-bottom: 15px;
   border: 1px solid rgba(36, 76, 154, 0.44);
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
 .box_general_3 hr {
   margin: 30px -30px 30px -30px;
 }
 
+@media (max-width: 768px) {
+  .box_general_3 {
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+}
 
 /*-------- 3.2 List --------*/
 ul.bullets {
