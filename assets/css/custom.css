@@ -298,6 +298,22 @@ a.dr_box i {
     padding-bottom: 35px;
 }
 
+
+.margin_30_20 {
+    padding-top: 30px;
+    padding-bottom: 20px;
+}
+
+.btn-comment{
+    margin-top: 10px;
+    background: #00ffb5;
+    color: #646464
+}
+.btn-comment:hover{
+    background: rgba(0, 255, 181, 0.78);
+}
+
+
 @media (max-width: 991px) {
     .margin_50_35 {
         /* For less than 991px */
@@ -312,7 +328,15 @@ a.dr_box i {
         padding-top: 30px;
         padding-bottom: 5px;
     }
+    .margin_30_20 {
+        padding-top: 10px;
+        padding-bottom: 10px;
 }
+}
+
+
+
+
 
 @media (max-width: 768px) {
     .left {
@@ -377,6 +401,18 @@ a.dr_box i {
     border: 3px solid rgba(0, 0, 0, 0.13);
 }
 
+.border-left-pc {
+  border-left: 1px solid #dee2e6;
+}
+
+.comment-rate{
+    background: darkslateblue;
+    margin-bottom: 20px;
+    margin-right: 1px;
+    margin-left: 1px;
+    border-radius: 15px;
+}
+
 @media (max-width: 768px) {
     .banner-blog {
         height: auto; /* ارتفاع تصویر به اندازه ارتفاع صفحه موبایل */
@@ -389,6 +425,9 @@ a.dr_box i {
         transform: translateX(100%); /* منو را به خارج از صفحه در سمت راست منتقل می‌کند */
     }
 
+    .border-left-pc {
+        border-left: none;
+    }
     .nav.center-content li {
     margin: 0 15px!important; /* ایجاد فاصله افقی بین دو آیتم منوی ناوبری */
 }
@@ -411,6 +450,7 @@ a.clinic_box i {
     color: #858585 !important;
     opacity: 1 !important;
 }
+
 
 
 .nav.center-content {
@@ -439,3 +479,75 @@ a.clinic_box i {
 .nav.center-content li {
     margin: 0 70px; /* ایجاد فاصله افقی بین دو آیتم منوی ناوبری */
 }
+
+
+
+
+
+
+/*تیک سایدبار کلینیک*/
+    .treatments {
+        list-style: none;
+        padding: 0;
+    }
+
+    .treatments li {
+        margin-bottom: 10px;
+    }
+
+    .treatment-label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        font-size: 18px;
+    }
+
+    .treatment-label .custom-radio {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 2px solid #ccc;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-left: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .treatment-label .custom-radio::after {
+        content: "✔";
+        font-size: 16px;
+        color: white;
+        display: none;
+    }
+
+    /* مخفی کردن رادیو پیش‌فرض */
+    .treatment-input {
+        display: none;
+    }
+
+    /* وقتی انتخاب شد، دایره سبز بشه و تیک بخوره */
+    .treatment-input:checked + .custom-radio {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .treatment-input:checked + .custom-radio::after {
+        display: block;
+    }
+
+
+    .rev-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .rev-comment{
+        border: 1px solid rgba(46, 46, 87, 0.51);
+        border-radius: 20px;
+        margin-right: 2px;
+        margin-left: 2px;
+        padding-left: 8px;
+        padding-right: 8px;
+    }
