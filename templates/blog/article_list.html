@@ -21,7 +21,7 @@
             <img class="banner-blog" src="{% static 'img/dr/431-4316672_health-and-wellness-banner.png' %}">
         </div>
         <div class="row">
-            <aside class="col-lg-3 aside-border bg-gradiant2">
+            <aside class="col-lg-3 aside-border ">
                 <div class="widget">
                     <div class="widget-title">
                         <h4><i class="icon-article-alt-1"></i>آخرین مقاله ها</h4>
@@ -31,7 +31,7 @@
                             <div class="alignleft">
                                 <a href="#0"><img src="{% static 'img/blog/closeup-image-beautiful-asian-woman-eating-fish-chips-table-restaurant_1048944-27612350.avif' %}" alt=""></a>
                             </div>
-                            <h3><a href="#" title="">قولنج معده</a></h3>
+                            <h3><a href="" title="">قولنج معده</a></h3>
                             <small> مشکلات گوارشی مانند نفخ، سوءهاضمه، رفلاکس معده، یبوست و اسهال می‌توانند این ...</small>
                         </li>
                         <li>
@@ -70,14 +70,14 @@
                     <div class="row no-gutters">
                         <div class="col-lg-4">
                             <figure>
-                                <a href="#"><img src="{% static 'img/blog/young-handsome-physician-medical-robe-with-stethoscope_1303-17818.avif' %}" alt="">
+                                <a href="{% url 'core:article_detail' %}"><img src="{% static 'img/blog/young-handsome-physician-medical-robe-with-stethoscope_1303-17818.avif' %}" alt="">
                                     <div class="preview"><span>مطالعه مقاله</span></div>
                                 </a>
                             </figure>
                         </div>
                         <div class="col-lg-8">
                             <div class="post_info">
-                                <h3><a href="blog-post.html">قولنج معده </a></h3>
+                                <h3><a href="{% url 'core:article_detail' %}">قولنج معده </a></h3>
                                 <p>هضم غدا یکی از اساسی‌ترین عملکردهای بدن است که نقش مهمی در سلامت کلی ایفا می‌کند. در این فرآیند، بدن مواد مغذی را جذب کرده و انرژی مورد نیاز خود را تأمین می‌کند. اما مشکلات گوارشی مانند نفخ، 
                                     سوءهاضمه، رفلاکس معده، یبوست و اسهال می‌توانند این روند را مختل کنند. این مشکلات معمولاً به دلیل تغذیه نامناسب، کمبود تحرک، استرس یا برخی بیماری‌های زمینه‌ای ایجاد می‌شوند. </p>
                                 <ul>

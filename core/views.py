@@ -13,4 +13,7 @@ def clinic_detail(request):
 
 def article_list(request):
     return render(request, 'blog/article_list.html')
+
+def article_detail(request):
+    return render(request, 'blog/article_detail.html')
 # Create your views here.

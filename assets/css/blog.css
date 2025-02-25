@@ -282,15 +282,13 @@ article.blog .post_info ul li:last-child {
 /*Blog Post*/
 .singlepost {
   background-color: #fff;
-  padding: 30px 30px 5px 30px;
+  padding: 1px 30px 5px 30px;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   -ms-border-radius: 5px;
-  border-radius: 5px;
+  border-radius: 20px;
   margin-bottom: 25px;
-  -webkit-box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.05);
-  -moz-box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.05);
-  box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.05);
+
 }
 .singlepost h1 {
   font-size: 32px;
@@ -309,6 +307,8 @@ article.blog .post_info ul li:last-child {
 
 .postmeta {
   padding-bottom: 10px;
+  padding-right: 30px;
+  font-size: 13px;
 }
 .postmeta ul {
   margin-bottom: 10px;
@@ -318,10 +318,10 @@ article.blog .post_info ul li:last-child {
   margin: 0 10px 5px 0;
 }
 .postmeta ul li a {
-  color: #999;
+  color: rgba(36, 76, 154, 0.47);
 }
 .postmeta ul li a:hover {
-  color: #e74e84;
+  color: #009383;
 }
 
 .dropcaps p:first-child::first-letter {
