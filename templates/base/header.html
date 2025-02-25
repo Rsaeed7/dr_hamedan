@@ -20,26 +20,49 @@
                         <li>
                             <a href="#0">نوبت دهی آنلاین</a>
                         </li>
+                        <li class="submenu">
+                            <a href="#" class="show-submenu">تخصص ها<i class="icon-down-open-mini"></i></a>
+                            <ul>
+                                <li><a href="#"><img src="{% static 'img/pic/heart_8358516.png' %}"
+                                                     style="margin-left: 10px" width="25">قلب و عروق</a></li>
+                                <li><a href="#"><img src="{% static 'img/pic/lungs_1881231.png' %}"
+                                                     style="margin-left: 10px" width="25">ریه</a></li>
+                                <li><a href="#"><img src="{% static 'img/pic/bone_7749003.png' %}"
+                                                     style="margin-left: 10px" width="25">ارتوپدی</a></li>
+                                <li><a href="#"><img src="{% static 'img/pic/kidney_2518743.png' %}"
+                                                     style="margin-left: 10px" width="25">اورولوژی</a></li>
+                                <li><a href="#"><img src="{% static 'img/pic/x-ray_18237493.png' %}"
+                                                     style="margin-left: 10px" width="25">رادیولوژی</a></li>
+                                <li><a href="#"><img src="{% static 'img/pic/creativity_15557951.png' %}"
+                                                     style="margin-left: 10px" width="25">مغز و اعصاب</a></li>
+                                <li><a href="#"><img src="{% static 'img/pic/dissection_2511032.png' %}"
+                                                     style="margin-left: 10px" width="25">جراحی عمومی</a></li>
+                                <li><a href="#"><img src="{% static 'img/pic/allergy-shots_6701610.png' %}"
+                                                     style="margin-left: 10px" width="25">بیهوشی</a></li>
+                                <li><a href="#"><img src="{% static 'img/pic/jaw-contouring_3828729.png' %}"
+                                                     style="margin-left: 10px" width="25">فک و صورت</a></li>
+                                <li><a href="#"><img src="{% static 'img/pic/heart_8358516.png' %}"
+                                                     style="margin-left: 10px" width="25">گوش و حلق و بینی</a></li>
+                                <li><a href="#"><img src="{% static 'img/pic/medical_16649783.png' %}"
+                                                     style="margin-left: 10px" width="25">زنان و زایمان</a></li>
+                                <li><a href="#"><img src="{% static 'img/pic/heart_8358516.png' %}"
+                                                     style="margin-left: 10px" width="25">داخلی</a></li>
+                                <li><a href="#"><img src="{% static 'img/pic/science_10666848.png' %}"
+                                                     style="margin-left: 10px" width="25">دندانپزشکی</a></li>
+                                <li><a href="#"><img src="{% static 'img/pic/radiotherapy_8358522.png' %}"
+                                                     style="margin-left: 10px" width="25">رادیوتراپی</a></li>
+                                <li><a href="#"><img src="{% static 'img/pic/hydration-bladder_1810047.png' %}"
+                                                     style="margin-left: 10px" width="25">مجاری</a></li>
+                                <li><a href="#"><img src="{% static 'img/pic/8358615.png' %}"
+                                                     style="margin-left: 10px" width="25">نمونه برداری</a></li>
+                                <li><a href="#"><img src="{% static 'img/pic/stethoscope_4068895.png' %}"
+                                                     style="margin-left: 10px" width="25">پزشک عمومی</a></li>
+                                
+                            </ul>
+                        </li>
                         <li>
                             <a href="#0">مشاوره آنلاین</a>
 
-                        </li>
-                        <li class="submenu">
-                            <a href="#0" class="show-submenu">تخصص ها<i class="icon-down-open-mini"></i></a>
-                            <ul>
-                                <li><a href="#">قلب و عروق</a></li>
-                                <li><a href="#">ریه</a></li>
-                                <li><a href="#">ارتوپدی</a></li>
-                                <li><a href="#">اورولوژی</a></li>
-                                <li><a href="#">رادیولوژی</a></li>
-                                <li><a href="#">مغز و اعصاب</a></li>
-                                <li><a href="#">جراحی عمومی</a></li>
-                                <li><a href="#">بیهوشی</a></li>
-                                <li><a href="#">فک و صورت</a></li>
-                                <li><a href="#">گوش و حلق و بینی</a></li>
-                                <li><a href="#">زنان و زایمان</a></li>
-                                <li><a href="#">داخلی</a></li>
-                            </ul>
                         </li>
                         <li><a href="{% url 'core:article_list' %}">مجله پزشکی</a></li>
                         <li><a href="{% url 'core:clinic_list' %}">مراکز درمانی</a></li>
@@ -50,7 +73,7 @@
             </nav>
         </div>
     </div>
-    
+
     <!-- /container -->
 </header>
 <!-- /header -->
@@ -76,7 +99,7 @@
 </div>
 
 <script>
-     window.addEventListener("scroll", function() {
+    window.addEventListener("scroll", function () {
         var bottomNav = document.getElementById("bottom-nav");
         var scrollPosition = window.scrollY + window.innerHeight; // موقعیت کنونی اسکرول
 

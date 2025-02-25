@@ -11,6 +11,10 @@ def clinic_detail(request):
     return render(request, 'clinic/clinic_detail.html')
 
 
+def dr_detail(request):
+        return render(request, 'doctor/dr_detail.html')
+
+
 def article_list(request):
     return render(request, 'blog/article_list.html')
 
