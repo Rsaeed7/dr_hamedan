@@ -3,7 +3,8 @@ from django.shortcuts import render
 def home(request):
     return render(request, 'core/homepage.html')
 
-
+def special_list(request):
+    return render(request, 'doctor/specialties_list.html')
 def clinic_list(request):
     return render(request, 'clinic/clinic_list.html')
 
