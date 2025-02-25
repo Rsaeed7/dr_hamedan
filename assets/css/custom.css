@@ -401,6 +401,18 @@ a.dr_box i {
     border: 3px solid rgba(0, 0, 0, 0.13);
 }
 
+.dr_img {
+    width: 100%;
+    max-height: 100px; /* ارتفاع حداکثر در دسکتاپ */
+    max-width: 100px;
+    object-fit: fill; /* برش دادن تصویر برای پر کردن ظرف */
+    border-radius: 50%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border: 2px solid rgba(36, 76, 154, 0.62);
+}
+
 .border-left-pc {
   border-left: 1px solid #dee2e6;
 }
@@ -452,6 +464,15 @@ a.clinic_box i {
     opacity: 1 !important;
 }
 
+a.dr_box2 i {
+    position: absolute;
+    left: 3px;
+    top: 1px;
+    font-size: 13px;
+    color: #f5d801 !important;
+    opacity: 1 !important;
+}
+
 
 
 .nav.center-content {
@@ -471,6 +492,13 @@ a.clinic_box i {
     transition: border-bottom 0.3s ease; /* انیمیشن نرم برای خط زیرین */
 }
 
+@media (max-width: 768px) {
+    .nav-link.p_1 {
+        padding: 10px 1px;
+    }
+}
+
+
 .nav-link.active {
     font-weight: bold;
     color: rgb(39, 100, 129);
@@ -482,7 +510,9 @@ a.clinic_box i {
 }
 
 
-
+.nav.center-content.margin-10 li {
+    margin: 0 40px; /* ایجاد فاصله افقی بین دو آیتم منوی ناوبری */
+}
 
 
 
