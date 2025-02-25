@@ -1242,21 +1242,32 @@ ul#additional_links li:after {
 }
 
 .list_home ul {
-  text-align: right;
+  display: flex;
+  flex-wrap: wrap;
 }
+
+.list_home ul li {
+  flex: 0 0 50%;
+  box-sizing: border-box; /* برای محاسبه صحیح عرض */
+}
+
 .list_home ul li a {
-  background-color: #fff;
+  background-color: #ffffff;
   padding: 10px;
   display: block;
   margin-bottom: 5px;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   -ms-border-radius: 3px;
-  border-radius: 3px;
+  border-radius: 10px;
+  border: 1px solid #2e2e57;
   position: relative;
+  margin-left: 10px;
   font-weight: 500;
   color: #555555;
+  box-sizing: border-box; /* برای محاسبه صحیح padding و margin */
 }
+
 .list_home ul li a strong {
   background-color: #f8f8f8;
   color: #999;
@@ -1271,21 +1282,14 @@ ul#additional_links li:after {
   -ms-border-radius: 3px;
   border-radius: 3px;
 }
-.list_home ul li a:after {
-  font-family: 'ElegantIcons';
-  content: "\24";
-  left: 15px;
-  top: 15px;
-  position: absolute;
-  color: #e74e84;
-}
+
 .list_home ul li a:hover {
-  background-color: #e74e84;
-  -webkit-transform: scale(1.05);
-  -moz-transform: scale(1.05);
-  -ms-transform: scale(1.05);
-  -o-transform: scale(1.05);
-  transform: scale(1.05);
+  background-color: rgba(36, 76, 154, 0.56);
+  -webkit-transform: scale(0.90);
+  -moz-transform: scale(0.90);
+  -ms-transform: scale(0.90);
+  -o-transform: scale(0.90);
+  transform: scale(0.90);
   color: #fff;
 }
 .list_home ul li a:hover:after {
