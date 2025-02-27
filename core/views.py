@@ -5,6 +5,10 @@ def home(request):
 
 def special_list(request):
     return render(request, 'doctor/specialties_list.html')
+
+def special_dr_list(request):
+    return render(request, 'doctor/expertise_list.html')
+
 def clinic_list(request):
     return render(request, 'clinic/clinic_list.html')
 
