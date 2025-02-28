@@ -1,0 +1,157 @@
+{% extends  'base/base.html' %}
+{% load static %}
+{% block body %}
+    <style>
+        .list-group-item {
+            font-weight: 500;
+            color: #03657a !important;
+            padding: 20px;
+            font-size: 15px;
+            text-align: right;
+            display: flex;
+            align-items: center;
+            background: #fff;
+            transition: background 0.3s;
+            border:none;
+        }
+
+        .list-group-item:hover {
+            background: rgba(133, 133, 133, 0.04);
+            -webkit-transform: scale(1.02);
+            -moz-transform: scale(1.02);
+            -ms-transform: scale(1.02);
+            -o-transform: scale(1.02);
+            transform: scale(1.02);
+        }
+
+        .item-active{
+            background: rgba(59, 89, 152, 0.14);
+        }
+
+        @media (max-width: 768px) {
+            .list-group {
+                margin-bottom: 20px;
+            }
+        }
+
+        .list-group-item a{
+            color: #000000;
+        }
+    </style>
+    <div class="bg-light">
+        <div class="container margin_120_95">
+            <div class="row">
+                <aside class="col-lg-4">
+                    <div class="box_general_3 border-0 booking">
+                        <ul class="list-group">
+                            <li class="list-group-item item-active">
+                                <i class="icon-user-7 m-l-5"></i><a href="#">اطلاعات کاربری</a>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="icon-calendar-7 m-l-5"></i><a href="#">نوبت های من</a>
+                            </li>
+                            <li class="list-group-item">
+                                <i class=" icon-newspaper-1 m-l-5"></i><a href="#">سوابق من</a>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="icon-wallet m-l-5"></i><a href="#">کیف پول من <span class="m-r-70">0تومان</span></a>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="icon-comment-empty m-l-5"></i><a href="#">نظرات من</a>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="icon-logout-1 m-l-5"></i><a href="#">خروج</a>
+                            </li>
+                        </ul>
+                    </div>
+                </aside>
+                <!-- /col -->
+                <div class="col-lg-8 ml-auto">
+                    <div class="box_form border-0">
+                        <form>
+                            <div class="row">
+                                <div class="col-md-6 ">
+                                    <div class="form-group">
+                                        <label>نام</label>
+                                        <input type="text" class="form-control" placeholder=" نام خود را بنویسید">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>نام خانوادگی</label>
+                                        <input type="text" class="form-control"
+                                               placeholder="نام خوانوادگی خود را بنویسید">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /row -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>کد ملی</label>
+                                        <input type="text" class="form-control" placeholder="کد ملی خود را وارد کنید">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="form-group">
+                                            <label>ایمیل (اختیاری)</label>
+                                            <input type="text" class="form-control"
+                                                   placeholder="ایمیل خود را وارد کنید">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /row -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>شماره تلفن</label>
+                                        <input type="text" class="form-control" placeholder="09188028729" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>جنسیت</label>
+                                        <select class="form-control">
+                                            <option value="">جنسیت را انتخاب کنید</option>
+                                            <option value="">مرد</option>
+                                            <option value="">زن</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>سن</label>
+                                        <input type="text" class="form-control" placeholder="سن خود را بنویسید">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>شهر</label>
+                                        <select class="form-control">
+                                            <option value="">همدان</option>
+                                            <option value="">ملایر</option>
+                                            <option value="">اسدآباد</option>
+                                            <option value="">نهاوند</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /row -->
+                            <p class="text-center"><input type="submit" class="btn_1" value="ثبت اطلاعات"></p>
+                        </form>
+                    </div>
+                    <!-- /box_form -->
+                </div>
+                <!-- /col -->
+            </div>
+            <!-- /row -->
+        </div>
+        <!-- /container -->
+    </div>
+    <!-- /hero_register -->
+
+{% endblock %}

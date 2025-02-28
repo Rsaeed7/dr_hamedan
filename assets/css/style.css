@@ -493,12 +493,12 @@ a.btn_1,
 .btn_1 {
   border: none;
   color: #fff;
-  background: #e74e84;
+  background: #163b8d;
   cursor: pointer;
-  padding: 7px 20px;
+  padding: 10px 100px;
   display: inline-block;
   outline: none;
-  font-size: 14px;
+  font-size: 20px;
   font-size: 0.875rem;
   -moz-transition: all 0.3s ease-in-out;
   -o-transition: all 0.3s ease-in-out;
@@ -508,7 +508,7 @@ a.btn_1,
   -webkit-border-radius: 25px;
   -moz-border-radius: 25px;
   -ms-border-radius: 25px;
-  border-radius: 25px;
+  border-radius: 10px;
   font-weight: 500;
 }
 a.btn_1.medium,
@@ -528,17 +528,17 @@ a.btn_1.full-width,
 }
 a.btn_1:hover,
 .btn_1:hover {
-  background: #74d1c6;
+  background: #3165c7;
 }
 a.btn_1.outline,
 .btn_1.outline {
   background: transparent;
-  border: 2px solid #e74e84;
-  color: #e74e84;
+  border: 2px solid #244c9a;
+  color: #244c9a;
 }
 a.btn_1.outline:hover,
 .btn_1.outline:hover {
-  background: #e74e84;
+  background: #3969c7;
   color: #fff;
 }
 
@@ -1881,7 +1881,7 @@ iframe {
 .box_list small {
   text-transform: uppercase;
   color: rgb(81, 126, 217);
-  font-weight: 300;
+  font-weight: 200;
   background: rgba(0, 0, 0, 0.09);
   border-radius: 3px;
   padding: 2px;
@@ -3334,7 +3334,7 @@ label.css-label strong {
 }
 
 #login-2 {
-  width: 650px;
+  width: 500px;
   margin: 60px auto;
   color: #fff;
 }
@@ -3355,7 +3355,7 @@ label.css-label strong {
   #login-2 {
     /* For less than 767px */
     width: 100%;
-    margin: 0;
+    margin: 100px;
   }
 }
 #login-2 h1 {
@@ -3367,11 +3367,12 @@ label.css-label strong {
 }
 
 .box_login {
-  width: 50%;
-  float: left;
-  border-right: 1px solid #e1e8ed;
+  width: 100%;
+  float: none;
+  align-items: center;
   padding: 15px 25px;
 }
+
 @media (max-width: 767px) {
   .box_login {
     /* For less than 767px */
@@ -3380,9 +3381,7 @@ label.css-label strong {
     padding: 0;
   }
 }
-.box_login.last {
-  border-right: 0;
-}
+
 
 a.social_bt {
   -webkit-border-radius: 3px;
@@ -3890,14 +3889,19 @@ ul.treatments.checkout li.total {
 }
 
 .bg_color_2 {
-  background: #3f4079 url(../img/hero_bg_1.svg) repeat fixed;
+  background: #669ec4 url(../img/hero_bg_1.svg) repeat fixed;
 }
 
 .form-control {
   font-size: 14px;
   font-size: 0.875rem;
   min-height: 40px;
-  border-color: #e1e8ed;
+  border-color: rgba(79, 79, 79, 0.42);
+  box-shadow: none!important;
+
+}
+.form-control:hover{
+  border-color: rgb(78, 123, 210);
 }
 
 #booking .loader {
@@ -3913,10 +3917,11 @@ ul.treatments.checkout li.total {
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   -ms-border-radius: 5px;
-  border-radius: 5px;
-  -webkit-box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.3);
-  box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+  border: 1px solid #4f4fbe;
+  -webkit-box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.3);
   margin-bottom: 25px;
   color: #555555;
 }
@@ -3949,12 +3954,12 @@ ul.treatments.checkout li.total {
 }
 
 .box_general_2 {
-  background-color: #fff;
+  background-color: #143b3b;
   padding: 30px;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   -ms-border-radius: 5px;
-  border-radius: 5px;
+  border-radius: 20px;
   margin-bottom: 25px;
   border: 1px solid #e1e8ed;
 }

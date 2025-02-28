@@ -36,9 +36,9 @@
 <div class="layer"></div>
 <!-- Mobile menu overlay mask -->
 
-	<div id="preloader">
-		<div data-loader="circle-side"></div>
-	</div>
+<div id="preloader">
+    <div data-loader="circle-side"></div>
+</div>
 <!-- End Preload -->
 
 <!-- Header -->
@@ -46,11 +46,11 @@
 <!-- /Header -->
 <main class="bg-white">
 
-{% block body %}
+    {% block body %}
 
 
 
-{% endblock %}
+    {% endblock %}
 </main>
 <!-- /main content -->
 {% include 'base/footer.html' %}
@@ -89,28 +89,96 @@
     });
 </script>
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    // انتخاب همه کانتینرها
-    let containers = document.querySelectorAll(".scroll-container");
+    document.addEventListener("DOMContentLoaded", function () {
+        // انتخاب همه کانتینرها
+        let containers = document.querySelectorAll(".scroll-container");
 
-    containers.forEach(function (container, index) {
-        let isRTL = getComputedStyle(container).direction === "rtl";
-        let btnLeft = document.getElementById("btnLeft" + (index + 1));
-        let btnRight = document.getElementById("btnRight" + (index + 1));
+        containers.forEach(function (container, index) {
+            let isRTL = getComputedStyle(container).direction === "rtl";
+            let btnLeft = document.getElementById("btnLeft" + (index + 1));
+            let btnRight = document.getElementById("btnRight" + (index + 1));
 
-        // رویداد دکمه چپ
-        btnLeft.addEventListener("click", function () {
-            container.scrollBy({ left: isRTL ? 800 : -800, behavior: "smooth" });
-        });
+            // رویداد دکمه چپ
+            btnLeft.addEventListener("click", function () {
+                container.scrollBy({left: isRTL ? 800 : -800, behavior: "smooth"});
+            });
 
-        // رویداد دکمه راست
-        btnRight.addEventListener("click", function () {
-            container.scrollBy({ left: isRTL ? -800 : 800, behavior: "smooth" });
+            // رویداد دکمه راست
+            btnRight.addEventListener("click", function () {
+                container.scrollBy({left: isRTL ? -800 : 800, behavior: "smooth"});
+            });
         });
     });
-});
 
 
+</script>
+<script>
+    // گرفتن عنصر اسکرول
+    const scrollContainer = document.querySelector('.scroll-wrapper');
+
+    // متغیرهای لازم برای حالت drag
+    let isMouseDown = false;
+    let startX;
+    let scrollLeft;
+
+    // وقتی کاربر کلیک راست می‌کند
+    scrollContainer.addEventListener('mousedown', (e) => {
+        isMouseDown = true;
+        startX = e.pageX - scrollContainer.offsetLeft;
+        scrollLeft = scrollContainer.scrollLeft;
+    });
+
+    // وقتی موس حرکت می‌کند
+    scrollContainer.addEventListener('mousemove', (e) => {
+        if (!isMouseDown) return; // اگر کلیک نشده باشد اسکرول را انجام نده
+        const x = e.pageX - scrollContainer.offsetLeft;
+        const walk = (x - startX) * 2; // سرعت اسکرول (می‌توانید این مقدار را تغییر دهید)
+        scrollContainer.scrollLeft = scrollLeft - walk;
+    });
+
+    // وقتی کاربر موس را رها می‌کند
+    scrollContainer.addEventListener('mouseup', () => {
+        isMouseDown = false;
+    });
+
+    // وقتی موس از روی قسمت خارج می‌شود
+    scrollContainer.addEventListener('mouseleave', () => {
+        isMouseDown = false;
+    });
+
+</script>
+
+
+<script>
+    const scrollWrapper = document.querySelector('.scroll-wrapper');
+    let isDragging = false;
+    let startX;
+    let scrollLeft;
+
+    scrollWrapper.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.pageX - scrollWrapper.offsetLeft;
+        scrollLeft = scrollWrapper.scrollLeft;
+        scrollWrapper.style.cursor = 'grabbing';  // تغییر وضعیت کرسر
+    });
+
+    scrollWrapper.addEventListener('mouseleave', () => {
+        isDragging = false;
+        scrollWrapper.style.cursor = 'grab';  // تغییر کرسر زمانی که موس از روی ناحیه خارج شود
+    });
+
+    scrollWrapper.addEventListener('mouseup', () => {
+        isDragging = false;
+        scrollWrapper.style.cursor = 'grab';  // تغییر کرسر زمانی که موس رها می‌شود
+    });
+
+    scrollWrapper.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        e.preventDefault();  // جلوگیری از انتخاب متن و جلوگیری از رفتار پیش‌فرض
+        const x = e.pageX - scrollWrapper.offsetLeft;
+        const walk = (x - startX) * 2;  // سرعت اسکرول
+        scrollWrapper.scrollLeft = scrollLeft - walk;
+    });
 </script>
 
 <!-- COMMON SCRIPTS -->
