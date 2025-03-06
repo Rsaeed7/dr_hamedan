@@ -9,20 +9,19 @@
     <meta name="description" content="Find easily a doctor and book online an appointment">
     <meta name="author" content="Ansonika">
     <title>دکتر همدان نوبت گیری آنلاین</title>
-    <!-- Favicons-->
+    <!-- Icons link -->
     <link rel="shortcut icon" href="{% static 'img/topicon.png' %}" type="image/x-icon">
     <link rel="apple-touch-icon" type="image/x-icon" href="{% static 'img/icon57x57.png' %}">
     <link rel="apple-touch-icon" type="image/x-icon" sizes="72x72" href="{% static 'img/icon72x72.png' %}">
     <link rel="apple-touch-icon" type="image/x-icon" sizes="114x114" href="{% static 'img/icon114x114.png' %}">
     <link rel="apple-touch-icon" type="image/x-icon" sizes="144x144" href="{% static 'img/icon144x144.png' %}">
-
-    <!-- BASE CSS -->
+    <!-- /Icons link -->
+    
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
     <link href="{% static 'css/menu.css' %}" rel="stylesheet">
     <link href="{% static 'css/vendors.css' %}" rel="stylesheet">
     <link href="{% static 'css/icon_fonts/css/all_icons_min.css' %}" rel="stylesheet">
-    <!-- YOUR CUSTOM CSS -->
     <link href="{% static 'css/extra.css' %}" rel="stylesheet">
     <link href="{% static 'css/blog.css' %}" rel="stylesheet">
     <link href="{% static 'css/util.css' %}" rel="stylesheet">
@@ -31,16 +30,18 @@
 <body>
 
 <div class="layer"></div>
-<!-- Mobile menu overlay mask -->
+<!-- Mobile menu mask -->
 
 <div id="preloader">
     <div data-loader="circle-side"></div>
 </div>
-<!-- End Preload -->
+<!--  /Preload -->
 
 <!-- Header -->
 {% include 'base/header.html' %}
 <!-- /Header -->
+
+<!-- main -->
 <main class="bg-white">
 
     {% block body %}
@@ -49,12 +50,19 @@
 
     {% endblock %}
 </main>
-<!-- /main content -->
+<!-- /main -->
+
+<!--footer-->
 {% include 'base/footer.html' %}
 <!--/footer-->
 
+
+
 <div id="toTop"></div>
-<!-- Back to top button -->
+<!-- /to top button -->
+
+
+
 <!-- اسکریپت نمایش آیتم‌ها -->
 <script>
     document.getElementById("showMoreBtn").addEventListener("click", function () {
@@ -178,7 +186,8 @@
     });
 </script>
 
-<!-- COMMON SCRIPTS -->
+
+
 <script src="{% static 'js/jquery-2.2.4.min.js' %}"></script>
 <script src="{% static 'js/common_scripts.min.js' %}"></script>
 <script src="{% static 'js/functions.js' %}"></script>

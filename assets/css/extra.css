@@ -387,9 +387,18 @@ a.dr_box i {
 .center-content{
     justify-content: center;
 }
+.down-1{
+    top: 1px;
+}
+
+.down-2{
+    top: 2px;
+}
+
 .down-3{
     top: 3px;
 }
+
 
 .banner-blog {
     width: 100%;

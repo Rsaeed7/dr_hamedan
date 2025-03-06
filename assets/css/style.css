@@ -4274,12 +4274,13 @@ ul.bullets li:before {
 }
 
 /*-------- 3.6 Pagination --------*/
-.page-item.active .page-link {
+.page-iter.active .page-link {
   background-color: #3f4079;
   border-color: #3f4079;
+  color: white;
 }
 
-.page-item.disabled .page-link {
+.page-iter.disabled .page-link {
   color: #999;
   border: none;
 }

@@ -1,15 +1,15 @@
 {% load static %}
-<style>
 
-</style>
 <header class="header_sticky">
     <div class="container">
         <div class="row">
+            <!--Logo-->
             <div class="col-lg-3 col-6">
                 <div id="logo_home">
                     <h1><a href="/" title="DrHamedan">DrHamedan</a></h1>
                 </div>
             </div>
+            <!--/Logo-->
             <nav class="col-lg-9 col-6">
                 <a class="cmn-toggle-switch cmn-toggle-switch__htx open_close" href="#0"><span>Menu mobile</span></a>
                 <ul id="top_access">
@@ -64,7 +64,7 @@
                             <a href="#0">مشاوره آنلاین</a>
 
                         </li>
-                        <li><a href="{% url 'core:article_list' %}">مجله پزشکی</a></li>
+                        <li><a href="{% url 'mag:list' %}">مجله پزشکی</a></li>
                         <li><a href="{% url 'core:clinic_list' %}">مراکز درمانی</a></li>
                         <li><a href="" class="text_dr_2">برای پزشکان</a></li>
                     </ul>
@@ -73,10 +73,10 @@
             </nav>
         </div>
     </div>
-
     <!-- /container -->
 </header>
-<!-- /header -->
+
+
 <!-- mobile footer -->
 <div class="bottom-nav" id="bottom-nav">
     <a href="/" class="nav-item active">
@@ -97,6 +97,7 @@
         <span>پروفایل</span>
     </a>
 </div>
+<!-- /mobile footer -->
 
 <script>
     window.addEventListener("scroll", function () {
@@ -114,4 +115,3 @@
         }
     });
 </script>
-<!-- /mobile footer -->
