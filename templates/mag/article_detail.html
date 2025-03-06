@@ -27,49 +27,27 @@
                         <h4><i class="icon-article-alt-1"></i>آخرین مقاله ها</h4>
                     </div>
                     <ul class="comments-list">
+                        {% for article in articles_last %}
                         <li>
                             <div class="alignleft">
-                                <a href="#0"><img
-                                        src="{% static 'img/blog/closeup-image-beautiful-asian-woman-eating-fish-chips-table-restaurant_1048944-27612350.avif' %}"
+                                <a href="{{ article.get_absolute_url }}"><img
+                                        src="{{ article.image.url }}"
                                         alt=""></a>
                             </div>
-                            <h3><a href="" title="">قولنج معده</a></h3>
-                            <small> مشکلات گوارشی مانند نفخ، سوءهاضمه، رفلاکس معده، یبوست و اسهال می‌توانند این
-                                ...</small>
+                            <h3><a href="{{ article.get_absolute_url }}" title="">{{ article.title }}</a></h3>
+                            <small>{{ article.description|truncatechars:60 }}</small>
                         </li>
-                        <li>
-                            <div class="alignleft">
-                                <a href="#0"><img
-                                        src="{% static 'img/blog/close-up-hands-doctor-holding-patient-hand-giving-support-hope-clinic_603656-5478.avif' %}"
-                                        alt=""></a>
-                            </div>
-                            <h3><a href="#" title="">هضم غذا چگونه انجام میشود</a></h3>
-                            <small>هضم غدا یکی از اساسی‌ترین عملکردهای بدن است که نقش مهمی در سلامت کلی ایفا
-                                می‌کند</small>
-                        </li>
-                        <li>
-                            <div class="alignleft">
-                                <a href="#0"><img
-                                        src="{% static 'img/blog/young-handsome-physician-medical-robe-with-stethoscope_1303-17818.avif' %}"
-                                        alt=""></a>
-                            </div>
-                            <h3><a href="#" title="">بیماری‌های التهابی روده و روماتیسم مفصلی</a></h3>
-                            <small>بدن مواد مغذی را جذب کرده و انرژی مورد نیاز خود را تأمین می‌کند</small>
-                        </li>
+                        {% endfor %}
                     </ul>
                 </div>
-                <!-- /widget -->
-
                 <div class="widget">
                     <div class="widget-title">
                         <h4><i class="icon-tags-1"></i>دسته بندی</h4>
                     </div>
                     <ul class="cats">
-                        <li><a href="#">درمان ها </a></li>
-                        <li><a href="#">اخبار </a></li>
-                        <li><a href="#">رویداد </a></li>
-                        <li><a href="#">اخبار جدید </a></li>
-                        <li><a href="#">خوددرمانی </a></li>
+                        {% for item in category %}
+                        <li><a href="#">{{ item.name }}</a></li>
+                        {% endfor %}
                     </ul>
                 </div>
             </aside>
@@ -78,58 +56,21 @@
             <div class="col-lg-9">
                 <div class="postmeta">
                     <ul>
-                        <li><a href="#"><i class="icon-bookmark-empty-1"></i> سلامتی</a></li>
-                        <li><a href="#"><i class="icon-calendar-7"></i> دی 1403</a></li>
-                        <li><a href="#"><i class="icon-edit-3"></i>سعید رحیمی</a></li>
+                        <li><a href="#"><i class="icon-bookmark-empty-1"></i> {{ object.category }}</a></li>
+                        <li><a href="#"><i class="icon-calendar-7"></i>{{ object.JaliliDatepublished }}</a></li>
+                        <li><a href="#"><i class="icon-edit-3"></i>{{ object.writer.username }}</a></li>
                         <li><a href="#">14<i class="icon_comment_alt" style="margin-left: 3px"></i></a></li>
                     </ul>
                 </div>
                 <div class="bloglist singlepost">
                     <p><img alt="" class="img-fluid" style="border-radius: 20px; width: 1000px;height: 300px"
-                            src="{% static 'img/blog/young-handsome-physician-medical-robe-with-stethoscope_1303-17818.avif' %}">
+                            src="{{ object.image.url }}">
                     </p>
-                    <h1>هضم غذا چگونه انجام می‌شود؟</h1>
+                    <h1>{{ object.title }}</h1>
                     <div class="post-content">
                         <div>
-                            <p>عوامل روان‌شناختی
-                                عوامل روان‌شناختی نقش مهمی در بروز و تشدید کولیک گوارشی دارند. ارتباط میان سیستم عصبی
-                                مرکزی و روده‌ای، تأثیر استرس، اضطراب و سایر عوامل ذهنی بر سلامت گوارش را توضیح می‌دهد.
-                                در ادامه، به مهم‌ترین این عوامل اشاره شده است:
-
-                                استرس و اضطراب
-                                تاثیر سطوح بالای اضطراب و استرس بر گوارش، عملکرد طبیعی این سیستم را مختل می‌کند. در این
-                                شرایط، خطر ابتلا به اختلالات تعامل مغز و روده افزایش می‌یابد.
-
-                                آسیب‌های روانی در اوایل زندگی
-                                افراد دارای تجربیات آسیب‌زای دوران کودکی، مانند سوء‌استفاده عاطفی یا کلامی، در بزرگسالی
-                                با خطر بالاتر ابتلا اختلال در ارتباط بین اعصاب دستگاه گوارش و مواجه می‌شوند.
-
-                                رابطه بین سیستم عصبی و دستگاه گوارش
-                                سیستم عصبی گوارشی، انقباضات عضلانی را برای هضم تنظیم می‌کند. حساسیت بالای این اعصاب به
-                                دلیل عوامل روانشناختی می‌تواند اسپاسم‌های غیرطبیعی و قولنج معده را ایجاد کند. این وضعیت
-                                که به حساسیت احشایی معروف است، درک دردهای گوارشی را تشدید می‌کند.</p>
+                            <p>{{ object.description }}</p>
                         </div>
-
-                        <p>روش‌های درمان قولنج معده
-                            درمان کولیک معده بستگی به علت زمینه‌ای آن دارد و شامل کاهش مصرف چربی، مصرف مسکن‌ها،
-                            ضداسپاسم‌ها و آنتی‌بیوتیک‌ها، روش‌های غیردارویی همچون ماساژ و پروبیوتیک‌ها است. در ادامه، به
-                            موثرترین شیوه‌های درمان این بیماری پرداخته‌ایم:
-
-                            درمان قولنج معده در خانه
-                            با وجود اثربخشی درمان خانگی، اما این شیوه‌های درمانی باید ‌به‌عنوان یک درمان مکمل در کنار
-                            سایر درمان‌های تجویز شده توسط پزشک مورد استفاده قرار بگیرند. در ادامه، به مهم‌ترین درمان‌های
-                            خانگی قولنج معده پرداخته‌ایم:
-
-                            مصرف دمنوش‌های گیاهی
-                            چای‌های گیاهی، به‌ویژه چای نعناع و زنجبیل، به دلیل برجای گذاشتن تاثیرات مثبت برای تسکین
-                            علائم کولیک معده بسیار موثر هستند. به نوشیدن این دمنوش‌ها در طب سنتی، تاکید شده است:
-
-                            چای نعناع؛ ترکیب اصلی این چای، منتول است که به‌عنوان شل‌کننده عضلات صاف، ناراحتی‌های گوارشی
-                            را کاهش می‌دهد.
-                            چای زنجبیل؛ زنجبیل، به دلیل خواص ضدالتهابی و آنتی‌اکسیدانی خود با بهبود عملکرد دستگاه و
-                            افزایش سرعت تخلیه معده و تحریک انقباضات آن، در کاهش ناراحتی‌های ناشی از کولیک معده نقش دارد.
-                            مصرف کاسنی آسیاب شده
-                            البته دمنوش نعناع، برای بیماران مبتلا به رفلاکس معده باید با احتیاط بیشتری مصرف شود.</p>
                     </div>
                     <!-- /post -->
                 </div>

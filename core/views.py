@@ -26,3 +26,12 @@ def article_list(request):
 def article_detail(request):
     return render(request, 'blog/article_detail.html')
 # Create your views here.
+
+def login(request):
+    return render(request, 'account/login.html')
+
+def check_code(request):
+    return render(request, 'account/check_code.html')
+
+def profile(request):
+    return render(request, 'account/profile.html')
