@@ -1976,14 +1976,13 @@ pre code {
 .form-control:focus {
   color: #495057;
   background-color: #fff;
-  border-color: #80bdff;
+  border-color: #02386b;
   outline: 0;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
 .form-control::-webkit-input-placeholder {
-  color: #6c757d;
-  opacity: 1;
+  color: rgba(108, 117, 125, 0.57);
+  opacity: 0.8;
 }
 
 .form-control::-moz-placeholder {
@@ -2002,7 +2001,7 @@ pre code {
 }
 
 .form-control::placeholder {
-  color: #6c757d;
+  color: rgba(108, 117, 125, 0.67);
   opacity: 1;
 }
 

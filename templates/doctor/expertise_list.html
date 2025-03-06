@@ -41,30 +41,30 @@
                         </li>
                         <li class="online-status">
                             <div class="drag-layer">
-                            <img class="rounded50 border border-success" width="50" height="50"
-                                 src="{% static 'img/dr/banner-img.png' %}">
-                            <span class="status-indicator"></span>
+                                <img class="rounded50 border border-success" width="50" height="50"
+                                     src="{% static 'img/dr/banner-img.png' %}">
+                                <span class="status-indicator"></span>
                             </div>
                         </li>
                         <li class="online-status">
                             <div class="drag-layer">
-                            <img class="rounded50 border border-success" width="50" height="50"
-                                 src="{% static 'img/dr/download.jfif' %}">
-                            <span class="status-indicator"></span>
+                                <img class="rounded50 border border-success" width="50" height="50"
+                                     src="{% static 'img/dr/download.jfif' %}">
+                                <span class="status-indicator"></span>
                             </div>
                         </li>
                         <li class="online-status">
                             <div class="drag-layer">
-                            <img class="rounded50 border border-success" width="50" height="50"
-                                 src="{% static 'img/dr/download (2).jfif' %}">
-                            <span class="status-indicator"></span>
+                                <img class="rounded50 border border-success" width="50" height="50"
+                                     src="{% static 'img/dr/download (2).jfif' %}">
+                                <span class="status-indicator"></span>
                             </div>
                         </li>
                         <li class="online-status">
                             <div class="drag-layer">
-                            <img class="rounded50 border border-success" width="50" height="50"
-                                 src="{% static 'img/dr/download (3).jfif' %}">
-                            <span class="status-indicator"></span>
+                                <img class="rounded50 border border-success" width="50" height="50"
+                                     src="{% static 'img/dr/download (3).jfif' %}">
+                                <span class="status-indicator"></span>
                             </div>
                         </li>
                         <li class="online-status">
@@ -128,7 +128,7 @@
         </div>
 
         <div class="row">
-            <aside class="col-xl-4 col-lg-4" id="sidebar">
+            <aside class="col-xl-3 col-lg-3" id="sidebar">
                 <div class="box_general_3 booking">
                     <h6 class="text_dr_3"><i class="icon-filter-1"></i>فیلترها</h6>
                     <form>
@@ -194,7 +194,7 @@
 
                         <!-- پزشکان دارای نوبت -->
                         <div class="filter-section m-b-10">فقط پزشکان دارای نوبت
-                            <label class="switch alignleft">
+                            <label class="switch-label alignleft">
                                 <input type="checkbox">
                                 <span class="slider round"></span>
                             </label>
@@ -204,360 +204,25 @@
                     </form>
                 </div>
             </aside>
-
-            <style>
-                .online-status {
-                    position: relative;
-                    display: inline-block;
-                }
-
-                .drag-layer {
-                    position: relative;
-                    display: inline-block;
-                }
-
-                .status-indicator {
-                    position: absolute;
-                    top: 0;
-                    right: 0;
-                    width: 12px;
-                    height: 12px;
-                    background-color: #28a745;
-                    border: 2px solid white;
-                    border-radius: 50%;
-                }
-
-                .drag-layer::before {
-                    content: '';
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    cursor: grab;
-                    z-index: 10;
-                }
-
-                .btn-reset {
-                    border: none;
-                    background-color: rgba(220, 53, 69, 0.27);
-                    color: #ffffff;
-                    font-size: 11px;
-                    cursor: pointer;
-                    display: block;
-                    margin: 1px auto;
-                    border-radius: 20px;
-                    text-align: center;
-                    padding-right: 5px;
-                    padding-left: 5px;
-                    padding-top: 1px;
-                    padding-bottom: 1px;
-                }
-
-                .btn-reset:hover {
-                    background-color: rgba(155, 35, 47, 0.66);
-                }
-
-                .filter-section {
-                    margin-bottom: 10px;
-                }
-
-                .btn-filter {
-                    width: 100%;
-                    padding: 8px;
-                    border: none !important;
-                    cursor: pointer;
-                    text-align: right;
-                    background: none;
-                    font-size: 13px;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    color: #575757;
-                }
-
-                .btn-filter:focus, .btn-filter.focus {
-                    outline: 0;
-                }
-
-                .arrow {
-                    transition: transform 0.3s ease;
-                }
-
-                .filter-dropdown {
-                    list-style: none;
-                    padding: 0;
-                    margin: 0;
-                    background-color: #fff;
-                    display: none;
-                    overflow: hidden;
-                    transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
-                    opacity: 0;
-                    max-height: 0;
-                }
-
-                .filter-dropdown li {
-                    padding: 5px 10px;
-                }
-
-                .filter-dropdown li:hover {
-                    background-color: #eee;
-                }
-
-                .custom-checkbox {
-                    appearance: none;
-                    width: 16px;
-                    height: 16px;
-                    border: 2px solid #28a745;
-                    border-radius: 4px;
-                    position: relative;
-                }
-
-                .custom-checkbox:checked::after {
-                    content: '\2713';
-                    font-size: 14px;
-                    color: #fff;
-                    position: absolute;
-                    left: 50%;
-                    top: 50%;
-                    transform: translate(-50%, -50%);
-                    background: #28a745;
-                    width: 100%;
-                    height: 100%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    border-radius: 4px;
-                }
-
-                .switch {
-                    position: relative;
-                    display: inline-block;
-                    width: 40px;
-                    height: 20px;
-                }
-
-                .switch input {
-                    opacity: 0;
-                    width: 0;
-                    height: 0;
-                }
-
-                .slider {
-                    position: absolute;
-                    cursor: pointer;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background-color: #ccc;
-                    transition: 0.4s;
-                    border-radius: 20px;
-                }
-
-                .slider:before {
-                    position: absolute;
-                    content: "";
-                    height: 14px;
-                    width: 14px;
-                    left: 3px;
-                    bottom: 3px;
-                    background-color: white;
-                    transition: 0.4s;
-                    border-radius: 50%;
-                }
-
-                input:checked + .slider {
-                    background-color: #28a745;
-                }
-
-                input:checked + .slider:before {
-                    transform: translateX(20px);
-                }
-
-                .custom-checkbox {
-                    appearance: none;
-                    width: 16px;
-                    height: 16px;
-                    border: 2px solid #28a745;
-                    border-radius: 4px;
-                    position: relative;
-                }
-
-                .custom-checkbox:checked::after {
-                    content: '\2713';
-                    font-size: 14px;
-                    color: #fff;
-                    position: absolute;
-                    left: 50%;
-                    top: 50%;
-                    transform: translate(-50%, -50%);
-                    background: #28a745;
-                    width: 100%;
-                    height: 100%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    border-radius: 4px;
-                }
-
-                .custom-radio {
-                    appearance: none;
-                    width: 16px;
-                    height: 16px;
-                    border: 2px solid #007bff;
-                    border-radius: 50%;
-                    position: relative;
-                }
-
-                .custom-radio:checked::after {
-                    content: '';
-                    width: 10px;
-                    height: 10px;
-                    background: #007bff;
-                    border-radius: 50%;
-                    position: absolute;
-                    left: 50%;
-                    top: 50%;
-                    transform: translate(-50%, -50%);
-                }
-
-                .online-status {
-                    position: relative;
-                    display: inline-block;
-                }
-
-                .status-indicator {
-                    position: absolute;
-                    top: 0; /* تغییر از bottom به top */
-                    right: 1px;
-                    width: 12px;
-                    height: 12px;
-                    background-color: #28a745;
-                    border: 2px solid white;
-                    border-radius: 50%;
-                }
-
-            </style>
-
-            <script>
-                function toggleDropdown(id, button) {
-                    let dropdown = document.getElementById(id);
-                    let arrow = button.querySelector('.arrow');
-                    if (dropdown.style.maxHeight === "0px" || dropdown.style.maxHeight === "") {
-                        dropdown.style.display = "block";
-                        dropdown.style.maxHeight = dropdown.scrollHeight + "px";
-                        dropdown.style.opacity = "1";
-                        arrow.style.transform = "rotate(180deg)";
-                    } else {
-                        dropdown.style.maxHeight = "0px";
-                        dropdown.style.opacity = "0";
-                        setTimeout(() => {
-                            dropdown.style.display = "none";
-                        }, 300);
-                        arrow.style.transform = "rotate(0deg)";
-                    }
-                }
-
-
-                window.onload = function () {
-                    // باز کردن پیش‌فرض منوهای تخصص و جنسیت
-                    toggleDropdown('specialty', document.querySelector('button[onclick="toggleDropdown(\'specialty\', this)"]'));
-                    toggleDropdown('gender', document.querySelector('button[onclick="toggleDropdown(\'gender\', this)"]'));
-                };
-            </script>
-            <script>
-                function resetFilters() {
-                    // بازنشانی همه چک‌باکس‌ها
-                    const checkboxes = document.querySelectorAll('.custom-checkbox');
-                    checkboxes.forEach(checkbox => {
-                        checkbox.checked = false;
-                    });
-
-                    // بازنشانی همه رادیو باتن‌ها
-                    const radios = document.querySelectorAll('.custom-radio');
-                    radios.forEach(radio => {
-                        radio.checked = false;
-                    });
-
-                    // غیرفعال کردن سوئیچ نوبت پزشکان
-                    const switchInput = document.querySelector('.switch input');
-                    if (switchInput) {
-                        switchInput.checked = false;
-                    }
-
-                    // بسته کردن همه منوهای فیلتر
-                    const filterDropdowns = document.querySelectorAll('.filter-dropdown');
-                    filterDropdowns.forEach(dropdown => {
-                        dropdown.style.maxHeight = "0px";
-                        dropdown.style.opacity = "0";
-                        setTimeout(() => {
-                            dropdown.style.display = "none";
-                        }, 300);
-                    });
-
-                    // بازنشانی همه فلش‌های باز/بسته کننده
-                    const arrows = document.querySelectorAll('.arrow');
-                    arrows.forEach(arrow => {
-                        arrow.style.transform = "rotate(0deg)";
-                    });
-                }
-
-            </script>
-            <script>
-                // گرفتن عنصر اسکرول
-                const scrollContainer = document.querySelector('.scroll-wrapper');
-
-                // متغیرهای لازم برای حالت drag
-                let isMouseDown = false;
-                let startX;
-                let scrollLeft;
-
-                // وقتی کاربر کلیک راست می‌کند
-                scrollContainer.addEventListener('mousedown', (e) => {
-                    isMouseDown = true;
-                    startX = e.pageX - scrollContainer.offsetLeft;
-                    scrollLeft = scrollContainer.scrollLeft;
-                });
-
-                // وقتی موس حرکت می‌کند
-                scrollContainer.addEventListener('mousemove', (e) => {
-                    if (!isMouseDown) return; // اگر کلیک نشده باشد اسکرول را انجام نده
-                    const x = e.pageX - scrollContainer.offsetLeft;
-                    const walk = (x - startX) * 2; // سرعت اسکرول (می‌توانید این مقدار را تغییر دهید)
-                    scrollContainer.scrollLeft = scrollLeft - walk;
-                });
-
-                // وقتی کاربر موس را رها می‌کند
-                scrollContainer.addEventListener('mouseup', () => {
-                    isMouseDown = false;
-                });
-
-                // وقتی موس از روی قسمت خارج می‌شود
-                scrollContainer.addEventListener('mouseleave', () => {
-                    isMouseDown = false;
-                });
-
-            </script>
-
-            <div class="col-lg-8">
+            <div class="col-lg-9">
                 <ul class="nav center-content margin-10  bg-gradiant3" role="tablist">
                     <li>
                         <a class="nav-link  active p_1" id="general-tab" data-toggle="tab"
-                           href="#general"
-                           role="tab" aria-controls="general" aria-expanded="true">نوبت حضوری</a>
+                           href="#turn"
+                           role="tab" aria-controls="turn" aria-expanded="true">نوبت حضوری</a>
                     </li>
                     <li>
-                        <a class="nav-link p_1" id="address-tab" data-toggle="tab" href="#address"
-                           role="tab" aria-controls="address">مشاوره تلفنی</a>
+                        <a class="nav-link p_1" id="phone_turn-tab" data-toggle="tab" href="#phone_turn"
+                           role="tab" aria-controls="phone_turn">مشاوره تلفنی</a>
                     </li>
                     <li>
-                        <a class="nav-link p_1" id="reviews-tab" data-toggle="tab" href="#reviews"
-                           role="tab" aria-controls="reviews">مشاوره متنی</a>
+                        <a class="nav-link p_1" id="text_turn-tab" data-toggle="tab" href="#text_turn"
+                           role="tab" aria-controls="text_turn">مشاوره متنی</a>
                     </li>
                 </ul>
 
-                <div class="row">
+                <div class="row tab-pane fade show active" id="turn" role="tabpanel"
+                                     aria-labelledby="turn-tab">
                     <div class="col-md-6">
                         <div class="box_list wow fadeIn">
                             <i href="#0" class="rate icon-star-5"><span class="text-dark">4.8</span></i>
@@ -574,7 +239,7 @@
                                 <p class="text-right"><i class="icon-location-inv"></i>همدان، چهار راه پارک، رو به روی
                                     استخر آبیاران</p>
                                 <small>اولین نوبت خالی 4 اسفند</small>
-                                <div class="m-t-15">
+                                <div class="m-t-10">
                                     <button class="btn btn-outline-info">مشاهده پروفایل پزشک</button>
                                     <button class="btn btn-success">دریافت نوبت</button>
                                 </div>
@@ -599,7 +264,7 @@
                                 <p class="text-right"><i class="icon-location-inv"></i>همدان، چهار راه پارک، رو به روی
                                     استخر آبیاران</p>
                                 <small>اولین نوبت خالی 4 اسفند</small>
-                                <div class="m-t-15">
+                                <div class="m-t-10">
                                     <button class="btn btn-outline-info">مشاهده پروفایل پزشک</button>
                                     <button class="btn btn-success">دریافت نوبت</button>
                                 </div>
@@ -623,7 +288,7 @@
                                 <p class="text-right"><i class="icon-location-inv"></i>همدان، چهار راه پارک، رو به روی
                                     استخر آبیاران</p>
                                 <small>اولین نوبت خالی 4 اسفند</small>
-                                <div class="m-t-15">
+                                <div class="m-t-10">
                                     <button class="btn btn-outline-info">مشاهده پروفایل پزشک</button>
                                     <button class="btn btn-success">دریافت نوبت</button>
                                 </div>
@@ -648,7 +313,7 @@
                                 <p class="text-right"><i class="icon-location-inv"></i>همدان، چهار راه پارک، رو به روی
                                     استخر آبیاران</p>
                                 <small>اولین نوبت خالی 4 اسفند</small>
-                                <div class="m-t-15">
+                                <div class="m-t-10">
                                     <button class="btn btn-outline-info">مشاهده پروفایل پزشک</button>
                                     <button class="btn btn-success">دریافت نوبت</button>
                                 </div>
@@ -672,7 +337,7 @@
                                 <p class="text-right"><i class="icon-location-inv"></i>همدان، چهار راه پارک، رو به روی
                                     استخر آبیاران</p>
                                 <small>اولین نوبت خالی 4 اسفند</small>
-                                <div class="m-t-15">
+                                <div class="m-t-10">
                                     <button class="btn btn-outline-info">مشاهده پروفایل پزشک</button>
                                     <button class="btn btn-success">دریافت نوبت</button>
                                 </div>
@@ -696,7 +361,7 @@
                                 <p class="text-right"><i class="icon-location-inv"></i>همدان، چهار راه پارک، رو به روی
                                     استخر آبیاران</p>
                                 <small>اولین نوبت خالی 4 اسفند</small>
-                                <div class="m-t-15">
+                                <div class="m-t-10">
                                     <button class="btn btn-outline-info">مشاهده پروفایل پزشک</button>
                                     <button class="btn btn-success">دریافت نوبت</button>
                                 </div>
@@ -707,7 +372,7 @@
 
                 </div>
                 <!-- /row -->
-
+                <div id="phone_turn"></div>
                 <nav aria-label="" class="add_top_20">
                     <ul class="pagination pagination-sm center-content">
                         <li class="page-item disabled align-center">
@@ -732,4 +397,70 @@
         <!-- /row -->
     </div>
     <!-- /container -->
+
+
+    <script>
+        function toggleDropdown(id, button) {
+            let dropdown = document.getElementById(id);
+            let arrow = button.querySelector('.arrow');
+            if (dropdown.style.maxHeight === "0px" || dropdown.style.maxHeight === "") {
+                dropdown.style.display = "block";
+                dropdown.style.maxHeight = dropdown.scrollHeight + "px";
+                dropdown.style.opacity = "1";
+                arrow.style.transform = "rotate(180deg)";
+            } else {
+                dropdown.style.maxHeight = "0px";
+                dropdown.style.opacity = "0";
+                setTimeout(() => {
+                    dropdown.style.display = "none";
+                }, 300);
+                arrow.style.transform = "rotate(0deg)";
+            }
+        }
+
+
+        window.onload = function () {
+            // باز کردن پیش‌فرض منوهای تخصص و جنسیت
+            toggleDropdown('specialty', document.querySelector('button[onclick="toggleDropdown(\'specialty\', this)"]'));
+            toggleDropdown('gender', document.querySelector('button[onclick="toggleDropdown(\'gender\', this)"]'));
+        };
+    </script>
+    <script>
+        function resetFilters() {
+            // بازنشانی همه چک‌باکس‌ها
+            const checkboxes = document.querySelectorAll('.custom-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+
+            // بازنشانی همه رادیو باتن‌ها
+            const radios = document.querySelectorAll('.custom-radio');
+            radios.forEach(radio => {
+                radio.checked = false;
+            });
+
+            // غیرفعال کردن سوئیچ نوبت پزشکان
+            const switchInput = document.querySelector('.switch input');
+            if (switchInput) {
+                switchInput.checked = false;
+            }
+
+            // بسته کردن همه منوهای فیلتر
+            const filterDropdowns = document.querySelectorAll('.filter-dropdown');
+            filterDropdowns.forEach(dropdown => {
+                dropdown.style.maxHeight = "0px";
+                dropdown.style.opacity = "0";
+                setTimeout(() => {
+                    dropdown.style.display = "none";
+                }, 300);
+            });
+
+            // بازنشانی همه فلش‌های باز/بسته کننده
+            const arrows = document.querySelectorAll('.arrow');
+            arrows.forEach(arrow => {
+                arrow.style.transform = "rotate(0deg)";
+            });
+        }
+
+    </script>
 {% endblock %}
