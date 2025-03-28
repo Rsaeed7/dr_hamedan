@@ -49,37 +49,42 @@ class MagArticle(models.Model):
         verbose_name_plural = 'مقالات'
 
 #
-# class Comment(models.Model):
-#     STATUS_CHOICES = (('checking','در حال بررسی'),('confirmed','تایید شده'))
-#     article = models.ForeignKey(BlogPost , on_delete=models.CASCADE , verbose_name='مقاله', related_name='comments')
-#     name = models.CharField(max_length=100, verbose_name='نام کاربر')
-#     text = models.TextField(verbose_name='متن کامنت')
-#     parent = models.ForeignKey("self", on_delete=models.CASCADE , verbose_name='کامنت والد', related_name='related_comments', null=True, blank=True)
-#     date = models.DateTimeField(verbose_name='تاریخ ثبت', auto_now_add=True)
-#     is_reply = models.BooleanField(default=False, verbose_name="آیا این یک پاسخ است؟")
-#     status = models.CharField(
-#         max_length=10, choices=STATUS_CHOICES, default="checking", verbose_name="وضعیت"
-#     )
-#     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='کاربر', related_name='blog_comments', null=True, blank=True)
-#     def status_display(self):
-#         if self.status == 'checking':
-#             return 'در حال بررسی'
-#         else:
-#             return 'تایید شده'
-#
-#     class Meta:
-#         ordering = ("date",)
-#         verbose_name = "کامنت"
-#         verbose_name_plural = "کامنت ها"
-#
-#     def JaliliDatepublished(self):
-#         return jdatetime.date.fromgregorian(
-#             day=self.date.day,
-#             month=self.date.month,
-#             year=self.date.year,
-#         )
-#
-#     def __str__(self):
-#         repl = "reply" if self.is_reply else "comment"
-#         return f'{repl} from "{self.name}" to "{self.article}"'
-#
+class Comment(models.Model):
+    STATUS_CHOICES = (('checking','در حال بررسی'),('confirmed','تایید شده'))
+    GENDER_CHOICES = [
+        ('M', 'آقا'),
+        ('F', 'خانم'),
+    ]
+    article = models.ForeignKey(MagArticle , on_delete=models.CASCADE , verbose_name='مقاله', related_name='comments')
+    name = models.CharField(max_length=100, verbose_name='نام کاربر')
+    text = models.TextField(verbose_name='متن کامنت')
+    parent = models.ForeignKey("self", on_delete=models.CASCADE , verbose_name='کامنت والد', related_name='related_comments', null=True, blank=True)
+    date = models.DateTimeField(verbose_name='تاریخ ثبت', auto_now_add=True)
+    is_reply = models.BooleanField(default=False, verbose_name="آیا این یک پاسخ است؟")
+    status = models.CharField(
+        max_length=10, choices=STATUS_CHOICES, default="checking", verbose_name="وضعیت"
+    )
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default="M", verbose_name="جنسیت",blank=True,null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='کاربر', related_name='blog_comments', null=True, blank=True)
+    def status_display(self):
+        if self.status == 'checking':
+            return 'در حال بررسی'
+        else:
+            return 'تایید شده'
+
+    class Meta:
+        ordering = ("date",)
+        verbose_name = "کامنت"
+        verbose_name_plural = "کامنت ها"
+
+    def JaliliDatepublished(self):
+        return jdatetime.date.fromgregorian(
+            day=self.date.day,
+            month=self.date.month,
+            year=self.date.year,
+        )
+
+    def __str__(self):
+        repl = "reply" if self.is_reply else "comment"
+        return f'{repl} from "{self.name}" to "{self.article}"'
+

@@ -1,7 +1,17 @@
 from django.shortcuts import render
+from django.views.generic import TemplateView
+from mag.models import MagArticle
 
-def home(request):
-    return render(request, 'core/homepage.html')
+
+
+class HomePageView(TemplateView):
+    template_name = 'core/homepage.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['articles'] = MagArticle.objects.filter(published=True).order_by("date")[:9]
+        return context
+
 
 def special_list(request):
     return render(request, 'doctor/specialties_list.html')
@@ -19,13 +29,6 @@ def clinic_detail(request):
 def dr_detail(request):
         return render(request, 'doctor/dr_detail.html')
 
-
-def article_list(request):
-    return render(request, 'blog/article_list.html')
-
-def article_detail(request):
-    return render(request, 'blog/article_detail.html')
-# Create your views here.
 
 def login(request):
     return render(request, 'account/login.html')

@@ -1,6 +1,11 @@
 {% extends  'base/base.html' %}
 {% load static %}
 {% block body %}
+    <style>
+      
+
+
+    </style>
     <!-- Search-bar -->
     <div class="filters_listing">
         <div class="container">
@@ -28,15 +33,15 @@
                     </div>
                     <ul class="comments-list">
                         {% for article in articles_last %}
-                        <li>
-                            <div class="alignleft">
-                                <a href="{{ article.get_absolute_url }}"><img
-                                        src="{{ article.image.url }}"
-                                        alt=""></a>
-                            </div>
-                            <h3><a href="{{ article.get_absolute_url }}" title="">{{ article.title }}</a></h3>
-                            <small>{{ article.description|truncatechars:60 }}</small>
-                        </li>
+                            <li>
+                                <div class="alignleft">
+                                    <a href="{{ article.get_absolute_url }}"><img
+                                            src="{{ article.image.url }}"
+                                            alt=""></a>
+                                </div>
+                                <h3><a href="{{ article.get_absolute_url }}" title="">{{ article.title }}</a></h3>
+                                <small>{{ article.description|truncatechars:60 }}</small>
+                            </li>
                         {% endfor %}
                     </ul>
                 </div>
@@ -46,13 +51,13 @@
                     </div>
                     <ul class="cats">
                         {% for item in category %}
-                        <li><a href="#">{{ item.name }}</a></li>
+                            <li><a href="#">{{ item.name }}</a></li>
                         {% endfor %}
                     </ul>
                 </div>
             </aside>
             <!--/sidebar-->
-            
+
             <div class="col-lg-9">
                 <div class="postmeta">
                     <ul>
@@ -86,87 +91,56 @@
                 <div>
                     <div class="reviews-container">
                         <div class="row text-left">
-                            <div>
+                            <div class="col-lg-12">
                                 <form method="post" id="comment_content">
                                     {% csrf_token %}
                                     <div class="col-md-auto form-group">
-                                        <input id="name" name="name" type="text" class="form-control"
-                                               placeholder="نام خود را وارد کنید">
+                                        {{ form.name }}
                                     </div>
                                     <div class="col-md-12 form-group">
-                                                <textarea id="text" name="text" class="form-control" cols="100" rows="6"
-                                                          placeholder="پیام خود را بنویسید"></textarea>
+                                        {{ form.text }}
                                     </div>
-                                    <input hidden id="parent_id" name="parent_id" value="">
-                                    <button type="submit"
-                                            class="btn btn-success mx-3">
-                                        ثبت دیدگاه
-                                    </button>
+                                    {{ form.parent }}
+                                    <div class="row rev-header">
+                                        <div class="col-auto">
+                                            <div class="custom-gender-toggle">
+                                                <input type="radio" id="male-option" name="gender" value="M" checked>
+                                                <label for="male-option">آقا هستم</label>
+                                                <input type="radio" id="female-option" name="gender" value="F">
+                                                <label for="female-option">خانم هستم</label>
+                                                <div class="custom-slider"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <button type="submit" class="btn btn-success mx-3 m-t-20">ثبت دیدگاه</button>
+                                        </div>
+                                    </div>
                                 </form>
-
                                 <!-- /row -->
                             </div>
                         </div>
                         <!-- /row -->
 
+
                         <hr>
-                        <div class="review-box clearfix">
-                            <div class="border-bottom">
-                                <div class="rev-header">
-                                    <div class="rev-info font-weight-bold"><i class="icon-user-female"></i>مهناز</div>
-                                    <small class="text-left text_dr_3">2 دی 1403</small>
+                        {% for comment in comments %}
+                            <div class="review-box clearfix box_faq">
+                                <div class="border-bottom">
+                                    <div class="rev-header">
+                                        <div class="rev-info font-weight-bold"><i
+                                                class="pe-7s-user{% if comment.gender == 'F' %}-female{% endif %} text-info"></i>{{ comment.name }}
+                                        </div>
+                                        <small class="text-left text_dr_3">{{ comment.JaliliDatepublished }}</small>
 
-                                </div>
-                                <div class="rev-text m-t-20">
-                                    <p>
-                                        سلام ممنونم پست خوبی بود
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="review-box clearfix">
-                            <div class="border-bottom">
-                                <div class="rev-header">
-                                    <div class="rev-info font-weight-bold"><i class="icon-user-female"></i>علی رحیمی
                                     </div>
-                                    <small class="text-left text_dr_3">1 دی 1403</small>
-
-                                </div>
-                                <div class="rev-text m-t-20">
-                                    <p>
-                                        به نظر من که غلطه
-                                    </p>
+                                    <div class="rev-text m-t-20">
+                                        <p>
+                                            {{ comment.text }}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="review-box clearfix">
-                            <div class="border-bottom">
-                                <div class="rev-header">
-                                    <div class="rev-info font-weight-bold"><i class="icon-user-female"></i>سعید</div>
-                                    <small class="text-left text_dr_3">2 دی 1403</small>
-
-                                </div>
-                                <div class="rev-text m-t-20">
-                                    <p>
-                                        سپاس
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="review-box clearfix">
-                            <div class="border-bottom">
-                                <div class="rev-header">
-                                    <div class="rev-info font-weight-bold"><i class="icon-user-female"></i>مهسا</div>
-                                    <small class="text-left text_dr_3">1 دی 1403</small>
-
-                                </div>
-                                <div class="rev-text m-t-20">
-                                    <p>
-                                        عالی بود
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                        {% endfor %}
                     </div>
                     <!-- End review-container -->
                 </div>

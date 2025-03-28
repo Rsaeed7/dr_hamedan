@@ -4,30 +4,7 @@
     <div class="bg-light">
         <div class="container margin_120_95">
             <div class="row">
-                <aside class="col-lg-4">
-                    <div class="box_general_3 border-0 booking">
-                        <ul class="list-group">
-                            <li class="list-group-item item-active">
-                                <i class="icon-user-7 m-l-5"></i><a href="#">اطلاعات کاربری</a>
-                            </li>
-                            <li class="list-group-item">
-                                <i class="icon-calendar-7 m-l-5"></i><a href="#">نوبت های من</a>
-                            </li>
-                            <li class="list-group-item">
-                                <i class=" icon-newspaper-1 m-l-5"></i><a href="#">سوابق من</a>
-                            </li>
-                            <li class="list-group-item">
-                                <i class="icon-wallet m-l-5"></i><a href="#">کیف پول من <span class="m-r-70">0تومان</span></a>
-                            </li>
-                            <li class="list-group-item">
-                                <i class="icon-comment-empty m-l-5"></i><a href="#">نظرات من</a>
-                            </li>
-                            <li class="list-group-item">
-                                <i class="icon-logout-1 m-l-5"></i><a href="#">خروج</a>
-                            </li>
-                        </ul>
-                    </div>
-                </aside>
+                {% include  'account/dashbord_sidebar.html' %}
                 <!-- /col -->
                 <div class="col-lg-8 ml-auto">
                     <div class="box_form border-0">
