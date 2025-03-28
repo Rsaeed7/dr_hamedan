@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>چت پشتیبانی</title>
+    <style>
+        #chat-box {
+            width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        #messages {
+            height: 300px;
+            overflow-y: scroll;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .user-message {
+            text-align: right;
+            color: blue;
+        }
+        .admin-message {
+            text-align: left;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-box">
+        <div id="messages">
+            <!-- پیام‌ها اینجا نمایش داده می‌شن -->
+        </div>
+        <input type="text" id="message-input" placeholder="پیام خود را وارد کنید...">
+        <button id="send-button">ارسال</button>
+    </div>
+
+    <script>
+    // تابع برای دریافت پیام‌ها از سرور
+function fetchMessages() {
+    fetch('/get_messages/')
+        .then(response => response.json())
+        .then(data => {
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML = '';
+            data.messages.forEach(msg => {
+                const messageElement = document.createElement('div');
+                messageElement.textContent = msg.message;
+                if (msg.is_admin) {
+                    messageElement.classList.add('admin-message');
+                } else {
+                    messageElement.classList.add('user-message');
+                }
+                messagesDiv.appendChild(messageElement);
+            });
+        });
+}
+
+// ارسال پیام به سرور
+document.getElementById('send-button').addEventListener('click', () => {
+    const messageInput = document.getElementById('message-input');
+    const message = messageInput.value;
+    
+    fetch('/send_message/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: `message=${encodeURIComponent(message)}`
+    }).then(() => {
+        messageInput.value = '';
+        fetchMessages();  // بعد از ارسال پیام، لیست پیام‌ها رو آپدیت کن
+    });
+});
+
+// هر ۲ ثانیه پیام‌ها رو آپدیت کن
+setInterval(fetchMessages, 2000);
+    </script>
+</body>
+</html>

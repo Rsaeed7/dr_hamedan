@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="h-full">
+    <div class="min-h-full">
+        <!-- Navigation -->
+        <nav class="bg-indigo-600">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <span class="text-white text-xl font-bold">Wallet System</span>
+                        </div>
+                    </div>
+                    <div class="text-white">
+                        User ID: {{ user_id }}
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Balance Card -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-lg font-semibold text-gray-700 mb-4">Current Balance</h2>
+                    <div class="flex items-center justify-between">
+                        <span id="balance" class="text-3xl font-bold text-indigo-600">Loading...</span>
+                        <button onclick="getWalletBalance()" 
+                                class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Deposit Form -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-lg font-semibold text-gray-700 mb-4">Deposit Funds</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="depositAmount" class="block text-sm font-medium text-gray-700">Amount</label>
+                            <input type="number" id="depositAmount" step="0.01" min="0.01" required
+                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        </div>
+                        <button onclick="makeDeposit()" 
+                                class="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors flex items-center justify-center">
+                            <span id="depositText">Deposit</span>
+                            <span id="depositLoading" class="hidden ml-2">
+                                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Withdraw Form -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-lg font-semibold text-gray-700 mb-4">Withdraw Funds</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="withdrawAmount" class="block text-sm font-medium text-gray-700">Amount</label>
+                            <input type="number" id="withdrawAmount" step="0.01" min="0.01" required
+                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        </div>
+                        <button onclick="makeWithdraw()" 
+                                class="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors flex items-center justify-center">
+                            <span id="withdrawText">Withdraw</span>
+                            <span id="withdrawLoading" class="hidden ml-2">
+                                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications -->
+            <div id="notification" class="fixed top-4 right-4 w-80 transition-opacity duration-300 opacity-0 hidden">
+                <div class="bg-white rounded-lg shadow-lg p-4 border-l-4 border-indigo-600">
+                    <div class="flex items-center">
+                        <div class="ml-3">
+                            <p id="notificationText" class="text-sm font-medium text-gray-900"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const token = '{{ request.user.auth_token.key }}';
+        const walletId = '{{ wallet.id }}';
+        const userId = "{{ user_id }}";
+        const apiBase = 'http://127.0.0.1:8000/api';
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            notificationText.textContent = message;
+            notification.classList.remove('hidden', 'opacity-0');
+            notification.classList.add('opacity-100');
+            setTimeout(() => {
+                notification.classList.remove('opacity-100');
+                notification.classList.add('opacity-0');
+                setTimeout(() => notification.classList.add('hidden'), 300);
+            }, 3000);
+        }
+
+        // Get wallet balance
+        const getWalletBalance = async () => {
+            try {
+                const response = await fetch(`${apiBase}/wallets/${userId}/`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Token ${token}`,
+                    },
+                });
+
+                if (!response.ok) throw new Error('Failed to fetch balance');
+                
+                const data = await response.json();
+                document.getElementById('balance').textContent = `$${parseFloat(data.balance).toFixed(2)}`;
+            } catch (error) {
+                showNotification(error.message, 'error');
+            }
+        };
+
+        // Deposit funds
+        const makeDeposit = async () => {
+            const amount = parseFloat(document.getElementById('depositAmount').value);
+            const button = document.querySelector('#depositText');
+            const loader = document.querySelector('#depositLoading');
+
+            if (!amount || amount <= 0) {
+                showNotification('Please enter a valid amount', 'error');
+                return;
+            }
+
+            try {
+                button.disabled = true;
+                loader.classList.remove('hidden');
+                
+                const response = await fetch(`${apiBase}/wallets/deposit/`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Token ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ amount: amount }),
+                });
+
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Deposit failed');
+
+                showNotification(`Successfully deposited $${amount.toFixed(2)}`);
+                await getWalletBalance();
+            } catch (error) {
+                showNotification(error.message, 'error');
+            } finally {
+                button.disabled = false;
+                loader.classList.add('hidden');
+            }
+        };
+
+        // Withdraw funds
+        const makeWithdraw = async () => {
+            const amount = parseFloat(document.getElementById('withdrawAmount').value);
+            const button = document.querySelector('#withdrawText');
+            const loader = document.querySelector('#withdrawLoading');
+
+            if (!amount || amount <= 0) {
+                showNotification('Please enter a valid amount', 'error');
+                return;
+            }
+
+            try {
+                button.disabled = true;
+                loader.classList.remove('hidden');
+                
+                const response = await fetch(`${apiBase}/wallets/withdraw/`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Token ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ amount: amount }),
+                });
+
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Withdrawal failed');
+
+                showNotification(`Successfully withdrew $${amount.toFixed(2)}`);
+                await getWalletBalance();
+            } catch (error) {
+                showNotification(error.message, 'error');
+            } finally {
+                button.disabled = false;
+                loader.classList.add('hidden');
+            }
+        };
+
+        // Initial balance load
+        getWalletBalance();
+    </script>
+</body>
+</html>
