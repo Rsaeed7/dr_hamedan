@@ -77,7 +77,7 @@
                             </div>
                             <div class="col-lg-8">
                                 <div class="post_info">
-                                    <h3><a href="{% url 'core:article_detail' %}">{{ object.title }}</a></h3>
+                                    <h3><a href="{% url 'mag:article' object.slug %}">{{ object.title }}</a></h3>
                                     <p>{{ object.description | truncatewords:70 }}</p>
                                     <ul>
                                         <li><i class="icon-feather"></i>{{ object.writer.username }}</li>

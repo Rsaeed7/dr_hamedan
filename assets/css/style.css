@@ -3889,7 +3889,11 @@ ul.treatments.checkout li.total {
 }
 
 .bg_color_2 {
-  background: #669ec4 url(../img/hero_bg_1.svg) repeat fixed;
+  background:  url(../img/bg/seamless-pattern-doodle-drawings-medical-equipment-first-aid-items-doodle-seamless-pattern_947681-1551.jpg) repeat;
+}
+
+.bg_pic {
+  background:  url(../img/bg/grey-medical-icons-vector-abstract-pattern-design_88343-2117.jpg) repeat;
 }
 
 .form-control {
@@ -3990,6 +3994,17 @@ ul.treatments.checkout li.total {
   }
 }
 
+
+.box_general_4 {
+  background-color: rgb(201, 225, 248);
+  padding: 30px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  border-radius: 20px;
+  margin-bottom: 25px;
+  border: 1px solid #e1e8ed;
+}
 /*-------- 3.2 List --------*/
 ul.bullets {
   line-height: 1.8;

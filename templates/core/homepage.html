@@ -1,14 +1,15 @@
 {% extends  'base/base.html' %}
 {% load static %}
 {% block body %}
-
+    
+    
     <div class="hero_home version_2">
         <div class="content text-dark">
             <h4 class="text-info text-xl-center">نوبت آنلاین در دکتر همدان</h4>
             <p>
                 برای پیدا کردن پزشک مورد نظر جست و جو کنید
             </p>
-            <form method="post" action="list.html">
+            <form method="post" action="#">
                 <div id="custom-search-input">
                     <div class="input-group">
                         <input type="text" class="search-query" placeholder="نام یا تخصص....">
@@ -51,49 +52,49 @@
                 </a>
             </div>
             <div class="col-lg-3 col-md-6">
-                <a href="list.html" class="box_cat_home">
+                <a href="#" class="box_cat_home">
                     <i class="icon-search-7"></i>
                     <img src="{% static 'img/pic/kidney_2518743.png' %}" width="60" height="60" alt="">
                     <h3>اورولوژی</h3>
                 </a>
             </div>
             <div class="col-lg-3 col-md-6">
-                <a href="list.html" class="box_cat_home">
+                <a href="#" class="box_cat_home">
                     <i class="icon-search-7"></i>
                     <img src="{% static 'img/pic/jaw-contouring_3828729.png' %}" width="60" height="60" alt="">
                     <h3>فک و صورت</h3>
                 </a>
             </div>
             <div class="col-lg-3 col-md-6">
-                <a href="list.html" class="box_cat_home">
+                <a href="#" class="box_cat_home">
                     <i class="icon-search-7"></i>
                     <img src="{% static 'img/pic/heart_8358516.png' %}" width="60" height="60" alt="">
                     <h3>قلب و عروق</h3>
                 </a>
             </div>
             <div class="col-lg-3 col-md-6">
-                <a href="list.html" class="box_cat_home">
+                <a href="#" class="box_cat_home">
                     <i class="icon-search-7"></i>
                     <img src="{% static 'img/pic/stethoscope_4068895.png' %}" width="60" height="60" alt="">
                     <h3>پزشک عمومی</h3>
                 </a>
             </div>
             <div class="col-lg-3 col-md-6">
-                <a href="list.html" class="box_cat_home">
+                <a href="#" class="box_cat_home">
                     <i class="icon-search-7"></i>
                     <img src="{% static 'img/pic/medical_16649783.png' %}" width="60" height="60" alt="">
                     <h3>متخصص زنان</h3>
                 </a>
             </div>
             <div class="col-lg-3 col-md-6">
-                <a href="list.html" class="box_cat_home">
+                <a href="#" class="box_cat_home">
                     <i class="icon-search-7"></i>
                     <img src="{% static 'img/pic/science_10666848.png' %}" width="60" height="60" alt="">
                     <h3>دندانپزشکی</h3>
                 </a>
             </div>
             <div class="col-lg-3 col-md-6">
-                <a href="list.html" class="box_cat_home">
+                <a href="#" class="box_cat_home">
                     <i class="icon-search-7"></i>
                     <img src="{% static 'img/pic/creativity_15557951.png' %}" width="60" height="60" alt="">
                     <h3>مغز و اعصاب</h3>
@@ -104,28 +105,28 @@
         <div id="extraItems" class="row p-t-10"
              style="height: 0; opacity: 0; overflow: hidden; transition: height 0.7s ease, opacity 0.5s ease;">
             <div class="col-lg-3 col-md-6">
-                <a href="list.html" class="box_cat_home">
+                <a href="#" class="box_cat_home">
                     <i class="icon-search-7"></i>
                     <img src="{% static 'img/pic/hydration-bladder_1810047.png' %}" width="60" height="60" alt="">
                     <h3>تعبیه سوند</h3>
                 </a>
             </div>
             <div class="col-lg-3 col-md-6">
-                <a href="list.html" class="box_cat_home">
+                <a href="#" class="box_cat_home">
                     <i class="icon-search-7"></i>
                     <img src="{% static 'img/pic/ultrasound_9599497.png' %}" width="60" height="60" alt="">
                     <h3>سونوگرافی</h3>
                 </a>
             </div>
             <div class="col-lg-3 col-md-6">
-                <a href="list.html" class="box_cat_home">
+                <a href="#" class="box_cat_home">
                     <i class="icon-search-7"></i>
                     <img src="{% static 'img/pic/kidney_12773133.png' %}" width="60" height="60" alt="">
                     <h3>مجاری</h3>
                 </a>
             </div>
             <div class="col-lg-3 col-md-6">
-                <a href="list.html" class="box_cat_home">
+                <a href="#" class="box_cat_home">
                     <i class="icon-search-7"></i>
                     <img src="{% static 'img/pic/radiotherapy_8358522.png' %}" width="60" height="60" alt="">
                     <h3>رادیوتراپی</h3>
@@ -154,8 +155,8 @@
                 <div class="scroll-container p-15" id="scrollContainer">
                     <div class="scroll-wrapper">
                         <a href="{% url 'core:dr_detail' %}" class="box_cat_home dr_box">
-                            <img src="{% static 'img/dr/saeed.jpg' %}" class="round50" width="80" height="80" alt="">
-                            <h3>دکتر سعید رحیمی</h3>
+                            <img src="{% static 'img/dr/dr1.jfif' %}" class="round50" width="80" height="80" alt="">
+                            <h3>دکتر امیر چرخنده</h3>
                             <p>فوق تخصص مغز و اعصاب</p>
                             <div class="text-right text-info">
                                 <i class="icon-star-5"><small>4.3</small></i>
@@ -167,7 +168,7 @@
                                 <button class="btn btn-outline-success col-md-12">دریافت نوبت</button>
                             </div>
                         </a>
-                        <a href="list.html" class="box_cat_home dr_box">
+                        <a href="#" class="box_cat_home dr_box">
                             <img src="{% static 'img/dr/banner-img.png' %}" class="round50" width="80" height="80"
                                  alt="">
                             <h3>دکتر میلاد دهیامی</h3>
@@ -182,7 +183,7 @@
                                 <button class="btn btn-outline-success col-md-12">دریافت نوبت</button>
                             </div>
                         </a>
-                        <a href="list.html" class="box_cat_home dr_box">
+                        <a href="#" class="box_cat_home dr_box">
                             <img src="{% static 'img/dr/OIP.jfif' %}" class="round50" width="80" height="80" alt="">
                             <h3>دکتر حسام شهبازی</h3>
                             <p>فلوشیپ رادیواینترونشن</p>
@@ -196,7 +197,7 @@
                                 <button class="btn btn-outline-success col-md-12">دریافت نوبت</button>
                             </div>
                         </a>
-                        <a href="list.html" class="box_cat_home dr_box">
+                        <a href="#" class="box_cat_home dr_box">
                             <img src="{% static 'img/dr/OIP (1).jfif' %}" class="round50" width="80" height="80" alt="">
                             <h3>دکتر فاطمه محرابی</h3>
                             <p>فوق تخصص قلب و عروق</p>
@@ -210,11 +211,11 @@
                                 <button class="btn btn-outline-success col-md-12">دریافت نوبت</button>
                             </div>
                         </a>
-                        <a href="list.html" class="box_cat_home dr_box">
-                            <img src="{% static 'img/dr/download (1).jfif' %}" class="round50" width="80" height="80"
+                        <a href="#" class="box_cat_home dr_box">
+                            <img src="{% static 'img/dr/dr2.jfif' %}" class="round50" width="80" height="80"
                                  alt="">
-                            <h3>دکتر سعید رحیمی</h3>
-                            <p>فوق تخصص قلب و عروق</p>
+                            <h3>دکتر روناز نعیمی</h3>
+                            <p>فوق تخصص پوست</p>
                             <div class="text-right text-info">
                                 <i class="icon-star-5"><small>4.8</small></i>
                                 <small class="icon-location">همدان،بلوار بهادر بیگی,کوچه اول</small>
@@ -225,10 +226,38 @@
                                 <button class="btn btn-outline-success col-md-12">دریافت نوبت</button>
                             </div>
                         </a>
-                        <a href="list.html" class="box_cat_home dr_box">
-                            <img src="{% static 'img/dr/doctor-with-his-arms-crossed-white-background.jpg' %}"
+                        <a href="#" class="box_cat_home dr_box">
+                            <img src="{% static 'img/dr/dr3.jfif' %}"
                                  class="round50" width="80" height="80" alt="">
-                            <h3>دکتر سعید رحیمی</h3>
+                            <h3>دکتر سعید بهشتی</h3>
+                            <p>فلوشیپ ارتوپدی</p>
+                            <div class="text-right text-info">
+                                <i class="icon-star-5"><small>4.8</small></i>
+                                <small class="icon-location">همدان،بلوار بهادر بیگی,کوچه اول</small>
+                                <p class="text-dark small p-t-10">اولین نوبت خالی <span class="text-success p-r-20">10 اسفند</span>
+                                <p class="text-dark small">زمان تقریبی انتظار <span
+                                        class="text-success p-r-20">2 ساعت</span>
+                                </p>
+                                <button class="btn btn-outline-success col-md-12">دریافت نوبت</button>
+                            </div>
+                        </a>
+                        <a href="#" class="box_cat_home dr_box">
+                            <img src="{% static 'img/dr/dr4.jfif' %}" class="round50" width="80" height="80" alt="">
+                            <h3>دکتر بهروز رحیمی</h3>
+                            <p>روانشناس</p>
+                            <div class="text-right text-info">
+                                <i class="icon-star-5"><small>4.8</small></i>
+                                <small class="icon-location">همدان،بلوار بهادر بیگی,کوچه اول</small>
+                                <p class="text-dark small p-t-10">اولین نوبت خالی <span class="text-success p-r-20">10 اسفند</span>
+                                <p class="text-dark small">زمان تقریبی انتظار <span
+                                        class="text-success p-r-20">2 ساعت</span>
+                                </p>
+                                <button class="btn btn-outline-success col-md-12">دریافت نوبت</button>
+                            </div>
+                        </a>
+                        <a href="#" class="box_cat_home dr_box">
+                            <img src="{% static 'img/dr/dr5).jfif' %}" class="round50" width="80" height="80" alt="">
+                            <h3>دکتر یاشار سلطانی</h3>
                             <p>فوق تخصص قلب و عروق</p>
                             <div class="text-right text-info">
                                 <i class="icon-star-5"><small>4.8</small></i>
@@ -240,35 +269,7 @@
                                 <button class="btn btn-outline-success col-md-12">دریافت نوبت</button>
                             </div>
                         </a>
-                        <a href="list.html" class="box_cat_home dr_box">
-                            <img src="{% static 'img/dr/saeed.jpg' %}" class="round50" width="80" height="80" alt="">
-                            <h3>دکتر سعید رحیمی</h3>
-                            <p>فوق تخصص قلب و عروق</p>
-                            <div class="text-right text-info">
-                                <i class="icon-star-5"><small>4.8</small></i>
-                                <small class="icon-location">همدان،بلوار بهادر بیگی,کوچه اول</small>
-                                <p class="text-dark small p-t-10">اولین نوبت خالی <span class="text-success p-r-20">10 اسفند</span>
-                                <p class="text-dark small">زمان تقریبی انتظار <span
-                                        class="text-success p-r-20">2 ساعت</span>
-                                </p>
-                                <button class="btn btn-outline-success col-md-12">دریافت نوبت</button>
-                            </div>
-                        </a>
-                        <a href="list.html" class="box_cat_home dr_box">
-                            <img src="{% static 'img/dr/saeed.jpg' %}" class="round50" width="80" height="80" alt="">
-                            <h3>دکتر سعید رحیمی</h3>
-                            <p>فوق تخصص قلب و عروق</p>
-                            <div class="text-right text-info">
-                                <i class="icon-star-5"><small>4.8</small></i>
-                                <small class="icon-location">همدان،بلوار بهادر بیگی,کوچه اول</small>
-                                <p class="text-dark small p-t-10">اولین نوبت خالی <span class="text-success p-r-20">10 اسفند</span>
-                                <p class="text-dark small">زمان تقریبی انتظار <span
-                                        class="text-success p-r-20">2 ساعت</span>
-                                </p>
-                                <button class="btn btn-outline-success col-md-12">دریافت نوبت</button>
-                            </div>
-                        </a>
-                        <a href="list.html" class="box_cat_home dr_box">
+                        <a href="#" class="box_cat_home dr_box">
                             <img src="{% static 'img/dr/saeed.jpg' %}" class="round50" width="80" height="80" alt="">
                             <h3>دکتر سعید رحیمی</h3>
                             <p>فوق تخصص قلب و عروق</p>
@@ -291,8 +292,6 @@
     </div>
     <!-- /Top doctors -->
 
-    
-    
     <!-- Online consultation -->
     <div>
         <div class="container">
@@ -301,10 +300,10 @@
                  <button id="btnLeft2" class="left btn-scroll"><i class="icon-right-open-4"></i></button>
                 <div class="scroll-container p-15" id="scrollContainer">
                     <div class="scroll-wrapper">
-                        <a href="list.html" class="box_cat_home dr_box">
-                            <img src="{% static 'img/dr/saeed.jpg' %}" class="round50" width="80" height="80" alt="">
-                            <h3>دکتر سعید رحیمی</h3>
-                            <p>فوق تخصص مغز و اعصاب</p>
+                        <a href="#" class="box_cat_home dr_box">
+                            <img src="{% static 'img/dr/dr5).jfif' %}" class="round50" width="80" height="80" alt="">
+                            <h3>دکتر نیما شاهرخی</h3>
+                            <p>فوق تخصص ستون فقرات</p>
                             <div class="text-right text-info">
                                 <i class="icon-star-5"><small>4.3</small></i>
                                 <p class="text-dark small">مدت زمان مشاوره <span class="text-info p-r-20">15 دقیقه</span>
@@ -313,7 +312,7 @@
                                 <button class="btn btn-outline-info col-md-12">دریافت مشاوره</button>
                             </div>
                         </a>
-                        <a href="list.html" class="box_cat_home dr_box">
+                        <a href="#" class="box_cat_home dr_box">
                             <img src="{% static 'img/dr/banner-img.png' %}" class="round50" width="80" height="80"
                                  alt="">
                             <h3>دکتر میلاد دهیامی</h3>
@@ -326,7 +325,7 @@
                                 <button class="btn btn-outline-info col-md-12">دریافت مشاوره</button>
                             </div>
                         </a>
-                        <a href="list.html" class="box_cat_home dr_box">
+                        <a href="#" class="box_cat_home dr_box">
                             <img src="{% static 'img/dr/OIP.jfif' %}" class="round50" width="80" height="80" alt="">
                             <h3>دکتر حسام شهبازی</h3>
                             <p>فلوشیپ رادیواینترونشن</p>
@@ -338,7 +337,7 @@
                                 <button class="btn btn-outline-info col-md-12">دریافت مشاوره</button>
                             </div>
                         </a>
-                        <a href="list.html" class="box_cat_home dr_box">
+                        <a href="#" class="box_cat_home dr_box">
                             <img src="{% static 'img/dr/OIP (1).jfif' %}" class="round50" width="80" height="80" alt="">
                             <h3>دکتر فاطمه محرابی</h3>
                             <p>فوق تخصص قلب و عروق</p>
@@ -350,23 +349,47 @@
                                 <button class="btn btn-outline-info col-md-12">دریافت مشاوره</button>
                             </div>
                         </a>
-                        <a href="list.html" class="box_cat_home dr_box">
-                            <img src="{% static 'img/dr/download (1).jfif' %}" class="round50" width="80" height="80"
+                        <a href="#" class="box_cat_home dr_box">
+                            <img src="{% static 'img/dr/dr2.jfif' %}" class="round50" width="80" height="80"
                                  alt="">
-                            <h3>دکتر سعید رحیمی</h3>
-                            <p>فوق تخصص قلب و عروق</p>
+                            <h3>دکتر رویا رحمانی</h3>
+                            <p>فوق تخصص چشم</p>
                             <div class="text-right text-info">
-                                <i class="icon-star-5"><small>4.8</small></i>
+                                <i class="icon-star-5"><small>4.5</small></i>
                                 <p class="text-dark small">مدت زمان مشاوره <span class="text-info p-r-20">15 دقیقه</span>
                                 <p class="text-dark small">پاسخگویی : <span class="text-info p-r-20">روی خط</span>
                                 </p>
                                 <button class="btn btn-outline-info col-md-12">دریافت مشاوره</button>
                             </div>
                         </a>
-                        <a href="list.html" class="box_cat_home dr_box">
-                            <img src="{% static 'img/dr/doctor-with-his-arms-crossed-white-background.jpg' %}"
+                        <a href="#" class="box_cat_home dr_box">
+                            <img src="{% static 'img/dr/dr3.jfif' %}"
                                  class="round50" width="80" height="80" alt="">
-                            <h3>دکتر سعید رحیمی</h3>
+                            <h3>دکتر سعید سعیدی</h3>
+                            <p>فوق تخصص قلب و عروق</p>
+                            <div class="text-right text-info">
+                                <i class="icon-star-5"><small>4.2</small></i>
+                                <p class="text-dark small">مدت زمان مشاوره <span class="text-info p-r-20">15 دقیقه</span>
+                                <p class="text-dark small">پاسخگویی : <span class="text-info p-r-20">روی خط</span>
+                                </p>
+                                <button class="btn btn-outline-info col-md-12">دریافت مشاوره</button>
+                            </div>
+                        </a>
+                        <a href="#" class="box_cat_home dr_box">
+                            <img src="{% static 'img/dr/dr1.jfif' %}" class="round50" width="80" height="80" alt="">
+                            <h3>دکتر عادل فردوس</h3>
+                            <p>فوق تخصص پوست و مو</p>
+                            <div class="text-right text-info">
+                                <i class="icon-star-5"><small>4.7</small></i>
+                                <p class="text-dark small">مدت زمان مشاوره <span class="text-info p-r-20">15 دقیقه</span>
+                                <p class="text-dark small">پاسخگویی : <span class="text-info p-r-20">روی خط</span>
+                                </p>
+                                <button class="btn btn-outline-info col-md-12">دریافت مشاوره</button>
+                            </div>
+                        </a>
+                        <a href="#" class="box_cat_home dr_box">
+                            <img src="{% static 'img/dr/dr4.jfif' %}" class="round50" width="80" height="80" alt="">
+                            <h3>دکتر نفس مهربان</h3>
                             <p>فوق تخصص قلب و عروق</p>
                             <div class="text-right text-info">
                                 <i class="icon-star-5"><small>4.8</small></i>
@@ -376,31 +399,7 @@
                                 <button class="btn btn-outline-info col-md-12">دریافت مشاوره</button>
                             </div>
                         </a>
-                        <a href="list.html" class="box_cat_home dr_box">
-                            <img src="{% static 'img/dr/saeed.jpg' %}" class="round50" width="80" height="80" alt="">
-                            <h3>دکتر سعید رحیمی</h3>
-                            <p>فوق تخصص قلب و عروق</p>
-                            <div class="text-right text-info">
-                                <i class="icon-star-5"><small>4.8</small></i>
-                                <p class="text-dark small">مدت زمان مشاوره <span class="text-info p-r-20">15 دقیقه</span>
-                                <p class="text-dark small">پاسخگویی : <span class="text-info p-r-20">روی خط</span>
-                                </p>
-                                <button class="btn btn-outline-info col-md-12">دریافت مشاوره</button>
-                            </div>
-                        </a>
-                        <a href="list.html" class="box_cat_home dr_box">
-                            <img src="{% static 'img/dr/saeed.jpg' %}" class="round50" width="80" height="80" alt="">
-                            <h3>دکتر سعید رحیمی</h3>
-                            <p>فوق تخصص قلب و عروق</p>
-                            <div class="text-right text-info">
-                                <i class="icon-star-5"><small>4.8</small></i>
-                                <p class="text-dark small">مدت زمان مشاوره <span class="text-info p-r-20">15 دقیقه</span>
-                                <p class="text-dark small">پاسخگویی : <span class="text-info p-r-20">روی خط</span>
-                                </p>
-                                <button class="btn btn-outline-info col-md-12">دریافت مشاوره</button>
-                            </div>
-                        </a>
-                        <a href="list.html" class="box_cat_home dr_box">
+                        <a href="#" class="box_cat_home dr_box">
                             <img src="{% static 'img/dr/saeed.jpg' %}" class="round50" width="80" height="80" alt="">
                             <h3>دکتر سعید رحیمی</h3>
                             <p>فوق تخصص قلب و عروق</p>
@@ -431,31 +430,31 @@
                 <button id="btnLeft3" class="left btn-scroll2"><i class="icon-right-open-4"></i></button>
                 <div class="scroll-container p-15" id="scrollContainer">
                     <div class="scroll-wrapper">
-                        <a href="list.html" class="box_cat_home box_badges">
+                        <a href="#" class="box_cat_home box_badges">
                             <h3>همدان</h3>
                         </a>
-                        <a href="list.html" class="box_cat_home box_badges">
+                        <a href="#" class="box_cat_home box_badges">
                             <h3>ملایر</h3>
                         </a>
-                        <a href="list.html" class="box_cat_home box_badges">
+                        <a href="#" class="box_cat_home box_badges">
                             <h3>نهاوند</h3>
                         </a>
-                        <a href="list.html" class="box_cat_home box_badges">
+                        <a href="#" class="box_cat_home box_badges">
                             <h3>تویسرکان</h3>
                         </a>
-                        <a href="list.html" class="box_cat_home box_badges">
+                        <a href="#" class="box_cat_home box_badges">
                             <h3>بهار</h3>
                         </a>
-                        <a href="list.html" class="box_cat_home box_badges">
+                        <a href="#" class="box_cat_home box_badges">
                             <h3>اسدآباد</h3>
                         </a>
-                        <a href="list.html" class="box_cat_home box_badges">
+                        <a href="#" class="box_cat_home box_badges">
                             <h3>لالجین</h3>
                         </a>
-                        <a href="list.html" class="box_cat_home box_badges">
+                        <a href="#" class="box_cat_home box_badges">
                             <h3>فامنین</h3>
                         </a>
-                        <a href="list.html" class="box_cat_home box_badges">
+                        <a href="#" class="box_cat_home box_badges">
                             <h3>رزن</h3>
                         </a>
                     </div>
@@ -476,7 +475,7 @@
                 <button id="btnLeft4" class="left btn-scroll"><i class="icon-right-open-4"></i></button>
                 <div class="scroll-container p-15" id="scrollContainer">
                     <div class="scroll-wrapper">
-                        <a href="list.html" class="box_cat_home dr_box">
+                        <a href="#" class="box_cat_home dr_box">
                             <img src="{% static 'img/dr/th.jfif' %}" class="rounded" width="250" height="100" alt="">
                             <h3>کلینیک مهدیه</h3>
                             <p>مرکز جراحی محدود</p>
@@ -486,7 +485,7 @@
                                 <button class="btn btn-outline-warning col-md-12">مشاهده پروفایل</button>
                             </div>
                         </a>
-                        <a href="list.html" class="box_cat_home dr_box">
+                        <a href="#" class="box_cat_home dr_box">
                             <img src="{% static 'img/dr/download (2).jfif' %}" class="rounded" width="250" height="100"
                                  alt="">
                             <h3>درمانگاه بعثت</h3>
@@ -497,7 +496,7 @@
                                 <button class="btn btn-outline-warning col-md-12">مشاهده پروفایل</button>
                             </div>
                         </a>
-                        <a href="list.html" class="box_cat_home dr_box">
+                        <a href="#" class="box_cat_home dr_box">
                             <img src="{% static 'img/dr/OIP (3).jfif' %}" class="rounded" width="250" height="100"
                                  alt="">
                             <h3>کلینیک رژ</h3>
@@ -508,7 +507,7 @@
                                 <button class="btn btn-outline-warning col-md-12">مشاهده پروفایل</button>
                             </div>
                         </a>
-                        <a href="list.html" class="box_cat_home dr_box">
+                        <a href="#" class="box_cat_home dr_box">
                             <img src="{% static 'img/dr/OIP (4).jfif' %}" class="rounded" width="250" height="100"
                                  alt="">
                             <h3>دندانپزشکی سیب</h3>
@@ -519,7 +518,7 @@
                                 <button class="btn btn-outline-warning col-md-12">مشاهده پروفایل</button>
                             </div>
                         </a>
-                        <a href="list.html" class="box_cat_home dr_box">
+                        <a href="#" class="box_cat_home dr_box">
                             <img src="{% static 'img/dr/download (1).jfif' %}" class="rounded" width="250" height="100"
                                  alt="">
                             <h3>کلینیک مهدیه</h3>
@@ -530,7 +529,7 @@
                                 <button class="btn btn-outline-warning col-md-12">مشاهده پروفایل</button>
                             </div>
                         </a>
-                        <a href="list.html" class="box_cat_home dr_box">
+                        <a href="#" class="box_cat_home dr_box">
                             <img src="{% static 'img/dr/download.jfif' %}" class="rounded" width="250" height="100"
                                  alt="">
                             <h3>کلینیک مهدیه</h3>
@@ -541,7 +540,7 @@
                                 <button class="btn btn-outline-warning col-md-12">مشاهده پروفایل</button>
                             </div>
                         </a>
-                        <a href="list.html" class="box_cat_home dr_box">
+                        <a href="#" class="box_cat_home dr_box">
                             <img src="{% static 'img/dr/download (2).jfif' %}" class="rounded" width="250" height="100"
                                  alt="">
                             <h3>کلینیک مهدیه</h3>
@@ -552,7 +551,7 @@
                                 <button class="btn btn-outline-warning col-md-12">مشاهده پروفایل</button>
                             </div>
                         </a>
-                        <a href="list.html" class="box_cat_home dr_box">
+                        <a href="#" class="box_cat_home dr_box">
                             <img src="{% static 'img/dr/download (3).jfif' %}" class="rounded" width="250" height="100"
                                  alt="">
                             <h3>کلینیک مهدیه</h3>
@@ -563,7 +562,7 @@
                                 <button class="btn btn-outline-warning col-md-12">مشاهده پروفایل</button>
                             </div>
                         </a>
-                        <a href="list.html" class="box_cat_home dr_box">
+                        <a href="#" class="box_cat_home dr_box">
                             <img src="{% static 'img/dr/th.jfif' %}" class="rounded" width="250" height="100" alt="">
                             <h3>کلینیک مهدیه</h3>
                             <p>مرکز جراحی محدود</p>
@@ -577,7 +576,7 @@
                 </div>
                 <button id="btnRight4" class="right btn-scroll"><i class="icon-left-open-4"></i></button>
             </div>
-            <p class="text-center text_dr"><a href="#"> مشاهده همه مراکز <i class="icon-left-4"></i> </a></p>
+            <p class="text-center text_dr"><a href="{% url 'core:clinic_list' %}"> مشاهده همه مراکز <i class="icon-left-4"></i> </a></p>
         </div>
 
     </div>
@@ -591,60 +590,14 @@
                 <button id="btnLeft5" class="left btn-scroll"><i class="icon-right-open-4"></i></button>
                 <div class="scroll-container p-15" id="scrollContainer">
                     <div class="scroll-wrapper">
-                        <a href="list.html" class="box_cat_home article_box">
-                            <img src="{% static 'img/pic/R.png' %}" class="rounded" width="150" height="100" alt="">
-                            <h3>مراقبت های اولیه</h3>
-                            <p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک
-                                است.</p>
+                        {% for article in articles %}
+                        <a href="{{ article.get_absolute_url }}" class="box_cat_home article_box">
+                            <img src="{{ article.image.url }}" class="rounded" width="150" height="100" alt="">
+                            <h3>{{ article.title }}</h3>
+                            <p>{{ article.description|truncatechars:60 }}
+                                </p>
                         </a>
-                        <a href="list.html" class="box_cat_home  article_box">
-                            <img src="{% static 'img/pic/R (1).png' %}" class="rounded" width="150" height="100" alt="">
-                            <h3>مراقبت های اولیه</h3>
-                            <p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک
-                                است.</p>
-                        </a>
-                        <a href="list.html" class="box_cat_home article_box">
-                            <img src="{% static 'img/pic/OIP (1).jfif' %}" class="rounded" width="150" height="100"
-                                 alt="">
-                            <h3>مراقبت های اولیه</h3>
-                            <p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک
-                                است.</p>
-                        </a>
-                        <a href="list.html" class="box_cat_home article_box">
-                            <img src="{% static 'img/pic/OIF (1).jfif' %}" class="rounded" width="150" height="100"
-                                 alt="">
-                            <h3>مراقبت های اولیه</h3>
-                            <p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک
-                                است.</p>
-                        </a>
-                        <a href="list.html" class="box_cat_home article_box">
-                            <img src="{% static 'img/pic/download (1).jfif' %}" class="rounded" width="150" height="100"
-                                 alt="">
-                            <h3>مراقبت های اولیه</h3>
-                            <p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک
-                                است.</p>
-                        </a> <a href="list.html" class="box_cat_home article_box">
-                        <img src="{% static 'img/pic/download.jfif' %}" class="rounded" width="150" height="100" alt="">
-                        <h3>مراقبت های اولیه</h3>
-                        <p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک
-                            است.</p>
-                    </a> <a href="list.html" class="box_cat_home article_box">
-                        <img src="{% static 'img/pic/OIP.jfif' %}" class="rounded" width="150" height="100" alt="">
-                        <h3>مراقبت های اولیه</h3>
-                        <p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک
-                            است.</p>
-                    </a> <a href="list.html" class="box_cat_home article_box">
-                        <img src="{% static 'img/pic/OIF.jfif' %}" class="rounded" width="150" height="100" alt="">
-                        <h3>مراقبت های اولیه</h3>
-                        <p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک
-                            است.</p>
-                    </a> <a href="list.html" class="box_cat_home article_box">
-                        <img src="{% static 'img/pic/baby_14153313.png' %}" class="rounded" width="150" height="100"
-                             alt="">
-                        <h3>مراقبت های اولیه</h3>
-                        <p>ملت وب ایپسوم متن ساختگی با تولید سادگی ملت وب از صنعت چاپ و با ملت وب از ملت وب گرافیک
-                            است.</p>
-                    </a>
+                        {% endfor %}
                     </div>
 
                 </div>

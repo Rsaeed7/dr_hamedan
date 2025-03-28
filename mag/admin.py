@@ -15,8 +15,8 @@ class BlogPostAdmin(admin.ModelAdmin):
     list_filter = ('published',)
     search_fields = ('title',)
 
-# @admin.register(models.Comment)
-# class CommentAdmin(admin.ModelAdmin):
-#     list_display = ("__str__", "is_reply", "date", "status")
-#     list_filter = ("status",)
-#     list_editable = ('status',)
+@admin.register(models.Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "is_reply", "date", "status")
+    list_filter = ("status",)
+    list_editable = ('status',)

@@ -3,7 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView
-from .models import MagArticle, Category
+
+from .forms import CommentForm
+from .models import MagArticle, Category , Comment
 # from product.models import Product
 import time
 
@@ -19,33 +21,35 @@ class MagView(ListView):
         return context
 
 
-
-def article(request,slug):
+def article(request, slug):
     object = get_object_or_404(MagArticle, slug=slug)
-    # if request.method == "POST":
-    #     parent_id = request.POST.get('parent_id')
-    #     name = request.POST.get('name')
-    #     text = request.POST.get('text')
-    #     if not name or text:
-    #         messages.error(request,'لطفا نام و متن کامنت را به درستی وارد کنید')
-    #     if parent_id:
-    #         is_reply = True
-    #         messages.success(request, "پاسخ شما با موفقیت ثبت شد و پس از تایید نمایش داده میشود...")
-    #     else:
-    #         is_reply = False
-    #         messages.success(request, "پیام شما با موفقیت ثبت شد و پس از تایید نمایش داده میشود...")
-    #     Comment.objects.create(article=object, text=text , parent_id=parent_id , name=name , is_reply=is_reply , user=request.user)
-    #     return redirect(get_object_or_404(MagArticle, slug=slug))
-    #
-    # comments = Comment.objects.filter(article=object, status='confirmed')
+    comments = Comment.objects.filter(article=object, status='confirmed')
+
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.article = object  # ارتباط کامنت با مقاله
+            comment.status = 'checking'  # وضعیت پیش‌فرض کامنت
+            comment.user = request.user if request.user.is_authenticated else None
+            comment.save()
+            return redirect(object.get_absolute_url())  # بازگشت به صفحه مقاله
+    else:
+        form = CommentForm()
+
     context = {
         "object": object,
-        # "comments": comments,
+        "comments": comments,
+        "form": form,  # نمایش فرم در قالب
         'articles_last': MagArticle.objects.filter(published=True).order_by("-date")[:3],
-        'category':Category.objects.all()
+        'category': Category.objects.all(),
     }
 
     return render(request, "mag/article_detail.html", context)
+
+
+
+
 
 # @login_required()
 # def comments_delete(request,id):
