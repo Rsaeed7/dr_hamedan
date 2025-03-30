@@ -2894,9 +2894,11 @@ ul.legend li strong {
 }
 ul.legend li:first-child strong {
   background-color: #8ec549;
+  border-radius: 50%;
 }
 ul.legend li:last-child strong {
-  background-color: #eb525b;
+  background-color: #868686;
+  border-radius: 50%;
 }
 
 ul.time_select.version_2 li {

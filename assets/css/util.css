@@ -16,7 +16,7 @@
 .fs-12 {font-size: 12px;}
 .fs-13 {font-size: 13px;}
 .fs-14 {font-size: 14px;}
-.fs-15 {font-size: 15px;}
+.fs-15 {font-size: 15px!important;}
 .fs-16 {font-size: 16px;}
 .fs-17 {font-size: 17px;}
 .fs-18 {font-size: 18px;}
@@ -2239,6 +2239,8 @@
 */
 /* ------------------------------------ */
 .text-white {color: white;}
+.text-white:hover {color: #696969!important;}
+
 .text-black {color: black;}
 
 .text-hov-white:hover {color: white;}
@@ -3069,3 +3071,8 @@
     border-radius: 50%;
 }
 
+@media (max-width: 768px) {
+    .p-m-1{
+        padding: 1px !important;
+    }
+}

@@ -280,7 +280,7 @@
     .main-menu {
         overflow-y: scroll;
         padding-bottom: 60px;
-        transform: translateX(-102%);
+        transform: translatey(-110%);
         top: 57px;
         border-top: 1px solid #ededed;
         left: 0;
@@ -289,11 +289,11 @@
         height: 100%;
         position: fixed;
         background-color: #fff;
-        -webkit-transition: all 0.5s cubic-bezier(0.77, 0, 0.175, 1);
-        -moz-transition: all 0.5s cubic-bezier(0.77, 0, 0.175, 1);
-        -ms-transition: all 0.5s cubic-bezier(0.77, 0, 0.175, 1);
-        -o-transition: all 0.5s cubic-bezier(0.77, 0, 0.175, 1);
-        transition: all 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+        -webkit-transition: all 0.8s cubic-bezier(0.80, 0.2, 0.175, 1);
+        -moz-transition: all 0.8s cubic-bezier(0.80, 0.2, 0.175, 1);
+        -ms-transition: all 0.8s cubic-bezier(0.80, 0.2, 0.175, 1);
+        -o-transition: all 0.8s cubic-bezier(0.80, 0.2, 0.175, 1);
+        transition: all 0.8s cubic-bezier(0.80, 0.2, 0.175, 1);
     }
 
     .main-menu.show {
