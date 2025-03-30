@@ -26,6 +26,7 @@ urlpatterns = [
     path('',include('core.urls')),
     path('mag/',include('mag.urls')),
     path('wallet/', include('wallet.urls')),
+    path('turn/',include('turn.urls')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

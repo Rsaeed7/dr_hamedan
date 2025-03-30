@@ -77,6 +77,8 @@
 
 }
 
+
+
 .p-t-5 {
     padding-top: 5px !important;
 }
@@ -113,6 +115,8 @@
 .bg-gradiant3 {
     background: linear-gradient(to bottom, rgba(255, 255, 255, 0.01), rgba(36, 76, 154, 0.11));
 }
+
+
 
 .bottom-nav {
     position: fixed;
@@ -162,6 +166,8 @@
         display: none;
     }
 }
+
+
 
 .r {
     border-radius: 20px;
@@ -217,6 +223,10 @@ a.dr_box i {
 .dr_bg {
     background: #384291;
     border-radius: 2px;
+}
+
+.bg-bluelight{
+    background: rgba(239, 251, 252, 0.47);
 }
 
 .text_dr {
@@ -456,12 +466,12 @@ a.dr_box i {
     }
 
     .clinic_img {
-        /*max-height: 150px;*/
+        max-height: 150px;
     }
 
-    .main-menu {
-        transform: translateX(100%); /* منو را به خارج از صفحه در سمت راست منتقل می‌کند */
-    }
+    /*.main-menu {*/
+    /*    transform: translateX(100%); !* منو را به خارج از صفحه در سمت راست منتقل می‌کند *!*/
+    /*}*/
 
     .border-left-pc {
         border-left: none;
@@ -930,4 +940,43 @@ input#male-option:checked ~ .custom-slider {
 input#female-option:checked ~ .custom-slider {
     background-color: #FFC0CB;
     left: 2px;
+}
+
+
+/*scroll turn*/
+.scrollable {
+  max-height: 340px;
+  overflow: auto
+}
+
+.hidden {
+  display: none;
+}
+
+.w-8 {
+  width: 6.5rem;
+}
+
+.w-10 {
+  width: 8rem;
+}
+
+.w-11 {
+  width: 8.2rem;
+}
+
+@media (max-width: 768px) {
+    .w-11{
+        width: 4.7rem;
+    }
+
+}
+
+
+.w-12 {
+  width: 10rem;
+}
+
+.animation {
+  animation: pulse 1000ms ease-in-out;
 }

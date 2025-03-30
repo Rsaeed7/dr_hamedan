@@ -30,6 +30,9 @@ def dr_detail(request):
         return render(request, 'doctor/dr_detail.html')
 
 
+def dr_turn(request):
+    return render(request, 'doctor/turn.html')
+
 def login(request):
     return render(request, 'account/login.html')
 

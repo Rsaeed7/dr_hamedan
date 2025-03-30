@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'core',
     'mag.apps.MagConfig',
     'wallet.apps.WalletConfig',
+    'turn',
 ]
 
 MIDDLEWARE = [
