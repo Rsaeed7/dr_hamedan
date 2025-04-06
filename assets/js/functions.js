@@ -65,16 +65,16 @@
 
 	// WoW - animation on scroll
 	var wow = new WOW({
-		boxClass: 'wow', // animated element css class (default is wow)
-		animateClass: 'animated', // animation css class (default is animated)
-		offset: 0, // distance to the element when triggering the animation (default is 0)
-		mobile: true, // trigger animations on mobile devices (default is true)
-		live: true, // act on asynchronously loaded content (default is true)
+		boxClass: 'wow',
+		animateClass: 'animated',
+		offset: 0, //
+		mobile: true,
+		live: true,
 		callback: function (box) {
-			// the callback is fired every time an animation is started
-			// the argument that is passed in is the DOM node being animated
+
+
 		},
-		scrollContainer: null // optional scroll container selector, otherwise use window
+		scrollContainer: null
 	});
 	wow.init();
 
@@ -100,28 +100,19 @@
 	// Selectbox
 	$(".selectbox").selectbox();
 
-	// Sticky horizontal results list page
+
 	$("#results").stick_in_parent({
 		offset_top: 0
 	});
 
-	// Sticky sidebar
+
 	$('#sidebar').theiaStickySidebar({
 		additionalMarginTop: 95
 	});
 
-	// Tooltips
+
 	$('[data-toggle="tooltip"]').tooltip();
-	
-	// Detail page func
-	$('#booking_date').dateDropper();
-		$('#booking_time').timeDropper({
-			setCurrentTime: false,
-			meridians: true,
-			primaryColor: "#e74e84",
-			borderColor: "#e74e84",
-			minutesInterval: '15'
-		});
+
 		
 		var $sticky_nav= $('#secondary_nav');
 		$sticky_nav.stick_in_parent();
@@ -138,24 +129,7 @@
 		$(this).addClass('active');
 		});
 	
-	// Faq section
-	$('#faq_box a[href^="#"]').on('click', function () {
-		if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') 
-			|| location.hostname == this.hostname) {
-			var target = $(this.hash);
-			target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
-			   if (target.length) {
-				 $('html,body').animate({
-					 scrollTop: target.offset().top -185
-				}, 800);
-				return false;
-			}
-		}
-	});
-	$('ul#cat_nav li a').on('click', function () {
-		$('ul#cat_nav li a.active').removeClass('active');
-		$(this).addClass('active');
-	});
+
 	// Accordion
 	function toggleChevron(e) {
 		$(e.target)
