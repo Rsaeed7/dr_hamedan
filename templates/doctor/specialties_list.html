@@ -1,20 +1,13 @@
 {% extends  'base/base.html' %}
 {% load static %}
 {% block body %}
-    <div class="filters_listing">
-        <div class="container">
-            <ul class="clearfix">
-                <form method="post" action="list.html">
-                    <div id="custom-search-input">
-                        <div class="input-group">
-                            <input type="text" class="search-query" placeholder="نام مرکز....">
-                            <input type="submit" class="btn_search" style="border-radius: 50px" value="جستجو">
-                        </div>
-                    </div>
-                </form>
-            </ul>
-        </div>
-    </div>
+
+
+    <!-- Search -->
+    {% include  'base/search.html' %}
+    <!-- /Search -->
+
+
     <div class="container margin_120_95 bg-light">
         <div class="main_title">
             <h4>لیست تمام تخصص ها</h4>
@@ -26,18 +19,18 @@
                         <li><a href="{% url 'core:special_list_dr' %}">
                             <strong><img width="30" src="{% static 'img/pic/x-ray_18237493.png' %}"></strong>
                             رادیولوژی </a></li>
-                        <li><a href="#0"><strong><img width="30" src="{% static 'img/pic/bone_7749003.png' %}"></strong>ارتوپدی</a>
+                        <li><a href="{% url 'core:special_list_dr' %}"><strong><img width="30" src="{% static 'img/pic/bone_7749003.png' %}"></strong>ارتوپدی</a>
                         </li>
-                        <li><a href="#0"><strong><img width="30"
+                        <li><a href="{% url 'core:special_list_dr' %}"><strong><img width="30"
                                                       src="{% static 'img/pic/creativity_15557951.png' %}"></strong>مغز
                             و اعصاب</a></li>
-                        <li><a href="#0"><strong><img width="30"
+                        <li><a href="{% url 'core:special_list_dr' %}"><strong><img width="30"
                                                       src="{% static 'img/pic/dissection_2511032.png' %}"></strong>جراحی
                             عمومی</a></li>
-                        <li><a href="#0"><strong><img width="30"
+                        <li><a href="{% url 'core:special_list_dr' %}"><strong><img width="30"
                                                       src="{% static 'img/pic/science_10666848.png' %}"></strong>دندانپزشکی</a>
                         </li>
-                        <li><a href="#0"><strong><img width="30" src="{% static 'img/pic/radiotherapy_8358522.png' %}"></strong>رادیوتراپی</a>
+                        <li><a href="{% url 'core:special_list_dr' %}"><strong><img width="30" src="{% static 'img/pic/radiotherapy_8358522.png' %}"></strong>رادیوتراپی</a>
                         </li>
                         <li><a href="#0"><strong><img width="30"
                                                       src="{% static 'img/pic/kidney_2518743.png' %}"></strong>اورولوژی</a>
@@ -72,26 +65,24 @@
             <section class="col-xl-12 col-lg-12 col-md-12">
                 <div class="list_home">
                     <ul>
-                        <li><a href="#0">
-                            تعبیه سوند </a></li>
-                        <li><a href="#0">تعبیه آنژیوکت</a></li>
-                        <li><a href="#0">تعبیه سوند معده ای</a></li>
-                        <li><a href="#0">پانسمان ساده</a></li>
-                        <li><a href="#0">بانداژ</a></li>
-                        <li><a href="#0">بخیه</a></li>
-                        <li><a href="#0">تعبیه شالدون</a></li>
-                        <li><a href="#0">معاینه</a></li>
-                        <li><a href="#0">سونوگرافی</a></li>
-                        <li><a href="#0">آنژیوگرافی</a></li>
-                        <li><a href="#0">اتوسکوپی</a></li>
-                        <li><a href="#0">گرفتن فشار خون</a></li>
-                        <li><a href="#0">ضربان قلب</a></li>
-                        <li><a href="#0">بانداژ کشی</a></li>
+                        <li><a href="#">تعبیه سوند </a></li>
+                        <li><a href="#">تعبیه آنژیوکت</a></li>
+                        <li><a href="#">تعبیه سوند معده ای</a></li>
+                        <li><a href="#">پانسمان ساده</a></li>
+                        <li><a href="#">بانداژ</a></li>
+                        <li><a href="#">بخیه</a></li>
+                        <li><a href="#">تعبیه شالدون</a></li>
+                        <li><a href="#">معاینه</a></li>
+                        <li><a href="#">سونوگرافی</a></li>
+                        <li><a href="#">آنژیوگرافی</a></li>
+                        <li><a href="#">اتوسکوپی</a></li>
+                        <li><a href="#">گرفتن فشار خون</a></li>
+                        <li><a href="#">ضربان قلب</a></li>
+                        <li><a href="#">بانداژ کشی</a></li>
                     </ul>
                 </div>
             </section>
         </div>
-        <!-- /row -->
     </div>
 
 {% endblock %}

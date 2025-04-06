@@ -1,22 +1,9 @@
 {% extends  'base/base.html' %}
 {% load static %}
 {% block body %}
-    <!-- Search-bar -->
-    <div class="filters_listing">
-        <div class="container">
-            <ul class="clearfix">
-                <form method="post" action="list.html">
-                    <div id="custom-search-input">
-                        <div class="input-group">
-                            <input type="text" class="search-query" placeholder="جستجو....">
-                            <input type="submit" class="btn_search" style="border-radius: 50px" value="جستجو">
-                        </div>
-                    </div>
-                </form>
-            </ul>
-        </div>
-    </div>
-    <!-- /Search-bar -->
+    <!-- Search -->
+{% include  'base/search.html' %}
+    <!-- /Search -->
 
 
     <div class="container margin_60">

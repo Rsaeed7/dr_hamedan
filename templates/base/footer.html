@@ -5,7 +5,7 @@
             <div class="row">
                 <div class="col-lg-3 col-md-12">
                     <p class="text-center">
-                        <a href="index.html" title="DrHamedan">
+                        <a href="/" title="DrHamedan">
                             <img src="{% static 'img/logo_bw_2x.png' %}" data-retina="true" alt="" width="233"
                                  height="36"
                                  class="img-fluid">
@@ -31,14 +31,14 @@
                                 <li><a href="{% url 'core:login' %}">ورود بیماران</a></li>
                                 <li><a href="#">ورود پزشکان</a></li>
                                 <li><a href="#">ثبت نام پزشکان</a></li>
-                                <li><a href="#">محله سلامت</a></li>
-                                <li><a href="#">لیست تخصص ها</a></li>
-                                <li><a href="#">مشاوره تلفنی</a></li>
+                                <li><a href="{% url 'mag:list' %}">محله سلامت</a></li>
+                                <li><a href="{% url 'core:special_list' %}">لیست تخصص ها</a></li>
+                                <li><a href="{% url 'core:special_list_dr' %}">مشاوره تلفنی</a></li>
                             </ul>
                         </div>
                         <div class="col-6 col-md-12">
                             <ul class="links">
-                                <li><a href="#">لیست مراکز درمانی</a></li>
+                                <li><a href="{% url 'core:clinic_list' %}">لیست مراکز درمانی</a></li>
                                 <li><a href="#">فرصت های شغلی</a></li>
                                 <li><a href="#">درباره ما</a></li>
                                 <li><a href="{% url 'contact:contact_us' %}">تماس با ما</a></li>
@@ -65,7 +65,7 @@
                     </div>
                     <h5 class="p-t-25">راه های ارتباطی</h5>
                     <ul class="contacts">
-                        <li><a href="tel://61280932400"><i class="icon-phone-squared"></i> 8138227774 +</a></li>
+                        <li><a href=""><i class="icon-phone-squared"></i> 8138227774 +</a></li>
                         <li><a href="mailto:info@saeedfh074.com">saeedfh074@gmail.com <i
                                 class="icon_mail p-l-5"></i></a>
                         </li>
