@@ -3076,3 +3076,66 @@
         padding: 1px !important;
     }
 }
+
+@media (max-width: 768px) {
+    .p-m-5{
+        padding: 5px !important;
+    }
+}
+
+
+
+/*custom util cods*/
+.p-t-5 {
+    padding-top: 5px !important;
+}
+
+.p-t-10 {
+    padding-top: 10px !important;
+}
+
+.p-t-15 {
+    padding-top: 15px !important;
+}
+
+.p-t-20 {
+    padding-top: 20px !important;
+}
+
+.p-t-25 {
+    padding-top: 25px !important;
+}
+
+.p-15 {
+    padding: 15px !important;
+}
+
+
+@media (min-width: 991px) {
+    .p-r-50 {
+        padding-right: 50px;
+    }
+
+    .p-r-100 {
+        padding-right: 100px;
+    }
+
+    .p-r-150 {
+        padding-right: 150px;
+    }
+}
+
+
+
+
+.down-1 {
+    top: 1px;
+}
+
+.down-2 {
+    top: 2px;
+}
+
+.down-3 {
+    top: 3px;
+}

@@ -1,11 +1,16 @@
 {% extends  'base/base.html' %}
 {% load static %}
 {% block body %}
+    <div class="filters_listing d-lg-none">
+        <div class="container">
+            <a href="{% url 'core:account' %}" class="text-dr"><i class="icon-right-open"></i>داشبورد</a>
+        </div>
+    </div>
     <div class="bg-light">
         <div class="container margin_120_95">
             <div class="row">
                 {% include  'account/dashbord_sidebar.html' %}
-                <!-- /col -->
+
                 <div class="col-lg-8 ml-auto">
 
                     <div class="box_general_4 border-0">
@@ -35,7 +40,7 @@
                             {% endfor %}
                         </div>
                     {% endif %}
-                    <!-- /box_form -->
+
                     <div class="box_form border-0">
                         <div class="row">
                             <div class="col-md-12">
@@ -92,11 +97,8 @@
                         </div>
                     </div>
                 </div>
-                <!-- /col -->
             </div>
-            <!-- /row -->
         </div>
-        <!-- /container -->
     </div>
 
 

@@ -12,6 +12,9 @@ urlpatterns = [
     path('dr_detail', views.dr_detail, name='dr_detail'),
     path('login', views.login, name='login'),
     path('check_code', views.check_code, name='check_code'),
-    path('profile', views.profile, name='profile'),
+    path('information', views.information, name='profile'),
+    path('account', views.account, name='account'),
     path('dr_turn', views.dr_turn, name='dr_turn'),
+    path('404', views.error404, name='404'),
+
 ]

@@ -95,42 +95,49 @@
     }
 
     /* Submenu*/
-      .main-menu ul ul, .main-menu ul li .menu-wrapper {
-            position: absolute;
-            border-top: 2px solid #0bd99c;
-            z-index: 1;
-            text-align: right;
-            visibility: hidden;
-            right: 3px;
-            top: 100%;
-            margin: 0;
-            column-count: 5; /* تعداد ستون‌ها */
-            column-gap: 20px; /* فاصله بین ستون‌ها */
-            max-height: 700px; /* حداکثر ارتفاع ستون‌ها */
-            padding: 0;
-            background: #fff;
-            min-width: 450px;
-            box-decoration-break: clone; /* اضافه کردن این قسمت */
-            -webkit-box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.175);
-            -moz-box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.175);
-            box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.175);
-            -webkit-transform: translateY(20px);
-            -moz-transform: translateY(20px);
-            -ms-transform: translateY(20px);
-            -o-transform: translateY(20px);
-            transform: translateY(20px);
-            opacity: 0;
-            -moz-transition: all 0.2s ease;
-            -o-transition: all 0.2s ease;
-            -webkit-transition: all 0.2s ease;
-            -ms-transition: all 0.2s ease;
-            transition: all 0.2s ease;
-        }
+    .main-menu ul ul, .main-menu ul li .menu-wrapper {
+        position: absolute;
+        border-top: 3px solid #0bd99c;
+        z-index: 1;
+        text-align: right;
+        visibility: hidden;
+        right: 3px;
+        top: 100%;
+        margin: 0;
+        column-count: 5; /* تعداد ستون‌ها */
+        column-gap: 20px; /* فاصله بین ستون‌ها */
+        max-height: 700px; /* حداکثر ارتفاع ستون‌ها */
+        padding: 0;
+        background: rgba(255, 255, 255, 0.56);
+        backdrop-filter: blur(7px);
+        min-width: 450px;
+        box-decoration-break: clone; /* اضافه کردن این قسمت */
+        -webkit-box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.175);
+        -moz-box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.175);
+        box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.175);
+        -webkit-transform: translateY(20px);
+        -moz-transform: translateY(20px);
+        -ms-transform: translateY(20px);
+        -o-transform: translateY(20px);
+        transform: translateY(20px);
+        opacity: 0;
+        -moz-transition: all 0.2s ease;
+        -o-transition: all 0.2s ease;
+        -webkit-transition: all 0.2s ease;
+        -ms-transition: all 0.2s ease;
+        transition: all 0.2s ease;
+    }
 
-        .main-menu ul ul li {
-            list-style: none;
-            break-inside: avoid-column; /* جلوگیری از بریدن آیتم‌ها */
+    .main-menu ul ul li {
+        list-style: none;
+        break-inside: avoid-column; /* جلوگیری از بریدن آیتم‌ها */
+    }
+
+    @media (min-width: 991px) and (max-width: 1434px) {
+        .main-menu ul ul, .main-menu ul li .menu-wrapper {
+            column-count: 3 !important; /* تعداد ستون‌ها */
         }
+    }
 
     .main-menu ul li .menu-wrapper {
         padding: 10px 15px !important;
@@ -178,7 +185,7 @@
         font-size: 13px;
         font-size: 0.8125rem;
         color: #555;
-        border-bottom: 1px solid #ededed;
+        border-bottom: 1px solid rgba(237, 237, 237, 0.83);
         display: block;
         padding: 15px;
         -moz-transition: all 0.3s ease;
@@ -193,7 +200,8 @@
     }
 
     .main-menu ul ul li:hover > a {
-        background-color: #f9f9f9;
+        background-color: rgba(182, 252, 177, 0.08);
+        backdrop-filter: blur(8px);
         color: #009383;
         padding-left: 18px;
     }
@@ -248,7 +256,7 @@
     }
 
     .main-menu a:hover {
-        color: #e74e84 !important;
+        color: #009383 !important;
     }
 
     .main-menu ul > li {
