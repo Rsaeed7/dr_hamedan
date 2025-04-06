@@ -50,12 +50,7 @@
 		$(this).next().toggleClass("show_normal");
 	});
 
-	// Hamburger icon 
-	var toggles = document.querySelectorAll(".cmn-toggle-switch");
-	for (var i = toggles.length - 1; i >= 0; i--) {
-		var toggle = toggles[i];
-		toggleHandler(toggle);
-	};
+
 	function toggleHandler(toggle) {
 		toggle.addEventListener("click", function (e) {
 			e.preventDefault();
@@ -78,24 +73,7 @@
 	});
 	wow.init();
 
-	// Carousel
-	$('#reccomended').owlCarousel({
-		center: true,
-		items: 2,
-		loop: true,
-		margin: 10,
-		responsive: {
-			0: {
-				items: 1
-			},
-			600: {
-				items: 2
-			},
-			1000: {
-				items: 4
-			}
-		}
-	});
+
 
 	// Selectbox
 	$(".selectbox").selectbox();
@@ -149,3 +127,5 @@
 
 
 })(window.jQuery);
+
+
