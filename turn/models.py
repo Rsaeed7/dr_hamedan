@@ -67,7 +67,7 @@ class Reservation_Day(models.Model):
 
     def dateformat(self):
         dateList = str(self.date).split("-")
-        date = f"{DATE_DAY[dateList[2]]} {DATE_MONTH[dateList[1]]}"
+        date = f"{DATE_DAY[dateList[2]]}"
         return str(date)
 
 

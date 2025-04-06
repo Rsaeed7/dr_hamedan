@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'mag.apps.MagConfig',
     'wallet.apps.WalletConfig',
     'turn',
+    'contact.apps.ContactConfig',
 ]
 
 MIDDLEWARE = [
@@ -68,6 +69,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'wallet.context_processors.wallet',
+                'context_proccesors.context_proccesors.context_proccesors',
             ],
         },
     },

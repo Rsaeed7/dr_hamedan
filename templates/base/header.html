@@ -15,7 +15,7 @@
                 <ul id="top_access">
 
                     <li class="d-none d-md-flex">
-                        <a href="{% url 'core:profile' %}">
+                        <a href="{% url 'core:account' %}">
                         <div class="btn btn-outline-light">
                          <i class="icon-user-2 fs-15"></i>09188028729
                         </div>
@@ -24,8 +24,15 @@
                 </ul>
                 <div class="main-menu">
                     <ul>
+                        <li class="d-lg-none">
+                            <a href="{% url 'core:account' %}">
+                                <div class="btn dr_box col-11">
+                                    <i class="pe-7s-users"></i>09188028729
+                                </div>
+                            </a>
+                        </li>
                         <li>
-                            <a href="#0">نوبت دهی آنلاین</a>
+                            <a href="{% url 'turn:turn_days' %}">نوبت دهی آنلاین</a>
                         </li>
                         <li class="submenu">
                             <a href="#" class="show-submenu">تخصص ها<i class="icon-down-open-mini"></i></a>
@@ -64,7 +71,7 @@
                                                      style="margin-left: 10px" width="25">نمونه برداری</a></li>
                                 <li><a href="#"><img src="{% static 'img/pic/stethoscope_4068895.png' %}"
                                                      style="margin-left: 10px" width="25">پزشک عمومی</a></li>
-                                
+
                             </ul>
                         </li>
                         <li>
@@ -76,11 +83,9 @@
                         <li><a href="" class="text_dr_2">برای پزشکان</a></li>
                     </ul>
                 </div>
-                <!-- /main-menu -->
             </nav>
         </div>
     </div>
-    <!-- /container -->
 </header>
 
 

@@ -2,8 +2,8 @@
 {% load static %}
 {% block body %}
     
-    
-    <div class="hero_home version_2">
+     <!-- Head -->
+    <section class="hero_home version_2">
         <div class="content text-dark">
             <h4 class="text-info text-xl-center">نوبت آنلاین در دکتر همدان</h4>
             <p>
@@ -32,12 +32,12 @@
                 </div>
             </form>
         </div>
-    </div>
+    </section>
     <!-- /Head -->
     
     
     <!-- Specialties section -->
-    <div class="container margin_50_35 bg-gradiant">
+    <section class="container margin_50_35 bg-gradiant">
         <div class="main_title">
             <p>دنبال چه تخصصی میگردید؟</p>
         </div>
@@ -101,7 +101,7 @@
                 </a>
             </div>
         </div>
-        <!-- آیتم‌های مخفی (داخل یک div با افکت نرم) -->
+        <!-- آیتم‌های مخفی  -->
         <div id="extraItems" class="row p-t-10"
              style="height: 0; opacity: 0; overflow: hidden; transition: height 0.7s ease, opacity 0.5s ease;">
             <div class="col-lg-3 col-md-6">
@@ -142,12 +142,12 @@
                 <i id="arrowIcon" class="icon-down-open" style="transition: transform 0.3s ease;"></i>
             </button>
         </div>
-    </div>
+    </section>
     <!-- /Specialties section -->
     
     
     <!-- Top doctors -->
-    <div>
+    <section>
         <div class="container margin_60_35 bg-gradiant2">
             <h3 class="text_dr">برترین پزشکان</h3>
             <div class="flex rounded">
@@ -287,13 +287,13 @@
                 </div>
                 <button id="btnRight1" class="right btn-scroll"><i class="icon-left-open-4"></i></button>
             </div>
-            <p class="text-center text_dr"><a href="#"> مشاهده همه پزشک ها <i class="icon-left-4"></i> </a></p>
+            <p class="text-center text_dr"><a href="{% url 'core:special_list_dr' %}"> مشاهده همه پزشک ها <i class="icon-left-4"></i> </a></p>
         </div>
-    </div>
+    </section>
     <!-- /Top doctors -->
 
     <!-- Online consultation -->
-    <div>
+    <section>
         <div class="container">
             <h3 class="text_dr">دریافت مشاوره آنلاین</h3>
             <div class="flex rounded">
@@ -415,15 +415,15 @@
                 </div>
                  <button id="btnRight2" class="right btn-scroll"><i class="icon-left-open-4"></i></button>
             </div>
-            <p class="text-center text_dr"><a href="#"> مشاهده همه پزشک ها <i class="icon-left-4"></i> </a></p>
+            <p class="text-center text_dr"><a href="{% url 'core:special_list_dr' %}"> مشاهده همه پزشک ها <i class="icon-left-4"></i> </a></p>
         </div>
-    </div>
+    </section>
      <!-- /Online consultation -->
     
     
     
     <!-- Doctors in every city -->
-    <div>
+    <section>
         <div class="container margin_60_35 bg-gradiant text-center">
             <h4 class="text-secondary">پزشک های شهر شما</h4>
             <div class="flex rounded">
@@ -463,12 +463,12 @@
             </div>
         </div>
 
-    </div>
+    </section>
     <!-- /Doctors in every city -->
 
     
     <!-- Clinics -->
-    <div>
+    <section>
         <div class="container bg-gradiant2">
             <h3 class="text_dr">مراکز درمانی و کلینیک ها</h3>
             <div class="flex rounded">
@@ -579,11 +579,11 @@
             <p class="text-center text_dr"><a href="{% url 'core:clinic_list' %}"> مشاهده همه مراکز <i class="icon-left-4"></i> </a></p>
         </div>
 
-    </div>
+    </section>
     <!-- /Clinics -->
 
     <!-- Mag -->
-    <div>
+    <section>
         <div class="container margin_120_95">
             <h3 class="text-success">مجله سلامت</h3>
             <div class="flex article_bg">
@@ -607,22 +607,21 @@
             <p class="text-left"><a href="#" class="text-success">مشاهده همه مقاله ها <i class="icon-left-dir"></i></a>
             </p>
         </div>
-    </div>
+    </section>
     <!-- /Mag -->
-
+    
     
     <!-- app_section -->
-    <div id="app_section">
+    <section id="app_section">
         <div class="container">
             <div class="row justify-content-around">
                 <div class="col-md-6">
-                    <small>دانلود</small>
                     <h5>اپلیکیشن <strong>دکتر همدان</strong>!</h5>
                     <p class="lead">با استفاده از خدمات سلامت دیجیتال دکتر همدان، تجربه سریع و راحت از خدمات پزشکی داشته
                         باشید. نوبت‌دهی آنلاین، دریافت مشاوره به صورت تلفنی و استفاده از خدمات کلینیک‌ها و مراکز درمانی
                         از جمله خدمات ما هستند. همچنین برای تجربه بهتر در استفاده از خدمات ما بر روی تلفن همراه،
                         می‌توانید نرم‌افزار ما برای گوشی‌های اندروید را دریافت و نصب کنید.</p>
-                    <div class="app_buttons wow" data-wow-offset="100">
+                    <div class="app_buttons wow m-b-20" data-wow-offset="100">
                         <a href="#0" class="fadeIn"><img class="rounded" src="{% static 'img/pic/OIP (2).jfif' %}"
                                                          alt="" width="150"
                                                          height="50" data-retina="true"></a>
@@ -631,15 +630,14 @@
                     </div>
 
                 </div>
-                <div class="col-md-5">
-                    <p><img src="{% static 'img/pic/download.png' %}" alt="" class="img-fluid" width="500" height="433">
+                <div class="col-md-6 parent-container">
+                    <p><img src="{% static 'img/pins/mobile2.png' %}" alt="" class="img-fluid" width="250" height="333">
                     </p>
                 </div>
             </div>
             <div class="row p-t-25 border_top2">
                 <div class="col-md-6">
                     <div class="box_faq">
-                        {#                	<i class="icon-headphones-3 text-white"></i>#}
                         <img src="{% static 'img/pic/headphones_4936044.png' %}" alt="" class="img-fluid" width="50"
                              height="433">
                         <h4>پشتیبانی آنلاین 24 ساعته 7 روز هفته</h4>
@@ -673,10 +671,8 @@
                     </div>
                 </div>
             </div>
-            <!-- /row -->
         </div>
-        <!-- /container -->
-    </div>
+    </section>
     <!-- /app_section -->
 
 

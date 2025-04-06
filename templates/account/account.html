@@ -1,12 +1,37 @@
 {% extends  'base/base.html' %}
 {% load static %}
 {% block body %}
-    <div class="bg-light">
+    <section class="bg-light">
         <div class="container margin_120_95">
             <div class="row">
-                {% include  'account/dashbord_sidebar.html' %}
-                <!-- /col -->
-                <div class="col-lg-8 ml-auto">
+                <aside class="col-lg-4">
+                    <div class="box_general_5 border-0 booking">
+                        <ul class="list-group">
+                            <li class="list-group-item {% if request.resolver_match.url_name == 'profile' %} item-active {% endif %}">
+                                <i class="icon-user-7 m-l-5"></i><a href="{% url 'core:profile' %}">اطلاعات کاربری</a>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="icon-calendar-7 m-l-5"></i><a href="#">نوبت های من</a>
+                            </li>
+                            <li class="list-group-item">
+                                <i class=" icon-newspaper-1 m-l-5"></i><a href="#">سوابق من</a>
+                            </li>
+                            <li class="list-group-item {% if request.resolver_match.app_name == 'wallet' %} item-active {% endif %}">
+                                <i class="icon-wallet m-l-5"></i><a href="{% url 'wallet:wallet_dashboard' %}">کیف پول
+                                <span
+                                        class="m-r-70">{{ wallet.balance }} تومان </span></a>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="icon-comment-empty m-l-5"></i><a href="#">نظرات من</a>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="icon-logout-1 m-l-5"></i><a href="#">خروج</a>
+                            </li>
+                        </ul>
+                    </div>
+                </aside>
+
+                <div class="col-lg-8 ml-auto d-none d-lg-block">
                     <div class="box_form border-0">
                         <form>
                             <div class="row">
@@ -24,7 +49,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- /row -->
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -42,7 +67,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- /row -->
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -80,18 +105,13 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- /row -->
+
                             <p class="text-center"><input type="submit" class="btn_1" value="ثبت اطلاعات"></p>
                         </form>
                     </div>
-                    <!-- /box_form -->
                 </div>
-                <!-- /col -->
             </div>
-            <!-- /row -->
         </div>
-        <!-- /container -->
-    </div>
-    <!-- /hero_register -->
+    </section>
 
 {% endblock %}

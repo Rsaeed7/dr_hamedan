@@ -39,5 +39,12 @@ def login(request):
 def check_code(request):
     return render(request, 'account/check_code.html')
 
-def profile(request):
-    return render(request, 'account/profile.html')
+def information(request):
+    return render(request, 'account/information.html')
+
+
+def account(request):
+    return render(request, 'account/account.html')
+
+def error404(request):
+    return render(request,'404.html')
