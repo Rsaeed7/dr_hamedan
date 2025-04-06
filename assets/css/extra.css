@@ -299,6 +299,9 @@ a.dr_box i {
     cursor: grabbing;
 }
 
+.rounded-5 {
+    border-radius: 5px;
+}
 
 .rounded-10 {
     border-radius: 10px;
