@@ -1,6 +1,4 @@
-/*============================================================================================*/
-/* Your custom styles below */
-/*============================================================================================*/
+
 @media (min-width: 768px) {
     .btn_search {
         background: none !important;
@@ -45,7 +43,6 @@
     background: none !important;
     border: none !important;
     outline: none !important;
-    /*all: unset!important; !* حذف تمامی استایل‌های پیش‌فرض *!*/
     padding-left: 10px;
     padding-right: 10px;
 
@@ -64,9 +61,6 @@
     border: none !important;
     outline: none !important;
     padding-bottom: 20px;
-    /*all: unset!important; !* حذف تمامی استایل‌های پیش‌فرض *!*/
-    /*padding-left: 0px;*/
-    /*padding-right: 10px;*/
 
 }
 
@@ -75,32 +69,6 @@
     border: none !important;
     outline: none !important;
 
-}
-
-
-
-.p-t-5 {
-    padding-top: 5px !important;
-}
-
-.p-t-10 {
-    padding-top: 10px !important;
-}
-
-.p-t-15 {
-    padding-top: 15px !important;
-}
-
-.p-t-20 {
-    padding-top: 20px !important;
-}
-
-.p-t-25 {
-    padding-top: 25px !important;
-}
-
-.p-15 {
-    padding: 15px !important;
 }
 
 
@@ -117,6 +85,7 @@
 }
 
 
+/*mobile navbar*/
 
 .bottom-nav {
     position: fixed;
@@ -160,7 +129,7 @@
     color: rgba(0, 0, 0, 0.59);
 }
 
-/* واکنش‌گرایی: نمایش نوار فقط در موبایل */
+
 @media (min-width: 768px) {
     .bottom-nav {
         display: none;
@@ -168,27 +137,12 @@
 }
 
 
-
 .r {
     border-radius: 20px;
 }
+/*---------*/
 
 
-.article_box {
-    /*border: solid rgba(0, 147, 131, 0.66) 1px!important;*/
-    border: none !important;
-    /*background: linear-gradient(to bottom, rgba(0, 147, 131, 0.02), rgba(86, 143, 63, 0.05))!important;*/
-    background: #ffffff !important;
-
-}
-
-.article_box:hover {
-    -webkit-transform: translateY(5px) !important;
-    -moz-transform: translateY(5px) !important;
-    -ms-transform: translateY(5px) !important;
-    -o-transform: translateY(5px) !important;
-    transform: translateY(5px) !important;
-}
 
 .dr_box {
     border: rgba(36, 76, 154, 0.55) solid 1px !important;
@@ -215,10 +169,7 @@ a.dr_box i {
     transform: translateY(5px) !important;
 }
 
-.article_bg {
-    background: rgba(73, 158, 102, 0.8);
-    border-radius: 2px;
-}
+
 
 .dr_bg {
     background: #384291;
@@ -258,43 +209,7 @@ a.dr_box i {
     /*padding: 10px !important;*/
 }
 
-.p-l-5 {
-    padding-left: 5px;
-}
 
-.p-r-5 {
-    padding-right: 5px;
-}
-
-.p-l-10 {
-    padding-left: 10px;
-}
-
-.p-r-10 {
-    padding-right: 10px;
-}
-
-.p-l-20 {
-    padding-left: 20px;
-}
-
-.p-r-20 {
-    padding-right: 20px;
-}
-
-@media (min-width: 991px) {
-    .p-r-50 {
-        padding-right: 50px;
-    }
-
-    .p-r-100 {
-        padding-right: 100px;
-    }
-
-    .p-r-150 {
-        padding-right: 150px;
-    }
-}
 
 .links li {
     margin-bottom: 20px;
@@ -330,7 +245,6 @@ a.dr_box i {
 
 @media (max-width: 991px) {
     .margin_50_35 {
-        /* For less than 991px */
         padding-top: 30px;
         padding-bottom: 15px;
     }
@@ -338,7 +252,6 @@ a.dr_box i {
 
 @media (max-width: 767px) {
     .margin_50_35 {
-        /* For less than 767px */
         padding-top: 30px;
         padding-bottom: 5px;
     }
@@ -352,23 +265,23 @@ a.dr_box i {
 
 @media (max-width: 768px) {
     .left {
-        display: none; /* همه دکمه‌ها مخفی می‌شوند */
+        display: none;
     }
 
     .right {
-        display: none; /* همه دکمه‌ها مخفی می‌شوند */
+        display: none;
     }
 }
 
 /* مخفی کردن اسکرول بار */
 .scroll-container {
-    overflow: auto; /* اجازه اسکرول */
-    -ms-overflow-style: none; /* برای اینترنت اکسپلورر */
-    scrollbar-width: none; /* برای Firefox */
+    overflow: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
 .scroll-container::-webkit-scrollbar {
-    display: none; /* مخفی کردن اسکرول بار در Webkit */
+    display: none;
 }
 
 
@@ -403,37 +316,23 @@ a.dr_box i {
     justify-content: center;
 }
 
-.down-1 {
-    top: 1px;
-}
-
-.down-2 {
-    top: 2px;
-}
-
-.down-3 {
-    top: 3px;
-}
-
-
-.banner-blog {
-    width: 100%;
-    max-height: 300px; /* ارتفاع حداکثر در دسکتاپ */
-    object-fit: cover; /* برش دادن تصویر برای پر کردن ظرف */
-    border-radius: 15px;
-}
 
 .clinic_img {
     width: 100%;
     max-height: 250px; /* ارتفاع حداکثر در دسکتاپ */
     max-width: 250px;
-    object-fit: fill; /* برش دادن تصویر برای پر کردن ظرف */
+    object-fit: cover;
     border-radius: 50%;
     display: block;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto;
     border: 3px solid rgba(0, 0, 0, 0.13);
 }
+
+.parent-container {
+  display: grid;
+  place-items: center; /* جادوی واقعی اینجاست! */
+}
+
 
 .dr_img {
     width: 100%;
@@ -979,4 +878,70 @@ input#female-option:checked ~ .custom-slider {
 
 .animation {
   animation: pulse 1000ms ease-in-out;
+}
+
+
+::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+    display: none;
+}
+
+
+
+/*medal content */
+
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 3px;
+    width: 700px;
+    box-shadow: none;
+    position: relative;
+}
+
+.hidden {
+    display: none;
+}
+
+.close {
+    cursor: pointer;
+    color: red;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+
+/*contact us box*/
+
+.contact_us {
+  width: 50%;
+  float: left;
+  border-right: 1px solid #e1e8ed;
+  padding: 15px 25px;
+}
+@media (max-width: 767px) {
+  .contact_us {
+    /* For less than 767px */
+    width: 100%;
+    border-right: 0;
+    padding: 0;
+  }
+}
+.contact_us.last {
+  border-right: 0;
 }

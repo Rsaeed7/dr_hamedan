@@ -1,21 +1,11 @@
 {% extends  'base/base.html' %}
 {% load static %}
 {% block body %}
-    <div class="filters_listing">
-        <div class="container">
-            <ul class="clearfix">
-                <form method="post" action="list.html">
-                    <div id="custom-search-input">
-                        <div class="input-group">
-                            <input type="text" class="search-query" placeholder="نام مرکز....">
-                            <input type="submit" class="btn_search" style="border-radius: 50px" value="جستجو">
-                        </div>
-                    </div>
-                </form>
-            </ul>
-        </div>
-        <!-- /container -->
-    </div>
+    
+    
+    <!-- Search -->
+{% include  'base/search.html' %}
+    <!-- /Search -->
 
 
     <div class="container margin_60_35">
@@ -246,7 +236,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- /box_list -->
+
 
                     <div class="col-md-6">
                         <div class="box_list wow fadeIn">
@@ -271,7 +261,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- /box_list -->
+
 
                     <div class="col-md-6">
                         <div class="box_list wow fadeIn">
@@ -295,7 +285,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- /box_list -->
+
 
                     <div class="col-md-6">
                         <div class="box_list wow fadeIn">
@@ -320,7 +310,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- /box_list -->
+       
 
                     <div class="col-md-6">
                         <div class="box_list wow fadeIn">
@@ -344,7 +334,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- /box_list -->
+
 
                     <div class="col-md-6">
                         <div class="box_list wow fadeIn">
@@ -368,10 +358,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- /box_list -->
-
                 </div>
-                <!-- /row -->
                 <div id="phone_turn"></div>
                 <nav aria-label="" class="add_top_20">
                     <ul class="pagination pagination-sm center-content">
@@ -392,11 +379,9 @@
 
                 <!-- /pagination -->
             </div>
-            <!-- /col -->
         </div>
-        <!-- /row -->
     </div>
-    <!-- /container -->
+
 
 
     <script>

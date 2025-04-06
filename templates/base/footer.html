@@ -5,7 +5,7 @@
             <div class="row">
                 <div class="col-lg-3 col-md-12">
                     <p class="text-center">
-                        <a href="index.html" title="DrHamedan">
+                        <a href="/" title="DrHamedan">
                             <img src="{% static 'img/logo_bw_2x.png' %}" data-retina="true" alt="" width="233"
                                  height="36"
                                  class="img-fluid">
@@ -29,20 +29,20 @@
                         <div class="col-6 col-md-12">
                             <ul class="links">
                                 <li><a href="{% url 'core:login' %}">ورود بیماران</a></li>
-                                <li><a href="#0">ورود پزشکان</a></li>
-                                <li><a href="#0">ثبت نام پزشکان</a></li>
-                                <li><a href="#0">محله سلامت</a></li>
-                                <li><a href="#0">لیست تخصص ها</a></li>
-                                <li><a href="#0">مشاوره تلفنی</a></li>
+                                <li><a href="#">ورود پزشکان</a></li>
+                                <li><a href="#">ثبت نام پزشکان</a></li>
+                                <li><a href="{% url 'mag:list' %}">محله سلامت</a></li>
+                                <li><a href="{% url 'core:special_list' %}">لیست تخصص ها</a></li>
+                                <li><a href="{% url 'core:special_list_dr' %}">مشاوره تلفنی</a></li>
                             </ul>
                         </div>
                         <div class="col-6 col-md-12">
                             <ul class="links">
-                                <li><a href="#0">لیست مراکز درمانی</a></li>
-                                <li><a href="#0">فرصت های شغلی</a></li>
-                                <li><a href="#0">درباره ما</a></li>
-                                <li><a href="#0">تماس با ما</a></li>
-                                <li><a href="#0">ثبت شکایت</a></li>
+                                <li><a href="{% url 'core:clinic_list' %}">لیست مراکز درمانی</a></li>
+                                <li><a href="#">فرصت های شغلی</a></li>
+                                <li><a href="#">درباره ما</a></li>
+                                <li><a href="{% url 'contact:contact_us' %}">تماس با ما</a></li>
+                                <li><a href="#">ثبت شکایت</a></li>
                             </ul>
                         </div>
                     </div>
@@ -52,20 +52,20 @@
                     <div class="follow_us">
                         <h5>گواهینامه ها</h5>
                         <ul>
-                            <li><a href="#0"><img class="border bg-light rounded"
-                                                  src="{% static 'img/dr/samandehi.webp' %}" width="60" height="60"></a>
+                            <li><a href="#"><img class="border bg-light rounded"
+                                                 src="{% static 'img/dr/samandehi.webp' %}" width="60" height="60"></a>
                             </li>
-                            <li><a href="#0"><img class="border bg-light rounded"
-                                                  src="{% static 'img/dr/virtual.webp' %}" width="60" height="60"></a>
+                            <li><a href="#"><img class="border bg-light rounded"
+                                                 src="{% static 'img/dr/virtual.webp' %}" width="60" height="60"></a>
                             </li>
-                            <li><a href="#0"><img class="border bg-light rounded"
-                                                  src="{% static 'img/dr/enamad.webp' %}" width="60" height="60"></a>
+                            <li><a href="#"><img class="border bg-light rounded"
+                                                 src="{% static 'img/dr/enamad.webp' %}" width="60" height="60"></a>
                             </li>
                         </ul>
                     </div>
                     <h5 class="p-t-25">راه های ارتباطی</h5>
                     <ul class="contacts">
-                        <li><a href="tel://61280932400"><i class="icon-phone-squared"></i> 8138227774 +</a></li>
+                        <li><a href=""><i class="icon-phone-squared"></i> 8138227774 +</a></li>
                         <li><a href="mailto:info@saeedfh074.com">saeedfh074@gmail.com <i
                                 class="icon_mail p-l-5"></i></a>
                         </li>
@@ -74,15 +74,14 @@
             </div>
             <div class="follow_us text-center">
                 <ul>
-                    <li><a href="#0"><i class="icon-instagram-2"></i></a></li>
-                    <li><a href="#0"><i class="icon_mail"></i></a></li>
-                    <li><a href="#0"><i class="icon-chat-inv"></i></a></li>
-                    <li><a href="#0"><i class="icon-paper-plane-1"></i></a></li>
-                    <li><a href="#0"><i class="icon-blogger"></i></a></li>
+                    <li><a href="#"><i class="icon-instagram-2"></i></a></li>
+                    <li><a href="#"><i class="icon_mail"></i></a></li>
+                    <li><a href="#"><i class="icon-chat-inv"></i></a></li>
+                    <li><a href="#"><i class="icon-paper-plane-1"></i></a></li>
+                    <li><a href="#"><i class="icon-blogger"></i></a></li>
 
                 </ul>
             </div>
-            <!--/row-->
             <hr>
             <div class="row">
                 <div class="col-md-12">
