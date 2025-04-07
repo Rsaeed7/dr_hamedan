@@ -2,8 +2,8 @@ from django.shortcuts import render,redirect
 from .forms import ContactForm
 from django.contrib import messages
 
-# def about_us(request):
-#     return render(request, 'contact/about_us.html')
+def about_us(request):
+    return render(request, 'contact/about_us.html')
 
 
 
