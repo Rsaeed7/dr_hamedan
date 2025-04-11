@@ -93,6 +93,20 @@
                                                     <input type="hidden" id="resid" name="id">
 
                                                     <div class="row">
+                                                        <div class="col-md-12">
+                                                            <div class="form-group">
+                                                                <label>انتخاب پزشک<span class="text-danger">*</span></label>
+                                                                <select name="doctor" id="doctor_select" class="form-control" required>
+                                                                    <option value="">لطفا پزشک را انتخاب کنید</option>
+                                                                    {% for doctor in doctors %}
+                                                                        <option value="{{ doctor.id }}">
+                                                                            {{ doctor }} - {{ doctor.specialization }} ({{ doctor.consultation_fee }})
+                                                                        </option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                                <small class="text-danger font-weight-light" id="doctor_alarm"></small>
+                                                            </div>
+                                                        </div>
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label>نام<span class="text-danger">*</span></label>
@@ -198,18 +212,88 @@
             let newresid = `res_${params}`;
             let newres = document.getElementById(newresid);
             let daysElement = document.getElementById("days");
-            daysElement.textContent = ""; // حذف محتویات فعلی، شامل متن و اسپن‌ها
-            daysElement.append(day);
-            if (resid != "") {
-                document.getElementById(`res_${resid}`).style.display = "none";
-                document.getElementById("time").innerText = '';
+            
+            // Hide all and show the selected
+            document.querySelectorAll('[id^="res_"]').forEach(el => {
+                el.classList.add('hidden');
+            });
+            newres.classList.remove('hidden');
+            
+            // Update selected date in form
+            if (daysElement) {
+                daysElement.innerText = day;
             }
-            newres.style.display = 'block';
-            newres.classList.toggle('animation');
-            resid = params;
-
-
+            
+            // If a doctor is selected, fetch available slots
+            const doctorSelect = document.getElementById('doctor_select');
+            if (doctorSelect && doctorSelect.value) {
+                fetchDoctorSlots(doctorSelect.value, params);
+            }
         }
+        
+        // Function to fetch doctor's available slots for a specific date
+        function fetchDoctorSlots(doctorId, dateId) {
+            fetch(`/turn/doctor-slots/${doctorId}/${dateId}/`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    updateTimeSlots(data.available_slots, dateId);
+                    // Update consultation fee if provided
+                    if (data.consultation_fee) {
+                        document.getElementById('fee_display').textContent = `هزینه ویزیت: ${data.consultation_fee} تومان`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching doctor slots:', error);
+                });
+        }
+        
+        // Function to update time slots display
+        function updateTimeSlots(availableSlots, dateId) {
+            const timeSlotContainer = document.querySelector(`#res_${dateId} .turn-group`);
+            if (!timeSlotContainer) return;
+            
+            // Clear existing slots
+            timeSlotContainer.innerHTML = '';
+            
+            // Add available slots
+            if (availableSlots && availableSlots.length > 0) {
+                availableSlots.forEach(slot => {
+                    const button = document.createElement('button');
+                    button.className = 'btn btn-outline-success h-auto mx-2 my-2 w-11';
+                    button.textContent = slot;
+                    button.onclick = function() {
+                        document.getElementById('time').textContent = slot;
+                        showFormModal();
+                    };
+                    timeSlotContainer.appendChild(button);
+                });
+            } else {
+                const message = document.createElement('p');
+                message.textContent = 'نوبت خالی برای این تاریخ یافت نشد';
+                timeSlotContainer.appendChild(message);
+            }
+        }
+
+        // Add event listener to doctor select dropdown
+        document.addEventListener('DOMContentLoaded', function() {
+            const doctorSelect = document.getElementById('doctor_select');
+            if (doctorSelect) {
+                doctorSelect.addEventListener('change', function() {
+                    const activeDateElement = document.querySelector('[id^="res_"]:not(.hidden)');
+                    if (activeDateElement) {
+                        const dateId = activeDateElement.id.replace('res_', '');
+                        if (this.value) {
+                            fetchDoctorSlots(this.value, dateId);
+                        }
+                    }
+                });
+            }
+        });
 
         function set_id(id) {
             document.getElementById("formModal").classList.remove("hidden");

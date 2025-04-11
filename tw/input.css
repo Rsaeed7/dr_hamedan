@@ -3,39 +3,14 @@
 @tailwind utilities;
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
 
-/*-------------- Added Fonts --------------*/
+/* Custom font definition for 'Anjoman' */
+/* Note: Adjust the font file paths based on your project structure */
 @font-face {
     font-family: 'Anjoman';
-    font-weight: 300;
-    src: url('../fonts/Anjoman-Light.ttf') format('truetype');
-}
-
-@font-face {
-    font-family: 'Anjoman';
-    font-weight: 400;
-    src: url('../fonts/Anjoman-Regular.ttf') format('truetype');
-}
-
-@font-face {
-    font-family: 'Anjoman';
+    src: url('/fonts/anjoman.woff2') format('woff2'),
+         url('/fonts/anjoman.woff') format('woff');
     font-weight: 500;
-    src: url('../fonts/Anjoman-Medium.ttf') format('truetype');
-}
-
-@font-face {
-    font-family: 'Anjoman';
-    font-weight: 700;
-    src: url('../fonts/Anjoman-Bold.ttf') format('truetype');
-}
-
-@font-face {
-    font-family: 'Anjoman';
-    font-weight: 900;
-    src: url('../fonts/Anjoman-Heavy.ttf') format('truetype');
-}
-@font-face {
-    font-family: 'Farsan';
-    src: url('../fonts/Farsan-Regular.ttf') format('ttf');  
+    font-style: normal;
 }
 
 /*-------------- Base Styles --------------*/
@@ -43,162 +18,80 @@ body {
     scroll-behavior: smooth;
     font-family: 'Anjoman', sans-serif;
     font-weight: 500;
-    
     /* Persian numeral formatting */
     font-feature-settings: "ss05";
 }
 
 /*-------------- Base Styles --------------*/
 @layer base {
-    html {
-        @apply scroll-smooth;
-    }
-    
-
-    h1, h2, h3, h4, h5, h6 {
-        @apply font-bold text-primary-500;
-    }
-
-    a {
-        @apply transition-colors duration-200 hover:text-primary-400 text-gray-600;
-    }
-
-    input, select, textarea {
-        @apply border border-custom-gray-300 border-b-3 p-2 text-base w-full;
-        font-family: 'Roboto', sans-serif;
-    }
-
-    textarea {
-        @apply h-20;
-    }
-
-    select {
-        @apply w-full;
-    }
-
-    input[type=submit], .button {
-        @apply bg-primary-500 text-white px-5 py-2 rounded-lg uppercase border-none hover:bg-primary-400 transition-colors;
-    }
-
-    .secondary-button {
-        @apply border-3 border-primary-500 px-5 py-2 hover:border-primary-400;
-    }
+    /* Additional global styles can be added here if needed */
+    /* For now, the body styles above suffice as the primary base styles */
 }
 
 /*-------------- Components --------------*/
 @layer components {
-    .sidbar {
-        @apply w-full lg:w-1/5  xl:w-1/6 text-center;
+    /* Bottom Navigation */
+    .bottom-nav {
+        @apply fixed bottom-0 left-0 right-0 flex justify-around bg-[rgba(255,255,255,0.89)] shadow-[-2px_0_5px_rgba(0,0,0,0.1)] py-[10px] z-[1000] transition-[bottom] duration-300 md:hidden;
+    }
+    .nav-item {
+        @apply text-center flex-1 text-[#666] no-underline text-sm transition-colors duration-300 hover:text-blue-500 active:text-[#163b8d] active:font-bold;
+    }
+    .nav-item i {
+        @apply text-xl mb-[5px] block;
     }
 
-    .success_btn{
-        @apply bg-green-500/50 text-black font-bold px-6 py-2 shadow shadow-black rounded-lg text-sm  hover:bg-accent-600/25 transition;
+    /* Modal Styles */
+    .modal {
+        @apply fixed top-0 left-0 w-full h-full bg-[rgba(0,0,0,0.5)] flex justify-center items-center;
     }
-    .secondary_btn{
-        @apply bg-primary-500/50 text-black font-bold px-6 py-2 shadow shadow-black rounded-lg text-sm hover:bg-primary-400/50 transition
+    .modal-content {
+        @apply bg-white p-5 rounded-[3px] w-[700px] shadow-none relative;
     }
-    .gray_btn{
-        @apply bg-gray-500 text-white px-6 py-2 rounded-full text-sm shadow-md hover:bg-gray-600 transition
-    }
-    .sidli {
-        @apply rounded-lg shadow shadow-black m-4 flex justify-around items-center py-4
-    }
-    .selected{
-       @apply sidli bg-gray-200
-    }
-    /* Roboto-based components */
-    .roboto-section {
-        font-family: 'Roboto', sans-serif;
-        @apply font-normal text-custom-gray-900;
-        
-        h1, h2, h3, h4, h5, h6 {
-            @apply font-light;
-        }
+    .close {
+        @apply cursor-pointer text-red-500 absolute top-[10px] right-[10px];
     }
 
-    .module {
-        @apply p-4 w-full lg:w-3/4  xl:w-4/5 grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4;
+    /* Custom Checkbox */
+    .custom-checkbox {
+        @apply appearance-none w-4 h-4 border-2 border-[#28a745] rounded relative;
     }
-    .solidpage{
-        @apply w-full text-center
-    }
-
-    #header {
-        @apply bg-primary-500 overflow-auto p-4 border-b-6 border-primary-600;
+    .custom-checkbox:checked::after {
+        content: '\2713'; /* Checkmark character */
+        @apply text-sm text-white absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[#28a745] w-full h-full flex items-center justify-center rounded;
     }
 
-    .contents {
-        @apply w-full md:w-1/5 p-2 float-left bg-custom-gray-900 text-white;
-        
-        ul {
-            @apply float-left w-full p-0 m-0 list-none;
-            
-            li {
-                @apply m-0 mb-2 p-1 overflow-auto cursor-move;
-                
-                &:hover, &.selected {
-                    @apply accent-gray-500;
-                }
-            }
-        }
+    /* Custom Radio */
+    .custom-radio {
+        @apply appearance-none w-4 h-4 border-2 border-[#007bff] rounded-full relative;
+    }
+    .custom-radio:checked::after {
+        content: '';
+        @apply w-[10px] h-[10px] bg-[#007bff] rounded-full absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2;
     }
 
-    .course-info {
-        @apply border border-custom-gray-300 p-4 mb-2 w-full md:w-[400px] overflow-auto;
+    /* Switch Slider */
+    .switch-label {
+        @apply relative inline-block w-[40px] h-[20px];
     }
-
-    /* Chat styles */
-    #chat {
-        @apply fixed top-16 bottom-0 w-full overflow-y-auto pb-40;
-        
-        .message {
-            @apply bg-custom-gray-100 p-4 rounded inline-block float-left clear-both mx-2 mt-2 min-w-[440px];
-            
-            &.me {
-                @apply float-right bg-primary-100 text-primary-600;
-            }
-        }
+    .slider {
+        @apply absolute cursor-pointer inset-0 bg-[#ccc] transition-all duration-400 rounded-[20px];
     }
-
-    #chat-input {
-        @apply absolute bottom-0 bg-custom-gray-100 w-full pt-4;
-        
-        input {
-            @apply w-[96%] mx-[2%];
-        }
+    .slider::before {
+        @apply absolute content-[''] h-[14px] w-[14px] left-[3px] bottom-[3px] bg-white transition-all duration-400 rounded-full;
+    }
+    input:checked + .slider {
+        @apply bg-[#28a745];
+    }
+    input:checked + .slider::before {
+        @apply transform translate-x-[20px];
     }
 }
 
 /*-------------- Utilities --------------*/
 @layer utilities {
     /* RTL utilities */
-    .box-deck {
-        @apply gap-6 2xl:grid-cols-4 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 grid;
-      }
-      .box {
-        @apply shadow-lg rounded-3xl bg-white max-w-md mx-auto w-full md:w-[300px] ;
-      }
-    .rtl-rotate {
-        transform: rotateY(180deg);
-    }
-
-    .persian-num {
-        font-feature-settings: "ss05";
-    }
-
-    /* Content modules */
-    .content-modules {
-        li {
-            @apply even:bg-custom-gray-100 hover:bg-custom-gray-300 p-4 overflow-auto cursor-move;
-        }
-    }
-
-    /* Form elements */
-    .helptext {
-        @apply text-custom-gray-500 pl-4;
-    }
-
-    .errorlist {
-        @apply text-red-700 m-0;
-    }
+    /* Tailwind supports RTL natively with the 'rtl:' prefix when dir="rtl" is set on the HTML element */
+    /* Add custom RTL utilities here if needed, e.g., specific margin or padding adjustments */
+    /* For now, no additional utilities are specified */
 }

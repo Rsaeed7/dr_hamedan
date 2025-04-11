@@ -1,0 +1,290 @@
+{% extends  'base/base.html' %}
+{% load static %}
+{% block body %}
+
+    <!-- Search -->
+{% include  'base/search.html' %}
+    <!-- /Search -->
+
+    <div class="container margin_60">
+        <div class="row">
+            <div class="col-xl-8 col-lg-8">
+                <section id="section_1">
+                    <div>
+                        <div class="profile box_general_3">
+                            <div class="row parent-container">
+                                <div class="col-lg-12 col-md-4">
+                                    <figure>
+                                        <a class="dr_box2"><img src="{% static 'img/dr/dr1.jfif' %}" alt=""
+                                                                class="dr_img">
+                                            <i class="icon-star-5 text-primary"><small>4.3</small></i></a>
+                                    </figure>
+                                </div>
+                                <div class="col-lg-12 col-md-12">
+                                    <div class="text-center">
+                                        <h1>{{ doctor.user.get_full_name }}</h1>
+                                        <small>{{ doctor.specialization }}</small>
+                                    </div>
+                                    <button id="scrollButton" class="btn btn-comment btn-sm col-md-12 rounded-10 d-lg-none animation">نوبت دهی</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /profile -->
+
+                        <div>
+                            <!--/nav-tabs -->
+                            <div class="tab-content box_general_3">
+                                <div class="indent_title_in" style="margin: 0;padding: 0">
+                                    <i class="pe-7s-id"></i>
+                                </div>
+                                <ul class="nav center-content margin-10" role="tablist">
+                                    <li>
+                                        <a class="nav-link  active p_1" id="general-tab" data-toggle="tab"
+                                           href="#general"
+                                           role="tab" aria-controls="general" aria-expanded="true"> پزشک درباره</a>
+                                    </li>
+                                    <li>
+                                        <a class="nav-link p_1" id="address-tab" data-toggle="tab" href="#address"
+                                           role="tab" aria-controls="address">آدرس و تلفن</a>
+                                    </li>
+                                    <li>
+                                        <a class="nav-link p_1" id="reviews-tab" data-toggle="tab" href="#reviews"
+                                           role="tab" aria-controls="reviews"> نظرات</a>
+                                    </li>
+                                </ul>
+                                <div class="tab-pane fade show active" id="general" role="tabpanel"
+                                     aria-labelledby="general-tab">
+                                    <div>
+                                        <h3>دکتر مجتبی خزایی</h3>
+                                        <p>دکتر مجتبی خزایی متخصص بیماری های مغز و اعصاب همدان دارای کد نظام‌پزشکی
+                                            ۱۱۰۱۲۵ است. ایشان در دو شهر همدان و تهران فعالیت داشته و به‌عنوان اولین پزشک
+                                            دارای مدرک فلوشیپ و آغازگر درمان استروک حاد در همدان شناخته می‌شوند و در حال
+                                            حاضر بر روی ارائه انواع خدمات اینترونشن و مداخلات عروقی سروگردن و سکته‌های
+                                            مغزی تمرکز دارند و به‌عنوان اولین نفراتی شناخته می‌شوند که خدمات آنژیوگرافی
+                                            و مداخلات عروقی سروگردن را در شهر خود تأسیس کرده‌اند.
+
+
+                                            نظرات درباره دکتر خزایی همدان
+                                            بنا بر نظرات موجود درباره دکتر ، وی توانایی ارائه اقدامات مختلف درمانی همچون
+                                            دریافت نوار عصب و عضله، نوار مغز، سونوگرافی عروق گردن و مغز را با کمک
+                                            دستگاه‌های روز دنیا داشته و در مطب خود از دستگاه rTMS، استیمولوشن‌های مغزی و
+                                            فیدبک‌ها استفاده می‌کنند که مناسب برای بازتوانی بیماران بوده و می‌تواند در
+                                            سرعت‌بخشی درمان بیماری‌های اعصاب و روان افراد تأثیر مستقیمی بگذارد. شما
+                                            همچنین می‌توانید دیگر نظرات را در پروفایل دکتر نیز مشاهده کنید.</p>
+                                    </div>
+                                    <div class="wrapper_indent">
+                                        <p>سوابق تحصیلی و افتخارات دکتر
+                                            سوابق تحصیلی و افتخارات دکتر خزایی در زیر آورده است:
+
+
+                                            · کسب مدرک پزشکی عمومی از دانشگاه علوم پزشکی همدان در سال ۱۳۸۴
+
+                                            · کسب تخصص بیماری‌های مغز و اعصاب (نورولوژی) از دانشگاه علوم پزشکی مشهد در
+                                            سال ۱۳۹۱
+
+                                            · دارای بورد تخصصی
+
+                                            · کسب فلوشیپ اقدامات مداخله‌ای عروق اعصاب (نوروواسکولار اینترونشن) از
+                                            دانشگاه تهران در سال ۱۳۹۸
+
+                                            · عضو هیئت‌علمی و دانشیار دانشگاه علوم پزشکی همدان
+
+                                            · عضو انجمن مغز و اعصاب ایران
+
+                                            · عضو آکادمی نورولوژی اروپا و آمریکا
+
+                                            · عضو انجمن استروک ایران
+
+                                            · عضو انجمن اینترونشن ایران
+
+                                            · اولین فلوشیپ پرورش‌یافته در کشور
+
+                                            · پزشک نمونه استان همدان
+
+                                            · اولین پزشک آغازکننده درمان استروک حاد در همدان
+
+                                            · راه‌اندازی بخش اینتروونشن سروگردن در همدان
+
+                                            · معاون تخصصی دانشگاه علوم پزشکی همدان
+
+                                            ·مسئول بخش‌های ICU و نورولوژی همدان
+
+
+                                            ایشان را به‌عنوان یکی از برترین فوق متخصصان در زمینه اقدامات مداخله‌ای عروق
+                                            اعصاب در شهر تهران و همدان می‌شناسند.</p>
+                                        <h6>خدمات تخصصی</h6>
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <ul class="bullets">
+                                                    <li>درمان مغز پیری</li>
+                                                    <li> دریافت آزمایش عصبی روانی</li>
+                                                    <li>درمان ناهنجاری شریانی (AVM)</li>
+                                                    <li>درمان آنوریسم مغز</li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <ul class="bullets">
+                                                    <li>رفتاردرمانی به روش PRT</li>
+                                                    <li>دریافت نوار مغز (EEG)</li>
+                                                    <li>درمان مسائل مربوط به ام اس (MS)</li>
+                                                    <li>رادیکولوپاتی</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="address" role="tabpanel"
+                                     aria-labelledby="address-tab">
+                                    <div>
+                                        <h4>مطب دکتر مجتبی خزایی</h4>
+                                        <div class="indent_title_in m-t-15 border-0">
+                                            <i class="pe-7s-map-2"></i>
+                                            <img class="banner-blog" src="{% static 'img/pic/map.jpg' %}">
+                                            <p class="text-center text_dr_3">مسیریابی روی نقشه</p>
+                                        </div>
+                                        <p><i class="icon-location-outline"></i>همدان، چهار راه پارک، روبه روی استخر آبیاران، مطب دکتر خزایی </p>
+                                        <p><i class="icon-phone-outline"></i>08138297774</p>
+                                    </div>
+                                </div>
+                                <!-- /tab_2 -->
+
+                                <div class="tab-pane fade" id="reviews" role="tabpanel"
+                                     aria-labelledby="reviews-tab">
+                                    <div class="reviews-container">
+                                        <div class="row margin_30_20 comment-rate">
+                                            <div class="col-lg-4 border-left-pc">
+                                                <h6 class="text-center text-white"><i
+                                                        class="icon-star-5 text-warning"></i>3.9 امتیاز</h6>
+                                            </div>
+                                            <div class="col-lg-4 border-left-pc">
+                                                <h6 class="text-center text-white"><i
+                                                        class="icon-thumbs-up-1 text-success"></i>89% توصیه شده</h6>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <h6 class="text-center text-white"><i
+                                                        class="icon-hourglass-1 text-info"></i> انتظار 2 تا 4 ساعت</h6>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <button class="btn btn-comment col-md-12">ثبت نظر</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="review-box clearfix">
+                                            <div class="rev-content">
+                                                <div class="rev-header">
+                                                    <div class="rev-info">مهناز</div>
+                                                    <small>2 دی 1403</small>
+                                                    <div class="rating text-left">
+                                                        <i class="icon_star voted"></i><i class="icon_star voted"></i>
+                                                        <i class="icon_star voted"></i><i class="icon_star voted"></i>
+                                                        <i class="icon_star"></i>
+                                                    </div>
+                                                </div>
+                                                <h6 class="text-success"><i class="icon-thumbs-up-1"></i>پزشک را توصیه
+                                                    میکنم
+                                                </h6>
+                                                <div class="rev-text">
+                                                    <p>خدماتشون خیلی خوب و ارزونه ممنون از مدیریت کلینیک سیب</p>
+                                                    <ul class="row">
+                                                        <li class="rev-comment">رفتار مناسب</li>
+                                                        <li class="rev-comment">قیمت پایین</li>
+                                                        <li class="rev-comment">محیط آرام</li>
+                                                    </ul>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+
+
+                                        <div class="review-box clearfix">
+                                            <div class="rev-content">
+                                                <div class="rev-header">
+                                                    <div class="rev-info">علی حسینی</div>
+                                                    <small>1 دی 1403</small>
+                                                    <div class="rating text-left">
+                                                        <i class="icon_star voted"></i><i class="icon_star voted"></i>
+                                                        <i class="icon_star"></i>
+                                                        <i class="icon_star"></i>
+                                                        <i class="icon_star"></i>
+                                                    </div>
+                                                </div>
+                                                <h6 class="text-danger">پزشک را توصیه نمیکنم <i
+                                                        class="icon-thumbs-down-1"></i>
+                                                </h6>
+                                                <div class="rev-text">
+                                                    <p>کلینیک سیب قبلا خوب بود خدماتشون خیلی بد شده</p>
+                                                    <ul class="row">
+                                                        <li class="rev-comment">رفتار نامناسب</li>
+                                                        <li class="rev-comment">قیمت بالا</li>
+                                                        <li class="rev-comment">محیط شلوغ</li>
+                                                    </ul>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /tab_3 -->
+                            </div>
+                            <!-- /tab-content -->
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <aside class="col-xl-4 col-lg-4" id="aside">
+                <div class="box_general_3 booking">
+                    <form>
+                        <div class="m-t-2 m-b-20">
+                            <h6 class="text_dr_3"><i class="icon-user-add-outline"></i>دریافت نوبت حضوری</h6>
+                            <small class="m-b-10 font-weight-bold"> <i class="icon-location-outline"></i>همدان، رو به
+                                روی استخر آبیاران، کلینیک رز</small>
+                        </div>
+
+                        <div class="rev-header">
+
+                            <small class="rev-info text-sm-right">اولین نوبت خالی</small> <small class="text-info">2
+                            اسفند 1403</small>
+                        </div>
+                        <a href="{% url 'turn:turn_days' %}" class="btn btn-success col-lg-12 m-b-10 m-t-15">دریافت نوبت</a>
+                    </form>
+                </div>
+    
+                <div class="box_general_3 booking">
+                    <form>
+                        <div class="m-t-2 m-b-20">
+                            <h6 class="text_dr_3"><i class="icon-user-add-outline"></i>دریافت مشاوره تلفنی</h6>
+                            <small class="text_dr_3">هزینه مشاوره 150 هزار تومان</small>
+                        </div>
+                        <small class="rev-info text-sm-right">مشاوره تلفنی به مدت <span
+                                class="text-info">15 دقیقه</span></small>
+                        <a href="" class="btn btn-info col-lg-12 m-b-10 m-t-15">دریافت مشاوره تلفنی</a>
+                    </form>
+                </div>
+                <div class="box_general_3 booking">
+                    <form>
+                        <div class="m-t-2 m-b-20">
+                            <h6 class="text_dr_3"><i class="icon-user-add-outline"></i>دریافت مشاوره متنی آنلاین</h6>
+                            <small class="text_dr_3">هزینه مشاوره 100 هزار تومان</small>
+                        </div>
+                        <small class="rev-info text-sm-right">مشاوره تلفنی به مدت <span
+                                class="text-info">30 دقیقه</span></small>
+                        <a href="" class="btn btn-primary col-lg-12 m-b-10 m-t-15">دریافت مشاوره متنی</a>
+                    </form>
+                </div>
+
+            </aside>
+            <!-- /asdide -->
+        </div>
+    </div>
+<script>
+document.getElementById('scrollButton').addEventListener('click', function() {
+    const asideElement = document.getElementById('aside');
+    const offsetTop = asideElement.getBoundingClientRect().top + window.scrollY - 150; // 100 پیکسل بالاتر
+    window.scrollTo({ top: offsetTop, behavior: 'smooth' });
+});
+
+</script>
+
+{% endblock %}

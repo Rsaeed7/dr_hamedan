@@ -1,0 +1,111 @@
+{% extends  'base/base.html' %}
+{% load static %}
+{% block body %}
+
+    <!-- Search -->
+{% include  'base/search.html' %}
+    <!-- /Search -->
+    
+
+    <div class="container margin_60_35">
+        <div class="row">
+            <div class="col-lg-12 p-m-5">
+               <!-- clinic_list -->
+                <div class="strip_list wow fadeIn">
+                    <figure>
+                        <a href="{% url 'core:clinic_detail' %}"><img src="{% static 'img/dr/download (2).jfif' %}" alt=""></a>
+                    </figure>
+                    <small>کلینیک جراحی</small>
+                    <h3>مرکز جراحی مهدیه</h3>
+                    <small class="text-sm-right"><i class="icon-location-3"></i>همدان خیابان مهدیه ، ساختمان مهدیه ، پلاک 6</small>
+                    <ul>
+                        <li>
+                        </li>
+                        <li><a class="p-r-10 small" href="{% url 'core:clinic_detail' %}">مشاهده پروفایل مرکز</a></li>
+                        <li><a href="#">رزرو نوبت</a></li>
+                    </ul>
+                </div>
+
+                <div class="strip_list wow fadeIn">
+                    <figure>
+                        <a href=""><img src="{% static 'img/dr/OIP (4).jfif' %}" alt=""></a>
+                    </figure>
+                    <small>کلینیک دندانپزشکی</small>
+                    <h3>مرکز دندانپزشکی سیب</h3>
+                    <small class="text-sm-right"><i class="icon-location-3"></i>همدان خیابان مهدیه ، ساختمان مهدیه ، پلاک 6</small>
+                    <ul>
+                        <li>
+                        </li>
+                        <li><a class="p-r-10 small" href="#">مشاهده پروفایل مرکز</a></li>
+                        <li><a href="">رزرو نوبت</a></li>
+                    </ul>
+                </div>
+
+                <div class="strip_list wow fadeIn">
+                    <figure>
+                        <a href=""><img src="{% static 'img/dr/download (1).jfif' %}" alt=""></a>
+                    </figure>
+                    <small>درمانگاه</small>
+                    <h3>درمانگاه بیمارستان بعثت</h3>
+                    <small class="text-sm-right"><i class="icon-location-3"></i>همدان خیابان مهدیه ، ساختمان مهدیه ، پلاک 6</small>
+                    <ul>
+                        <li>
+                        </li>
+                        <li><a class="p-r-10 small" href="#">مشاهده پروفایل مرکز</a></li>
+                        <li><a href="">رزرو نوبت</a></li>
+                    </ul>
+                </div>
+
+                <div class="strip_list wow fadeIn">
+                    <figure>
+                        <a href=""><img src="{% static 'img/dr/OIP (2).jfif' %}" alt=""></a>
+                    </figure>
+                    <small>کلینیک جراحی</small>
+                    <h3>مرکز جراحی افق</h3>
+                    <small class="text-sm-right"><i class="icon-location-3"></i>همدان خیابان مهدیه ، ساختمان مهدیه ، پلاک 6</small>
+                    <ul>
+                        <li>
+                        </li>
+                        <li><a class="p-r-10 small" href="#">مشاهده پروفایل مرکز</a></li>
+                        <li><a href="">رزرو نوبت</a></li>
+                    </ul>
+                </div>
+
+               <div class="strip_list wow fadeIn">
+                    <figure>
+                        <a href=""><img src="{% static 'img/dr/banner-img.png' %}" alt=""></a>
+                    </figure>
+                    <small>کلینیک قائم</small>
+                    <h3>مرکز خیریه</h3>
+                    <small class="text-sm-right"><i class="icon-location-3"></i>همدان خیابان مهدیه ، ساختمان مهدیه ، پلاک 6</small>
+                    <ul>
+                        <li>
+                        </li>
+                        <li><a class="p-r-10 small" href="#">مشاهده پروفایل مرکز</a></li>
+                        <li><a href="">رزرو نوبت</a></li>
+                    </ul>
+                </div>
+
+                <!-- /clinic_list -->
+                <nav aria-label="" class="add_top_20">
+                    <ul class="pagination pagination-sm center-content">
+                        <li class="page-item disabled align-center">
+                            <a class="page-link move-down down-3" href="#" tabindex="-1"><i class="icon-right-open-3"></i></a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link" href="#">4</a></li>
+                        <li class="page-item"><a class="page-link" href="#">5</a></li>
+                        <li class="page-item">
+                            <a class="page-link border-0 down-3" href="#"><i class="icon-left-open-3"></i></a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <!-- /pagination -->
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

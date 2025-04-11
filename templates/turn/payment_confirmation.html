@@ -1,0 +1,106 @@
+{% extends  'base/base.html' %}
+{% load static %}
+{% block body %}
+
+<div class="container margin_60">
+    <div class="row">
+        <div class="col-xl-8 col-lg-8 mx-auto">
+            <div class="box_general_3 cart">
+                <div class="form_title">
+                    <h3><strong>1</strong>تایید پرداخت</h3>
+                    <p>
+                        اطلاعات نوبت و پرداخت را تایید کنید
+                    </p>
+                </div>
+                <div class="step">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6">
+                            <div class="form-group">
+                                <label class="font-weight-bold">نام بیمار:</label>
+                                <p>{{ reservation.patient.name }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-6">
+                            <div class="form-group">
+                                <label class="font-weight-bold">تلفن:</label>
+                                <p>{{ reservation.phone }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6">
+                            <div class="form-group">
+                                <label class="font-weight-bold">پزشک:</label>
+                                <p>{{ reservation.doctor }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-6">
+                            <div class="form-group">
+                                <label class="font-weight-bold">تخصص:</label>
+                                <p>{{ reservation.doctor.specialization }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6">
+                            <div class="form-group">
+                                <label class="font-weight-bold">تاریخ:</label>
+                                <p>{{ reservation.day.date }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-6">
+                            <div class="form-group">
+                                <label class="font-weight-bold">ساعت:</label>
+                                <p>{{ reservation.time }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="form_title">
+                    <h3><strong>2</strong>اطلاعات پرداخت</h3>
+                    <p>
+                        هزینه ویزیت را از کیف پول خود پرداخت کنید
+                    </p>
+                </div>
+                <div class="step">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="wallet-status alert {% if wallet.balance < reservation.amount %}alert-danger{% else %}alert-success{% endif %}">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>موجودی کیف پول:</strong> {{ wallet.balance }} تومان</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>هزینه ویزیت:</strong> {{ reservation.amount }} تومان</p>
+                                    </div>
+                                </div>
+                                
+                                {% if wallet.balance < reservation.amount %}
+                                <div class="text-center mt-3">
+                                    <p>موجودی کیف پول شما کافی نیست!</p>
+                                    <a href="{% url 'wallet:deposit' %}" class="btn_1">شارژ کیف پول</a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="text-center">
+                            {% if wallet.balance >= reservation.amount %}
+                            <button type="submit" class="btn_1 green medium">پرداخت و تایید نوبت</button>
+                            {% else %}
+                            <button type="button" class="btn_1 medium" disabled>پرداخت و تایید نوبت</button>
+                            {% endif %}
+                            <a href="{% url 'turn:turn_days' %}" class="btn_1 gray medium">انصراف</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %} 

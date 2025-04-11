@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'wallet.apps.WalletConfig',
     'turn',
     'contact.apps.ContactConfig',
+    'doctors.apps.DoctorsConfig',
+    'clinics.apps.ClinicsConfig',
 ]
 
 MIDDLEWARE = [
@@ -113,9 +115,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'fa-ir'
 
-import locale
+# import locale
 
-locale.setlocale(locale.LC_ALL,"Persian_Iran.UTF-8")
+# locale.setlocale(locale.LC_ALL,"Persian_Iran.UTF-8")
 
 TIME_ZONE = 'Asia/Tehran'
 

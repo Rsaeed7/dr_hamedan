@@ -28,6 +28,8 @@ urlpatterns = [
     path('wallet/', include('wallet.urls')),
     path('turn/',include('turn.urls')),
     path('contact/',include('contact.urls')),
+    path('doctors/', include('doctors.urls')),
+    path('clinics/', include('clinics.urls')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
