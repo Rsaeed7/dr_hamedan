@@ -1,0 +1,95 @@
+{% extends  'base/base.html' %}
+{% load static %}
+{% block body %}
+
+<div class="container margin_60">
+    <div class="row">
+        <div class="col-xl-8 col-lg-8 mx-auto">
+            <div class="box_general_3 cart">
+                <div class="form_title">
+                    <h3><strong>1</strong>اطلاعات نوبت</h3>
+                    <p>
+                        نوبت شما با موفقیت ثبت شد
+                    </p>
+                </div>
+                <div class="step">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6">
+                            <div class="form-group">
+                                <label class="font-weight-bold">نام بیمار:</label>
+                                <p>{{ reservation.patient.name }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-6">
+                            <div class="form-group">
+                                <label class="font-weight-bold">تلفن:</label>
+                                <p>{{ reservation.phone }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6">
+                            <div class="form-group">
+                                <label class="font-weight-bold">پزشک:</label>
+                                <p>{{ reservation.doctor }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-6">
+                            <div class="form-group">
+                                <label class="font-weight-bold">تخصص:</label>
+                                <p>{{ reservation.doctor.specialization }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6">
+                            <div class="form-group">
+                                <label class="font-weight-bold">تاریخ:</label>
+                                <p>{{ reservation.day.date }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-6">
+                            <div class="form-group">
+                                <label class="font-weight-bold">ساعت:</label>
+                                <p>{{ reservation.time }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="form_title">
+                    <h3><strong>2</strong>انتخاب روش پرداخت</h3>
+                    <p>
+                        لطفا روش پرداخت را انتخاب کنید
+                    </p>
+                </div>
+                <div class="step">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="payment_info">
+                                <figure>
+                                    <img src="{% static 'img/payments.png' %}" alt="Payment methods" class="img-fluid">
+                                </figure>
+                                <p class="nomargin">مبلغ قابل پرداخت: <span class="font-weight-bold">{{ reservation.amount }} تومان</span></p>
+                            </div>
+                            
+                            <div class="payment-options text-center mt-4">
+                                <a href="#" class="btn_1">پرداخت آنلاین</a>
+                                <p class="mt-3">یا</p>
+                                <a href="{% url 'core:login' %}" class="btn_1">ورود به حساب کاربری و پرداخت از کیف پول</a>
+                            </div>
+                            
+                            <div class="text-center mt-4">
+                                <p class="text-secondary">
+                                    <small>نوبت شما به مدت 30 دقیقه رزرو می‌شود. در صورت عدم پرداخت، نوبت به صورت خودکار لغو خواهد شد.</small>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %} 
