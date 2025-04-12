@@ -11,7 +11,7 @@ class UserAdmin(admin.ModelAdmin):
 # مدل Inline برای نوبت‌ها
 class InlineReservation(admin.StackedInline):
     model = models.Reservation
-    fields = ('get_patient_name','phone','time')  # فقط نمایش اسم بیمار و زمان نوبت
+    fields = ('get_patient_name', 'doctor', 'phone', 'time', 'status', 'payment_status')
     readonly_fields = ('get_patient_name',)
 
     def get_patient_name(self, obj):
@@ -30,7 +30,7 @@ class ReservationAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.prefetch_related('reservations__patient')  # لود کردن سریع بیماران و نوبت‌ها
+        return qs.prefetch_related('reservations__patient', 'reservations__doctor')  # لود کردن سریع بیماران و نوبت‌ها
 
     # نمایش نام بیماران در لیست نوبت‌ها
     def get_patient_names(self, obj):
@@ -44,8 +44,38 @@ class ReservationAdmin(admin.ModelAdmin):
 
 @admin.register(models.Reservation)
 class ReservationAdmin(admin.ModelAdmin):
-    raw_id_fields = ('patient',)  # فقط شناسه بیمار نمایش داده می‌شود
-    list_display = ('patient', 'day', 'time')
-    search_fields = ('patient__name', 'patient__meli_code', 'patient__phone')  # جستجو بر اساس نام، کد ملی و شماره تلفن بیمار
-    list_filter = ('day',)  # فیلتر بر اساس تاریخ نوبت
-    list_per_page = 25  # فقط 20 نوبت در هر صفحه
+    raw_id_fields = ('patient', 'doctor')
+    list_display = ('patient', 'doctor', 'day', 'time', 'status', 'payment_status', 'amount')
+    search_fields = ('patient__name', 'patient__meli_code', 'patient__phone', 'doctor__user__first_name', 'doctor__user__last_name')
+    list_filter = ('day', 'status', 'payment_status', 'doctor')
+    list_per_page = 25
+    readonly_fields = ('created_at', 'updated_at')
+    fieldsets = (
+        ('اطلاعات نوبت', {
+            'fields': ('day', 'time', 'patient', 'doctor', 'phone', 'notes')
+        }),
+        ('وضعیت', {
+            'fields': ('status', 'payment_status', 'amount', 'transaction')
+        }),
+        ('اطلاعات سیستمی', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    actions = ['mark_as_confirmed', 'mark_as_completed', 'mark_as_cancelled']
+    
+    def mark_as_confirmed(self, request, queryset):
+        updated = queryset.update(status=models.Reservation.STATUS_CONFIRMED)
+        self.message_user(request, f'{updated} نوبت تایید شد.')
+    mark_as_confirmed.short_description = "تایید نوبت های انتخاب شده"
+    
+    def mark_as_completed(self, request, queryset):
+        updated = queryset.update(status=models.Reservation.STATUS_COMPLETED)
+        self.message_user(request, f'{updated} نوبت تکمیل شد.')
+    mark_as_completed.short_description = "تکمیل نوبت های انتخاب شده"
+    
+    def mark_as_cancelled(self, request, queryset):
+        updated = queryset.update(status=models.Reservation.STATUS_CANCELLED)
+        self.message_user(request, f'{updated} نوبت لغو شد.')
+    mark_as_cancelled.short_description = "لغو نوبت های انتخاب شده"
