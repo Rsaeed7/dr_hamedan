@@ -1,0 +1,209 @@
+{% extends  'base/base.html' %}
+{% load static %}
+{% block body %}
+
+<div class="container margin_60_35">
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="box_general_3 p-3">
+                <div class="profile">
+                    <div class="row text-center">
+                        <div class="col-md-12">
+                            <figure>
+                                {% if doctor.profile_image %}
+                                <img src="{{ doctor.profile_image.url }}" alt="Doctor" class="rounded-circle img-fluid" style="max-width: 150px;">
+                                {% else %}
+                                <img src="{% static 'img/dr/dr1.jfif' %}" alt="Doctor" class="rounded-circle img-fluid" style="max-width: 150px;">
+                                {% endif %}
+                            </figure>
+                            <h3>{{ doctor.user.get_full_name }}</h3>
+                            <p>{{ doctor.specialization }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-nav mt-4">
+                    <ul class="list-group">
+                        <li class="list-group-item {% if active_tab == 'overview' %}active{% endif %}">
+                            <a href="{% url 'doctors:dashboard' %}"><i class="icon-th-large-outline"></i> داشبورد</a>
+                        </li>
+                        <li class="list-group-item {% if active_tab == 'appointments' %}active{% endif %}">
+                            <a href="{% url 'doctors:dashboard' %}?tab=appointments"><i class="icon-calendar-empty"></i> نوبت ها</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'doctors:analytics' %}"><i class="icon-chart-bar"></i> تحلیل عملکرد</a>
+                        </li>
+                        <li class="list-group-item {% if active_tab == 'earnings' %}active{% endif %}">
+                            <a href="{% url 'doctors:dashboard' %}?tab=earnings"><i class="icon-chart-line"></i> گزارش مالی</a>
+                        </li>
+                        <li class="list-group-item {% if active_tab == 'profile' %}active{% endif %}">
+                            <a href="{% url 'doctors:dashboard' %}?tab=profile"><i class="icon-user-1"></i> پروفایل</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-9">
+            <div class="box_general_3">
+                {% if active_tab == 'overview' or not active_tab %}
+                <!-- Overview Tab -->
+                <div class="header_box">
+                    <h2 class="d-inline-block">خلاصه وضعیت</h2>
+                    <div class="filter float-left">
+                        <select name="period" class="form-control">
+                            <option value="today" {% if period == 'today' %}selected{% endif %}>امروز</option>
+                            <option value="week" {% if period == 'week' %}selected{% endif %}>هفته جاری</option>
+                            <option value="month" {% if period == 'month' %}selected{% endif %}>ماه جاری</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="icon-calendar-check-o"></i> کل نوبت ها</h5>
+                                <p class="card-text h3">{{ total_appointments }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="icon-check-1"></i> نوبت های تکمیل شده</h5>
+                                <p class="card-text h3">{{ completed_appointments }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="icon-wallet"></i> درآمد</h5>
+                                <p class="card-text h3">{{ earnings }} تومان</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="header_box">
+                            <h3>نوبت های آینده</h3>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>بیمار</th>
+                                        <th>تاریخ</th>
+                                        <th>ساعت</th>
+                                        <th>وضعیت</th>
+                                        <th>عملیات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appointment in upcoming_appointments %}
+                                    <tr>
+                                        <td>{{ appointment.patient.name }}</td>
+                                        <td>{{ appointment.day.date }}</td>
+                                        <td>{{ appointment.time }}</td>
+                                        <td>
+                                            {% if appointment.status == 'pending' %}
+                                                <span class="badge badge-warning">در انتظار</span>
+                                            {% elif appointment.status == 'confirmed' %}
+                                                <span class="badge badge-success">تایید شده</span>
+                                            {% elif appointment.status == 'completed' %}
+                                                <span class="badge badge-info">تکمیل شده</span>
+                                            {% elif appointment.status == 'cancelled' %}
+                                                <span class="badge badge-danger">لغو شده</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-info update-status" data-id="{{ appointment.id }}" data-status="confirmed">تایید</button>
+                                            <button class="btn btn-sm btn-success update-status" data-id="{{ appointment.id }}" data-status="completed">تکمیل</button>
+                                            <button class="btn btn-sm btn-danger update-status" data-id="{{ appointment.id }}" data-status="cancelled">لغو</button>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center">هیچ نوبتی یافت نشد</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if active_tab == 'appointments' %}
+                <!-- Appointments Tab -->
+                <div class="header_box">
+                    <h2 class="d-inline-block">نوبت ها</h2>
+                </div>
+                
+                <!-- Add appointment-specific content here -->
+                {% endif %}
+                
+                {% if active_tab == 'earnings' %}
+                <!-- Earnings Tab -->
+                <div class="header_box">
+                    <h2 class="d-inline-block">گزارش مالی</h2>
+                </div>
+                
+                <!-- Add earnings-specific content here -->
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Handle appointment status updates
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get all status update buttons
+        const updateButtons = document.querySelectorAll('.update-status');
+        
+        // Add click event listener to each button
+        updateButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const appointmentId = this.getAttribute('data-id');
+                const newStatus = this.getAttribute('data-status');
+                
+                // Send AJAX request to update appointment status
+                fetch(`/doctors/appointment/${appointmentId}/update-status/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: `status=${newStatus}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Reload the page to show updated status
+                        window.location.reload();
+                    } else {
+                        alert('خطا در بروزرسانی وضعیت: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('خطا در ارتباط با سرور');
+                });
+            });
+        });
+        
+        // Handle period change
+        const periodSelect = document.querySelector('select[name="period"]');
+        if (periodSelect) {
+            periodSelect.addEventListener('change', function() {
+                window.location.href = `{% url 'doctors:dashboard' %}?period=${this.value}`;
+            });
+        }
+    });
+</script>
+
+{% endblock %} 
