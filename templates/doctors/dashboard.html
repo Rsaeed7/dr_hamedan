@@ -1,209 +1,303 @@
-{% extends  'base/base.html' %}
-{% load static %}
-{% block body %}
+{% extends 'base.html' %}
 
-<div class="container margin_60_35">
-    <div class="row">
-        <div class="col-lg-3">
-            <div class="box_general_3 p-3">
-                <div class="profile">
-                    <div class="row text-center">
-                        <div class="col-md-12">
-                            <figure>
-                                {% if doctor.profile_image %}
-                                <img src="{{ doctor.profile_image.url }}" alt="Doctor" class="rounded-circle img-fluid" style="max-width: 150px;">
-                                {% else %}
-                                <img src="{% static 'img/dr/dr1.jfif' %}" alt="Doctor" class="rounded-circle img-fluid" style="max-width: 150px;">
-                                {% endif %}
-                            </figure>
-                            <h3>{{ doctor.user.get_full_name }}</h3>
-                            <p>{{ doctor.specialization }}</p>
-                        </div>
+{% block title %}داشبورد پزشک - دکتر {% endblock %}
+
+{% block extra_css %}
+<style>
+    /* RTL specific styles */
+    .rtl .mr-3 {
+        margin-right: 0;
+        margin-left: 0.75rem;
+    }
+    
+    .rtl .ml-2 {
+        margin-left: 0;
+        margin-right: 0.5rem;
+    }
+    
+    .rtl .border-l-4 {
+        border-left: none;
+        border-right: 4px solid;
+    }
+    
+    .rtl .text-right {
+        text-align: left;
+    }
+    
+    .rtl .justify-between {
+        justify-content: space-between;
+    }
+    
+    .rtl .items-center {
+        align-items: center;
+    }
+    
+    .rtl .space-x-4 {
+        margin-right: 0;
+        margin-left: 1rem;
+    }
+    
+    .rtl .space-y-4 {
+        margin-top: 0;
+        margin-bottom: 1rem;
+    }
+    
+    .rtl .flex-row {
+        flex-direction: row-reverse;
+    }
+    
+    .rtl .flex-col {
+        flex-direction: column;
+    }
+    
+    .rtl .gap-4 {
+        gap: 1rem;
+    }
+    
+    .rtl .mr-4 {
+        margin-right: 0;
+        margin-left: 1rem;
+    }
+    
+    .rtl .md:pr-4 {
+        padding-right: 0;
+        padding-left: 1rem;
+    }
+    
+    .rtl .md:pl-4 {
+        padding-left: 0;
+        padding-right: 1rem;
+    }
+    
+    .rtl .md:border-l {
+        border-left: none;
+        border-right: 1px solid;
+    }
+    
+    /* Existing styles */
+    .sidebar {
+        height: calc(100vh - 4rem);
+    }
+    
+    .main-content {
+        height: calc(100vh - 4rem);
+        overflow-y: auto;
+    }
+    
+    @media (max-width: 768px) {
+        .sidebar, .main-content {
+            height: auto;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="flex flex-col md:flex-row rtl">
+    <!-- Sidebar -->
+    <div class="w-full md:w-64 bg-white shadow-md sidebar">
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex items-center">
+                {% if doctor.profile_image %}
+                    <img src="{{ doctor.profile_image.url }}" alt="{{ doctor }}" class="w-10 h-10 rounded-full object-cover ml-3">
+                {% else %}
+                    <div class="w-10 h-10 rounded-full bg-blue-200 flex items-center justify-center ml-3">
+                        <span class="text-blue-600 text-lg font-bold">{{ doctor.user.first_name|first }}{{ doctor.user.last_name|first }}</span>
                     </div>
-                </div>
-                
-                <div class="dashboard-nav mt-4">
-                    <ul class="list-group">
-                        <li class="list-group-item {% if active_tab == 'overview' %}active{% endif %}">
-                            <a href="{% url 'doctors:dashboard' %}"><i class="icon-th-large-outline"></i> داشبورد</a>
-                        </li>
-                        <li class="list-group-item {% if active_tab == 'appointments' %}active{% endif %}">
-                            <a href="{% url 'doctors:dashboard' %}?tab=appointments"><i class="icon-calendar-empty"></i> نوبت ها</a>
-                        </li>
-                        <li class="list-group-item">
-                            <a href="{% url 'doctors:analytics' %}"><i class="icon-chart-bar"></i> تحلیل عملکرد</a>
-                        </li>
-                        <li class="list-group-item {% if active_tab == 'earnings' %}active{% endif %}">
-                            <a href="{% url 'doctors:dashboard' %}?tab=earnings"><i class="icon-chart-line"></i> گزارش مالی</a>
-                        </li>
-                        <li class="list-group-item {% if active_tab == 'profile' %}active{% endif %}">
-                            <a href="{% url 'doctors:dashboard' %}?tab=profile"><i class="icon-user-1"></i> پروفایل</a>
-                        </li>
-                    </ul>
+                {% endif %}
+                <div>
+                    <h2 class="text-lg font-medium text-gray-800">دکتر {{ doctor.user.last_name }}</h2>
+                    <p class="text-sm text-gray-600">{{ doctor.specialization }}</p>
                 </div>
             </div>
         </div>
         
-        <div class="col-lg-9">
-            <div class="box_general_3">
-                {% if active_tab == 'overview' or not active_tab %}
-                <!-- Overview Tab -->
-                <div class="header_box">
-                    <h2 class="d-inline-block">خلاصه وضعیت</h2>
-                    <div class="filter float-left">
-                        <select name="period" class="form-control">
-                            <option value="today" {% if period == 'today' %}selected{% endif %}>امروز</option>
-                            <option value="week" {% if period == 'week' %}selected{% endif %}>هفته جاری</option>
-                            <option value="month" {% if period == 'month' %}selected{% endif %}>ماه جاری</option>
-                        </select>
+        <nav class="mt-4">
+            <a href="{% url 'doctors:doctor_dashboard' %}" class="block px-6 py-3 text-blue-600 border-r-4 border-blue-600 bg-blue-50 font-medium">
+                داشبورد
+            </a>
+            <a href="{% url 'doctors:doctor_appointments' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                نوبت‌ها
+            </a>
+            <a href="{% url 'doctors:doctor_availability' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                مدیریت زمان‌های حضور
+            </a>
+            <a href="{% url 'doctors:doctor_earnings' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                درآمد
+            </a>
+            <a href="{% url 'home:doctor_detail' doctor.id %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                مشاهده پروفایل عمومی
+            </a>
+        </nav>
+        
+        <div class="mt-auto p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <p class="mr-2 text-sm text-gray-600">
+                    {% if doctor.is_available %}
+                        <span class="text-green-600 font-medium">قابل رزرو</span>
+                    {% else %}
+                        <span class="text-red-600 font-medium">غیرقابل رزرو</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="flex-1 p-6 bg-gray-50 main-content">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6">داشبورد پزشک</h1>
+        
+        <!-- Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <div class="mr-4">
+                        <h2 class="text-sm font-medium text-gray-600">نوبت‌های امروز</h2>
+                        <p class="text-2xl font-semibold text-gray-800">{{ today_appointments_count|default:"0" }}</p>
                     </div>
                 </div>
-                
-                <div class="row text-center">
-                    <div class="col-md-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title"><i class="icon-calendar-check-o"></i> کل نوبت ها</h5>
-                                <p class="card-text h3">{{ total_appointments }}</p>
-                            </div>
-                        </div>
+            </div>
+            
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-green-100 text-green-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
                     </div>
-                    <div class="col-md-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title"><i class="icon-check-1"></i> نوبت های تکمیل شده</h5>
-                                <p class="card-text h3">{{ completed_appointments }}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title"><i class="icon-wallet"></i> درآمد</h5>
-                                <p class="card-text h3">{{ earnings }} تومان</p>
-                            </div>
-                        </div>
+                    <div class="mr-4">
+                        <h2 class="text-sm font-medium text-gray-600">درآمد این ماه</h2>
+                        <p class="text-2xl font-semibold text-gray-800">{{ monthly_earnings|default:"0" }} تومان</p>
                     </div>
                 </div>
-                
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <div class="header_box">
-                            <h3>نوبت های آینده</h3>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table table-hover table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>بیمار</th>
-                                        <th>تاریخ</th>
-                                        <th>ساعت</th>
-                                        <th>وضعیت</th>
-                                        <th>عملیات</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for appointment in upcoming_appointments %}
-                                    <tr>
-                                        <td>{{ appointment.patient.name }}</td>
-                                        <td>{{ appointment.day.date }}</td>
-                                        <td>{{ appointment.time }}</td>
-                                        <td>
-                                            {% if appointment.status == 'pending' %}
-                                                <span class="badge badge-warning">در انتظار</span>
-                                            {% elif appointment.status == 'confirmed' %}
-                                                <span class="badge badge-success">تایید شده</span>
-                                            {% elif appointment.status == 'completed' %}
-                                                <span class="badge badge-info">تکمیل شده</span>
-                                            {% elif appointment.status == 'cancelled' %}
-                                                <span class="badge badge-danger">لغو شده</span>
+            </div>
+            
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                    </div>
+                    <div class="mr-4">
+                        <h2 class="text-sm font-medium text-gray-600">کل بیماران</h2>
+                        <p class="text-2xl font-semibold text-gray-800">{{ total_patients|default:"0" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Upcoming Appointments -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-medium text-gray-800">نوبت‌های پیش رو</h2>
+            </div>
+            
+            {% if upcoming_appointments %}
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">بیمار</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاریخ و زمان</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">وضعیت</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for appointment in upcoming_appointments %}
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900">{{ appointment.patient.name }}</div>
+                                        <div class="text-sm text-gray-500">{{ appointment.phone }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">{{ appointment.day.date|date:"Y/m/d" }}</div>
+                                        <div class="text-sm text-gray-500">{{ appointment.time|time:"H:i" }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        {% if appointment.status == 'pending' %}
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">در انتظار</span>
+                                        {% elif appointment.status == 'confirmed' %}
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">تایید شده</span>
+                                        {% elif appointment.status == 'completed' %}
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">تکمیل شده</span>
+                                        {% elif appointment.status == 'cancelled' %}
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">لغو شده</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <div class="flex space-x-2">
+                                            {% if appointment.status == 'pending' and appointment.payment_status == 'paid' %}
+                                                <a href="{% url 'reservations:confirm_appointment' appointment.id %}" class="text-green-600 hover:text-green-900">تایید</a>
                                             {% endif %}
-                                        </td>
-                                        <td>
-                                            <button class="btn btn-sm btn-info update-status" data-id="{{ appointment.id }}" data-status="confirmed">تایید</button>
-                                            <button class="btn btn-sm btn-success update-status" data-id="{{ appointment.id }}" data-status="completed">تکمیل</button>
-                                            <button class="btn btn-sm btn-danger update-status" data-id="{{ appointment.id }}" data-status="cancelled">لغو</button>
-                                        </td>
-                                    </tr>
-                                    {% empty %}
-                                    <tr>
-                                        <td colspan="5" class="text-center">هیچ نوبتی یافت نشد</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-                
-                {% if active_tab == 'appointments' %}
-                <!-- Appointments Tab -->
-                <div class="header_box">
-                    <h2 class="d-inline-block">نوبت ها</h2>
+                                            
+                                            {% if appointment.status == 'confirmed' %}
+                                                <a href="{% url 'reservations:complete_appointment' appointment.id %}" class="text-blue-600 hover:text-blue-900">تکمیل</a>
+                                            {% endif %}
+                                            
+                                            {% if appointment.status == 'pending' or appointment.status == 'confirmed' %}
+                                                <a href="{% url 'reservations:cancel_appointment' appointment.id %}" class="text-red-600 hover:text-red-900">لغو</a>
+                                            {% endif %}
+                                            
+                                            <a href="{% url 'reservations:appointment_status' appointment.id %}" class="text-gray-600 hover:text-gray-900">مشاهده</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
                 
-                <!-- Add appointment-specific content here -->
-                {% endif %}
-                
-                {% if active_tab == 'earnings' %}
-                <!-- Earnings Tab -->
-                <div class="header_box">
-                    <h2 class="d-inline-block">گزارش مالی</h2>
+                <div class="px-6 py-4 border-t border-gray-200">
+                    <a href="{% url 'doctors:doctor_appointments' %}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">مشاهده همه نوبت‌ها ←</a>
                 </div>
+            {% else %}
+                <div class="px-6 py-4 text-center text-gray-500">
+                    <p>شما هیچ نوبت پیش رو ندارید.</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-medium text-gray-800">عملیات سریع</h2>
+            </div>
+            
+            <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <a href="{% url 'doctors:doctor_availability' %}" class="flex items-center p-3 bg-blue-50 rounded-md hover:bg-blue-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span class="text-blue-600 font-medium">مدیریت زمان‌های حضور</span>
+                </a>
                 
-                <!-- Add earnings-specific content here -->
-                {% endif %}
+                <a href="{% url 'doctors:doctor_earnings' %}" class="flex items-center p-3 bg-green-50 rounded-md hover:bg-green-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 8h6m-5 0a3 3 0 110 6H9l3 3m-3-6h6m6 1a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span class="text-green-600 font-medium">مشاهده درآمد</span>
+                </a>
+                
+                <a href="{% url 'home:doctor_detail' doctor.id %}" class="flex items-center p-3 bg-purple-50 rounded-md hover:bg-purple-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span class="text-purple-600 font-medium">مشاهده پروفایل عمومی</span>
+                </a>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-    // Handle appointment status updates
-    document.addEventListener('DOMContentLoaded', function() {
-        // Get all status update buttons
-        const updateButtons = document.querySelectorAll('.update-status');
-        
-        // Add click event listener to each button
-        updateButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const appointmentId = this.getAttribute('data-id');
-                const newStatus = this.getAttribute('data-status');
-                
-                // Send AJAX request to update appointment status
-                fetch(`/doctors/appointment/${appointmentId}/update-status/`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                    },
-                    body: `status=${newStatus}`
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Reload the page to show updated status
-                        window.location.reload();
-                    } else {
-                        alert('خطا در بروزرسانی وضعیت: ' + data.error);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('خطا در ارتباط با سرور');
-                });
-            });
-        });
-        
-        // Handle period change
-        const periodSelect = document.querySelector('select[name="period"]');
-        if (periodSelect) {
-            periodSelect.addEventListener('change', function() {
-                window.location.href = `{% url 'doctors:dashboard' %}?period=${this.value}`;
-            });
-        }
-    });
-</script>
-
 {% endblock %} 

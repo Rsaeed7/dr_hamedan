@@ -1,0 +1,323 @@
+{% extends 'base.html' %}
+
+{% block title %}افزودن موجودی - دکتر همدان{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* RTL specific styles */
+    .rtl .mr-2 {
+        margin-right: 0;
+        margin-left: 0.5rem;
+    }
+    
+    .rtl .mr-4 {
+        margin-right: 0;
+        margin-left: 1rem;
+    }
+    
+    .rtl .ml-3 {
+        margin-left: 0;
+        margin-right: 0.75rem;
+    }
+    
+    .rtl .text-left {
+        text-align: right;
+    }
+    
+    .rtl .text-right {
+        text-align: left;
+    }
+    
+    .rtl .flex-row {
+        flex-direction: row-reverse;
+    }
+    
+    .rtl .border-l-4 {
+        border-left: 0;
+        border-right: 4px solid;
+    }
+    
+    .rtl .pl-3 {
+        padding-left: 0;
+        padding-right: 0.75rem;
+    }
+    
+    .rtl .pl-7 {
+        padding-left: 0;
+        padding-right: 1.75rem;
+    }
+    
+    .rtl .pr-3 {
+        padding-right: 0;
+        padding-left: 0.75rem;
+    }
+    
+    .rtl .pr-12 {
+        padding-right: 0;
+        padding-left: 3rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 rtl">
+    <div class="flex flex-col md:flex-row md:space-x-8">
+        <!-- Sidebar -->
+        <div class="w-full md:w-64 mb-8 md:mb-0">
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <div class="p-6 bg-blue-50 border-b border-blue-100">
+                    <h2 class="text-xl font-bold text-gray-800">منوی کیف پول</h2>
+                </div>
+                <nav class="py-4">
+                    <ul>
+                        <li>
+                            <a href="{% url 'wallet:wallet_dashboard' %}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+                                    <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd" />
+                                </svg>
+                                داشبورد
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'wallet:deposit' %}" class="flex items-center px-6 py-3 text-blue-600 bg-blue-50 border-r-4 border-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                                </svg>
+                                افزودن موجودی
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'wallet:withdraw' %}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" transform="rotate(45 10 10)" />
+                                </svg>
+                                برداشت
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'wallet:transaction_list' %}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+                                </svg>
+                                تراکنش‌ها
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="flex-1">
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-900">افزودن موجودی</h1>
+                <p class="text-gray-600">موجودی به کیف پول خود اضافه کنید تا برای نوبت‌ها و خدمات پرداخت کنید.</p>
+            </div>
+            
+            {% if messages %}
+            <div class="mb-6">
+                {% for message in messages %}
+                <div class="p-4 mb-4 rounded-md {% if message.tags == 'success' %}bg-green-50 text-green-800 border border-green-200{% elif message.tags == 'error' %}bg-red-50 text-red-800 border border-red-200{% else %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <!-- Balance Card -->
+            <div class="bg-white rounded-lg shadow-sm p-4 mb-6 border border-gray-200">
+                <div class="flex items-center">
+                    <div class="mr-4 p-3 rounded-full bg-blue-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">موجودی فعلی</p>
+                        <div class="flex items-baseline">
+                            <span class="text-2xl font-bold text-gray-900">{{ wallet.balance|floatformat:2 }} تومان</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <!-- Deposit Form -->
+                <form method="post" action="{% url 'wallet:deposit' %}" class="p-6 border-b border-gray-200">
+                    {% csrf_token %}
+                    
+                    <div class="mb-6">
+                        <label for="amount" class="block text-sm font-medium text-gray-700 mb-1">مبلغ واریزی</label>
+                        <div class="mt-1 relative rounded-md shadow-sm">
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <span class="text-gray-500 sm:text-sm">تومان</span>
+                            </div>
+                            <input type="number" name="amount" id="amount" min="5" step="0.01" required 
+                                class="focus:ring-blue-500 focus:border-blue-500 block w-full pr-12 pl-7 sm:text-sm border-gray-300 rounded-md" 
+                                placeholder="0.00" value="{{ form.amount.value|default:'' }}">
+                        </div>
+                        {% if form.amount.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.amount.errors.0 }}</p>
+                        {% else %}
+                        <p class="mt-1 text-sm text-gray-500">حداقل مبلغ واریزی: 5 تومان</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-sm font-medium text-gray-700 mb-3">روش پرداخت</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="flex p-4 border border-gray-300 rounded-md cursor-pointer hover:border-blue-500 {% if not form.payment_method.value or form.payment_method.value == 'credit_card' %}bg-blue-50 border-blue-500{% endif %}">
+                                    <input type="radio" name="payment_method" value="credit_card" class="h-4 w-4 text-blue-600 focus:ring-blue-500 mt-1" 
+                                        {% if not form.payment_method.value or form.payment_method.value == 'credit_card' %}checked{% endif %}>
+                                    <div class="mr-3">
+                                        <span class="block text-sm font-medium text-gray-900">کارت اعتباری</span>
+                                        <span class="block text-sm text-gray-500">ویزا، مسترکارت و غیره</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div>
+                                <label class="flex p-4 border border-gray-300 rounded-md cursor-pointer hover:border-blue-500 {% if form.payment_method.value == 'paypal' %}bg-blue-50 border-blue-500{% endif %}">
+                                    <input type="radio" name="payment_method" value="paypal" class="h-4 w-4 text-blue-600 focus:ring-blue-500 mt-1"
+                                        {% if form.payment_method.value == 'paypal' %}checked{% endif %}>
+                                    <div class="mr-3">
+                                        <span class="block text-sm font-medium text-gray-900">پی‌پال</span>
+                                        <span class="block text-sm text-gray-500">اتصال به حساب پی‌پال</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div>
+                                <label class="flex p-4 border border-gray-300 rounded-md cursor-pointer hover:border-blue-500 {% if form.payment_method.value == 'bank_transfer' %}bg-blue-50 border-blue-500{% endif %}">
+                                    <input type="radio" name="payment_method" value="bank_transfer" class="h-4 w-4 text-blue-600 focus:ring-blue-500 mt-1"
+                                        {% if form.payment_method.value == 'bank_transfer' %}checked{% endif %}>
+                                    <div class="mr-3">
+                                        <span class="block text-sm font-medium text-gray-900">انتقال بانکی</span>
+                                        <span class="block text-sm text-gray-500">مستقیم از حساب بانکی</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        {% if form.payment_method.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.payment_method.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Credit Card Details -->
+                    <div id="credit-card-details" class="mb-6 {% if form.payment_method.value == 'paypal' or form.payment_method.value == 'bank_transfer' %}hidden{% endif %}">
+                        <h3 class="text-sm font-medium text-gray-700 mb-3">جزئیات کارت</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="md:col-span-2">
+                                <label for="card_number" class="block text-sm font-medium text-gray-700 mb-1">شماره کارت</label>
+                                <input type="text" name="card_number" id="card_number" placeholder="XXXX XXXX XXXX XXXX"
+                                    class="focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                    value="{{ form.card_number.value|default:'' }}">
+                                {% if form.card_number.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.card_number.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <label for="card_holder" class="block text-sm font-medium text-gray-700 mb-1">نام صاحب کارت</label>
+                                <input type="text" name="card_holder" id="card_holder" 
+                                    class="focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                    value="{{ form.card_holder.value|default:'' }}">
+                                {% if form.card_holder.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.card_holder.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="expiry_date" class="block text-sm font-medium text-gray-700 mb-1">تاریخ انقضا</label>
+                                    <input type="text" name="expiry_date" id="expiry_date" placeholder="ماه/سال"
+                                        class="focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                        value="{{ form.expiry_date.value|default:'' }}">
+                                    {% if form.expiry_date.errors %}
+                                    <p class="mt-1 text-sm text-red-600">{{ form.expiry_date.errors.0 }}</p>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <label for="cvv" class="block text-sm font-medium text-gray-700 mb-1">CVV</label>
+                                    <input type="password" name="cvv" id="cvv" maxlength="4" placeholder="XXX"
+                                        class="focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                        value="{{ form.cvv.value|default:'' }}">
+                                    {% if form.cvv.errors %}
+                                    <p class="mt-1 text-sm text-red-600">{{ form.cvv.errors.0 }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- PayPal Details -->
+                    <div id="paypal-details" class="mb-6 {% if not form.payment_method.value == 'paypal' %}hidden{% endif %}">
+                        <p class="text-sm text-gray-600 mb-4">پس از ارسال این فرم، به پی‌پال هدایت خواهید شد تا پرداخت خود را تکمیل کنید.</p>
+                        <div class="bg-blue-50 p-4 rounded-md border border-blue-100">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div class="mr-3 flex-1 md:flex md:justify-between">
+                                    <p class="text-sm text-blue-700">
+                                        برای استفاده از این روش پرداخت باید حساب پی‌پال داشته باشید.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Bank Transfer Details -->
+                    <div id="bank-transfer-details" class="mb-6 {% if not form.payment_method.value == 'bank_transfer' %}hidden{% endif %}">
+                        <h3 class="text-sm font-medium text-gray-700 mb-3">جزئیات حساب بانکی</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="account_name" class="block text-sm font-medium text-gray-700 mb-1">نام صاحب حساب</label>
+                                <input type="text" name="account_name" id="account_name" 
+                                    class="focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                    value="{{ form.account_name.value|default:'' }}">
+                                {% if form.account_name.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.account_name.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <label for="account_number" class="block text-sm font-medium text-gray-700 mb-1">شماره حساب</label>
+                                <input type="text" name="account_number" id="account_number" 
+                                    class="focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                    value="{{ form.account_number.value|default:'' }}">
+                                {% if form.account_number.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.account_number.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <label for="bank_name" class="block text-sm font-medium text-gray-700 mb-1">نام بانک</label>
+                                <input type="text" name="bank_name" id="bank_name" 
+                                    class="focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                    value="{{ form.bank_name.value|default:'' }}">
+                                {% if form.bank_name.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.bank_name.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <label for="routing_number" class="block text-sm font-medium text-gray-700 mb-1">شماره مسیریابی</label>
+                                <input type="text" name="routing_number" id="routing_number" 
+                                    class="focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                    value="{{ form.routing_number.value|default:'' }}">
+                                {% if form.routing_number.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.routing_number.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end">
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                            پرداخت
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+
+{% block title %}نوبت‌ها - {{ clinic.name }} - دکتر همدان{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* RTL specific styles */
+    .rtl .mr-3 {
+        margin-right: 0;
+        margin-left: 0.75rem;
+    }
+    
+    .rtl .space-x-2 {
+        margin-right: 0;
+        margin-left: 0.5rem;
+    }
+    
+    .rtl .text-left {
+        text-align: right;
+    }
+    
+    .rtl .mr-3 {
+        margin-right: 0;
+        margin-left: 0.75rem;
+    }
+    
+    .rtl .space-y-4 > * + * {
+        margin-top: 1rem;
+    }
+    
+    .rtl .grid-cols-4 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .rtl .md\:col-span-3 {
+        grid-column: span 3 / span 3;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mb-8 rtl">
+    <h1 class="text-3xl font-bold text-gray-800 mb-4">نوبت‌های کلینیک</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <!-- Sidebar Navigation -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center mb-6">
+                {% if clinic.logo %}
+                    <img src="{{ clinic.logo.url }}" alt="{{ clinic.name }}" class="w-12 h-12 rounded-md object-cover mr-3">
+                {% else %}
+                    <div class="w-12 h-12 rounded-md bg-blue-200 flex items-center justify-center mr-3">
+                        <span class="text-blue-600 text-xl font-bold">{{ clinic.name|first }}</span>
+                    </div>
+                {% endif %}
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800">{{ clinic.name }}</h3>
+                    <p class="text-gray-600 text-sm">مدیر کلینیک</p>
+                </div>
+            </div>
+            
+            <nav>
+                <a href="{% url 'clinics:clinic_dashboard' %}" class="block py-2 px-4 rounded-md text-gray-700 hover:bg-gray-100">
+                    داشبورد
+                </a>
+                <a href="{% url 'clinics:clinic_doctors' %}" class="block py-2 px-4 rounded-md text-gray-700 hover:bg-gray-100">
+                    مدیریت پزشکان
+                </a>
+                <a href="{% url 'clinics:clinic_profile' %}" class="block py-2 px-4 rounded-md text-gray-700 hover:bg-gray-100">
+                    پروفایل کلینیک
+                </a>
+                <a href="{% url 'clinics:clinic_appointments' %}" class="block py-2 px-4 rounded-md bg-blue-50 text-blue-600 font-medium">
+                    نوبت‌ها
+                </a>
+            </nav>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="md:col-span-3">
+            <!-- Filter Controls -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">فیلتر نوبت‌ها</h2>
+                
+                <form method="get" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label for="doctor_id" class="block text-sm font-medium text-gray-700 mb-1">پزشک</label>
+                            <select id="doctor_id" name="doctor_id" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                <option value="all" {% if selected_doctor == 'all' %}selected{% endif %}>همه پزشکان</option>
+                                {% for doctor in doctors %}
+                                    <option value="{{ doctor.id }}" {% if selected_doctor == doctor.id|stringformat:"s" %}selected{% endif %}>
+                                        دکتر {{ doctor.user.last_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="status" class="block text-sm font-medium text-gray-700 mb-1">وضعیت</label>
+                            <select id="status" name="status" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                <option value="all" {% if status == 'all' %}selected{% endif %}>همه وضعیت‌ها</option>
+                                <option value="pending" {% if status == 'pending' %}selected{% endif %}>در انتظار</option>
+                                <option value="confirmed" {% if status == 'confirmed' %}selected{% endif %}>تایید شده</option>
+                                <option value="completed" {% if status == 'completed' %}selected{% endif %}>تکمیل شده</option>
+                                <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>لغو شده</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="date_from" class="block text-sm font-medium text-gray-700 mb-1">از تاریخ</label>
+                            <input type="date" id="date_from" name="date_from" value="{{ date_from|date:'Y-m-d' }}" 
+                                   class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label for="date_to" class="block text-sm font-medium text-gray-700 mb-1">تا تاریخ</label>
+                            <input type="date" id="date_to" name="date_to" value="{{ date_to|date:'Y-m-d' }}" 
+                                   class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-2">
+                        <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
+                            اعمال فیلترها
+                        </button>
+                        <a href="{% url 'clinics:clinic_appointments' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50">
+                            پاک کردن فیلترها
+                        </a>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Appointments Table -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-xl font-semibold text-gray-800">نوبت‌ها</h2>
+                </div>
+                
+                {% if appointments %}
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">بیمار</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">پزشک</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاریخ و زمان</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">وضعیت</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">عملیات</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for appointment in appointments %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900">{{ appointment.patient_name }}</div>
+                                            <div class="text-sm text-gray-500">{{ appointment.patient_phone }}</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">دکتر {{ appointment.doctor.user.last_name }}</div>
+                                            <div class="text-sm text-gray-500">{{ appointment.doctor.specialization }}</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">{{ appointment.day.date|date:"j F Y" }}</div>
+                                            <div class="text-sm text-gray-500">{{ appointment.time|time:"H:i" }}</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                                {% if appointment.status == 'confirmed' %}bg-green-100 text-green-800
+                                                {% elif appointment.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                                {% elif appointment.status == 'completed' %}bg-blue-100 text-blue-800
+                                                {% elif appointment.status == 'cancelled' %}bg-red-100 text-red-800
+                                                {% endif %}">
+                                                {{ appointment.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                            <a href="{% url 'reservations:view_appointment' appointment.id %}" class="text-blue-600 hover:text-blue-900 ml-3">مشاهده</a>
+                                            
+                                            {% if appointment.status == 'pending' %}
+                                                <a href="{% url 'reservations:confirm_appointment' appointment.id %}?next={% url 'clinics:clinic_appointments' %}" class="text-green-600 hover:text-green-900 ml-3">تایید</a>
+                                            {% endif %}
+                                            
+                                            {% if appointment.status == 'pending' or appointment.status == 'confirmed' %}
+                                                <a href="{% url 'reservations:cancel_appointment' appointment.id %}?next={% url 'clinics:clinic_appointments' %}" class="text-red-600 hover:text-red-900">لغو</a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="p-6 text-center">
+                        <p class="text-gray-600">هیچ نوبتی مطابق با معیارهای انتخاب شده یافت نشد.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

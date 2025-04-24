@@ -1,163 +1,93 @@
-{% extends  'base/base.html' %}
-{% load static %}
-{% block body %}
-    
-    
-    <!-- Search -->
-{% include  'base/search.html' %}
-    <!-- /Search -->
+{% extends 'base.html' %}
 
-    <div class="filters_listing">
-        <div class="container">
-            <ul class="clearfix">
-                <li>
-                    <h6>فیلتر کردن</h6>
-                    <div class="switch-field">
-                        <input type="radio" id="all" name="type_patient" value="all" checked>
-                        <label for="all">همه</label>
-                        <input type="radio" id="doctors" name="type_patient" value="doctors">
-                        <label for="doctors">پزشکان</label>
-                        <input type="radio" id="clinics" name="type_patient" value="clinics">
-                        <label for="clinics">کلینیک ها</label>
-                    </div>
-                </li>
-                <li>
-                    <h6>سرویس ها</h6>
-                    <div class="switch-field">
-                        <input type="radio" id="online" name="layout_view" value="online" checked>
-                        <label for="online">بیمه</label>
-                        <input type="radio" id="row" name="layout_view" value="row">
-                        <label for="row">اورژانسی</label>
-                    </div>
-                </li>
-            </ul>
-        </div>
+{% block title %}لیست پزشکان - دکتر {% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Search and Filter Section -->
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <form method="get" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="query" class="block text-sm font-medium text-gray-700 mb-1">جستجو</label>
+                    <input type="text" name="query" id="query" value="{{ request.GET.query }}" 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="نام پزشک یا تخصص...">
+                </div>
+                <div>
+                    <label for="specialty" class="block text-sm font-medium text-gray-700 mb-1">تخصص</label>
+                    <select name="specialty" id="specialty" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">همه تخصص‌ها</option>
+                        {% for spec in specializations %}
+                            <option value="{{ spec.name }}" {% if request.GET.specialty == spec.name %}selected{% endif %}>
+                                {{ spec.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="clinic" class="block text-sm font-medium text-gray-700 mb-1">کلینیک</label>
+                    <input type="text" name="clinic" id="clinic" value="{{ request.GET.clinic }}"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="نام کلینیک...">
+                </div>
+            </div>
+            <div class="flex justify-end">
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                    جستجو
+                </button>
+            </div>
+        </form>
     </div>
 
-    <div class="container margin_60_35">
-        <div class="row">
-            <aside class="col-lg-3 mb-4">
-                <div id="filters_col">
-                    <a data-toggle="collapse" href="#collapseFilters" aria-expanded="false" aria-controls="collapseFilters" id="filters_col_bt">فیلتر ها </a>
-                    <div class="collapse show" id="collapseFilters">
-                        <div class="filter_type">
-                            <h6>تخصص</h6>
-                            <ul>
-                                <li>
-                                    <label class="container_check">تخصص مغز و اعصاب<small>12</small>
-                                        <input type="checkbox">
-                                        <span class="checkmark"></span>
-                                    </label>
-                                </li>
-                                <li>
-                                    <label class="container_check">پزشک عمومی<small>24</small>
-                                        <input type="checkbox">
-                                        <span class="checkmark"></span>
-                                    </label>
-                                </li>
-                                <li>
-                                    <label class="container_check">تخصص قلب و عروق<small>23</small>
-                                        <input type="checkbox">
-                                        <span class="checkmark"></span>
-                                    </label>
-                                </li>
-                                <li>
-                                    <label class="container_check">متخصص گوارش<small>11</small>
-                                        <input type="checkbox">
-                                        <span class="checkmark"></span>
-                                    </label>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </aside>
-
-            <div class="col-lg-9">
-                <div class="row">
-                    {% for doctor in doctors %}
-                    <div class="col-md-4">
-                        <div class="box_list wow fadeIn">
-                            <a href="{% url 'doctors:doctor_detail' doctor.id %}" class="wish_bt"></a>
-                            <figure>
-                                <a href="{% url 'doctors:doctor_detail' doctor.id %}">
-                                    {% if doctor.profile_image %}
-                                    <img src="{{ doctor.profile_image.url }}" class="img-fluid" alt="">
-                                    {% else %}
-                                    <img src="{% static 'img/dr/dr1.jfif' %}" class="img-fluid" alt="">
-                                    {% endif %}
-                                </a>
-                                <div class="preview"><span>مشاهده</span></div>
-                            </figure>
-                            <div class="wrapper">
-                                <small>{{ doctor.specialization }}</small>
-                                <h3>{{ doctor.user.get_full_name }}</h3>
-
-                                <p>{{ doctor.bio|truncatechars:100 }}</p>
-                                <span class="rating">
-                                    <i class="icon_star voted"></i>
-                                    <i class="icon_star voted"></i>
-                                    <i class="icon_star voted"></i>
-                                    <i class="icon_star voted"></i>
-                                    <i class="icon_star"></i>
-                                    <small>({{ doctor.consultation_fee }} تومان)</small>
-                                </span>
+    <!-- Doctors List -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for doctor in doctors %}
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="p-6">
+                <div class="flex items-center space-x-4">
+                    <div class="flex-shrink-0">
+                        {% if doctor.profile_image %}
+                            <img src="{{ doctor.profile_image.url }}" alt="{{ doctor.user.get_full_name }}" 
+                                 class="h-16 w-16 rounded-full object-cover">
+                        {% else %}
+                            <div class="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center">
+                                <heroicon-outline-user class="h-8 w-8 text-gray-400" />
                             </div>
-                            <ul>
-                                <li><i class="icon-location-outline"></i>{% if doctor.address %}{{ doctor.address }}{% else %}همدان{% endif %}</li>
-                                <li>
-                                    <a href="{% url 'doctors:doctor_detail' doctor.id %}">پروفایل</a>
-                                    <a href="{% url 'turn:turn_days' %}?doctor={{ doctor.id }}">رزرو نوبت</a>
-                                </li>
-                            </ul>
-                        </div>
+                        {% endif %}
                     </div>
-                    {% empty %}
-                    <div class="col-12 text-center">
-                        <p>پزشکی یافت نشد.</p>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-lg font-semibold text-gray-900">
+                            دکتر {{ doctor.user.get_full_name }}
+                        </h3>
+                        <p class="text-sm text-gray-500">{{ doctor.specialization.name }}</p>
                     </div>
-                    {% endfor %}
                 </div>
-
-                <!-- Pagination -->
-                {% if doctors.has_other_pages %}
-                <nav aria-label="..." class="add_top_20">
-                    <ul class="pagination pagination-sm">
-                        {% if doctors.has_previous %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ doctors.previous_page_number }}">قبلی</a>
-                        </li>
-                        {% else %}
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" tabindex="-1">قبلی</a>
-                        </li>
-                        {% endif %}
-                        
-                        {% for i in doctors.paginator.page_range %}
-                            {% if doctors.number == i %}
-                            <li class="page-item active">
-                                <a class="page-link" href="#">{{ i }}</a>
-                            </li>
-                            {% else %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
-                            </li>
-                            {% endif %}
-                        {% endfor %}
-                        
-                        {% if doctors.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ doctors.next_page_number }}">بعدی</a>
-                        </li>
-                        {% else %}
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" tabindex="-1">بعدی</a>
-                        </li>
-                        {% endif %}
-                    </ul>
-                </nav>
-                {% endif %}
+                
+                <div class="mt-4">
+                    <p class="text-sm text-gray-600 line-clamp-3">{{ doctor.bio|default:"بدون توضیحات" }}</p>
+                </div>
+                
+                <div class="mt-4 flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <heroicon-outline-currency-dollar class="h-5 w-5 text-green-600" />
+                        <span class="text-sm font-medium text-gray-900">{{ doctor.consultation_fee }} تومان</span>
+                    </div>
+                    <a href="{% url 'doctors:doctor_detail' doctor.pk %}" 
+                       class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
+                        مشاهده پروفایل
+                    </a>
+                </div>
             </div>
         </div>
+        {% empty %}
+        <div class="col-span-full text-center py-12">
+            <heroicon-outline-user-group class="h-12 w-12 text-gray-400 mx-auto" />
+            <h3 class="mt-2 text-lg font-medium text-gray-900">هیچ پزشکی یافت نشد</h3>
+            <p class="mt-1 text-sm text-gray-500">لطفاً معیارهای جستجوی خود را تغییر دهید.</p>
+        </div>
+        {% endfor %}
     </div>
-{% endblock %}
+</div>
+{% endblock %} 
