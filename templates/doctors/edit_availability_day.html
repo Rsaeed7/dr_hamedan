@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block title %}ویرایش زمان حضور - دکتر {% endblock %}
+
+{% block extra_css %}
+<style>
+    /* RTL specific styles */
+    .rtl .mr-3 {
+        margin-right: 0;
+        margin-left: 0.75rem;
+    }
+    
+    .rtl .border-l-4 {
+        border-left: none;
+        border-right: 4px solid;
+    }
+    
+    .rtl .text-right {
+        text-align: left;
+    }
+    
+    .rtl .justify-between {
+        justify-content: space-between;
+    }
+    
+    .rtl .items-center {
+        align-items: center;
+    }
+    
+    .rtl .space-x-4 {
+        margin-right: 0;
+        margin-left: 1rem;
+    }
+    
+    .rtl .space-y-4 {
+        margin-top: 0;
+        margin-bottom: 1rem;
+    }
+    
+    .rtl .flex-row {
+        flex-direction: row-reverse;
+    }
+    
+    .rtl .flex-col {
+        flex-direction: column;
+    }
+    
+    .rtl .gap-4 {
+        gap: 1rem;
+    }
+    
+    /* Existing styles */
+    .sidebar {
+        height: calc(100vh - 4rem);
+    }
+    
+    .main-content {
+        height: calc(100vh - 4rem);
+        overflow-y: auto;
+    }
+    
+    @media (max-width: 768px) {
+        .sidebar, .main-content {
+            height: auto;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="flex flex-col md:flex-row rtl">
+    <!-- Sidebar -->
+    <div class="w-full md:w-64 bg-white shadow-md sidebar">
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex items-center">
+                {% if doctor.profile_image %}
+                    <img src="{{ doctor.profile_image.url }}" alt="{{ doctor }}" class="w-10 h-10 rounded-full object-cover ml-3">
+                {% else %}
+                    <div class="w-10 h-10 rounded-full bg-blue-200 flex items-center justify-center ml-3">
+                        <span class="text-blue-600 text-lg font-bold">{{ doctor.user.first_name|first }}{{ doctor.user.last_name|first }}</span>
+                    </div>
+                {% endif %}
+                <div>
+                    <h2 class="text-lg font-medium text-gray-800">دکتر {{ doctor.user.last_name }}</h2>
+                    <p class="text-sm text-gray-600">{{ doctor.specialization }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <nav class="mt-4">
+            <a href="{% url 'doctors:doctor_dashboard' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                داشبورد
+            </a>
+            <a href="{% url 'doctors:doctor_appointments' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                نوبت‌ها
+            </a>
+            <a href="{% url 'doctors:doctor_availability' %}" class="block px-6 py-3 text-blue-600 border-r-4 border-blue-600 bg-blue-50 font-medium">
+                مدیریت زمان‌های حضور
+            </a>
+            <a href="{% url 'doctors:doctor_earnings' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                درآمد
+            </a>
+            <a href="{% url 'doctors:doctor_profile' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                مشاهده پروفایل عمومی
+            </a>
+        </nav>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="flex-1 p-6 bg-gray-50 main-content">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">ویرایش زمان حضور</h1>
+            
+            <a href="{% url 'doctors:doctor_availability' %}" class="text-blue-600 hover:text-blue-800">
+                بازگشت به زمان‌های حضور &rarr;
+            </a>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-lg font-medium text-gray-800 mb-4">{{ availability.get_day_of_week_display }}</h2>
+            
+            <form method="post" action="{% url 'doctors:edit_availability_day' availability.id %}">
+                {% csrf_token %}
+                
+                {% if messages %}
+                    <div class="mb-4">
+                        {% for message in messages %}
+                            <div class="{% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %} px-4 py-3 rounded-md mb-2">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label for="start_time" class="block text-sm font-medium text-gray-700 mb-1">زمان شروع</label>
+                        <input type="time" id="start_time" name="start_time" value="{{ availability.start_time|time:'H:i' }}" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                    </div>
+                    
+                    <div>
+                        <label for="end_time" class="block text-sm font-medium text-gray-700 mb-1">زمان پایان</label>
+                        <input type="time" id="end_time" name="end_time" value="{{ availability.end_time|time:'H:i' }}" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150">
+                        ذخیره تغییرات
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

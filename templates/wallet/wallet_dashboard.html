@@ -1,0 +1,270 @@
+{% extends 'base.html' %}
+
+{% block title %}داشبورد کیف پول - دکتر همدان{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* RTL specific styles */
+    .rtl .mr-2 {
+        margin-right: 0;
+        margin-left: 0.5rem;
+    }
+    
+    .rtl .mr-4 {
+        margin-right: 0;
+        margin-left: 1rem;
+    }
+    
+    .rtl .text-left {
+        text-align: right;
+    }
+    
+    .rtl .border-l-4 {
+        border-left: 0;
+        border-right: 4px solid;
+    }
+    
+    .rtl .md:space-x-8 {
+        margin-right: 0;
+        margin-left: 2rem;
+    }
+    
+    .rtl .-ml-1 {
+        margin-left: 0;
+        margin-right: -0.25rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 rtl">
+    <div class="flex flex-col md:flex-row md:space-x-8">
+        <!-- Sidebar -->
+        <div class="w-full md:w-64 mb-8 md:mb-0">
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <div class="p-6 bg-blue-50 border-b border-blue-100">
+                    <h2 class="text-xl font-bold text-gray-800">منوی کیف پول</h2>
+                </div>
+                <nav class="py-4">
+                    <ul>
+                        <li>
+                            <a href="{% url 'wallet:wallet_dashboard' %}" class="flex items-center px-6 py-3 text-blue-600 bg-blue-50 border-l-4 border-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+                                    <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd" />
+                                </svg>
+                                داشبورد
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'wallet:deposit' %}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                                </svg>
+                                واریز
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'wallet:withdraw' %}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" transform="rotate(45 10 10)" />
+                                </svg>
+                                برداشت
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'wallet:transaction_list' %}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+                                </svg>
+                                تراکنش‌ها
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="flex-1">
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-900">داشبورد کیف پول</h1>
+                <p class="text-gray-600">موجودی خود را مدیریت کنید و تاریخچه تراکنش‌ها را مشاهده کنید</p>
+            </div>
+            
+            {% if messages %}
+            <div class="mb-6">
+                {% for message in messages %}
+                <div class="p-4 mb-4 rounded-md {% if message.tags == 'success' %}bg-green-50 text-green-800 border border-green-200{% elif message.tags == 'error' %}bg-red-50 text-red-800 border border-red-200{% else %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <!-- Balance Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <!-- Available Balance Card -->
+                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">موجودی قابل برداشت</p>
+                            <p class="mt-1 text-3xl font-bold text-gray-900">{{ wallet.balance|floatformat:2 }} تومان</p>
+                        </div>
+                        <div class="p-3 rounded-full bg-blue-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pending Balance Card (for doctors) -->
+                {% if is_doctor %}
+                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">درآمد در انتظار</p>
+                            <p class="mt-1 text-3xl font-bold text-gray-900">{{ pending_earnings|default:"0.00"|floatformat:2 }} تومان</p>
+                            <p class="mt-1 text-xs text-gray-500">قابل برداشت در 7-14 روز آینده</p>
+                        </div>
+                        <div class="p-3 rounded-full bg-yellow-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Total Spent/Earned Card -->
+                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">
+                                {% if is_doctor %}کل درآمد{% else %}کل هزینه‌ها{% endif %}
+                            </p>
+                            <p class="mt-1 text-3xl font-bold text-gray-900">{{ total_amount|default:"0.00"|floatformat:2 }} تومان</p>
+                            <p class="mt-1 text-xs text-gray-500">از ابتدا</p>
+                        </div>
+                        <div class="p-3 rounded-full {% if is_doctor %}bg-green-100{% else %}bg-purple-100{% endif %}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 {% if is_doctor %}text-green-600{% else %}text-purple-600{% endif %}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                {% if is_doctor %}
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                                {% else %}
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" />
+                                {% endif %}
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="mb-8">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">عملیات سریع</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <a href="{% url 'wallet:deposit' %}" class="bg-white rounded-lg shadow-sm p-4 border border-gray-200 flex items-center hover:bg-blue-50 transition-colors">
+                        <div class="p-3 rounded-full bg-blue-100 mr-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-medium text-gray-900">واریز وجه</h3>
+                            <p class="text-sm text-gray-500">افزودن پول به کیف پول</p>
+                        </div>
+                    </a>
+                    
+                    <a href="{% url 'wallet:withdraw' %}" class="bg-white rounded-lg shadow-sm p-4 border border-gray-200 flex items-center hover:bg-blue-50 transition-colors">
+                        <div class="p-3 rounded-full bg-blue-100 mr-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" transform="rotate(45 10 10)" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-medium text-gray-900">برداشت وجه</h3>
+                            <p class="text-sm text-gray-500">انتقال پول به حساب بانکی</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Recent Transactions -->
+            <div>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold text-gray-900">تراکنش‌های اخیر</h2>
+                    <a href="{% url 'wallet:transaction_list' %}" class="text-sm font-medium text-blue-600 hover:text-blue-500">مشاهده همه</a>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                    {% if transactions %}
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاریخ</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">توضیحات</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">نوع</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">مبلغ</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">وضعیت</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for transaction in transactions %}
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ transaction.created_at|date:"M d, Y" }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{ transaction.description }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ transaction.get_transaction_type_display }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm 
+                                        {% if transaction.transaction_type == 'deposit' or transaction.transaction_type == 'payment_received' %}text-green-600
+                                        {% elif transaction.transaction_type == 'withdrawal' or transaction.transaction_type == 'payment_sent' %}text-red-600
+                                        {% else %}text-gray-900{% endif %} font-medium">
+                                        {% if transaction.transaction_type == 'deposit' or transaction.transaction_type == 'payment_received' %}+{% elif transaction.transaction_type == 'withdrawal' or transaction.transaction_type == 'payment_sent' %}-{% endif %}
+                                        {{ transaction.amount|floatformat:2 }} تومان
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                            {% if transaction.status == 'completed' %}bg-green-100 text-green-800
+                                            {% elif transaction.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                            {% elif transaction.status == 'failed' %}bg-red-100 text-red-800
+                                            {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                            {{ transaction.get_status_display }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="p-6 text-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900">تراکنشی وجود ندارد</h3>
+                        <p class="mt-1 text-sm text-gray-500">
+                            هنوز تراکنشی در کیف پول شما ثبت نشده است.
+                        </p>
+                        <div class="mt-6">
+                            <a href="{% url 'wallet:deposit' %}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                                </svg>
+                                واریز وجه
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

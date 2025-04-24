@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+
+{% block title %}مدیریت پزشکان - {{ clinic.name }} - دکتر همدان{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* RTL specific styles */
+    .rtl .mr-3 {
+        margin-right: 0;
+        margin-left: 0.75rem;
+    }
+    
+    .rtl .mr-4 {
+        margin-right: 0;
+        margin-left: 1rem;
+    }
+    
+    .rtl .space-x-2 > * + * {
+        margin-left: 0;
+        margin-right: 0.5rem;
+    }
+    
+    .rtl .text-left {
+        text-align: right;
+    }
+    
+    .rtl .text-right {
+        text-align: left;
+    }
+    
+    .rtl .flex-row {
+        flex-direction: row-reverse;
+    }
+    
+    .rtl .md\:flex-row {
+        flex-direction: row-reverse;
+    }
+    
+    .rtl .md\:justify-between {
+        justify-content: space-between;
+    }
+    
+    .rtl .space-y-4 > * + * {
+        margin-top: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mb-8 rtl">
+    <h1 class="text-3xl font-bold text-gray-800 mb-4">مدیریت پزشکان کلینیک</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <!-- Sidebar Navigation -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center mb-6">
+                {% if clinic.logo %}
+                    <img src="{{ clinic.logo.url }}" alt="{{ clinic.name }}" class="w-12 h-12 rounded-md object-cover mr-3">
+                {% else %}
+                    <div class="w-12 h-12 rounded-md bg-blue-200 flex items-center justify-center mr-3">
+                        <span class="text-blue-600 text-xl font-bold">{{ clinic.name|first }}</span>
+                    </div>
+                {% endif %}
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800">{{ clinic.name }}</h3>
+                    <p class="text-gray-600 text-sm">مدیر کلینیک</p>
+                </div>
+            </div>
+            
+            <nav>
+                <a href="{% url 'clinics:clinic_dashboard' %}" class="block py-2 px-4 rounded-md text-gray-700 hover:bg-gray-100">
+                    داشبورد
+                </a>
+                <a href="{% url 'clinics:clinic_doctors' %}" class="block py-2 px-4 rounded-md bg-blue-50 text-blue-600 font-medium">
+                    مدیریت پزشکان
+                </a>
+                <a href="{% url 'clinics:clinic_profile' %}" class="block py-2 px-4 rounded-md text-gray-700 hover:bg-gray-100">
+                    پروفایل کلینیک
+                </a>
+                <a href="{% url 'clinics:clinic_appointments' %}" class="block py-2 px-4 rounded-md text-gray-700 hover:bg-gray-100">
+                    نوبت‌ها
+                </a>
+            </nav>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="md:col-span-3">
+            <!-- Current Doctors -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">پزشکان فعلی</h2>
+                
+                {% if clinic_doctors %}
+                    <div class="space-y-4">
+                        {% for doctor in clinic_doctors %}
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                                    <div class="flex items-start mb-4 md:mb-0">
+                                        {% if doctor.profile_image %}
+                                            <img src="{{ doctor.profile_image.url }}" alt="{{ doctor }}" class="w-16 h-16 rounded-full object-cover mr-4">
+                                        {% else %}
+                                            <div class="w-16 h-16 rounded-full bg-blue-200 flex items-center justify-center mr-4">
+                                                <span class="text-blue-600 text-xl font-bold">{{ doctor.user.first_name|first }}{{ doctor.user.last_name|first }}</span>
+                                            </div>
+                                        {% endif %}
+                                        
+                                        <div>
+                                            <h3 class="text-lg font-semibold text-gray-800">{{ doctor }}</h3>
+                                            <p class="text-blue-600">{{ doctor.specialization }}</p>
+                                            <p class="text-gray-600 text-sm">{{ doctor.phone }}</p>
+                                            <p class="text-gray-600 text-sm">{{ doctor.user.email }}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center space-x-2">
+                                        <a href="{% url 'doctors:doctor_detail' doctor.pk %}" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                            مشاهده پروفایل
+                                        </a>
+                                        
+                                        <form method="post" class="inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="doctor_id" value="{{ doctor.id }}">
+                                            <input type="hidden" name="action" value="remove">
+                                            <button type="submit" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-red-700 bg-white hover:bg-gray-50">
+                                                حذف
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="bg-gray-50 p-6 rounded-lg text-center">
+                        <p class="text-gray-600 mb-4">در حال حاضر هیچ پزشکی با این کلینیک همکاری نمی‌کند.</p>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Add Doctors -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">افزودن پزشک</h2>
+                
+                {% if independent_doctors %}
+                    <div class="space-y-4">
+                        {% for doctor in independent_doctors %}
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                                    <div class="flex items-start mb-4 md:mb-0">
+                                        {% if doctor.profile_image %}
+                                            <img src="{{ doctor.profile_image.url }}" alt="{{ doctor }}" class="w-16 h-16 rounded-full object-cover mr-4">
+                                        {% else %}
+                                            <div class="w-16 h-16 rounded-full bg-blue-200 flex items-center justify-center mr-4">
+                                                <span class="text-blue-600 text-xl font-bold">{{ doctor.user.first_name|first }}{{ doctor.user.last_name|first }}</span>
+                                            </div>
+                                        {% endif %}
+                                        
+                                        <div>
+                                            <h3 class="text-lg font-semibold text-gray-800">{{ doctor }}</h3>
+                                            <p class="text-blue-600">{{ doctor.specialization }}</p>
+                                            <p class="text-gray-600 text-sm">{{ doctor.phone }}</p>
+                                            <p class="text-gray-600 text-sm">{{ doctor.user.email }}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <form method="post">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="doctor_id" value="{{ doctor.id }}">
+                                            <input type="hidden" name="action" value="add">
+                                            <button type="submit" class="inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                                                افزودن به کلینیک
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="bg-gray-50 p-6 rounded-lg text-center">
+                        <p class="text-gray-600">هیچ پزشک مستقلی برای افزودن به کلینیک شما موجود نیست.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

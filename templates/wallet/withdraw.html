@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+
+{% block title %}برداشت وجه - دکتر ترن{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex flex-col md:flex-row md:space-x-reverse md:space-x-8">
+        <!-- Sidebar -->
+        <div class="w-full md:w-64 mb-8 md:mb-0">
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <div class="p-6 bg-blue-50 border-b border-blue-100">
+                    <h2 class="text-xl font-bold text-gray-800">منوی کیف پول</h2>
+                </div>
+                <nav class="py-4">
+                    <ul>
+                        <li>
+                            <a href="{% url 'wallet:wallet_dashboard' %}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+                                    <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd" />
+                                </svg>
+                                داشبورد
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'wallet:deposit' %}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                                </svg>
+                                واریز
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'wallet:withdraw' %}" class="flex items-center px-6 py-3 text-blue-600 bg-blue-50 border-r-4 border-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" transform="rotate(45 10 10)" />
+                                </svg>
+                                برداشت
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'wallet:transaction_list' %}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+                                </svg>
+                                تراکنش‌ها
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="flex-1">
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-900">برداشت وجه</h1>
+                <p class="text-gray-600">انتقال وجه از کیف پول شما به حساب بانکی</p>
+            </div>
+            
+            {% if messages %}
+            <div class="mb-6">
+                {% for message in messages %}
+                <div class="p-4 mb-4 rounded-md {% if message.tags == 'success' %}bg-green-50 text-green-800 border border-green-200{% elif message.tags == 'error' %}bg-red-50 text-red-800 border border-red-200{% else %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <!-- Balance Card -->
+            <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200 mb-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-blue-100 text-blue-600 ml-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">موجودی قابل برداشت</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ wallet.balance|floatformat:2 }} تومان</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Withdraw Form -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-8">
+                <div class="p-6 border-b border-gray-200">
+                    <h2 class="text-lg font-medium text-gray-900">فرم برداشت وجه</h2>
+                    <p class="mt-1 text-sm text-gray-500">حداقل مبلغ برداشت 10,000 تومان می‌باشد.</p>
+                </div>
+                
+                <div class="p-6">
+                    <form method="post" action="{% url 'wallet:withdraw' %}">
+                        {% csrf_token %}
+                        
+                        <div class="space-y-6">
+                            <!-- Amount -->
+                            <div>
+                                <label for="amount" class="block text-sm font-medium text-gray-700">مبلغ (تومان)</label>
+                                <div class="mt-1 relative rounded-md shadow-sm">
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 sm:text-sm">تومان</span>
+                                    </div>
+                                    <input type="number" name="amount" id="amount" step="1000" min="10000" max="{{ wallet.balance }}" required class="focus:ring-blue-500 focus:border-blue-500 block w-full pr-12 sm:text-sm border-gray-300 rounded-md text-left" placeholder="0">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 sm:text-sm">ریال</span>
+                                    </div>
+                                </div>
+                                <p class="mt-1 text-xs text-gray-500">حداقل برداشت: 10,000 تومان | حداکثر: {{ wallet.balance|floatformat:0 }} تومان</p>
+                                <input type="hidden" id="max-amount-value" value="{{ wallet.balance|default:0 }}">
+                            </div>
+                            
+                            <!-- Withdrawal Method -->
+                            <div>
+                                <label for="withdrawal_method" class="block text-sm font-medium text-gray-700">روش برداشت</label>
+                                <select id="withdrawal_method" name="withdrawal_method" class="mt-1 block w-full pr-3 pl-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                    <option value="bank_transfer">حواله بانکی</option>
+                                    <option value="paypal">پی پال</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Bank Details (visible only when bank_transfer is selected) -->
+                            <div id="bank_details" class="space-y-4 border border-gray-200 rounded-md p-4 bg-gray-50">
+                                <h3 class="text-sm font-medium text-gray-700">مشخصات حساب بانکی</h3>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="account_holder_name" class="block text-sm font-medium text-gray-700">نام صاحب حساب</label>
+                                        <input type="text" name="account_holder_name" id="account_holder_name" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    </div>
+                                    
+                                    <div>
+                                        <label for="bank_name" class="block text-sm font-medium text-gray-700">نام بانک</label>
+                                        <input type="text" name="bank_name" id="bank_name" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label for="account_number" class="block text-sm font-medium text-gray-700">شماره حساب</label>
+                                    <input type="text" name="account_number" id="account_number" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                </div>
+                                
+                                <div>
+                                    <label for="routing_number" class="block text-sm font-medium text-gray-700">شماره شبا</label>
+                                    <input type="text" name="routing_number" id="routing_number" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                </div>
+                            </div>
+                            
+                            <!-- PayPal Details (hidden by default) -->
+                            <div id="paypal_details" class="space-y-4 border border-gray-200 rounded-md p-4 bg-gray-50 hidden">
+                                <h3 class="text-sm font-medium text-gray-700">مشخصات پی پال</h3>
+                                
+                                <div>
+                                    <label for="paypal_email" class="block text-sm font-medium text-gray-700">آدرس ایمیل پی پال</label>
+                                    <input type="email" name="paypal_email" id="paypal_email" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                </div>
+                            </div>
+                            
+                            <!-- Terms and Conditions -->
+                            <div class="relative flex items-start">
+                                <div class="flex items-center h-5">
+                                    <input id="terms" name="terms" type="checkbox" required class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded">
+                                </div>
+                                <div class="mr-3 text-sm">
+                                    <label for="terms" class="font-medium text-gray-700">این برداشت را تأیید می‌کنم</label>
+                                    <p class="text-gray-500">اطلاعات حساب ارائه شده صحیح بوده و این برداشت را تأیید می‌کنم.</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Submit Button -->
+                            <div>
+                                <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    درخواست برداشت
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Withdrawal Information -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div class="p-6 border-b border-gray-200">
+                    <h2 class="text-lg font-medium text-gray-900">اطلاعات برداشت</h2>
+                </div>
+                
+                <div class="p-6 space-y-4">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div class="mr-3">
+                            <h3 class="text-sm font-medium text-gray-900">زمان پردازش</h3>
+                            <p class="mt-1 text-sm text-gray-500">برداشت‌ها معمولاً طی 1 تا 3 روز کاری پردازش می‌شوند.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                        </div>
+                        <div class="mr-3">
+                            <h3 class="text-sm font-medium text-gray-900">امنیت</h3>
+                            <p class="mt-1 text-sm text-gray-500">اطلاعات مالی شما رمزگذاری شده و ایمن است. ما جزئیات کامل بانکی شما را ذخیره نمی‌کنیم.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div class="mr-3">
+                            <h3 class="text-sm font-medium text-gray-900">کارمزد</h3>
+                            <p class="mt-1 text-sm text-gray-500">حواله‌های بانکی بدون کارمزد هستند. برداشت از طریق پی پال ممکن است شامل کارمزد (2.9% + 0.30 دلار) باشد.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const withdrawalMethod = document.getElementById('withdrawal_method');
+        const bankDetails = document.getElementById('bank_details');
+        const paypalDetails = document.getElementById('paypal_details');
+        
+        withdrawalMethod.addEventListener('change', function() {
+            if (this.value === 'bank_transfer') {
+                bankDetails.classList.remove('hidden');
+                paypalDetails.classList.add('hidden');
+            } else if (this.value === 'paypal') {
+                bankDetails.classList.add('hidden');
+                paypalDetails.classList.remove('hidden');
+            }
+        });
+        
+        // Validate amount input
+        const amountInput = document.getElementById('amount');
+        const maxAmountElement = document.getElementById('max-amount-value');
+        const maxAmount = maxAmountElement ? parseFloat(maxAmountElement.value) : 0;
+        
+        amountInput.addEventListener('input', function() {
+            const inputValue = parseFloat(this.value || '0');
+            
+            if (isNaN(inputValue) || inputValue < 10000) {
+                this.setCustomValidity('حداقل مبلغ برداشت 10,000 تومان می‌باشد');
+            } else if (inputValue > maxAmount) {
+                this.setCustomValidity('مبلغ از موجودی کیف پول شما بیشتر است');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+    });
+</script>
+{% endblock %}

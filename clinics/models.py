@@ -1,61 +1,53 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils.translation import gettext_lazy as _
-
 
 class Clinic(models.Model):
-    name = models.CharField(_('نام کلینیک'), max_length=100)
-    address = models.TextField(_('آدرس'))
-    phone = models.CharField(_('تلفن'), max_length=15)
-    email = models.EmailField(_('ایمیل'), blank=True, null=True)
-    logo = models.ImageField(_('لوگو'), upload_to='clinics/', blank=True, null=True)
-    description = models.TextField(_('توضیحات'), blank=True, null=True)
-    
-    # Clinic owner/administrator
-    admin = models.ForeignKey(User, on_delete=models.CASCADE, related_name='administered_clinics')
-    
-    # Operating hours could be added here or in a separate model
-    
-    class Meta:
-        verbose_name = _('کلینیک')
-        verbose_name_plural = _('کلینیک ها')
-    
+    name = models.CharField(max_length=255, verbose_name='نام')
+    address = models.TextField(verbose_name='آدرس')
+    phone = models.CharField(max_length=20, verbose_name='شماره تماس')
+    email = models.EmailField(verbose_name='ایمیل')
+    logo = models.ImageField(upload_to='clinic_logos/', blank=True, null=True, verbose_name='لوگو')
+    description = models.TextField(blank=True, null=True, verbose_name='توضیحات')
+    admin = models.ForeignKey(User, on_delete=models.CASCADE, related_name='administered_clinics', verbose_name='مدیر')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
+
     def __str__(self):
         return self.name
     
     def get_doctors(self):
-        """Returns all doctors associated with this clinic"""
         return self.doctors.all()
     
-    def get_appointments(self):
-        """Returns all appointments at this clinic"""
-        # Implementation to be added
-        pass
+    def get_all_appointments(self):
+        from reservations.models import Reservation
+        doctors = self.get_doctors()
+        return Reservation.objects.filter(doctor__in=doctors)
 
+    class Meta:
+        verbose_name = 'کلینیک'
+        verbose_name_plural = 'کلینیک‌ها'
 
 class ClinicSpecialty(models.Model):
-    """Specialties offered at a clinic"""
-    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='specialties')
-    name = models.CharField(_('نام تخصص'), max_length=100)
-    description = models.TextField(_('توضیحات'), blank=True, null=True)
-    
-    class Meta:
-        verbose_name = _('تخصص کلینیک')
-        verbose_name_plural = _('تخصص های کلینیک')
-        
+    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='specialties', verbose_name='کلینیک')
+    name = models.CharField(max_length=255, verbose_name='نام')
+    description = models.TextField(blank=True, null=True, verbose_name='توضیحات')
+
     def __str__(self):
         return f"{self.clinic.name} - {self.name}"
-
-
-class ClinicGallery(models.Model):
-    """Images of the clinic for display"""
-    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='gallery')
-    image = models.ImageField(_('تصویر'), upload_to='clinics/gallery/')
-    title = models.CharField(_('عنوان'), max_length=100, blank=True, null=True)
     
     class Meta:
-        verbose_name = _('تصویر کلینیک')
-        verbose_name_plural = _('گالری تصاویر کلینیک')
-        
+        verbose_name = 'تخصص کلینیک'
+        verbose_name_plural = 'تخصص‌های کلینیک'
+
+class ClinicGallery(models.Model):
+    clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='gallery', verbose_name='کلینیک')
+    image = models.ImageField(upload_to='clinic_gallery/', verbose_name='تصویر')
+    title = models.CharField(max_length=255, blank=True, null=True, verbose_name='عنوان')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
+
     def __str__(self):
-        return f"{self.clinic.name} - {self.title or 'Image'}"
+        return f"{self.clinic.name} Gallery Image - {self.id}"
+    
+    class Meta:
+        verbose_name = 'گالری کلینیک'
+        verbose_name_plural = 'گالری‌های کلینیک'

@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block title %}نوبت‌های من - دکتر {% endblock %}
+
+{% block extra_css %}
+<style>
+    /* RTL specific styles */
+    .rtl .ml-3 {
+        margin-left: 0;
+        margin-right: 0.75rem;
+    }
+    
+    .rtl .space-x-2 {
+        margin-right: 0;
+        margin-left: 0.5rem;
+    }
+    
+    .rtl .text-right {
+        text-align: left;
+    }
+    
+    .rtl table th,
+    .rtl table td {
+        text-align: right;
+    }
+    
+    .rtl .divide-y > :not([hidden]) ~ :not([hidden]) {
+        border-top-width: 1px;
+        border-bottom-width: 0;
+    }
+    
+    .rtl .border-b {
+        border-bottom: none;
+        border-top: 1px solid;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mb-8 rtl">
+    <h1 class="text-3xl font-bold text-gray-800 mb-4">نوبت‌های من</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <!-- Sidebar Navigation -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 rounded-full bg-blue-200 flex items-center justify-center ml-3">
+                    <span class="text-blue-600 text-xl font-bold">{{ user.first_name|first|default:user.username|first|upper }}</span>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800">{{ user.get_full_name|default:user.username }}</h3>
+                    <p class="text-gray-600 text-sm">بیمار</p>
+                </div>
+            </div>
+            
+            <nav>
+                <a href="{% url 'patients:patient_dashboard' %}" class="block py-2 px-4 rounded-md text-gray-700 hover:bg-gray-100">
+                    داشبورد
+                </a>
+                <a href="{% url 'patients:patient_appointments' %}" class="block py-2 px-4 rounded-md bg-blue-50 text-blue-600 font-medium">
+                    نوبت‌های من
+                </a>
+                <a href="{% url 'patients:patient_profile' %}" class="block py-2 px-4 rounded-md text-gray-700 hover:bg-gray-100">
+                    پروفایل من
+                </a>
+                <a href="{% url 'wallet:wallet_dashboard' %}" class="block py-2 px-4 rounded-md text-gray-700 hover:bg-gray-100">
+                    کیف پول من
+                </a>
+            </nav>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="md:col-span-3">
+            <!-- Filters -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex space-x-2">
+                    <a href="{% url 'patients:patient_appointments' %}?status=upcoming" 
+                       class="px-4 py-2 rounded-md {% if status == 'upcoming' %}bg-blue-600 text-white{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                        نوبت‌های آینده
+                    </a>
+                    <a href="{% url 'patients:patient_appointments' %}?status=past" 
+                       class="px-4 py-2 rounded-md {% if status == 'past' %}bg-blue-600 text-white{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                        نوبت‌های گذشته
+                    </a>
+                    <a href="{% url 'patients:patient_appointments' %}" 
+                       class="px-4 py-2 rounded-md {% if status == 'all' or not status %}bg-blue-600 text-white{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                        همه نوبت‌ها
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Appointments List -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-xl font-semibold text-gray-800">
+                        {% if status == 'upcoming' %}
+                            نوبت‌های آینده
+                        {% elif status == 'past' %}
+                            نوبت‌های گذشته
+                        {% else %}
+                            همه نوبت‌ها
+                        {% endif %}
+                    </h2>
+                </div>
+                
+                {% if appointments %}
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">پزشک</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاریخ و زمان</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">وضعیت</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">عملیات</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for appointment in appointments %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                {% if appointment.doctor.profile_image %}
+                                                    <img src="{{ appointment.doctor.profile_image.url }}" alt="{{ appointment.doctor }}" class="w-10 h-10 rounded-full object-cover ml-3">
+                                                {% else %}
+                                                    <div class="w-10 h-10 rounded-full bg-blue-200 flex items-center justify-center ml-3">
+                                                        <span class="text-blue-600 text-sm font-bold">{{ appointment.doctor.user.first_name|first }}{{ appointment.doctor.user.last_name|first }}</span>
+                                                    </div>
+                                                {% endif %}
+                                                <div>
+                                                    <div class="text-sm font-medium text-gray-900">دکتر {{ appointment.doctor.user.last_name }}</div>
+                                                    <div class="text-sm text-gray-500">{{ appointment.doctor.specialization }}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">{{ appointment.day.date|date:"Y/m/d" }}</div>
+                                            <div class="text-sm text-gray-500">{{ appointment.time|time:"H:i" }}</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                                {% if appointment.status == 'confirmed' %}bg-green-100 text-green-800
+                                                {% elif appointment.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                                {% elif appointment.status == 'completed' %}bg-blue-100 text-blue-800
+                                                {% elif appointment.status == 'cancelled' %}bg-red-100 text-red-800
+                                                {% endif %}">
+                                                {% if appointment.status == 'confirmed' %}تایید شده
+                                                {% elif appointment.status == 'pending' %}در انتظار
+                                                {% elif appointment.status == 'completed' %}تکمیل شده
+                                                {% elif appointment.status == 'cancelled' %}لغو شده
+                                                {% endif %}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                            <a href="{% url 'reservations:view_appointment' appointment.id %}" class="text-blue-600 hover:text-blue-900 ml-3">مشاهده جزئیات</a>
+                                            
+                                            {% if appointment.status == 'pending' or appointment.status == 'confirmed' %}
+                                                <a href="{% url 'reservations:cancel_appointment' appointment.id %}?next={% url 'patients:patient_appointments' %}" 
+                                                   class="text-red-600 hover:text-red-900"
+                                                   onclick="return confirm('آیا مطمئن هستید که می‌خواهید این نوبت را لغو کنید؟');">
+                                                    لغو نوبت
+                                                </a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="p-6 text-center">
+                        <p class="text-gray-600 mb-4">شما هیچ نوبتی در این دسته‌بندی ندارید.</p>
+                        <a href="{% url 'doctors:doctor_list' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
+                            رزرو نوبت جدید
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

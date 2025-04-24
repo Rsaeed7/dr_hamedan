@@ -1,236 +1,165 @@
-{% extends  'base/base.html' %}
-{% load static %}
-{% block body %}
+{% extends 'base.html' %}
 
+{% block title %}{{ clinic.name }} - دکتر همدان{% endblock %}
 
-    <!-- Search -->
-{% include  'base/search.html' %}
-    <!-- /Search -->
+{% block extra_css %}
+<style>
+    /* RTL specific styles */
+    .rtl .md\:mr-6 {
+        margin-right: 0;
+        margin-left: 1.5rem;
+    }
+    
+    .rtl .mr-2 {
+        margin-right: 0;
+        margin-left: 0.5rem;
+    }
+    
+    .rtl .mr-3 {
+        margin-right: 0;
+        margin-left: 0.75rem;
+    }
+    
+    .rtl .gap-1 {
+        gap: 0.25rem;
+    }
+    
+    .rtl .gap-4 {
+        gap: 1rem;
+    }
+    
+    .rtl .text-right {
+        text-align: left;
+    }
+    
+    .rtl .flex-row {
+        flex-direction: row-reverse;
+    }
+    
+    .rtl .grid-cols-2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .rtl .grid-cols-3 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .rtl .grid-cols-4 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+</style>
+{% endblock %}
 
-    <div class="container margin_60">
-        <div class="row">
-            <div class="col-xl-8 col-lg-8">
-                <div id="section_1">
-                    <div>
-                        <!-- clinic profile -->
-                        <div class="profile box_general_3">
-                            <div class="row parent-container">
-                                <div class="col-lg-12 col-md-4">
-                                    <figure>
-                                        <a class="clinic_box"><img src="{% static 'img/dr/download (3).jfif' %}" alt=""
-                                                                   class="clinic_img">
-                                            <i class="icon-eye-1"><small>28</small></i></a>
-                                    </figure>
+{% block content %}
+<div class="bg-white rounded-lg shadow-md overflow-hidden rtl">
+    <!-- Clinic Profile Header -->
+    <div class="p-6 md:p-8 border-b border-gray-200">
+        <div class="flex flex-col md:flex-row md:items-start">
+            <div class="mb-4 md:mb-0 md:mr-6">
+                {% if clinic.logo %}
+                    <img src="{{ clinic.logo.url }}" alt="{{ clinic.name }}" class="w-32 h-32 rounded-lg object-cover">
+                {% else %}
+                    <div class="w-32 h-32 rounded-lg bg-blue-200 flex items-center justify-center">
+                        <span class="text-blue-600 text-3xl font-bold">{{ clinic.name|first }}</span>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="flex-1">
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">{{ clinic.name }}</h1>
+                
+                <div class="flex items-center mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span class="text-gray-700">{{ clinic.address }}</span>
+                </div>
+                
+                <div class="flex items-center mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
+                    <span class="text-gray-700">{{ clinic.phone }}</span>
+                </div>
+                
+                <div class="flex items-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <span class="text-gray-700">{{ clinic.email }}</span>
+                </div>
+                
+                {% if clinic.specialties.all %}
+                <div class="mt-2 flex flex-wrap gap-1">
+                    {% for specialty in clinic.specialties.all %}
+                        <span class="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">
+                            {{ specialty.name }}
+                        </span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Clinic Description -->
+    <div class="p-6 md:p-8 border-b border-gray-200">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">درباره {{ clinic.name }}</h2>
+        <div class="prose max-w-none">
+            <p class="text-gray-700">{{ clinic.description|default:"اطلاعاتی ارائه نشده است." }}</p>
+        </div>
+    </div>
+    
+    <!-- Gallery Section -->
+    {% if gallery %}
+    <div class="p-6 md:p-8 border-b border-gray-200">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">گالری تصاویر</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {% for image in gallery %}
+                <div class="relative aspect-w-1 aspect-h-1">
+                    <img src="{{ image.image.url }}" alt="{{ image.title|default:'تصویر کلینیک' }}" class="w-full h-40 object-cover rounded-lg">
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Doctors Section -->
+    <div class="p-6 md:p-8">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">پزشکان {{ clinic.name }}</h2>
+        
+        {% if doctors %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {% for doctor in doctors %}
+                    <div class="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow duration-300">
+                        <div class="flex items-start">
+                            {% if doctor.profile_image %}
+                                <img src="{{ doctor.profile_image.url }}" alt="{{ doctor }}" class="w-16 h-16 rounded-full object-cover mr-3">
+                            {% else %}
+                                <div class="w-16 h-16 rounded-full bg-blue-200 flex items-center justify-center mr-3">
+                                    <span class="text-blue-600 text-xl font-bold">{{ doctor.user.first_name|first }}{{ doctor.user.last_name|first }}</span>
                                 </div>
-                                <div class="col-lg-12 col-md-12">
-                                    <div class="text-center">
-                                        <small>خدمات دندانپزشکی</small>
-                                        <h1>کلینیک دندانپزشکی سیب</h1>
-                                        <i class="icon-star-5 text-warning"><small>4.3</small></i>
-                                    </div>
-
-                                    <ul class="contacts">
-                                        <li><i class="icon-location"></i>
-                                            همدان ، خیابان پاستور ، کلینیک سیب
-                                            <a href=""
-                                               target="_blank"></a>
-                                        </li>
-                                        <li><i class="icon-phone-1"></i>
-                                            <a href="">+09188028729</a> - <a
-                                                    href="">+09922390238</a></li>
-                                    </ul>
-                                      <button id="scrollButton" class="btn btn-comment btn-sm col-md-12 rounded-10 d-lg-none animation">نوبت دهی</button>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- /clinic profile -->
-                        
-                        
-                        <div class="indent_title_in box_general_3">
-                            <i class="pe-7s-map-2"></i>
-                            <img class="banner-blog" src="{% static 'img/pic/map.jpg' %}">
-                            <p class="text-center text_dr_3">مسیریابی روی نقشه</p>
-                        </div>
-                        
-                        
-                        <div>
-                            <!--/nav-tabs -->
-                            <div class="tab-content box_general_3">
-                                <div class="indent_title_in" style="margin: 0;padding: 0">
-                                    <i class="pe-7s-id"></i>
-                                </div>
-                                <ul class="nav center-content" role="tablist">
-                                    <li>
-                                        <a class="nav-link active" id="general-tab" data-toggle="tab"
-                                           href="#general"
-                                           role="tab" aria-controls="general" aria-expanded="true">درباره مرکز</a>
-                                    </li>
-                                    <li>
-                                        <a class="nav-link" id="reviews-tab" data-toggle="tab" href="#reviews"
-                                           role="tab" aria-controls="reviews"> نظرات</a>
-                                    </li>
-                                </ul>
-                                <div class="tab-pane fade show active" id="general" role="tabpanel"
-                                     aria-labelledby="general-tab">
-                                    <div>
-                                        <h3>درباره کلینیک سیب</h3>
-                                        <p>خانم دکتر افسانه قاسمی متخصص سونوگرافی و رادیولوژی در سال ۱۳۴۱ در شهر یزد
-                                            متولد شد. وی دوره پزشکی عمومی خود را از سال ۱۳۶۷ در دانشکده پزشکی
-                                            علی‌ابن‌ابی‌طالب یزد آغاز و در سال ۱۳۷۹ مدرک تخصص خود را در زمینه
-                                            پرتوشناسی تشخیصی از دانشگاه علوم پزشکی تهران دریافت کرد.</p>
-                                    </div>
-                                    <div class="wrapper_indent">
-                                        <p>خانم دکتر افسانه قاسمی متخصص سونوگرافی و رادیولوژی در سال ۱۳۴۱ در شهر یزد
-                                            متولد شد. وی دوره پزشکی عمومی خود را از سال ۱۳۶۷ در دانشکده پزشکی
-                                            علی‌ابن‌ابی‌طالب یزد آغاز و در سال ۱۳۷۹ مدرک تخصص خود را در زمینه
-                                            پرتوشناسی تشخیصی از دانشگاه علوم پزشکی تهران دریافت کرد.</p>
-                                        <h6>خدمات</h6>
-                                        <div class="row">
-                                            <div class="col-lg-6">
-                                                <ul class="bullets">
-                                                    <li>عصب کشی</li>
-                                                    <li>روکش</li>
-                                                    <li>بلیچینگ</li>
-                                                    <li>کامپوزیت</li>
-                                                </ul>
-                                            </div>
-                                            <div class="col-lg-6">
-                                                <ul class="bullets">
-                                                    <li>ایمپلنت</li>
-                                                    <li>جرم گیری</li>
-                                                    <li>ارتودنسی</li>
-                                                    <li>لمینیت</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- /tab_2 -->
-
-                                <div class="tab-pane fade" id="reviews" role="tabpanel"
-                                     aria-labelledby="reviews-tab">
-                                    <div class="reviews-container">
-                                        <div class="row margin_30_20 comment-rate">
-                                            <div class="col-lg-4 border-left-pc">
-                                                <h6 class="text-center text-white"><i
-                                                        class="icon-star-5 text-warning"></i>3.9 امتیاز</h6>
-                                            </div>
-                                            <div class="col-lg-4 border-left-pc">
-                                                <h6 class="text-center text-white"><i
-                                                        class="icon-thumbs-up-1 text-success"></i>89% توصیه شده</h6>
-                                            </div>
-                                            <div class="col-lg-4">
-                                                <h6 class="text-center text-white"><i
-                                                        class="icon-hourglass-1 text-info"></i> انتظار 2 تا 4 ساعت</h6>
-                                            </div>
-                                            <div class="col-lg-12">
-                                                <button class="btn btn-comment col-md-12">ثبت نظر</button>
-                                            </div>
-                                        </div>
-
-                                        <div class="review-box clearfix">
-                                            <div class="rev-content">
-                                                <div class="rev-header">
-                                                    <div class="rev-info">مهناز</div> <small>2 دی 1403</small>
-                                                    <div class="rating text-left">
-                                                        <i class="icon_star voted"></i><i class="icon_star voted"></i>
-                                                        <i class="icon_star voted"></i><i class="icon_star voted"></i>
-                                                        <i class="icon_star"></i>
-                                                    </div>
-                                                </div>
-                                                <h6 class="text-success"> <i class="icon-thumbs-up-1"></i>توصیه میکنم</h6>
-                                                <div class="rev-text">
-                                                    <p>خدماتشون خیلی خوب و ارزونه ممنون از مدیریت کلینیک سیب</p>
-                                                <ul class="row">
-                                                    <li class="rev-comment">رفتار مناسب</li>
-                                                    <li class="rev-comment">قیمت پایین</li>
-                                                    <li class="rev-comment">محیط آرام</li>
-                                                </ul>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                        
-
-                                        <div class="review-box clearfix">
-                                            <div class="rev-content">
-                                                <div class="rev-header">
-                                                    <div class="rev-info">علی حسینی</div> <small>1 دی 1403</small>
-                                                    <div class="rating text-left">
-                                                        <i class="icon_star voted"></i><i class="icon_star voted"></i>
-                                                        <i class="icon_star"></i>
-                                                        <i class="icon_star"></i>
-                                                        <i class="icon_star"></i>
-                                                    </div>
-                                                </div>
-                                                <h6 class="text-danger">توصیه نمیکنم <i class="icon-thumbs-down-1"></i></h6>
-                                                <div class="rev-text">
-                                                    <p>کلینیک سیب قبلا خوب بود خدماتشون خیلی بد شده</p>
-                                                <ul class="row">
-                                                    <li class="rev-comment">رفتار نامناسب</li>
-                                                    <li class="rev-comment">قیمت بالا</li>
-                                                    <li class="rev-comment">محیط شلوغ</li>
-                                                </ul>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            {% endif %}
+                            
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800">{{ doctor }}</h3>
+                                <p class="text-blue-600">{{ doctor.specialization }}</p>
+                                <p class="text-gray-600">{{ doctor.consultation_fee }} تومان</p>
+                                
+                                <a href="{% url 'doctors:doctor_detail' doctor.pk %}" class="mt-2 inline-block text-sm font-medium text-blue-600 hover:text-blue-800">
+                                    مشاهده پروفایل و رزرو نوبت
+                                </a>
                             </div>
                         </div>
                     </div>
-                </div>
+                {% endfor %}
             </div>
-
-            
-            <aside class="col-xl-4 col-lg-4" id="aside">
-                <div class="box_general_3 booking">
-                    <form>
-                        <div class="m-t-2 m-b-20">
-                            <h4 class="text_dr_3"><i class="icon-user-add-outline"></i>رزرو نوبت ویزیت</h4>
-                        </div>
-
-                        <ul class="treatments clearfix">
-                            <li>
-                                <label class="treatment-label">
-                                    <input type="radio" id="visit1" name="treatment" class="treatment-input" checked>
-                                    <span class="custom-radio"></span>
-                                    عصب کشی دندان
-                                </label>
-                            </li>
-                            <li>
-                                <label class="treatment-label">
-                                    <input type="radio" id="visit2" name="treatment" class="treatment-input">
-                                    <span class="custom-radio"></span>
-                                    ترمیم دندان
-                                </label>
-                            </li>
-                            <li>
-                                <label class="treatment-label">
-                                    <input type="radio" id="visit3" name="treatment" class="treatment-input">
-                                    <span class="custom-radio"></span>
-                                    جرم‌گیری
-                                </label>
-                            </li>
-                        </ul>
-
-
-                        <a href="" class="btn btn-success col-lg-12 m-b-10">دریافت نوبت</a>
-                    </form>
-                </div>
-            </aside>
-            <!-- /asdide -->
-        </div>
+        {% else %}
+            <div class="bg-gray-50 p-6 rounded-lg text-center">
+                <p class="text-gray-600">در حال حاضر هیچ پزشکی در این کلینیک فعال نیست.</p>
+            </div>
+        {% endif %}
     </div>
-
-<script>
-document.getElementById('scrollButton').addEventListener('click', function() {
-    const asideElement = document.getElementById('aside');
-    const offsetTop = asideElement.getBoundingClientRect().top + window.scrollY - 150; // 100 پیکسل بالاتر
-    window.scrollTo({ top: offsetTop, behavior: 'smooth' });
-});
-
-</script>
-
-{% endblock %}
+</div>
+{% endblock %} 

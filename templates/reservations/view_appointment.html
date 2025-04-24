@@ -1,0 +1,280 @@
+{% extends 'base.html' %}
+
+{% block title %}جزئیات نوبت - دکتر همدان{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* RTL specific styles */
+    .rtl .mr-4 {
+        margin-right: 0;
+        margin-left: 1rem;
+    }
+    
+    .rtl .ml-3 {
+        margin-left: 0;
+        margin-right: 0.75rem;
+    }
+    
+    .rtl .text-right {
+        text-align: left;
+    }
+    
+    .rtl .justify-between {
+        justify-content: space-between;
+    }
+    
+    .rtl .items-center {
+        align-items: center;
+    }
+    
+    .rtl .flex-row {
+        flex-direction: row-reverse;
+    }
+    
+    .rtl .flex-col {
+        flex-direction: column;
+    }
+    
+    .rtl .gap-4 {
+        gap: 1rem;
+    }
+    
+    .rtl .space-x-3 {
+        margin-right: 0.75rem;
+        margin-left: 0;
+    }
+    
+    .rtl .border-l-4 {
+        border-left: 0;
+        border-right: 4px solid;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6 rtl">
+    <div class="mb-6 flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800">جزئیات نوبت</h1>
+            <p class="text-gray-600">نوبت شماره {{ appointment.id }}</p>
+        </div>
+        
+        {% if user.patient %}
+            <a href="{% url 'patients:patient_appointments' %}" class="text-blue-600 hover:text-blue-800">بازگشت به نوبت‌های من &rarr;</a>
+        {% elif user.doctor %}
+            <a href="{% url 'doctors:doctor_appointments' %}" class="text-blue-600 hover:text-blue-800">بازگشت به نوبت‌های من &rarr;</a>
+        {% else %}
+            <a href="{% url 'doctors:doctor_list' %}" class="text-blue-600 hover:text-blue-800">بازگشت به صفحه اصلی &rarr;</a>
+        {% endif %}
+    </div>
+    
+    <!-- Status Banner -->
+    <div class="mb-6 rounded-lg p-4 {% if appointment.status == 'confirmed' %}bg-green-100 border border-green-200{% elif appointment.status == 'pending' %}bg-yellow-100 border border-yellow-200{% elif appointment.status == 'completed' %}bg-blue-100 border border-blue-200{% elif appointment.status == 'cancelled' %}bg-red-100 border border-red-200{% endif %}">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                {% if appointment.status == 'confirmed' %}
+                    <svg class="h-5 w-5 text-green-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                {% elif appointment.status == 'pending' %}
+                    <svg class="h-5 w-5 text-yellow-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-8.414l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 111.414-1.414L9 9.586V5a1 1 0 012 0v4.586z" clip-rule="evenodd" />
+                    </svg>
+                {% elif appointment.status == 'completed' %}
+                    <svg class="h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                {% elif appointment.status == 'cancelled' %}
+                    <svg class="h-5 w-5 text-red-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                    </svg>
+                {% endif %}
+            </div>
+            <div class="mr-3">
+                <h3 class="text-sm font-medium {% if appointment.status == 'confirmed' %}text-green-800{% elif appointment.status == 'pending' %}text-yellow-800{% elif appointment.status == 'completed' %}text-blue-800{% elif appointment.status == 'cancelled' %}text-red-800{% endif %}">
+                    وضعیت: {{ appointment.get_status_display }}
+                </h3>
+                
+                {% if appointment.status == 'pending' %}
+                    <div class="mt-2 text-sm text-yellow-700">
+                        <p>نوبت شما در انتظار تایید پزشک است.</p>
+                    </div>
+                {% elif appointment.status == 'confirmed' %}
+                    <div class="mt-2 text-sm text-green-700">
+                        <p>نوبت شما توسط پزشک تایید شده است.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Appointment Information -->
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-800">اطلاعات نوبت</h2>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">تاریخ</p>
+                        <p class="text-gray-800">{{ appointment.day.date|date:"F j, Y" }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">زمان</p>
+                        <p class="text-gray-800">{{ appointment.time|time:"H:i" }}</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">هزینه ویزیت</p>
+                        <p class="text-gray-800">{{ appointment.amount }} تومان</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">وضعیت پرداخت</p>
+                        <p class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {% if appointment.payment_status == 'paid' %}bg-green-100 text-green-800{% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                            {{ appointment.get_payment_status_display }}
+                        </p>
+                    </div>
+                </div>
+                
+                {% if appointment.notes %}
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 mb-2">توضیحات اضافی</p>
+                        <div class="bg-gray-50 p-4 rounded-md">
+                            <p class="text-gray-800">{{ appointment.notes }}</p>
+                        </div>
+                    </div>
+                {% endif %}
+                
+                {% if appointment.status == 'pending' or appointment.status == 'confirmed' %}
+                    <div class="mt-6 flex space-x-3">
+                        <a href="{% url 'reservations:cancel_appointment' appointment.id %}" 
+                           class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                           onclick="return confirm('آیا از لغو این نوبت اطمینان دارید؟');">
+                            لغو نوبت
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Doctor / Patient Information -->
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            {% if user.patient %}
+                <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-800">اطلاعات پزشک</h2>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center mb-6">
+                        {% if appointment.doctor.profile_image %}
+                            <img src="{{ appointment.doctor.profile_image.url }}" alt="دکتر {{ appointment.doctor.user.last_name }}" class="w-16 h-16 rounded-full object-cover ml-4">
+                        {% else %}
+                            <div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center ml-4">
+                                <span class="text-blue-600 text-xl font-bold">{{ appointment.doctor.user.first_name|first }}{{ appointment.doctor.user.last_name|first }}</span>
+                            </div>
+                        {% endif %}
+                        
+                        <div>
+                            <h3 class="text-lg font-medium text-gray-800">دکتر {{ appointment.doctor.user.get_full_name }}</h3>
+                            <p class="text-gray-600">{{ appointment.doctor.specialization }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 gap-4">
+                        {% if appointment.doctor.clinic %}
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">مطب</p>
+                                <p class="text-gray-800">{{ appointment.doctor.clinic.name }}</p>
+                            </div>
+                        {% endif %}
+                        
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">اطلاعات تماس</p>
+                            <p class="text-gray-800">{{ appointment.doctor.phone }}</p>
+                            <p class="text-gray-800">{{ appointment.doctor.user.email }}</p>
+                        </div>
+                        
+                        {% if appointment.doctor.address %}
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">آدرس</p>
+                                <p class="text-gray-800">{{ appointment.doctor.address }}</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mt-6">
+                        <a href="{% url 'doctors:doctor_detail' appointment.doctor.id %}" class="text-blue-600 hover:text-blue-800">
+                            مشاهده پروفایل پزشک
+                        </a>
+                    </div>
+                </div>
+            {% elif user.doctor %}
+                <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-800">اطلاعات بیمار</h2>
+                </div>
+                <div class="p-6">
+                    {% if appointment.patient %}
+                        <div class="flex items-center mb-6">
+                            {% if appointment.patient.profile_image %}
+                                <img src="{{ appointment.patient.profile_image.url }}" alt="{{ appointment.patient.user.get_full_name }}" class="w-16 h-16 rounded-full object-cover ml-4">
+                            {% else %}
+                                <div class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center ml-4">
+                                    <span class="text-gray-600 text-xl font-bold">{{ appointment.patient.user.first_name|first }}{{ appointment.patient.user.last_name|first }}</span>
+                                </div>
+                            {% endif %}
+                            
+                            <div>
+                                <h3 class="text-lg font-medium text-gray-800">{{ appointment.patient.user.get_full_name }}</h3>
+                                <p class="text-gray-600">شناسه بیمار: {{ appointment.patient.id }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 gap-4">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">اطلاعات تماس</p>
+                                <p class="text-gray-800">{{ appointment.patient.phone }}</p>
+                                <p class="text-gray-800">{{ appointment.patient.user.email }}</p>
+                            </div>
+                            
+                            {% if appointment.patient.date_of_birth %}
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">تاریخ تولد</p>
+                                    <p class="text-gray-800">{{ appointment.patient.date_of_birth|date:"F j, Y" }}</p>
+                                </div>
+                            {% endif %}
+                            
+                            {% if appointment.patient.address %}
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">آدرس</p>
+                                    <p class="text-gray-800">{{ appointment.patient.address }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <div class="mb-6">
+                            <h3 class="text-lg font-medium text-gray-800">{{ appointment.name }}</h3>
+                            <p class="text-gray-600">رزرو مهمان</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 gap-4">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">اطلاعات تماس</p>
+                                <p class="text-gray-800">{{ appointment.phone }}</p>
+                            </div>
+                            
+                            {% if appointment.email %}
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">ایمیل</p>
+                                    <p class="text-gray-800">{{ appointment.email }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 
