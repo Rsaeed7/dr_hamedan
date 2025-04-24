@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}پروفایل کاربری - دکتر {% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
+    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-4">
+        <h1 class="text-xl font-bold text-white">پروفایل کاربری</h1>
+    </div>
+    
+    <div class="p-6">
+        <form method="post" enctype="multipart/form-data" class="space-y-8">
+            {% csrf_token %}
+            
+            <div class="flex flex-col md:flex-row gap-8">
+                <!-- Profile image section -->
+                <div class="md:w-1/3">
+                    <div class="flex flex-col items-center">
+                        {% if request.user.profile.profile_image %}
+                        <img src="{{ request.user.profile.profile_image.url }}" alt="Profile" class="w-40 h-40 rounded-full object-cover mb-4">
+                        {% else %}
+                        <div class="w-40 h-40 rounded-full bg-gray-200 flex items-center justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                        </div>
+                        {% endif %}
+                        
+                        <label for="{{ profile_form.profile_image.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">تصویر پروفایل</label>
+                        {{ profile_form.profile_image }}
+                        {% if profile_form.profile_image.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ profile_form.profile_image.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- User info section -->
+                <div class="md:w-2/3 space-y-6">
+                    <div>
+                        <h2 class="text-lg font-semibold text-gray-900 mb-4">اطلاعات شخصی</h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="{{ user_form.first_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">نام</label>
+                                {{ user_form.first_name }}
+                                {% if user_form.first_name.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ user_form.first_name.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            
+                            <div>
+                                <label for="{{ user_form.last_name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">نام خانوادگی</label>
+                                {{ user_form.last_name }}
+                                {% if user_form.last_name.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ user_form.last_name.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            
+                            <div>
+                                <label for="{{ user_form.username.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">نام کاربری</label>
+                                {{ user_form.username }}
+                                {% if user_form.username.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ user_form.username.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            
+                            <div>
+                                <label for="{{ user_form.email.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">ایمیل</label>
+                                {{ user_form.email }}
+                                {% if user_form.email.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ user_form.email.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h2 class="text-lg font-semibold text-gray-900 mb-4">اطلاعات تکمیلی</h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="{{ profile_form.phone_number.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">شماره تماس</label>
+                                {{ profile_form.phone_number }}
+                                {% if profile_form.phone_number.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ profile_form.phone_number.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            
+                            <div>
+                                <label for="{{ profile_form.national_id.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">کد ملی</label>
+                                {{ profile_form.national_id }}
+                                {% if profile_form.national_id.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ profile_form.national_id.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            
+                            <div>
+                                <label for="{{ profile_form.birth_date.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">تاریخ تولد</label>
+                                {{ profile_form.birth_date }}
+                                {% if profile_form.birth_date.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ profile_form.birth_date.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <label for="{{ profile_form.address.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">آدرس</label>
+                            {{ profile_form.address }}
+                            {% if profile_form.address.errors %}
+                            <p class="mt-1 text-sm text-red-600">{{ profile_form.address.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-between items-center pt-4 border-t border-gray-200">
+                <a href="{% url 'accounts:change_password' %}" class="px-4 py-2 text-sm text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50">
+                    تغییر رمز عبور
+                </a>
+                
+                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    ذخیره تغییرات
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
