@@ -92,7 +92,7 @@
             <div class="bg-white rounded-lg shadow-sm p-6">
                 <h2 class="text-xl font-semibold text-gray-900 mb-4">رزرو نوبت</h2>
                 <p class="text-gray-600 mb-4">هزینه ویزیت: {{ doctor.consultation_fee }} تومان</p>
-                <a href="{% url 'appointments:book_appointment' doctor.pk %}" 
+                <a href="{% url 'reservations:book_appointment' doctor.pk %}" 
                    class="block w-full text-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                     رزرو نوبت
                 </a>
