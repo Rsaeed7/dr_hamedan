@@ -4,44 +4,45 @@ from patients.models import PatientsFile
 from doctors.models import Doctor
 
 class ReservationDay(models.Model):
-    date = jmodels.jDateField()
-    published = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    date = jmodels.jDateField(verbose_name='تاریخ')
+    published = models.BooleanField(default=True, verbose_name='منتشر شده')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
     
     def __str__(self):
         return f"{self.date} - {'Published' if self.published else 'Unpublished'}"
     
     class Meta:
-        verbose_name_plural = "Reservation Days"
+        verbose_name = 'روز رزرو'
+        verbose_name_plural = 'روزهای رزرو'
 
 class Reservation(models.Model):
     STATUS_CHOICES = (
-        ('pending', 'Pending'),
-        ('confirmed', 'Confirmed'),
-        ('completed', 'Completed'),
-        ('cancelled', 'Cancelled'),
+        ('pending', 'در انتظار'),
+        ('confirmed', 'تایید شده'),
+        ('completed', 'تکمیل شده'),
+        ('cancelled', 'لغو شده'),
     )
     
     PAYMENT_STATUS_CHOICES = (
-        ('pending', 'Pending'),
-        ('paid', 'Paid'),
-        ('failed', 'Failed'),
-        ('refunded', 'Refunded'),
+        ('pending', 'در انتظار'),
+        ('paid', 'پرداخت شده'),
+        ('failed', 'ناموفق'),
+        ('refunded', 'بازگشت وجه'),
     )
     
-    day = models.ForeignKey(ReservationDay, on_delete=models.CASCADE, related_name='reservations')
-    patient = models.ForeignKey(PatientsFile, on_delete=models.SET_NULL, null=True, blank=True, related_name='reservations')
-    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='reservations')
-    time = models.TimeField()
-    phone = models.CharField(max_length=20)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
-    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='pending')
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    transaction = models.ForeignKey('wallet.Transaction', on_delete=models.SET_NULL, null=True, blank=True, related_name='reservations')
-    notes = models.TextField(blank=True, null=True)
+    day = models.ForeignKey(ReservationDay, on_delete=models.CASCADE, related_name='reservations', verbose_name='روز')
+    patient = models.ForeignKey(PatientsFile, on_delete=models.SET_NULL, null=True, blank=True, related_name='reservations', verbose_name='بیمار')
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='reservations', verbose_name='پزشک')
+    time = models.TimeField(verbose_name='زمان')
+    phone = models.CharField(max_length=20, verbose_name='شماره تلفن')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name='وضعیت')
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='pending', verbose_name='وضعیت پرداخت')
+    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='مبلغ')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
+    transaction = models.ForeignKey('wallet.Transaction', on_delete=models.SET_NULL, null=True, blank=True, related_name='reservations', verbose_name='تراکنش')
+    notes = models.TextField(blank=True, null=True, verbose_name='یادداشت‌ها')
     
     def __str__(self):
         patient_name = self.patient.name if self.patient else "Guest"
@@ -93,3 +94,5 @@ class Reservation(models.Model):
 
     class Meta:
         unique_together = ('day', 'doctor', 'time')
+        verbose_name = 'رزرو'
+        verbose_name_plural = 'رزروها'
