@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+
+{% block title %}رزرو نوبت با {{ doctor }} - دکتر همدان{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* RTL specific styles */
+    .rtl .md:mr-6 {
+        margin-right: 0;
+        margin-left: 1.5rem;
+    }
+    
+    .rtl .ml-3 {
+        margin-left: 0;
+        margin-right: 0.75rem;
+    }
+    
+    .rtl .text-right {
+        text-align: left;
+    }
+    
+    .rtl .justify-between {
+        justify-content: space-between;
+    }
+    
+    .rtl .items-center {
+        align-items: center;
+    }
+    
+    .rtl .flex-row {
+        flex-direction: row-reverse;
+    }
+    
+    .rtl .flex-col {
+        flex-direction: column;
+    }
+    
+    .rtl .gap-4 {
+        gap: 1rem;
+    }
+    
+    .rtl .md:pr-4 {
+        padding-right: 0;
+        padding-left: 1rem;
+    }
+    
+    .rtl .md:pl-4 {
+        padding-left: 0;
+        padding-right: 1rem;
+    }
+    
+    .rtl .border-l-4 {
+        border-left: 0;
+        border-right: 4px solid;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto rtl">
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="p-6 md:p-8 border-b border-gray-200">
+            <h1 class="text-2xl font-bold text-gray-800 mb-4">رزرو نوبت</h1>
+            
+            <div class="flex flex-col md:flex-row md:items-center">
+                <div class="mb-4 md:mb-0 md:ml-6">
+                    {% if doctor.profile_image %}
+                        <img src="{{ doctor.profile_image.url }}" alt="{{ doctor }}" class="w-20 h-20 rounded-full object-cover">
+                    {% else %}
+                        <div class="w-20 h-20 rounded-full bg-blue-200 flex items-center justify-center">
+                            <span class="text-blue-600 text-xl font-bold">{{ doctor.user.first_name|first }}{{ doctor.user.last_name|first }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    <h2 class="text-xl text-gray-800">{{ doctor }}</h2>
+                    <p class="text-blue-600">{{ doctor.specialization }}</p>
+                    <p class="text-gray-600">{{ doctor.consultation_fee }} تومان برای هر ویزیت</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="p-6 md:p-8">
+            {% if days %}
+                <form method="post" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    <div>
+                        <label for="date" class="block text-sm font-medium text-gray-700 mb-1">انتخاب تاریخ</label>
+                        <select id="date" name="date" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                            <option value="">-- انتخاب تاریخ --</option>
+                            {% for day in days %}
+                                <option value="{{ day.date|date:'Y-m-d' }}">{{ day.date|date:'l, F j, Y' }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div id="time-slots-container" class="hidden">
+                        <label for="time" class="block text-sm font-medium text-gray-700 mb-1">انتخاب زمان</label>
+                        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2" id="time-slots">
+                            <!-- Time slots will be populated dynamically -->
+                        </div>
+                        <input type="hidden" name="time" id="selected_time" required>
+                    </div>
+                    
+                    <div class="pt-4 border-t border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-800 mb-3">اطلاعات شما</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">نام و نام خانوادگی</label>
+                                <input type="text" id="name" name="name" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                            </div>
+                            
+                            <div>
+                                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">شماره تماس</label>
+                                <input type="tel" id="phone" name="phone" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                            </div>
+                            
+                            <div>
+                                <label for="national_id" class="block text-sm font-medium text-gray-700 mb-1">کد ملی (اختیاری)</label>
+                                <input type="text" id="national_id" name="national_id" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <button type="submit" class="w-full py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            ادامه به پرداخت - {{ doctor.consultation_fee }} تومان
+                        </button>
+                    </div>
+                </form>
+                
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const dateSelect = document.getElementById('date');
+                        const timeSlotsContainer = document.getElementById('time-slots-container');
+                        const timeSlotsDiv = document.getElementById('time-slots');
+                        const selectedTimeInput = document.getElementById('selected_time');
+                        
+                        // Store the available slots for each date
+                        const availableSlots = {};
+                        
+                        {% for day in days %}
+                        availableSlots["{{ day.date|date:'Y-m-d' }}"] = [
+                            {% for slot in day.slots %}
+                            "{{ slot|time:'H:i' }}"{% if not forloop.last %},{% endif %}
+                            {% endfor %}
+                        ];
+                        {% endfor %}
+                        
+                        dateSelect.addEventListener('change', function() {
+                            const selectedDate = this.value;
+                            timeSlotsDiv.innerHTML = '';
+                            selectedTimeInput.value = '';
+                            
+                            if (selectedDate) {
+                                const slots = availableSlots[selectedDate];
+                                if (slots && slots.length) {
+                                    slots.forEach(slot => {
+                                        const button = document.createElement('button');
+                                        button.type = 'button';
+                                        button.className = 'py-2 px-4 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-100 focus:outline-none';
+                                        button.textContent = slot;
+                                        button.dataset.time = slot;
+                                        
+                                        button.addEventListener('click', function() {
+                                            document.querySelectorAll('#time-slots button').forEach(btn => {
+                                                btn.classList.remove('bg-blue-600', 'text-white', 'hover:bg-blue-700');
+                                                btn.classList.add('border-gray-300', 'text-gray-700', 'hover:bg-gray-100');
+                                            });
+                                            
+                                            this.classList.remove('border-gray-300', 'text-gray-700', 'hover:bg-gray-100');
+                                            this.classList.add('bg-blue-600', 'text-white', 'hover:bg-blue-700');
+                                            
+                                            selectedTimeInput.value = this.dataset.time;
+                                        });
+                                        
+                                        timeSlotsDiv.appendChild(button);
+                                    });
+                                    
+                                    timeSlotsContainer.classList.remove('hidden');
+                                } else {
+                                    timeSlotsContainer.classList.add('hidden');
+                                }
+                            } else {
+                                timeSlotsContainer.classList.add('hidden');
+                            }
+                        });
+                    });
+                </script>
+            {% else %}
+                <div class="bg-yellow-50 border-r-4 border-yellow-400 p-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="mr-3">
+                            <p class="text-sm text-yellow-700">
+                                در ۷ روز آینده نوبت خالی وجود ندارد. لطفاً بعداً تلاش کنید یا مستقیماً با پزشک تماس بگیرید.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

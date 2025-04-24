@@ -5,6 +5,7 @@ app_name = 'wallet'
 
 urlpatterns = [
     path('', views.wallet_dashboard, name='wallet_dashboard'),
-    path('deposit/', views.deposit, name='deposit'),
-    path('withdraw/', views.withdraw, name='withdraw'),
-]
+    path('transactions/', views.transaction_list, name='transaction_list'),
+    path('payment/<int:reservation_id>/', views.process_payment, name='process_payment'),
+    path('payment-callback/', views.payment_callback, name='payment_callback'),
+] 
