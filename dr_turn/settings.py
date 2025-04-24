@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     
     # Local apps
     'doctors',
+    'accounts',
     'reservations',
     'clinics',
     'patients',
@@ -61,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'accounts.middleware.UserProfileMiddleware',
 ]
 
 ROOT_URLCONF = 'dr_turn.urls'
