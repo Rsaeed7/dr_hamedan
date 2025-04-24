@@ -132,4 +132,4 @@ class DoctorAvailability(models.Model):
         return f"{self.doctor} - {self.get_day_of_week_display()} {self.start_time}-{self.end_time}"
     
     def get_day_of_week_display(self):
-        return self.get_day_of_week_display()
+        return dict(self.DAYS_OF_WEEK).get(self.day_of_week, '')
