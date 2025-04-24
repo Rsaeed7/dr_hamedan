@@ -1,0 +1,405 @@
+{% extends 'base.html' %}
+{% load doctors_extras %}
+
+{% block title %}درآمد من - دکتر {% endblock %}
+
+{% block extra_css %}
+<style>
+    .sidebar {
+        height: calc(100vh - 4rem);
+    }
+    
+    .main-content {
+        height: calc(100vh - 4rem);
+        overflow-y: auto;
+    }
+    
+    @media (max-width: 768px) {
+        .sidebar, .main-content {
+            height: auto;
+        }
+    }
+    
+    .stat-card {
+        transition: all 0.2s;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    
+    .tab-button.active {
+        border-bottom-width: 2px;
+        border-color: #3B82F6;
+        color: #3B82F6;
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="flex flex-col md:flex-row">
+    <!-- Sidebar -->
+    <div class="w-full md:w-64 bg-white shadow-md sidebar">
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex items-center">
+                {% if doctor.profile_image %}
+                    <img src="{{ doctor.profile_image.url }}" alt="{{ doctor }}" class="w-10 h-10 rounded-full object-cover ml-3">
+                {% else %}
+                    <div class="w-10 h-10 rounded-full bg-blue-200 flex items-center justify-center ml-3">
+                        <span class="text-blue-600 text-lg font-bold">{{ doctor.user.first_name|first }}{{ doctor.user.last_name|first }}</span>
+                    </div>
+                {% endif %}
+                <div>
+                    <h2 class="text-lg font-medium text-gray-800">دکتر {{ doctor.user.last_name }}</h2>
+                    <p class="text-sm text-gray-600">{{ doctor.specialization }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <nav class="mt-4">
+            <a href="{% url 'doctors:doctor_dashboard' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                داشبورد
+            </a>
+            <a href="{% url 'doctors:doctor_appointments' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                نوبت‌ها
+            </a>
+            <a href="{% url 'doctors:doctor_availability' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                مدیریت زمان‌های حضور
+            </a>
+            <a href="{% url 'doctors:doctor_earnings' %}" class="block px-6 py-3 text-blue-600 border-r-4 border-blue-600 bg-blue-50 font-medium">
+                درآمد
+            </a>
+            <a href="{% url 'docpages:doctor_posts' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                پست‌های من
+            </a>
+            <a href="{% url 'home:doctor_detail' doctor.id %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                مشاهده پروفایل عمومی
+            </a>
+        </nav>
+        
+        <div class="mt-auto p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <p class="mr-2 text-sm text-gray-600">
+                    {% if doctor.is_available %}
+                        <span class="text-green-600 font-medium">قابل رزرو</span>
+                    {% else %}
+                        <span class="text-red-600 font-medium">غیرقابل رزرو</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="flex-1 p-6 bg-gray-50 main-content">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">درآمد من</h1>
+            <p class="text-gray-600 mt-1">پیگیری درآمد و معیارهای مالی</p>
+        </div>
+        
+        <!-- Earnings Summary Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <!-- Current Month Earnings -->
+            <div class="bg-white p-6 rounded-lg shadow-sm stat-card">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">این ماه</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1">{{ current_month_earnings|default:"0" }} تومان</h3>
+                    </div>
+                    <div class="p-2 bg-green-100 rounded-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    {% if month_growth > 0 %}
+                        <span class="inline-flex items-center text-sm font-medium text-green-600">
+                            <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                            </svg>
+                            {{ month_growth }}% نسبت به ماه گذشته
+                        </span>
+                    {% elif month_growth < 0 %}
+                        <span class="inline-flex items-center text-sm font-medium text-red-600">
+                            <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                            {{ month_growth|abs_value }}% نسبت به ماه گذشته
+                        </span>
+                    {% else %}
+                        <span class="inline-flex items-center text-sm font-medium text-gray-600">
+                            مشابه ماه گذشته
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Last Month Earnings -->
+            <div class="bg-white p-6 rounded-lg shadow-sm stat-card">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">ماه گذشته</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1">{{ last_month_earnings|default:"0" }} تومان</h3>
+                    </div>
+                    <div class="p-2 bg-blue-100 rounded-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <span class="inline-flex items-center text-sm font-medium text-gray-600">
+                        {{ completed_appointments_last_month }} نوبت
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Total Earnings -->
+            <div class="bg-white p-6 rounded-lg shadow-sm stat-card">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">کل درآمد</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1">{{ total_earnings|default:"0" }} تومان</h3>
+                    </div>
+                    <div class="p-2 bg-purple-100 rounded-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <span class="inline-flex items-center text-sm font-medium text-gray-600">
+                        {{ total_completed_appointments }} نوبت در کل
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Average Per Appointment -->
+            <div class="bg-white p-6 rounded-lg shadow-sm stat-card">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">میانگین درآمد هر نوبت</p>
+                        <h3 class="text-2xl font-bold text-gray-800 mt-1">{{ avg_earnings_per_appointment|default:"0" }} تومان</h3>
+                    </div>
+                    <div class="p-2 bg-yellow-100 rounded-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <span class="inline-flex items-center text-sm font-medium text-gray-600">
+                        هزینه فعلی ویزیت: {{ doctor.consultation_fee|default:"0" }} تومان
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Period Selection and Chart -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6">
+                <h2 class="text-lg font-medium text-gray-800 mb-3 sm:mb-0">نمودار درآمد</h2>
+                <div class="inline-flex rounded-md shadow-sm">
+                    <button type="button" class="earnings-period-btn relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500 active-period" data-period="week">
+                        هفته
+                    </button>
+                    <button type="button" class="earnings-period-btn relative inline-flex items-center px-4 py-2 border-t border-b border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500" data-period="month">
+                        ماه
+                    </button>
+                    <button type="button" class="earnings-period-btn relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:outline-none focus:ring-1 focus:ring-blue-500" data-period="year">
+                        سال
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Chart Container -->
+            <div class="h-64 chart-container">
+                <canvas id="earningsChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Recent Payments -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-lg font-medium text-gray-800">پرداخت‌های اخیر</h2>
+                <a href="#" class="text-sm font-medium text-blue-600 hover:text-blue-800">مشاهده همه</a>
+            </div>
+            
+            {% if recent_payments %}
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">بیمار</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاریخ</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">وضعیت</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">مبلغ</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for payment in recent_payments %}
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10">
+                                                {% if payment.patient.profile_image %}
+                                                    <img class="h-10 w-10 rounded-full" src="{{ payment.patient.profile_image.url }}" alt="{{ payment.patient }}">
+                                                {% else %}
+                                                    <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                                        <span class="text-gray-500 text-sm">{{ payment.patient.user.first_name|first }}{{ payment.patient.user.last_name|first }}</span>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="mr-4">
+                                                <div class="text-sm font-medium text-gray-900">{{ payment.patient.user.get_full_name }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">{{ payment.created_at|date:"Y/m/d" }}</div>
+                                        <div class="text-sm text-gray-500">{{ payment.created_at|time:"H:i" }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                            {% if payment.status == 'completed' %}bg-green-100 text-green-800
+                                            {% elif payment.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                            {% elif payment.status == 'failed' %}bg-red-100 text-red-800
+                                            {% endif %}">
+                                            {% if payment.status == 'completed' %}تکمیل شده
+                                            {% elif payment.status == 'pending' %}در انتظار
+                                            {% elif payment.status == 'failed' %}ناموفق
+                                            {% endif %}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{ payment.amount }} تومان
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-12">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">هیچ پرداختی یافت نشد</h3>
+                    <p class="mt-1 text-sm text-gray-500">شما هنوز هیچ پرداختی دریافت نکرده‌اید.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Earnings period button functionality
+        const periodButtons = document.querySelectorAll('.earnings-period-btn');
+        
+        periodButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                periodButtons.forEach(btn => {
+                    btn.classList.remove('active-period');
+                    btn.classList.remove('bg-blue-50');
+                    btn.classList.remove('text-blue-700');
+                    btn.classList.add('bg-white');
+                    btn.classList.add('text-gray-700');
+                });
+                
+                // Add active class to clicked button
+                this.classList.add('active-period');
+                this.classList.add('bg-blue-50');
+                this.classList.add('text-blue-700');
+                this.classList.remove('bg-white');
+                this.classList.remove('text-gray-700');
+                
+                // Update chart based on period
+                const period = this.getAttribute('data-period');
+                updateChart(period);
+            });
+        });
+        
+        // Initialize chart
+        const ctx = document.getElementById('earningsChart').getContext('2d');
+        const earningsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Earnings',
+                    data: [12, 19, 3, 5, 2, 3, 7],
+                    backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value;
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return '$' + context.raw;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Function to update chart based on period
+        function updateChart(period) {
+            let labels, data;
+            
+            if (period === 'week') {
+                labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                data = [12, 19, 3, 5, 2, 3, 7];
+            } else if (period === 'month') {
+                labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+                data = [42, 28, 35, 50];
+            } else if (period === 'year') {
+                labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                data = [100, 120, 150, 170, 160, 140, 180, 190, 210, 230, 200, 250];
+            }
+            
+            earningsChart.data.labels = labels;
+            earningsChart.data.datasets[0].data = data;
+            earningsChart.update();
+            
+            // In a real application, you would fetch this data from the server based on the period
+            // For example:
+            // fetch(`/api/doctors/earnings?period=${period}`)
+            //     .then(response => response.json())
+            //     .then(data => {
+            //         earningsChart.data.labels = data.labels;
+            //         earningsChart.data.datasets[0].data = data.values;
+            //         earningsChart.update();
+            //     });
+        }
+    });
+</script>
+{% endblock %} 

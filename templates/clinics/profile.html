@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+
+{% block title %}پروفایل کلینیک - دکتر همدان{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* RTL specific styles */
+    .rtl .mr-3 {
+        margin-right: 0;
+        margin-left: 0.75rem;
+    }
+    
+    .rtl .mr-2 {
+        margin-right: 0;
+        margin-left: 0.5rem;
+    }
+    
+    .rtl .mr-4 {
+        margin-right: 0;
+        margin-left: 1rem;
+    }
+    
+    .rtl .file\:mr-4 {
+        margin-right: 0;
+        margin-left: 1rem;
+    }
+    
+    .rtl .text-left {
+        text-align: right;
+    }
+    
+    .rtl .text-right {
+        text-align: left;
+    }
+    
+    .rtl .flex-row {
+        flex-direction: row-reverse;
+    }
+    
+    .rtl .md\:grid-cols-2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .rtl .md\:grid-cols-4 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .rtl .sm\:grid-cols-3 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mb-8 rtl">
+    <h1 class="text-3xl font-bold text-gray-800 mb-4">مدیریت پروفایل کلینیک</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <!-- Sidebar Navigation -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center mb-6">
+                {% if clinic.logo %}
+                    <img src="{{ clinic.logo.url }}" alt="{{ clinic.name }}" class="w-12 h-12 rounded-md object-cover mr-3">
+                {% else %}
+                    <div class="w-12 h-12 rounded-md bg-blue-200 flex items-center justify-center mr-3">
+                        <span class="text-blue-600 text-xl font-bold">{{ clinic.name|first }}</span>
+                    </div>
+                {% endif %}
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800">{{ clinic.name }}</h3>
+                    <p class="text-gray-600 text-sm">مدیر کلینیک</p>
+                </div>
+            </div>
+            
+            <nav>
+                <a href="{% url 'clinics:clinic_dashboard' %}" class="block py-2 px-4 rounded-md text-gray-700 hover:bg-gray-100">
+                    داشبورد
+                </a>
+                <a href="{% url 'clinics:clinic_doctors' %}" class="block py-2 px-4 rounded-md text-gray-700 hover:bg-gray-100">
+                    مدیریت پزشکان
+                </a>
+                <a href="{% url 'clinics:clinic_profile' %}" class="block py-2 px-4 rounded-md bg-blue-50 text-blue-600 font-medium">
+                    پروفایل کلینیک
+                </a>
+                <a href="{% url 'clinics:clinic_appointments' %}" class="block py-2 px-4 rounded-md text-gray-700 hover:bg-gray-100">
+                    نوبت‌ها
+                </a>
+            </nav>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="md:col-span-3">
+            <!-- General Information -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">اطلاعات عمومی</h2>
+                
+                <form method="post" enctype="multipart/form-data" class="space-y-4">
+                    {% csrf_token %}
+                    
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">نام کلینیک</label>
+                        <input type="text" id="name" name="name" value="{{ clinic.name }}" required 
+                               class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label for="address" class="block text-sm font-medium text-gray-700 mb-1">آدرس</label>
+                        <textarea id="address" name="address" rows="3" required 
+                                 class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ clinic.address }}</textarea>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">شماره تماس</label>
+                            <input type="tel" id="phone" name="phone" value="{{ clinic.phone }}" required 
+                                   class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">ایمیل</label>
+                            <input type="email" id="email" name="email" value="{{ clinic.email }}" required 
+                                   class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-gray-700 mb-1">توضیحات</label>
+                        <textarea id="description" name="description" rows="4" 
+                                 class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ clinic.description }}</textarea>
+                    </div>
+                    
+                    <div>
+                        <label for="logo" class="block text-sm font-medium text-gray-700 mb-1">لوگو</label>
+                        {% if clinic.logo %}
+                            <div class="flex items-center mb-2">
+                                <img src="{{ clinic.logo.url }}" alt="لوگوی فعلی" class="w-16 h-16 object-cover rounded-md mr-2">
+                                <span class="text-sm text-gray-600">لوگوی فعلی</span>
+                            </div>
+                        {% endif %}
+                        <input type="file" id="logo" name="logo" accept="image/*" 
+                               class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    </div>
+                    
+                    <div>
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                            ذخیره تغییرات
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Specialties -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">تخصص‌ها</h2>
+                
+                <div class="mb-6">
+                    <h3 class="text-lg font-medium text-gray-800 mb-3">افزودن تخصص جدید</h3>
+                    <form method="post" class="space-y-4">
+                        {% csrf_token %}
+                        
+                        <div>
+                            <label for="specialty_name" class="block text-sm font-medium text-gray-700 mb-1">نام تخصص</label>
+                            <input type="text" id="specialty_name" name="specialty_name" placeholder="مثال: قلب و عروق" required 
+                                   class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label for="specialty_description" class="block text-sm font-medium text-gray-700 mb-1">توضیحات</label>
+                            <textarea id="specialty_description" name="specialty_description" rows="2" placeholder="توضیحات مختصر درباره این تخصص" 
+                                     class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                        </div>
+                        
+                        <div>
+                            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                                افزودن تخصص
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-medium text-gray-800 mb-3">تخصص‌های فعلی</h3>
+                    
+                    {% if specialties %}
+                        <div class="space-y-3">
+                            {% for specialty in specialties %}
+                                <div class="bg-gray-50 p-4 rounded-md">
+                                    <h4 class="font-medium text-gray-800">{{ specialty.name }}</h4>
+                                    <p class="text-gray-600 text-sm mt-1">{{ specialty.description|default:"توضیحاتی ثبت نشده است." }}</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-gray-600">هنوز تخصصی اضافه نشده است.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Gallery -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">گالری</h2>
+                
+                <div class="mb-6">
+                    <h3 class="text-lg font-medium text-gray-800 mb-3">افزودن تصویر جدید</h3>
+                    <form method="post" enctype="multipart/form-data" class="space-y-4">
+                        {% csrf_token %}
+                        
+                        <div>
+                            <label for="gallery_image" class="block text-sm font-medium text-gray-700 mb-1">تصویر</label>
+                            <input type="file" id="gallery_image" name="gallery_image" accept="image/*" required 
+                                   class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                        </div>
+                        
+                        <div>
+                            <label for="image_title" class="block text-sm font-medium text-gray-700 mb-1">عنوان (اختیاری)</label>
+                            <input type="text" id="image_title" name="image_title" placeholder="عنوان یا توضیح تصویر" 
+                                   class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        
+                        <div>
+                            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                                افزودن تصویر
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-medium text-gray-800 mb-3">گالری فعلی</h3>
+                    
+                    {% if gallery %}
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                            {% for image in gallery %}
+                                <div class="relative">
+                                    <img src="{{ image.image.url }}" alt="{{ image.title|default:'تصویر کلینیک' }}" class="w-full h-32 object-cover rounded-lg">
+                                    <div class="absolute inset-0 bg-black bg-opacity-40 opacity-0 hover:opacity-100 flex items-center justify-center transition-opacity duration-200 rounded-lg">
+                                        <form method="post" action="{% url 'clinics:delete_gallery_image' image.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="text-white bg-red-600 hover:bg-red-700 font-medium rounded-full p-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-gray-600">هنوز تصویری به گالری اضافه نشده است.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

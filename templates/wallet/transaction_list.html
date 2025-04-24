@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+
+{% block title %}تاریخچه تراکنش‌ها - دکتر همدان{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* RTL specific styles */
+    .rtl .mr-3 {
+        margin-right: 0;
+        margin-left: 0.75rem;
+    }
+    
+    .rtl .ml-3 {
+        margin-left: 0;
+        margin-right: 0.75rem;
+    }
+    
+    .rtl .text-left {
+        text-align: right;
+    }
+    
+    .rtl .text-right {
+        text-align: left;
+    }
+    
+    .rtl .flex-row {
+        flex-direction: row-reverse;
+    }
+    
+    .rtl .pl-3 {
+        padding-left: 0;
+        padding-right: 0.75rem;
+    }
+    
+    .rtl .pr-3 {
+        padding-right: 0;
+        padding-left: 0.75rem;
+    }
+    
+    .rtl .pr-10 {
+        padding-right: 0;
+        padding-left: 2.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mb-8 rtl">
+    <h1 class="text-3xl font-bold text-gray-800 mb-4">تاریخچه تراکنش‌ها</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <!-- Sidebar Navigation -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 rounded-full bg-blue-200 flex items-center justify-center mr-3">
+                    <span class="text-blue-600 text-xl font-bold">{{ user.first_name|first|default:user.username|first|upper }}</span>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800">{{ user.get_full_name|default:user.username }}</h3>
+                    <p class="text-gray-600 text-sm">بیمار</p>
+                </div>
+            </div>
+            
+            <nav>
+                <a href="{% url 'patients:patient_dashboard' %}" class="block py-2 px-4 rounded-md text-gray-700 hover:bg-gray-100">
+                    داشبورد
+                </a>
+                <a href="{% url 'patients:patient_appointments' %}" class="block py-2 px-4 rounded-md text-gray-700 hover:bg-gray-100">
+                    نوبت‌های من
+                </a>
+                <a href="{% url 'patients:patient_profile' %}" class="block py-2 px-4 rounded-md text-gray-700 hover:bg-gray-100">
+                    پروفایل من
+                </a>
+                <a href="{% url 'wallet:wallet_dashboard' %}" class="block py-2 px-4 rounded-md bg-blue-50 text-blue-600 font-medium">
+                    کیف پول من
+                </a>
+            </nav>
+            
+            <div class="mt-6 pt-6 border-t border-gray-200">
+                <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">فیلتر تراکنش‌ها</h4>
+                
+                <form method="get" action="{% url 'wallet:transaction_list' %}">
+                    <div class="mb-4">
+                        <label for="transaction_type" class="block text-sm font-medium text-gray-700 mb-1">نوع تراکنش</label>
+                        <select id="transaction_type" name="transaction_type" class="mt-1 block w-full pr-3 pl-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                            <option value="">همه انواع</option>
+                            <option value="payment" {% if request.GET.transaction_type == 'payment' %}selected{% endif %}>پرداخت</option>
+                            <option value="refund" {% if request.GET.transaction_type == 'refund' %}selected{% endif %}>بازپرداخت</option>
+                            <option value="deposit" {% if request.GET.transaction_type == 'deposit' %}selected{% endif %}>واریز</option>
+                            <option value="withdrawal" {% if request.GET.transaction_type == 'withdrawal' %}selected{% endif %}>برداشت</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="status" class="block text-sm font-medium text-gray-700 mb-1">وضعیت</label>
+                        <select id="status" name="status" class="mt-1 block w-full pr-3 pl-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                            <option value="">همه وضعیت‌ها</option>
+                            <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>در انتظار</option>
+                            <option value="completed" {% if request.GET.status == 'completed' %}selected{% endif %}>تکمیل شده</option>
+                            <option value="failed" {% if request.GET.status == 'failed' %}selected{% endif %}>ناموفق</option>
+                            <option value="cancelled" {% if request.GET.status == 'cancelled' %}selected{% endif %}>لغو شده</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        اعمال فیلترها
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="md:col-span-3">
+            <!-- Summary Card -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex flex-col sm:flex-row sm:justify-between">
+                    <div class="mb-4 sm:mb-0">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-1">موجودی فعلی</h2>
+                        <span class="text-3xl font-bold {% if balance >= 0 %}text-green-600{% else %}text-red-600{% endif %}">
+                            {{ balance|floatformat:2 }} تومان
+                        </span>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="text-center p-3 bg-gray-50 rounded-lg">
+                            <span class="block text-sm text-gray-500">تکمیل شده</span>
+                            <span class="block text-lg font-medium text-gray-800">{{ completed_count }}</span>
+                        </div>
+                        <div class="text-center p-3 bg-gray-50 rounded-lg">
+                            <span class="block text-sm text-gray-500">در انتظار</span>
+                            <span class="block text-lg font-medium text-gray-800">{{ pending_count }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Transactions List -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-xl font-semibold text-gray-800">
+                        {% if request.GET.transaction_type or request.GET.status %}
+                            تراکنش‌های فیلتر شده
+                        {% else %}
+                            همه تراکنش‌ها
+                        {% endif %}
+                    </h2>
+                </div>
+                
+                {% if transactions %}
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاریخ</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">توضیحات</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">نوع</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">مبلغ</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">وضعیت</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for transaction in transactions %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {{ transaction.created_at|date:"M d, Y H:i" }}
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-900">
+                                            {{ transaction.description|default:"" }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {{ transaction.get_transaction_type_display }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium {% if transaction.transaction_type in 'deposit,refund' %}text-green-600{% else %}text-red-600{% endif %}">
+                                            {% if transaction.transaction_type in 'deposit,refund' %}+{% else %}-{% endif %}{{ transaction.amount }} تومان
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                                {% if transaction.status == 'completed' %}bg-green-100 text-green-800
+                                                {% elif transaction.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                                {% elif transaction.status == 'failed' %}bg-red-100 text-red-800
+                                                {% elif transaction.status == 'cancelled' %}bg-gray-100 text-gray-800
+                                                {% endif %}">
+                                                {{ transaction.get_status_display }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    {% if is_paginated %}
+                    <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-700">
+                                نمایش <span class="font-medium">{{ page_obj.start_index }}</span> تا 
+                                <span class="font-medium">{{ page_obj.end_index }}</span> از 
+                                <span class="font-medium">{{ paginator.count }}</span> تراکنش
+                            </p>
+                        </div>
+                        <div>
+                            <nav class="flex items-center">
+                                {% if page_obj.has_previous %}
+                                    <a href="?{% if request.GET.transaction_type %}transaction_type={{ request.GET.transaction_type }}&{% endif %}{% if request.GET.status %}status={{ request.GET.status }}&{% endif %}page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                        قبلی
+                                    </a>
+                                {% endif %}
+                                
+                                {% if page_obj.has_next %}
+                                    <a href="?{% if request.GET.transaction_type %}transaction_type={{ request.GET.transaction_type }}&{% endif %}{% if request.GET.status %}status={{ request.GET.status }}&{% endif %}page={{ page_obj.next_page_number }}" class="mr-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                        بعدی
+                                    </a>
+                                {% endif %}
+                            </nav>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% else %}
+                    <div class="p-6 text-center">
+                        <div class="inline-block p-6 bg-gray-50 rounded-full mb-4">
+                            <svg class="h-12 w-12 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-1">تراکنشی یافت نشد</h3>
+                        <p class="text-gray-500">
+                            {% if request.GET.transaction_type or request.GET.status %}
+                                معیارهای فیلتر خود را تغییر دهید تا نتایج بیشتری ببینید.
+                            {% else %}
+                                هنوز تراکنشی در کیف پول شما ثبت نشده است.
+                            {% endif %}
+                        </p>
+                        <div class="mt-6">
+                            <a href="{% url 'wallet:wallet_dashboard' %}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+                                بازگشت به کیف پول
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

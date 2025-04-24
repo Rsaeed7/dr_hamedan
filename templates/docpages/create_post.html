@@ -1,0 +1,314 @@
+{% extends 'base.html' %}
+
+{% block title %}ایجاد پست جدید - دکتر همدان{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* RTL specific styles */
+    .rtl .mr-3 {
+        margin-right: 0;
+        margin-left: 0.75rem;
+    }
+    
+    .rtl .mr-1 {
+        margin-right: 0;
+        margin-left: 0.25rem;
+    }
+    
+    .rtl .ml-3 {
+        margin-left: 0;
+        margin-right: 0.75rem;
+    }
+    
+    .rtl .text-right {
+        text-align: left;
+    }
+    
+    .rtl .justify-between {
+        justify-content: space-between;
+    }
+    
+    .rtl .items-center {
+        align-items: center;
+    }
+    
+    .rtl .flex-row {
+        flex-direction: row-reverse;
+    }
+    
+    .rtl .flex-col {
+        flex-direction: column;
+    }
+    
+    .rtl .gap-4 {
+        gap: 1rem;
+    }
+    
+    .rtl .space-x-3 {
+        margin-right: 0.75rem;
+        margin-left: 0;
+    }
+    
+    .rtl .border-l-4 {
+        border-left: 0;
+        border-right: 4px solid;
+    }
+    
+    .rtl .file\:mr-4 {
+        margin-right: 0;
+        margin-left: 1rem;
+    }
+    
+    .rtl .mx-2 {
+        margin-left: 0.5rem;
+        margin-right: 0.5rem;
+    }
+    
+    .sidebar {
+        height: calc(100vh - 4rem);
+    }
+    
+    .main-content {
+        height: calc(100vh - 4rem);
+        overflow-y: auto;
+    }
+    
+    @media (max-width: 768px) {
+        .sidebar, .main-content {
+            height: auto;
+        }
+    }
+    
+    /* Add help tooltip styles */
+    .tooltip {
+        position: relative;
+        display: inline-block;
+        cursor: help;
+    }
+    
+    .tooltip .tooltip-text {
+        visibility: hidden;
+        width: 200px;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -100px;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    
+    .tooltip:hover .tooltip-text {
+        visibility: visible;
+        opacity: 1;
+    }
+    
+    /* Mobile sidebar toggle */
+    .mobile-sidebar-toggle {
+        display: none;
+    }
+    
+    @media (max-width: 768px) {
+        .mobile-sidebar-toggle {
+            display: block;
+        }
+        
+        .sidebar {
+            display: none;
+        }
+        
+        .sidebar.active {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 50;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Mobile sidebar toggle -->
+<div class="mobile-sidebar-toggle p-4 bg-gray-50 md:hidden">
+    <button id="sidebarToggle" type="button" class="text-gray-600 hover:text-gray-900">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+    </button>
+</div>
+
+<div class="flex flex-col md:flex-row rtl">
+    <!-- Sidebar -->
+    <div class="w-full md:w-64 bg-white shadow-md sidebar" id="sidebar">
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    {% if doctor.profile_image %}
+                        <img src="{{ doctor.profile_image.url }}" alt="{{ doctor }}" class="w-10 h-10 rounded-full object-cover ml-3">
+                    {% else %}
+                        <div class="w-10 h-10 rounded-full bg-blue-200 flex items-center justify-center ml-3">
+                            <span class="text-blue-600 text-lg font-bold">{{ doctor.user.first_name|first }}{{ doctor.user.last_name|first }}</span>
+                        </div>
+                    {% endif %}
+                    <div>
+                        <h2 class="text-lg font-medium text-gray-800">دکتر {{ doctor.user.last_name }}</h2>
+                        <p class="text-sm text-gray-600">{{ doctor.specialization }}</p>
+                    </div>
+                </div>
+                <button id="closeSidebar" class="md:hidden text-gray-600 hover:text-gray-900">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <nav class="mt-4">
+            <a href="{% url 'doctors:doctor_dashboard' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                داشبورد
+            </a>
+            <a href="{% url 'doctors:doctor_appointments' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                نوبت‌ها
+            </a>
+            <a href="{% url 'doctors:doctor_availability' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                مدیریت زمان حضور
+            </a>
+            <a href="{% url 'doctors:doctor_earnings' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                درآمد
+            </a>
+            <a href="{% url 'docpages:doctor_posts' %}" class="block px-6 py-3 text-blue-600 border-r-4 border-blue-600 bg-blue-50 font-medium">
+                پست‌های من
+            </a>
+            <a href="{% url 'docpages:manage_comments' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                مدیریت نظرات
+            </a>
+            <a href="{% url 'doctors:doctor_detail' doctor.id %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
+                مشاهده پروفایل عمومی
+            </a>
+        </nav>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="flex-1 p-6 bg-gray-50 main-content">
+        <!-- Breadcrumbs -->
+        <div class="mb-6 text-sm text-gray-500">
+            <a href="{% url 'doctors:doctor_dashboard' %}" class="hover:text-blue-600">داشبورد</a>
+            <span class="mx-2">›</span>
+            <a href="{% url 'docpages:doctor_posts' %}" class="hover:text-blue-600">پست‌های من</a>
+            <span class="mx-2">›</span>
+            <span class="text-gray-700">ایجاد پست جدید</span>
+        </div>
+        
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">ایجاد پست جدید</h1>
+            
+            <a href="{% url 'docpages:doctor_posts' %}" class="flex items-center text-blue-600 hover:text-blue-800">
+                بازگشت به پست‌ها
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+            </a>
+        </div>
+        
+        {% if messages %}
+            <div class="mb-6">
+                {% for message in messages %}
+                    <div class="{% if message.tags == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %} px-4 py-3 rounded-md mb-2">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-lg font-medium text-gray-800">اطلاعات پست</h2>
+                    <div class="tooltip">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="tooltip-text">یک پست برای به اشتراک گذاری با بیماران خود ایجاد کنید. می‌توانید قبل از انتشار پیش‌نمایش کنید یا به عنوان پیش‌نویس ذخیره کنید تا بعداً تکمیل کنید.</span>
+                    </div>
+                </div>
+            </div>
+            
+            <form method="post" action="{% url 'docpages:create_post' %}" enctype="multipart/form-data" class="p-6" id="postForm">
+                {% csrf_token %}
+                
+                <div class="mb-6">
+                    <label for="title" class="block text-sm font-medium text-gray-700 mb-1">عنوان پست</label>
+                    <input type="text" id="title" name="title" value="{{ form_data.title|default:'' }}" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    <p class="mt-1 text-sm text-gray-500">یک عنوان واضح و توصیفی برای پست خود انتخاب کنید</p>
+                </div>
+                
+                <div class="mb-6">
+                    <label for="content" class="block text-sm font-medium text-gray-700 mb-1">محتوا</label>
+                    <textarea id="content" name="content" rows="12" required 
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ form_data.content|default:'' }}</textarea>
+                    <p class="mt-1 text-sm text-gray-500">محتوای پست خود را اینجا بنویسید. می‌توانید اطلاعات مفید، به‌روزرسانی‌ها یا اطلاعیه‌هایی برای بیماران خود قرار دهید.</p>
+                </div>
+                
+                <div class="mb-6">
+                    <label for="image" class="block text-sm font-medium text-gray-700 mb-1">تصویر پست (اختیاری)</label>
+                    <input type="file" id="image" name="image" accept="image/*" 
+                           class="block w-full text-sm text-gray-500 file:ml-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    <p class="mt-1 text-sm text-gray-500">یک تصویر اضافه کنید تا پست شما جذاب‌تر شود. اندازه توصیه شده: 1200 در 600 پیکسل.</p>
+                </div>
+                
+                <input type="hidden" name="action" id="action" value="publish">
+                
+                <div class="flex items-center justify-end space-x-3">
+                    <a href="{% url 'docpages:doctor_posts' %}" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                        انصراف
+                    </a>
+                    <button type="button" onclick="setAction('preview')" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                        پیش‌نمایش
+                    </button>
+                    <button type="button" onclick="setAction('save_draft')" class="px-4 py-2 border border-indigo-300 rounded-md shadow-sm text-sm font-medium text-indigo-700 bg-indigo-50 hover:bg-indigo-100">
+                        ذخیره پیش‌نویس
+                    </button>
+                    <button type="button" onclick="setAction('publish')" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        انتشار پست
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function setAction(action) {
+        document.getElementById('action').value = action;
+        document.getElementById('postForm').submit();
+    }
+    
+    // Mobile sidebar toggle
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleButton = document.getElementById('sidebarToggle');
+        const closeButton = document.getElementById('closeSidebar');
+        const sidebar = document.getElementById('sidebar');
+        
+        if (toggleButton && closeButton && sidebar) {
+            toggleButton.addEventListener('click', function() {
+                sidebar.classList.add('active');
+            });
+            
+            closeButton.addEventListener('click', function() {
+                sidebar.classList.remove('active');
+            });
+        }
+    });
+</script>
+{% endblock %} 
