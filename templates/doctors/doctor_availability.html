@@ -181,7 +181,7 @@
                         <heroicon-outline-home class="h-5 w-5" />
                         <span>داشبورد</span>
                     </a>
-                    <a href="{% url 'appointments:doctor_appointments' %}" 
+                    <a href="{% url 'doctors:doctor_appointments' %}" 
                        class="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
                         <heroicon-outline-calendar class="h-5 w-5" />
                         <span>نوبت‌ها</span>
@@ -231,7 +231,7 @@
             <!-- Add New Day -->
             <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
                 <h2 class="text-xl font-semibold text-gray-900 mb-4">افزودن روز جدید</h2>
-                <form method="post" action="{% url 'doctors:add_availability' %}" class="space-y-4">
+                <form method="post" action="{% url 'doctors:add_availability_day' %}" class="space-y-4">
                     {% csrf_token %}
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
@@ -298,18 +298,18 @@
             <div class="bg-white rounded-lg shadow-sm p-6">
                 <h2 class="text-xl font-semibold text-gray-900 mb-4">روزهای حضور</h2>
                 <div class="space-y-4">
-                    {% for availability in doctor.availability.all %}
+                    {% for availability in doctor.availabilities.all %}
                         <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                             <div>
                                 <p class="font-medium text-gray-900">{{ availability.get_day_of_week_display }}</p>
                                 <p class="text-sm text-gray-600">{{ availability.start_time|time:"H:i" }} - {{ availability.end_time|time:"H:i" }}</p>
                             </div>
                             <div class="flex space-x-2">
-                                <a href="{% url 'doctors:edit_availability' availability.pk %}" 
+                                <a href="{% url 'doctors:edit_availability_day' availability.pk %}" 
                                    class="px-3 py-1 text-sm text-blue-600 hover:text-blue-700">
                                     ویرایش
                                 </a>
-                                <form method="post" action="{% url 'doctors:delete_availability' availability.pk %}" 
+                                <form method="post" action="{% url 'doctors:delete_availability_day' availability.pk %}" 
                                       class="inline" onsubmit="return confirm('آیا از حذف این زمان حضور اطمینان دارید؟');">
                                     {% csrf_token %}
                                     <button type="submit" class="px-3 py-1 text-sm text-red-600 hover:text-red-700">
