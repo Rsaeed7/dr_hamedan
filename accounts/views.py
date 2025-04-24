@@ -41,14 +41,16 @@ def login_view(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
-            email = form.cleaned_data.get('email')
+            username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
             remember_me = form.cleaned_data.get('remember_me', False)
             
             # Try to find user by email
             try:
-                user = User.objects.get(email=email)
-                user = authenticate(request, username=user.username, password=password)
+
+                
+                # Authenticate with the found username
+                user = authenticate(request, username=username, password=password)
                 
                 if user is not None:
                     login(request, user)
@@ -61,8 +63,10 @@ def login_view(request):
                         return redirect('doctors:doctor_dashboard')
                     return redirect('doctors:doctor_list')
                 else:
+                    print(f"Authentication failed for username: {user.username}")
                     messages.error(request, _('ایمیل یا رمز عبور نامعتبر است.'))
             except User.DoesNotExist:
+                print(f"No user found with email: {email}")
                 messages.error(request, _('ایمیل یا رمز عبور نامعتبر است.'))
     else:
         form = LoginForm()
