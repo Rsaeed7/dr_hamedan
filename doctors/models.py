@@ -7,6 +7,14 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.translation import gettext_lazy as _
 
 
+class City(models.Model):
+    name = models.CharField(max_length=50, verbose_name=_('نام شهر'))
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = _('شهر')
+        verbose_name_plural = _('شهرها')
 
 class Specialization(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('نام تخصص'))
@@ -26,6 +34,7 @@ class Doctor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name=_('کاربر'))
     specialization = models.ForeignKey(Specialization, on_delete=models.SET_NULL, null=True, verbose_name=_('تخصص'))
     license_number = models.CharField(max_length=50, unique=True, verbose_name=_('شماره پروانه'))
+    city = models.ForeignKey(City,on_delete=models.SET_NULL, null=True, verbose_name=_('شهر محل خدمت'))
     bio = models.TextField(blank=True, verbose_name=_('بیوگرافی'))
     profile_image = models.ImageField(upload_to='doctor_profiles/', blank=True, null=True, verbose_name=_('تصویر پروفایل'))
     consultation_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name=_('هزینه مشاوره'))

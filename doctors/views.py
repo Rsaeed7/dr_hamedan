@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from .models import Doctor, DoctorAvailability, Specialization
+from .models import Doctor, DoctorAvailability, Specialization,Clinic,City
 from reservations.models import Reservation, ReservationDay
 from datetime import datetime, timedelta
 from django.db.models import Q, Sum, Count
@@ -9,15 +9,35 @@ from django.utils import timezone
 from wallet.models import Transaction
 from utils.utils import send_notification
 from django.contrib import messages
+from medimag.models import MagArticle
+
+
+def index(request):
+    doctors = Doctor.objects.filter(is_available=True)
+    clinics = Clinic.objects.all()
+    specializations = Specialization.objects.all().order_by('name')
+    articles = MagArticle.objects.all()
+    cities = City.objects.all()
+    context = {
+        'doctors': doctors,
+        'clinics': clinics,
+        'specializations': specializations,
+        'articles': articles,
+        'cities': cities
+    }
+    return render(request, 'index/homepage.html', context)
+
 
 def doctor_list(request):
     """نمایش لیست پزشکان با امکان جستجو و فیلتر"""
     query = request.GET.get('query', '')
     specialty = request.GET.get('specialty', '')
     clinic = request.GET.get('clinic', '')
-    
+    city = request.GET.get('city', '')
+
     doctors = Doctor.objects.filter(is_available=True)
-    
+    clinics = Clinic.objects.all()
+
     # اعمال فیلترها در صورت وجود
     if query:
         doctors = doctors.filter(
@@ -31,14 +51,18 @@ def doctor_list(request):
     
     if clinic:
         doctors = doctors.filter(clinic__name__icontains=clinic)
-    
+
+    if city:
+        doctors = doctors.filter(city__name__icontains=city)
+
     specializations = Specialization.objects.all().order_by('name')
     
     context = {
         'doctors': doctors,
+        'clinics': clinics,
         'specializations': specializations,
     }
-    
+
     return render(request, 'doctors/doctor_list.html', context)
 
 def doctor_detail(request, pk):
