@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import Doctor, DoctorAvailability, Specialization
-
+from .models import Doctor, DoctorAvailability, Specialization ,City
+admin.site.register(City)
 @admin.register(Specialization)
 class SpecializationAdmin(admin.ModelAdmin):
     list_display = ('name', 'description')
