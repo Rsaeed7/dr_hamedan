@@ -1,0 +1,176 @@
+{% extends  'base/base.html' %}
+{% load static %}
+{% block body %}
+    <!-- Search -->
+{% include  'base/search.html' %}
+    <!-- /Search -->
+
+
+    <div class="container margin_60">
+        <!--Mag-Banner-->
+        <div class="main_title">
+            <img class="banner-blog" src="{% static 'img/dr/431-4316672_health-and-wellness-banner.png' %}">
+        </div>
+        <!--/Mag-Banner-->
+    
+        <div class="row">
+            <!--aside -->
+            <aside class="col-lg-3 aside-border ">
+                <div class="widget">
+                    <div class="widget-title">
+                        <h4><i class="icon-article-alt-1"></i>آخرین مقاله ها</h4>
+                    </div>
+                    <ul class="comments-list">
+                        {% for article in articles_last %}
+                            <li>
+                                <div class="alignleft">
+                                    <a href="{{ article.get_absolute_url }}"><img
+                                            src="{{ article.image.url }}"
+                                            alt=""></a>
+                                </div>
+                                <h3><a href="{{ article.get_absolute_url }}" title="">{{ article.title }}</a></h3>
+                                <small>{{ article.description|truncatechars:60 }}</small>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="widget">
+                    <div class="widget-title">
+                        <h4><i class="icon-tags-1"></i>دسته بندی</h4>
+                    </div>
+                    <ul class="cats">
+                        {% for item in category %}
+                            <li><a href="#">{{ item.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </aside>
+            <!--/aside -->
+
+            <div class="col-lg-9">
+                <!-- /article list -->
+                {% for object in object_list %}
+                    <article class="blog wow fadeIn">
+                        <div class="row no-gutters">
+                            <div class="col-lg-4">
+                                <figure>
+                                    <a href="{% url 'mag:article' object.slug %}"><img
+                                            src="{{ object.image.url }}"
+                                            alt="">
+                                        <div class="preview"><span>مطالعه مقاله</span></div>
+                                    </a>
+                                </figure>
+                            </div>
+                            <div class="col-lg-8">
+                                <div class="post_info">
+                                    <h3><a href="{% url 'mag:article' object.slug %}">{{ object.title }}</a></h3>
+                                    <p>{{ object.description | truncatewords:70 }}</p>
+                                    <ul>
+                                        <li><i class="icon-feather"></i>{{ object.writer.username }}</li>
+                                        <li><i class="icon-calendar-empty"></i>{{ object.JaliliDatepublished }}</li>
+                                        <li><i class="icon-comment-3"></i>2</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+                <!-- /article list -->
+
+
+                <!-- pagination -->
+                <div>
+                    <div class="add_top_20">
+                        <ul class="pagination pagination-sm center-content" id="pagination">
+                            <!-- آیتم‌های صفحه‌بندی به صورت داینامیک اضافه خواهند شد -->
+                        </ul>
+                    </div>
+                </div>
+                <!-- /pagination -->
+            </div>
+
+        </div>
+    </div>
+    <script>
+        function createPagination(totalPages, currentPage) {
+            var paginationContainer = document.getElementById('pagination');
+            paginationContainer.innerHTML = '';
+
+            if (totalPages <= 1) return;
+
+            var maxVisiblePages = 5;
+            var startPage, endPage;
+
+            if (totalPages <= maxVisiblePages) {
+                startPage = 1;
+                endPage = totalPages;
+            } else {
+                var maxPagesBeforeCurrentPage = Math.floor(maxVisiblePages / 2);
+                var maxPagesAfterCurrentPage = Math.ceil(maxVisiblePages / 2) - 1;
+
+                if (currentPage <= maxPagesBeforeCurrentPage) {
+                    startPage = 1;
+                    endPage = maxVisiblePages;
+                } else if (currentPage + maxPagesAfterCurrentPage >= totalPages) {
+                    startPage = totalPages - maxVisiblePages + 1;
+                    endPage = totalPages;
+                } else {
+                    startPage = currentPage - maxPagesBeforeCurrentPage;
+                    endPage = currentPage + maxPagesAfterCurrentPage;
+                }
+            }
+
+
+            if (startPage > 1) {
+                var firstPage = document.createElement('li');
+                firstPage.innerHTML = '<a class="page-link border-0 down-3" href="#" data-page="1"><i class="icon-right-open-3"></i></a>';
+                paginationContainer.appendChild(firstPage);
+
+                if (startPage > 2) {
+                    var dots = document.createElement('li');
+                    dots.innerHTML = '<p class="page-link border-0 down-2">...</p>';
+                    paginationContainer.appendChild(dots);
+                }
+            }
+
+            for (var page = startPage; page <= endPage; page++) {
+                var pageItem = document.createElement('li');
+                pageItem.classList.add('page-iter');
+                if (page === currentPage) {
+                    pageItem.classList.add('active');
+                }
+                pageItem.innerHTML = `<a class="page-link" href="#" data-page="${page}">${page}</a>`;
+                paginationContainer.appendChild(pageItem);
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    var dots = document.createElement('li');
+                    dots.innerHTML = '<p class="page-link border-0 down-2">...</p>';
+                    paginationContainer.appendChild(dots);
+                }
+
+                var lastPage = document.createElement('li');
+                lastPage.innerHTML = `<a class="page-link border-0 down-3" href="#" data-page="${totalPages}"><i class="icon-left-open-3"></i></a>`;
+                paginationContainer.appendChild(lastPage);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var currentPage = {{ page_obj.number }}; // شماره صفحه جاری را از سرور دریافت کنید
+            var totalPages = {{ page_obj.paginator.num_pages }}; // تعداد کل صفحات را از سرور دریافت کنید
+
+            createPagination(totalPages, currentPage);
+
+            document.getElementById('pagination').addEventListener('click', function (event) {
+                if (event.target.tagName === 'A' || event.target.tagName === 'I') {
+                    event.preventDefault();
+                    var pageParam = event.target.getAttribute('data-page') || event.target.parentElement.getAttribute('data-page');
+                    var urlParams = new URLSearchParams(window.location.search);
+                    urlParams.set('page', pageParam);
+                    window.location.search = urlParams.toString();
+                }
+            });
+        });
+    </script>
+{% endblock %}

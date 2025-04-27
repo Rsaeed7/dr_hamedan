@@ -1,0 +1,113 @@
+{% load static %}
+
+<header class="header_sticky">
+    <div class="container">
+        <div class="row">
+            <!--Logo-->
+            <div class="col-lg-3 col-6">
+                <div id="logo_home">
+                    <h1><a href="/" title="DrHamedan">DrHamedan</a></h1>
+                </div>
+            </div>
+            <!--/Logo-->
+            <nav class="col-lg-9 col-6">
+                <a class="cmn-toggle-switch cmn-toggle-switch__htx open_close m-r-100"
+                   href="#0"><span>Menu mobile</span></a>
+                <ul id="top_access">
+
+                    <li class="d-none d-md-flex">
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'doctors:doctor_dashboard' %}">
+                                <div class="btn btn-outline-light">
+                                    <i class="icon-user-2 fs-15"></i>{{ user.username }}
+                                </div>
+                            </a>
+                        {% else %}
+                            <a href="{% url 'login' %}">
+                                <div class="btn btn-outline-light">
+                                    <i class="icon-user-2 fs-15"></i>ورود
+                                </div>
+                            </a>
+                        {% endif %}
+
+                    </li>
+                </ul>
+                <div class="main-menu">
+                    <ul>
+                        <li class="d-lg-none">
+                            <a href="">
+                                <div class="btn dr_box col-11">
+                                    <i class="pe-7s-users"></i>09188028729
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="">نوبت دهی آنلاین</a>
+                        </li>
+                        <li class="submenu">
+                            <a href="#" class="show-submenu">تخصص ها<i class="icon-down-open-mini"></i></a>
+                            <ul>
+                                {% for specialization in specializations %}
+                                    <li>
+                                        <a href="{% url 'doctors:doctor_list' %}?specialty={{ specialization.name }}"><img
+                                                src="{{ specialization.image.url }}" style="margin-left: 10px"
+                                                width="25">{{ specialization.name }}</a></li>
+                                {% empty %}
+                                    <li>تخصصی یافت نشد
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="#0">مشاوره آنلاین</a>
+
+                        </li>
+                        <li><a href="{% url 'mag:list' %}">مجله پزشکی</a></li>
+                        <li><a href="{% url 'clinics:clinic_list' %}">مراکز درمانی</a></li>
+                        <li><a href="" class="text_dr_2">برای پزشکان</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+</header>
+
+
+<!-- mobile footer -->
+<div class="bottom-nav" id="bottom-nav">
+    <a href="/" class="nav-item active">
+        <i class="icon-hospital text-dr"></i>
+        <span>خانه</span>
+    </a>
+
+    <a href="" class="nav-item">
+        <i class="icon-blogger text-dr"></i>
+        <span>وبلاگ</span>
+    </a>
+    <a href="" class="nav-item {% if request.resolver_match.url_name == 'turn_days' %}active{% endif %}">
+        <i class="icon-users text-dr"></i>
+        <span>نوبت ها</span>
+    </a>
+    <a href="" class="nav-item">
+        <i class="icon-users-2 text-dr"></i>
+        <span>پروفایل</span>
+    </a>
+</div>
+<!-- /mobile footer -->
+
+<script>
+    window.addEventListener("scroll", function () {
+        var bottomNav = document.getElementById("bottom-nav");
+        var scrollPosition = window.scrollY + window.innerHeight; // موقعیت کنونی اسکرول
+
+        // بررسی که آیا به انتهای صفحه نزدیک شده‌ایم
+        if (document.documentElement.scrollHeight - scrollPosition <= 20) {
+            bottomNav.style.bottom = "270px"; // وقتی به انتها رسیدیم 20 پیکسل بالاتر از پایین قرار بگیرد
+            bottomNav.className = 'bottom-nav r'
+
+        } else {
+            bottomNav.style.bottom = "0"; // وقتی پایین صفحه نیستیم، در پایین باقی بماند
+            bottomNav.className = 'bottom-nav'
+        }
+    });
+</script>
