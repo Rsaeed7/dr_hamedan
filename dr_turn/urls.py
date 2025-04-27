@@ -29,7 +29,7 @@ urlpatterns = [
     path('wallet/', include('wallet.urls')),
     path('docpages/', include('docpages.urls')),
     path('', include('doctors.urls', namespace='home')),  # Home page will be handled by doctors app
-    
+    path('medimag/', include('medimag.urls')),
     # Authentication URLs
     path('accounts/', include('accounts.urls')),
     path('accounts/', include('django.contrib.auth.urls')), 

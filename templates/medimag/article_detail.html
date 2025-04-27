@@ -1,0 +1,132 @@
+{% extends  'base/base.html' %}
+{% load static %}
+{% block body %}
+
+    <!-- Search -->
+{% include  'base/search.html' %}
+    <!-- /Search -->
+
+    <div class="container margin_60">
+        <div class="row">
+            <!--aside-->
+            <aside class="col-lg-3 aside-border bg-gradiant2 order-2 order-lg-0">
+                <div class="widget">
+                    <div class="widget-title">
+                        <h4><i class="icon-article-alt-1"></i>آخرین مقاله ها</h4>
+                    </div>
+                    <ul class="comments-list">
+                        {% for article in articles_last %}
+                            <li>
+                                <div class="alignleft">
+                                    <a href="{{ article.get_absolute_url }}"><img
+                                            src="{{ article.image.url }}"
+                                            alt=""></a>
+                                </div>
+                                <h3><a href="{{ article.get_absolute_url }}" title="">{{ article.title }}</a></h3>
+                                <small>{{ article.description|truncatechars:60 }}</small>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="widget">
+                    <div class="widget-title">
+                        <h4><i class="icon-tags-1"></i>دسته بندی</h4>
+                    </div>
+                    <ul class="cats">
+                        {% for item in category %}
+                            <li><a href="#">{{ item.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </aside>
+            <!--/aside-->
+
+            <div class="col-lg-9">
+                <div class="postmeta">
+                    <ul>
+                        <li><a href="#"><i class="icon-bookmark-empty-1"></i> {{ object.category }}</a></li>
+                        <li><a href="#"><i class="icon-calendar-7"></i>{{ object.JaliliDatepublished }}</a></li>
+                        <li><a href="#"><i class="icon-edit-3"></i>{{ object.writer.username }}</a></li>
+                        <li><a href="#">14<i class="icon_comment_alt" style="margin-left: 3px"></i></a></li>
+                    </ul>
+                </div>
+                <div class="bloglist singlepost">
+                    <p><img alt="" class="img-fluid" style="border-radius: 20px; width: 1000px;height: 300px"
+                            src="{{ object.image.url }}">
+                    </p>
+                    <h1>{{ object.title }}</h1>
+                    <div class="post-content">
+                        <div>
+                            <p>{{ object.description }}</p>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                <!--Comments-->
+                <nav>
+                    <div class="container">
+                        <a class="font-weight-bold"> دیدگاه خودتان را بنویسید(4
+                            دیدگاه ثبت شده است)</a>
+                    </div>
+                </nav>
+                <div>
+                    <div class="reviews-container">
+                        <div class="row text-left">
+                            <div class="col-lg-12">
+                                <form method="post" id="comment_content">
+                                    {% csrf_token %}
+                                    <div class="col-md-auto form-group">
+                                        {{ form.name }}
+                                    </div>
+                                    <div class="col-md-12 form-group">
+                                        {{ form.text }}
+                                    </div>
+                                    {{ form.parent }}
+                                    <div class="row rev-header">
+                                        <div class="col-auto">
+                                            <div class="custom-gender-toggle">
+                                                <input type="radio" id="male-option" name="gender" value="M" checked>
+                                                <label for="male-option">آقا هستم</label>
+                                                <input type="radio" id="female-option" name="gender" value="F">
+                                                <label for="female-option">خانم هستم</label>
+                                                <div class="custom-slider"></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <button type="submit" class="btn btn-success mx-3 m-t-20">ثبت دیدگاه</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+
+                        <hr>
+                        {% for comment in comments %}
+                            <div class="review-box clearfix box_faq">
+                                <div class="border-bottom">
+                                    <div class="rev-header">
+                                        <div class="rev-info font-weight-bold"><i
+                                                class="pe-7s-user{% if comment.gender == 'F' %}-female{% endif %} text-info"></i>{{ comment.name }}
+                                        </div>
+                                        <small class="text-left text_dr_3">{{ comment.JaliliDatepublished }}</small>
+
+                                    </div>
+                                    <div class="rev-text m-t-20">
+                                        <p>
+                                            {{ comment.text }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <!--Comment-->
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
