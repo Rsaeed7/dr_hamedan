@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'wallet',
     'docpages',
     'medimag.apps.MedimagConfig',
+    'about_us.apps.AboutUsConfig',
 ]
 
 # Authentication settings
@@ -84,7 +85,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'doctors.context_processors.specializations_processor',
+                'context_processors.context_processors.context_processors',
             ],
         },
     },

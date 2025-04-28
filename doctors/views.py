@@ -10,6 +10,7 @@ from wallet.models import Transaction
 from utils.utils import send_notification
 from django.contrib import messages
 from medimag.models import MagArticle
+from docpages.models import Post
 
 
 def index(request):
@@ -27,6 +28,15 @@ def index(request):
     }
     return render(request, 'index/homepage.html', context)
 
+def specializations(request):
+    return render(request, 'doctors/specialization_list.html')
+
+def explore(request):
+    posts = Post.objects.filter(status='published')
+    context = {
+        'posts': posts,
+    }
+    return render(request, 'index/medexplore.html',context)
 
 def doctor_list(request):
     """نمایش لیست پزشکان با امکان جستجو و فیلتر"""
