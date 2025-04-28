@@ -7,7 +7,7 @@ from .models import Reservation, ReservationDay
 from doctors.models import Doctor
 from patients.models import PatientsFile
 from datetime import datetime
-
+from datetime import timedelta
 def book_appointment(request, doctor_id):
     """Handle booking a new appointment"""
     doctor = get_object_or_404(Doctor, id=doctor_id, is_available=True)
@@ -73,23 +73,23 @@ def book_appointment(request, doctor_id):
                 messages.error(request, f"An error occurred: {str(e)}")
         else:
             messages.error(request, "Please fill in all required fields.")
-    
+
     # Get available dates and slots for this doctor
     days = []
     today = datetime.now().date()
-    
     for i in range(7):
-        day = today.replace(day=today.day + i)
-        reservation_day, _ = ReservationDay.objects.get_or_create(date=day)
-        
-        if reservation_day.published:
-            available_slots = doctor.get_available_slots(day)
-            if available_slots:
-                days.append({
-                    'date': day,
-                    'slots': available_slots
-                })
-    
+        day = today + timedelta(days=i)
+        try:
+            reservation_day, _ = ReservationDay.objects.get_or_create(date=day)
+            if reservation_day.published:
+                available_slots = doctor.get_available_slots(day)
+                if available_slots:
+                    days.append({
+                        'date': day,
+                        'slots': available_slots
+                    })
+        except Exception as e:
+            print(f"Error processing day {day}: {e}")
     context = {
         'doctor': doctor,
         'days': days,

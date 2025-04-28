@@ -6,6 +6,10 @@ from .models import Post, Comment
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse
 
+
+
+
+
 def doctor_page(request, doctor_id):
     """Display a doctor's public page with their posts"""
     doctor = get_object_or_404(Doctor, id=doctor_id)

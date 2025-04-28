@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}دکتر  - سیستم رزرو نوبت پزشک{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Heroicons CDN -->
+    <script src="https://unpkg.com/@heroicons/v2.0.18/24/outline/index.js"></script>
+    {% block extra_css %}{% endblock %}
+</head>
+<style>
+.masonry-grid {
+    display: grid!important;
+    grid-gap: 1rem!important;
+    grid-template-columns: repeat(3, 1fr)!important;
+    grid-auto-rows: 10px!important;
+}
+
+.masonry-item {
+    width: 100%;
+}
+
+.masonry-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 2px;
+}
+
+</style>
+<header class="bg-gradient-to-r from-blue-600 to-indigo-700 shadow-lg">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="{% url 'doctors:doctor_list' %}" class="flex items-center space-x-2">
+                    <span class="text-2xl font-bold text-white">دکتر </span>
+                </a>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="{% url 'doctors:doctor_list' %}" class="text-blue-100 hover:text-white transition-colors flex items-center">
+                        <heroicon-outline-user-group class="w-5 h-5 mr-1" />
+                        پزشکان
+                    </a>
+                    <a href="{% url 'clinics:clinic_list' %}" class="text-blue-100 hover:text-white transition-colors flex items-center">
+                        <heroicon-outline-building-office-2 class="w-5 h-5 mr-1" />
+                        کلینیک‌ها
+                    </a>
+                    
+                    <div class="relative group">
+                        <button class="flex items-center text-blue-100 hover:text-white transition-colors">
+                            <heroicon-outline-academic-cap class="w-5 h-5 mr-1" />
+                            <span>تخصص‌ها</span>
+                            <heroicon-outline-chevron-down class="w-4 h-4 ml-1" />
+                        </button>
+                        <div class="absolute left-0 mt-2 w-56 origin-top-left bg-white rounded-lg shadow-xl ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                            {% for specialization in specializations %}
+                                <a href="{% url 'doctors:doctor_list' %}?specialty={{ specialization.name }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                    {{ specialization.name }}
+                                </a>
+                            {% empty %}
+                                <div class="px-4 py-2 text-sm text-gray-500">هیچ تخصصی موجود نیست</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    {% if user.is_authenticated %}
+                    <div class="relative group">
+                        <button class="flex items-center space-x-2 text-blue-100 hover:text-white transition-colors">
+                            <span class="font-medium">{{ user.username }}</span>
+                            <heroicon-outline-chevron-down class="w-4 h-4" />
+                        </button>
+                        <div class="absolute right-0 mt-2 w-56 origin-top-right bg-white rounded-lg shadow-xl ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                            {% if user.doctor %}
+                            <a href="{% url 'doctors:doctor_dashboard' %}" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                <heroicon-outline-briefcase class="w-5 h-5 mr-2 text-blue-600" />
+                                داشبورد پزشک
+                            </a>
+                            {% endif %}
+                            
+                            {% if user.administered_clinics.exists %}
+                            <a href="{% url 'clinics:clinic_dashboard' %}" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                <heroicon-outline-building-office class="w-5 h-5 mr-2 text-green-600" />
+                                داشبورد کلینیک
+                            </a>
+                            {% endif %}
+                            
+                            <div class="py-1">
+                                <a href="{% url 'patients:patient_dashboard' %}" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                    <heroicon-outline-calendar class="w-5 h-5 mr-2 text-purple-600" />
+                                    نوبت‌های من
+                                </a>
+                                <a href="{% url 'patients:patient_profile' %}" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                    <heroicon-outline-user-circle class="w-5 h-5 mr-2 text-indigo-600" />
+                                    پروفایل
+                                </a>
+                                <a href="{% url 'wallet:wallet_dashboard' %}" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                    <heroicon-outline-wallet class="w-5 h-5 mr-2 text-yellow-600" />
+                                    کیف پول
+                                </a>
+                            </div>
+                            
+                            <div class="py-1">
+                                {% if user.is_staff %}
+                                <a href="{% url 'admin:index' %}" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                    <heroicon-outline-cog-6-tooth class="w-5 h-5 mr-2 text-gray-600" />
+                                    پنل مدیریت
+                                </a>
+                                {% endif %}
+                                <a href="{% url 'logout' %}" class="flex items-center px-4 py-3 text-sm text-red-600 hover:bg-gray-50">
+                                    <heroicon-outline-arrow-left-on-rectangle class="w-5 h-5 mr-2" />
+                                    خروج
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg hover:bg-white/30 transition-colors text-white flex items-center">
+                        <heroicon-outline-arrow-right-on-rectangle class="w-5 h-5 mr-2" />
+                        ورود
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+    </header>
+<body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
+    <!-- Header/Navigation -->
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+<section id="recent" class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 masonry-grid" data-aos="fade-up" data-aos-delay="200">
+            {% for post in posts %}
+            <div class="group masonry-item" data-aos="fade-up">
+                <a href="{{ post.get_absolute_url }}" title="{{ post.title }}" data-gallery="recent-gallery-app" class="glightbox block overflow-hidden shadow-md">
+                    <div class="overflow-hidden">
+                        <img src="{{ post.image.url }}"  class="w-full h-full" alt="{{ post.title }}" />
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let containers = document.querySelectorAll(".shape-scroll-container");
+
+        containers.forEach(function (container, index) {
+            let btnLeft = document.getElementById("btnLeft" + (index + 1));
+            let btnRight = document.getElementById("btnRight" + (index + 1));
+
+            btnLeft.addEventListener("click", function () {
+                container.scrollBy({left: -300, behavior: "smooth"});
+            });
+
+            btnRight.addEventListener("click", function () {
+                container.scrollBy({left: 300, behavior: "smooth"});
+            });
+        });
+
+        // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            easing: 'ease-in-out',
+            once: true,
+            mirror: false
+        });
+
+        // Initialize GLightbox
+        const lightbox = GLightbox({
+            selector: '.glightbox',
+            touchNavigation: true,
+            loop: true,
+            autoplayVideos: true
+        });
+    });
+</script>
+
+    <script>
+        // اسکریپت برای محاسبه ارتفاع آیتم‌ها (همان نسخه کارکرده)
+        function resizeMasonryItem(item){
+            const grid = document.querySelector('.masonry-grid');
+            const rowGap = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-row-gap'));
+            const rowHeight = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-auto-rows'));
+            const content = item.querySelector('img');
+            const rowSpan = Math.ceil((content.getBoundingClientRect().height + rowGap) / (rowHeight + rowGap));
+            item.style.gridRowEnd = 'span ' + rowSpan;
+        }
+
+        function resizeAllMasonryItems(){
+            const allItems = document.querySelectorAll('.masonry-item');
+            allItems.forEach(item => {
+                resizeMasonryItem(item);
+            });
+        }
+
+        window.addEventListener('load', resizeAllMasonryItems);
+        window.addEventListener('resize', resizeAllMasonryItems);
+    </script>
+    </main>
+</body>
+    <footer class="border-t border-gray-200 mt-16 bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">دکتر </h3>
+                    <p class="text-sm text-gray-500">دسترسی به خدمات درمانی را برای همه آسان و راحت می‌کنیم.</p>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4">خدمات</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">پیدا کردن پزشک</a></li>
+                        <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">رزرو نوبت</a></li>
+                        <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">مشاوره آنلاین</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4">شرکت</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">درباره ما</a></li>
+                        <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">فرصت‌های شغلی</a></li>
+                        <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">بلاگ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4">قوانین</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">حریم خصوصی</a></li>
+                        <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">شرایط استفاده</a></li>
+                        <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">تماس با ما</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-100 mt-8 pt-8 text-center md:text-left">
+                <p class="text-sm text-gray-500">&copy; {% now "Y" %} دکتر . تمامی حقوق محفوظ است.</p>
+            </div>
+        </div>
+    </footer>
+</html>

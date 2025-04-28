@@ -1,10 +1,11 @@
 <div class="filters_listing">
     <div class="container">
         <ul class="clearfix">
-            <form method="post" action="">
+            <form method="get" action="{% url 'doctors:doctor_list' %}">
                 <div id="custom-search-input">
                     <div class="input-group">
-                        <input type="text" class="search-query" placeholder="نام یا تخصص....">
+                        <input type="text" name="query" id="query" value="{{ request.GET.query }}"
+                                   class="search-query" placeholder="نام پزشک یا متخصص....">
                         <input type="submit" class="btn_search" style="border-radius: 50px" value="جستجو">
                     </div>
                 </div>

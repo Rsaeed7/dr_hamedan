@@ -84,7 +84,7 @@
 
         </div>
         <div class="text-left">
-            {#            <a href="{% url 'core:special_list' %}" class="ali">مشاهده لیست کامل تخصص ها<i class="icon-left-4"></i></a>#}
+                        <a href="{% url 'doctors:specializations' %}" class="ali">مشاهده لیست کامل تخصص ها<i class="icon-left-4"></i></a>
         </div>
         <!-- دکمه نمایش بیشتر -->
         <div class="text-center mt-4">
@@ -133,7 +133,7 @@
                 </div>
                 <button id="btnRight1" class="right btn-scroll"><i class="icon-left-open-4"></i></button>
             </div>
-            {#            <p class="text-center text_dr"><a href="{% url 'core:special_list_dr' %}"> مشاهده همه پزشک ها <i class="icon-left-4"></i> </a></p>#}
+                        <p class="text-center text_dr"><a href="{% url 'doctors:doctor_list' %}"> مشاهده همه پزشک ها <i class="icon-left-4"></i> </a></p>
         </div>
     </section>
     <!-- /Top doctors -->
@@ -229,7 +229,7 @@
                 </div>
                 <button id="btnRight4" class="right btn-scroll"><i class="icon-left-open-4"></i></button>
             </div>
-            {#            <p class="text-center text_dr"><a href="{% url 'core:clinic_list' %}"> مشاهده همه مراکز <i class="icon-left-4"></i> </a></p>#}
+                        <p class="text-center text_dr"><a href="{% url 'clinics:clinic_list' %}"> مشاهده همه مراکز <i class="icon-left-4"></i> </a></p>
         </div>
 
     </section>
@@ -257,7 +257,7 @@
 
                 <button id="btnRight5" class="right btn-scroll"><i class="icon-left-open-4"></i></button>
             </div>
-            {#            <p class="text-left"><a href="{% url 'mag:list' %}" class="text-success">مشاهده همه مقاله ها <i class="icon-left-dir"></i></a>#}
+                        <p class="text-left"><a href="{% url 'mag:list' %}" class="text-success">مشاهده همه مقاله ها <i class="icon-left-dir"></i></a>
             {#            </p>#}
         </div>
     </section>

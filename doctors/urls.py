@@ -6,6 +6,7 @@ app_name = 'doctors'
 urlpatterns = [
     path('', views.index, name='index'),
     path('doctor_list', views.doctor_list, name='doctor_list'),
+    path('specializations', views.specializations, name='specializations'),
     path('<int:pk>/', views.doctor_detail, name='doctor_detail'),
     path('dashboard/', views.doctor_dashboard, name='doctor_dashboard'),
     path('availability/', views.doctor_availability, name='doctor_availability'),
@@ -21,4 +22,5 @@ urlpatterns = [
     path('delete-availability-day/<int:pk>/', views.delete_availability_day, name='delete_availability_day'),
     path('update-settings/', views.update_settings, name='update_settings'),
     path('update-payment-settings/', views.update_payment_settings, name='update_payment_settings'),
+    path('medexplor/', views.explore, name='medexplor'),
 ] 

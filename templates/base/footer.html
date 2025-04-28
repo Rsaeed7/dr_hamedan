@@ -39,10 +39,8 @@
                         <div class="col-6 col-md-12">
                             <ul class="links">
                                 <li><a href="{% url 'clinics:clinic_list' %}">لیست مراکز درمانی</a></li>
-{#                                <li><a href="#">فرصت های شغلی</a></li>#}
-{#                                <li><a href="#">درباره ما</a></li>#}
-{#                                <li><a href="{% url 'contact:contact_us' %}">تماس با ما</a></li>#}
-{#                                <li><a href="#">ثبت شکایت</a></li>#}
+                                <li><a href="{% url 'about:about_us' %}">درباره ما</a></li>
+                                <li><a href="{% url 'about:contact_us' %}">تماس با ما</a></li>
                             </ul>
                         </div>
                     </div>
@@ -65,8 +63,8 @@
                     </div>
                     <h5 class="p-t-25">راه های ارتباطی</h5>
                     <ul class="contacts">
-                        <li><a href=""><i class="icon-phone-squared"></i> 8138227774 +</a></li>
-                        <li><a href="mailto:info@saeedfh074.com">saeedfh074@gmail.com <i
+                        <li><a href=""><i class="icon-phone-squared"></i>{{ contact.phone_number }}</a></li>
+                        <li><a href="mailto:{{ contact.email }}">{{ contact.email }}<i
                                 class="icon_mail p-l-5"></i></a>
                         </li>
                     </ul>
@@ -74,11 +72,11 @@
             </div>
             <div class="follow_us text-center">
                 <ul>
-                    <li><a href=""><i class="icon-instagram-2"></i></a></li>
-                    <li><a href=""><i class="icon_mail"></i></a></li>
-                    <li><a href=""><i class="icon-chat-inv"></i></a></li>
-                    <li><a href=""><i class="icon-paper-plane-1"></i></a></li>
-                    <li><a href=""><i class="icon-blogger"></i></a></li>
+                    <li><a href="{{ contact.instagram }}"><i class="icon-instagram-2"></i></a></li>
+                    <li><a href="{{ contact.email }}"><i class="icon_mail"></i></a></li>
+                    <li><a href="{{ contact.whatsapp }}"><i class="icon-chat-inv"></i></a></li>
+                    <li><a href="{{ contact.telegram }}"><i class="icon-paper-plane-1"></i></a></li>
+
 
                 </ul>
             </div>
