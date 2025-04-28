@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from doctors.models import Doctor
-
+from django.urls import reverse
 class Post(models.Model):
     STATUS_CHOICES = (
         ('draft', 'Draft'),
@@ -19,7 +19,10 @@ class Post(models.Model):
     
     def __str__(self):
         return f"{self.doctor} - {self.title}"
-    
+
+    def get_absolute_url(self):
+        return reverse('docpages:post_detail', args=[str(self.id)])
+
     class Meta:
         ordering = ['-created_at']
         verbose_name = 'پست'
