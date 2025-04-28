@@ -1,0 +1,45 @@
+{% extends  'base/base.html' %}
+{% load static %}
+{% block body %}
+
+
+    <!-- Search -->
+    {% include  'base/search.html' %}
+    <!-- /Search -->
+
+
+    <div class="container margin_120_95 bg-light">
+        <div class="main_title">
+            <h4>لیست تمام تخصص ها</h4>
+        </div>
+        <div class="row justify-content-center">
+            <section class="col-xl-12 col-lg-12 col-md-12">
+                <div class="list_home">
+                    <ul>
+                        {% for specialization in specializations %}
+                            <li><a href="{% url 'doctors:doctor_list' %}?specialty={{ specialization.name }}">
+                                <strong><img width="30" src="{{ specialization.image.url }}"></strong>
+                                {{ specialization.name }} </a></li>
+                        {% empty %}
+                            <li>تخصصی یافت نشد
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </section>
+
+
+            <div class="main_title m-t-20">
+                <h4>لیست تمام خدمات</h4>
+            </div>
+            <section class="col-xl-12 col-lg-12 col-md-12">
+                <div class="list_home">
+                    <ul>
+                        <li><a href="#">به زودی </a></li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+    </div>
+
+{% endblock %}
