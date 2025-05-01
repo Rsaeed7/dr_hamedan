@@ -2,7 +2,22 @@
 {% load static %}
 {% block body %}
     <!-- Search -->
-{% include  'base/search.html' %}
+    <div class="filters_listing">
+        <div class="container">
+            <ul class="clearfix">
+                <form method="get" action="{% url 'mag:list' %}">
+                    <div id="custom-search-input">
+                        <div class="input-group">
+                            <input type="text" name="query" id="query" value="{{ request.GET.query }}"
+                                   class="search-query" placeholder="جست و جو کنید...">
+
+                            <input type="submit" class="btn_search" style="border-radius: 50px;" value="جستجو">
+                        </div>
+                    </div>
+                </form>
+            </ul>
+        </div>
+    </div>
     <!-- /Search -->
 
 
@@ -12,7 +27,7 @@
             <img class="banner-blog" src="{% static 'img/dr/431-4316672_health-and-wellness-banner.png' %}">
         </div>
         <!--/Mag-Banner-->
-    
+
         <div class="row">
             <!--aside -->
             <aside class="col-lg-3 aside-border ">
@@ -74,6 +89,11 @@
                             </div>
                         </div>
                     </article>
+
+                {% empty %}
+
+                    <h3 class="text-center">متاسفانه مقاله مورد نظر شما یافت نشد...!</h3>
+
                 {% endfor %}
                 <!-- /article list -->
 

@@ -8,11 +8,33 @@ from .forms import CommentForm
 from .models import MagArticle, Category , Comment
 # from product.models import Product
 import time
-
+from django.db.models import Q
 class MagView(ListView):
     model = MagArticle
     paginate_by = 3
     queryset = MagArticle.objects.filter(published=True)
+
+    def get_queryset(self):
+        queryset = MagArticle.objects.filter(published=True)
+
+        # دریافت پارامتر جستجو از URL
+        search_query = self.request.GET.get('query', '')
+        if search_query:
+            queryset = queryset.filter(
+                Q(title__icontains=search_query) |
+                Q(description__icontains=search_query)
+            )
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['category'] = Category.objects.all()
+        context['articles_last'] = MagArticle.objects.filter(published=True).order_by("-date")[:3]
+
+        # اضافه کردن پارامتر جستجو به context برای نمایش در تمپلیت
+        context['search_query'] = self.request.GET.get('q', '')
+        return context
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
