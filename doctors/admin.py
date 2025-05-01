@@ -8,8 +8,8 @@ class SpecializationAdmin(admin.ModelAdmin):
 
 @admin.register(Doctor)
 class DoctorAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'specialization', 'consultation_fee', 'is_available', 'clinic')
-    list_filter = ('is_available', 'is_independent', 'specialization', 'clinic')
+    list_display = ('__str__', 'specialization', 'consultation_fee', 'is_available')
+    list_filter = ('is_available', 'is_independent', 'specialization')
     search_fields = ('user__username', 'user__first_name', 'user__last_name', 'specialization')
 
 @admin.register(DoctorAvailability)
