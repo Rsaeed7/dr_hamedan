@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import Avg, Count
+
 from clinics.models import Clinic
 from datetime import time, datetime, timedelta
 from django.utils import timezone
@@ -31,6 +33,7 @@ class Specialization(models.Model):
     
 
 class Doctor(models.Model):
+    GENDER_CHOICES = (('male','مرد'),('female','زن'))
     user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name=_('کاربر'))
     specialization = models.ForeignKey(Specialization, on_delete=models.SET_NULL, null=True, verbose_name=_('تخصص'))
     license_number = models.CharField(max_length=50, unique=True, verbose_name=_('شماره پروانه'))
@@ -46,6 +49,75 @@ class Doctor(models.Model):
     phone = models.CharField(max_length=20, verbose_name=_('شماره تماس'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('تاریخ ایجاد'))
     updated_at = models.DateTimeField(auto_now=True, verbose_name=_('تاریخ بروزرسانی'))
+    gender = models.CharField(choices=GENDER_CHOICES, max_length=10, verbose_name=_('جنسیت'), null=True, blank=True)
+    view_count = models.PositiveIntegerField(default=93, verbose_name='تعداد بازدید')
+
+    def increment_view_count(self):
+        """افزایش تعداد بازدیدها"""
+        self.view_count += 1
+        self.save(update_fields=['view_count'])
+
+    def comment_rate(self, decimal_places=1, default=None):
+        """محاسبه امتیاز پزشک بر اساس کامنت‌های تایید شده"""
+        result = DrComment.objects.filter(
+            doctor=self,
+            status='confirmed'
+        ).aggregate(
+            avg_rate=Avg('rate'),
+            count=Count('id')
+        )
+
+        if result['avg_rate'] is None:
+            return 4.0
+
+        return round(result['avg_rate'], decimal_places)
+
+    @property
+    def comment_stats(self):
+        """آمار کامل نظرات برای استفاده در ویوها"""
+        stats = DrComment.objects.filter(
+            doctor=self,
+            status='confirmed'
+        ).aggregate(
+            avg_rate=Avg('rate'),
+            count=Count('id')
+        )
+
+        return {
+            'average': stats['avg_rate'],
+            'count': stats['count'],
+            'has_rating': stats['count'] > 0
+        }
+
+    def recommendation_percentage(self):
+        """محاسبه درصد توصیه شده بر اساس کامنت ها"""
+        confirmed_comments = self.comments.filter(status='confirmed')
+        total = confirmed_comments.count()
+        positive = confirmed_comments.filter(recommendation='توصیه میکنم').count()
+
+        if total == 0:
+            return 90
+
+        percentage = (positive / total) * 100
+
+        # اگر عدد صحیح است، بدون اعشار برگردان
+        if percentage.is_integer():
+            return int(percentage)
+        return round(percentage, 1)
+
+    def get_most_common_waiting_time(self):
+        """محاسبه زمان‌ انتظار در مطب بر اساس کامنت ها"""
+        from collections import Counter
+        waiting_times = self.comments.filter(status='confirmed').values_list('waiting_time', flat=True)
+
+        if not waiting_times:
+            return "نیم تا یک ساعت"
+
+        # یافتن پرتکرارترین مقدار
+        counter = Counter(waiting_times)
+        most_common = counter.most_common(1)[0][0]
+
+        return most_common
 
     class Meta:
         verbose_name = _('پزشک')
@@ -112,6 +184,63 @@ class Doctor(models.Model):
         )
         
         return sum(res.amount for res in completed_reservations)
+
+
+
+class DrServices(models.Model):
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='service', verbose_name='پزشک')
+    service = models.CharField(max_length=50,null=True,blank=True)
+
+    def __str__(self):
+        return self.service
+
+    class Meta:
+        verbose_name = 'خدمت'
+        verbose_name_plural = 'خدمات'
+
+
+class CommentTips(models.Model):
+    tip = models.CharField(max_length=50 , verbose_name='نکته')
+    positive = models.BooleanField(default=True , verbose_name='نکته مثبت')
+
+    def __str__(self):
+        return self.tip
+
+    class Meta:
+        verbose_name = 'نکته'
+        verbose_name_plural = 'نکات'
+
+class DrComment(models.Model):
+    STATUS_CHOICES = (('checking','در حال بررسی'),('confirmed','تایید شده'))
+    Recommendation_CHOICES = (('توصیه نمیکنم','توصیه نمیکنم'),('توصیه میکنم','توصیه میکنم'))
+    WAITING_CHOICES = (('کمتر از نیم ساعت','کمتر از نیم ساعت'),('نیم تا یک ساعت','نیم تا یک ساعت'),('یک تا دو ساعت','یک تا دو ساعت'),('بیش از دو ساعت','بیش از دو ساعت'))
+    doctor = models.ForeignKey(Doctor , on_delete=models.CASCADE , verbose_name='پزشک', related_name='comments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='کاربر', related_name='doctor_comments', null=True, blank=True)
+    text = models.TextField(verbose_name='متن کامنت')
+    recommendation = models.CharField(max_length=25, choices=Recommendation_CHOICES, verbose_name='توصیه',default=Recommendation_CHOICES[1], null=True, blank=True)
+    rate = models.SmallIntegerField(verbose_name='امتیاز', blank=True, null=True,validators=[MinValueValidator(1), MaxValueValidator(5)])
+    date = models.DateTimeField(verbose_name='تاریخ ثبت', auto_now_add=True)
+    tips = models.ManyToManyField(CommentTips, related_name='comment_tips' , verbose_name='نکات مثبت و منفی', blank=True,null=True)
+    status = models.CharField( max_length=10, choices=STATUS_CHOICES, default="checking", verbose_name="وضعیت")
+    waiting_time = models.CharField(max_length=30,choices=WAITING_CHOICES, verbose_name="زمان انتظار",default=WAITING_CHOICES[1])
+
+    class Meta:
+        ordering = ("date",)
+        verbose_name = "کامنت"
+        verbose_name_plural = "کامنت ها"
+
+
+    def __str__(self):
+        return f'from "{self.user}" to "{self.doctor}"'
+
+    def status_display(self):
+        if self.status == 'checking':
+            return 'در حال بررسی'
+        else:
+            return 'تایید شده'
+
+
+
 
 class DoctorAvailability(models.Model):
     DAYS_OF_WEEK = [
