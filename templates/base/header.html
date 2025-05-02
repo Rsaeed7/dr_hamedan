@@ -5,6 +5,7 @@
         <div class="row">
             <!--Logo-->
             <div class="col-lg-3 col-6">
+                
                 <div id="logo_home">
                     <h1><a href="/" title="DrHamedan">DrHamedan</a></h1>
                 </div>
@@ -14,7 +15,6 @@
                 <a class="cmn-toggle-switch cmn-toggle-switch__htx open_close m-r-100"
                    href="#0"><span>Menu mobile</span></a>
                 <ul id="top_access">
-
                     <li class="d-none d-md-flex">
                         {% if user.is_authenticated %}
                             <a href="{% url 'doctors:doctor_dashboard' %}">

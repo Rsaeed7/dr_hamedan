@@ -1,46 +1,78 @@
+from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from .models import Clinic, ClinicSpecialty, ClinicGallery
+from .models import Clinic, ClinicSpecialty, ClinicGallery,ClinicComment
 from doctors.models import Doctor
 from reservations.models import Reservation
 from django.db.models import Q
+from django.views.generic import ListView
 
-def clinic_list(request):
-    """Display a list of all clinics with search options"""
-    query = request.GET.get('query', '')
-    specialty = request.GET.get('specialty', '')
-    
-    clinics = Clinic.objects.all()
-    
-    # Apply filters if provided
-    if query:
-        clinics = clinics.filter(
-            Q(name__icontains=query) | 
-            Q(address__icontains=query)
-        )
-    
-    if specialty:
-        clinics = clinics.filter(specialties__name__icontains=specialty).distinct()
-    
-    context = {
-        'clinics': clinics,
-    }
-    
-    return render(request, 'clinics/clinic_list.html', context)
 
+class ClinicListView(ListView):
+    model = Clinic
+    template_name = 'clinics/clinic_list.html'
+    context_object_name = 'clinics'
+    paginate_by = 10  # تعداد آیتم‌ها در هر صفحه
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        query = self.request.GET.get('query', '')
+        specialty = self.request.GET.get('specialty', '')
+
+        if query:
+            queryset = queryset.filter(
+                Q(name__icontains=query) |
+                Q(address__icontains=query)
+            )
+
+        if specialty:
+            queryset = queryset.filter(specialties__name__icontains=specialty).distinct()
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # اضافه کردن پارامترهای جستجو به context برای نمایش در تمپلیت
+        context['query'] = self.request.GET.get('query', '')
+        context['specialty'] = self.request.GET.get('specialty', '')
+        return context
+
+
+@login_required
 def clinic_detail(request, pk):
-    """Display detailed information about a specific clinic"""
     clinic = get_object_or_404(Clinic, pk=pk)
     doctors = Doctor.objects.filter(clinic=clinic, is_available=True)
-    
+    comments = ClinicComment.objects.filter(clinic=clinic, status='confirmed')
+
+    if request.method == 'POST':
+        recommendation = request.POST.get('recommendation')
+        rating = request.POST.get('rating')
+        text = request.POST.get('text')
+
+        # اعتبارسنجی ساده
+        if not text or not rating:
+            messages.error(request, 'لطفاً امتیاز و متن نظر را وارد کنید')
+        else:
+            ClinicComment.objects.create(
+                clinic=clinic,
+                user=request.user,
+                recommendation=recommendation,
+                rate=rating,
+                text=text,
+            )
+            messages.success(request, 'نظر شما با موفقیت ثبت شد')
+            return redirect('clinics:clinic_detail', pk=clinic.pk)
+
     context = {
         'clinic': clinic,
         'doctors': doctors,
         'gallery': clinic.gallery.all(),
         'specialties': clinic.specialties.all(),
+        'comments': comments,
+        'stars_range': range(5, 0, -1),
     }
-    
+
     return render(request, 'clinics/clinic_detail.html', context)
 
 @login_required

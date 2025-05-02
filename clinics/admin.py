@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import Clinic, ClinicSpecialty, ClinicGallery
+from .models import Clinic, ClinicSpecialty, ClinicGallery,ClinicComment
+
+admin.site.register(ClinicComment)
 
 class ClinicSpecialtyInline(admin.TabularInline):
     model = ClinicSpecialty
