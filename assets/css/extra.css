@@ -339,7 +339,7 @@ a.dr_box i {
 
 .dr_img {
     width: 100%;
-    max-height: 100px; /* ارتفاع حداکثر در دسکتاپ */
+    height: 100px; /* ارتفاع حداکثر در دسکتاپ */
     max-width: 100px;
     object-fit: fill; /* برش دادن تصویر برای پر کردن ظرف */
     border-radius: 50%;

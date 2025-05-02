@@ -1,5 +1,6 @@
 from about_us.models import Contact
-from doctors.models import Specialization
+from doctors.models import Specialization, City
+
 
 def context_processors(request):
     """
@@ -7,4 +8,5 @@ def context_processors(request):
     """
     specializations = Specialization.objects.all().order_by('name')
     contact = Contact.objects.last()
-    return {'specializations': specializations , 'contact': contact}
+    cities = City.objects.all()
+    return {'specializations': specializations , 'contact': contact , 'cities': cities}
