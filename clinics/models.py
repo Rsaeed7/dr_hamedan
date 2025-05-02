@@ -15,6 +15,12 @@ class Clinic(models.Model):
     admin = models.ForeignKey(User, on_delete=models.CASCADE, related_name='administered_clinics', verbose_name='مدیر')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
+    view_count = models.PositiveIntegerField(default=88, verbose_name='تعداد بازدید')
+
+    def increment_view_count(self):
+        """افزایش تعداد بازدیدها"""
+        self.view_count += 1
+        self.save(update_fields=['view_count'])
 
     def __str__(self):
         return self.name
@@ -31,7 +37,7 @@ class Clinic(models.Model):
 
         confirmed_comments = self.comments.filter(status='confirmed')
         total = confirmed_comments.count()
-        positive = confirmed_comments.filter(recommendation=' توصیه میکنم').count()
+        positive = confirmed_comments.filter(recommendation='توصیه میکنم').count()
 
         if total == 0:
             return 90
@@ -42,11 +48,12 @@ class Clinic(models.Model):
         if percentage.is_integer():
             return int(percentage)
         return round(percentage, 1)
-    def comment_rate(self, decimal_places=2):
+
+    def comment_rate(self, decimal_places=1):
         from django.db.models import Avg
 
         result = ClinicComment.objects.filter(
-            clinic=self ,status='confirmed'
+            clinic=self, status='confirmed'
         ).aggregate(
             avg_rate=Avg('rate')
         )
@@ -65,7 +72,6 @@ class ClinicSpecialty(models.Model):
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='specialties', verbose_name='کلینیک')
     name = models.CharField(max_length=255, verbose_name='نام تخصص')
     Doctor = models.ManyToManyField('doctors.Doctor', related_name='special_doctors', verbose_name= 'پزشکان', blank=True,null=True)
-    # Doctor = models.ForeignKey('doctors.Doctor', on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.clinic.name} - {self.name}"
@@ -89,14 +95,11 @@ class ClinicGallery(models.Model):
 
 
 
-
-
-
 class ClinicComment(models.Model):
     STATUS_CHOICES = (('checking','در حال بررسی'),('confirmed','تایید شده'))
     Recommendation_CHOICES = (('توصیه نمیکنم','توصیه نمیکنم'),('توصیه میکنم','توصیه میکنم'))
     clinic = models.ForeignKey(Clinic , on_delete=models.CASCADE , verbose_name='کلینیک', related_name='comments')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='کاربر', related_name='product_comments', null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='کاربر', related_name='clinic_comments', null=True, blank=True)
     text = models.TextField(verbose_name='متن کامنت')
     recommendation = models.CharField(max_length=25, choices=Recommendation_CHOICES, verbose_name='توصیه',default=Recommendation_CHOICES[1], null=True, blank=True)
     rate = models.SmallIntegerField(verbose_name='امتیاز', blank=True, null=True,validators=[MinValueValidator(1), MaxValueValidator(5)])
