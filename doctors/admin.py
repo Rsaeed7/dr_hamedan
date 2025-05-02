@@ -1,6 +1,15 @@
 from django.contrib import admin
-from .models import Doctor, DoctorAvailability, Specialization ,City
+from .models import Doctor, DoctorAvailability, Specialization,City,DrServices,DrComment,CommentTips
+
+
 admin.site.register(City)
+
+admin.site.register(DrComment)
+admin.site.register(CommentTips)
+class DoctorServicesInline(admin.TabularInline):
+    model = DrServices
+    extra = 1
+
 @admin.register(Specialization)
 class SpecializationAdmin(admin.ModelAdmin):
     list_display = ('name', 'description')
@@ -11,6 +20,7 @@ class DoctorAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'specialization', 'consultation_fee', 'is_available')
     list_filter = ('is_available', 'is_independent', 'specialization')
     search_fields = ('user__username', 'user__first_name', 'user__last_name', 'specialization')
+    inlines = [DoctorServicesInline, ]
 
 @admin.register(DoctorAvailability)
 class DoctorAvailabilityAdmin(admin.ModelAdmin):

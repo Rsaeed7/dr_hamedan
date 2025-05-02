@@ -44,6 +44,7 @@ def clinic_detail(request, pk):
     clinic = get_object_or_404(Clinic, pk=pk)
     doctors = Doctor.objects.filter(clinic=clinic, is_available=True)
     comments = ClinicComment.objects.filter(clinic=clinic, status='confirmed')
+    clinic.increment_view_count()
 
     if request.method == 'POST':
         recommendation = request.POST.get('recommendation')
