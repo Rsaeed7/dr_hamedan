@@ -330,6 +330,29 @@
                                 </div>
                                 <!-- /tab_3 -->
                             </div>
+                        <div class="tab-content box_general_3">
+                                <div class="tab-pane fade show active m-t-5"  role="tabpanel"
+                                     aria-labelledby="general-tab">
+                                    <div>
+                                        <h6>آخرین پست های دکتر {{ doctor.user.get_full_name }}</h6>
+                                    </div>
+                                    <div class="masonry-container-gallery">
+                                            {% for post in posts %}
+                                                <div class="masonry-item-gallery">
+                                                    <a href="{% url 'docpages:post_detail' post.id %}" class="m-b-5">
+                                                        <img src="{{ post.image.url }}"
+                                                             alt="{{ post.title|default:'تصویر ' }}"
+                                                             class="img-fluid rounded w-100" style="max-height: 150px;min-height: 150px">
+                                                    </a>
+                                                </div>
+                                                {% empty %}
+                                                <p>هنوز تصویری بارگذاری نشده است!</p>
+                                            {% endfor %}
+                                        </div>
+
+                                </div>
+                        <a class="btn_1 col-12 text-center p-10 m-b-5" style="padding: 10px" href="{% url 'docpages:doctor_page' doctor.id %}">مشاهده صفحه مقالات پزشک</a>
+                            </div>
                             <!-- /tab-content -->
                         </div>
                     </div>

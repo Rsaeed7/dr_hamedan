@@ -1,11 +1,48 @@
 {% load static %}
+<style>
+.dropdown {
+  position: relative; /* این خیلی مهمه */
+  display: inline-block;
+}
 
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f8f9fa; /* رنگ پس‌زمینه */
+        min-width: 160px;
+        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+        border-radius: 5px;
+        padding: 10px 0;
+        text-align: center;
+        margin-top: 1px;
+
+
+    }
+
+    .dropdown-content a {
+        color: black;
+        padding: 8px 16px;
+        text-decoration: none;
+        display: block;
+        transition: background 0.2s;
+    }
+
+    .dropdown-content a:hover {
+        background-color: #ddd;
+    }
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+</style>
 <header class="header_sticky">
     <div class="container">
         <div class="row">
             <!--Logo-->
             <div class="col-lg-3 col-6">
-                
+
                 <div id="logo_home">
                     <h1><a href="/" title="DrHamedan">DrHamedan</a></h1>
                 </div>
@@ -17,11 +54,28 @@
                 <ul id="top_access">
                     <li class="d-none d-md-flex">
                         {% if user.is_authenticated %}
-                            <a href="{% url 'doctors:doctor_dashboard' %}">
+                            <div class="dropdown">
                                 <div class="btn btn-outline-light">
                                     <i class="icon-user-2 fs-15"></i>{{ user.username }}
                                 </div>
-                            </a>
+                                <div class="dropdown-content">
+                                    {% if user.doctor %}
+                                    <a class="icon-user" href="{% url 'doctors:doctor_dashboard' %}">داشبورد پزشک </a>
+                                    {% endif %}
+                                    {% if user.administered_clinics.exists %}
+                                    <a href="{% url 'clinics:clinic_dashboard' %}">داشبورد کلینیک</a>
+                                    {% endif %}
+                                    <a href="{% url 'patients:patient_dashboard' %}">نوبت های من</a>
+                                    <a href="{% url 'patients:patient_profile' %}">پروفایل</a>
+                                    <a href="{% url 'wallet:wallet_dashboard' %}">کیف پول</a>
+                                    {% if user.is_staff %}
+                                    <a href="{% url 'admin:index' %}">پنل مدیریت</a>
+                                    {% endif %}
+                                    <a href="{% url 'logout' %}">خروج</a>
+
+                                </div>
+                            </div>
+
                         {% else %}
                             <a href="{% url 'login' %}">
                                 <div class="btn btn-outline-light">
@@ -29,7 +83,6 @@
                                 </div>
                             </a>
                         {% endif %}
-
                     </li>
                 </ul>
                 <div class="main-menu">
@@ -42,7 +95,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="">نوبت دهی آنلاین</a>
+                            <a href="{% url 'doctors:doctor_list' %}">نوبت دهی آنلاین</a>
                         </li>
                         <li class="submenu">
                             <a href="#" class="show-submenu">تخصص ها<i class="icon-down-open-mini"></i></a>
@@ -59,7 +112,7 @@
                             </ul>
                         </li>
                         <li>
-                            <a href="#0">مشاوره آنلاین</a>
+                            <a href="{% url 'doctors:doctor_list' %}">مشاوره آنلاین</a>
 
                         </li>
                         <li><a href="{% url 'mag:list' %}">مجله پزشکی</a></li>

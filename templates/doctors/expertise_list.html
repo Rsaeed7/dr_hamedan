@@ -227,33 +227,107 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                             </div>
                         </div>
+                    {% empty %}
+                        <h6>پزشکی با مشخصات مورد نیاز شما یافت نشد!</h6>
                     {% endfor %}
 
                 </div>
                 <div id="phone_turn"></div>
-                <nav aria-label="" class="add_top_20">
-                    <ul class="pagination pagination-sm center-content">
-                        <li class="page-item disabled align-center">
-                            <a class="page-link move-down down-3" href="#" tabindex="-1"><i
-                                    class="icon-right-open-3"></i></a>
-                        </li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#">4</a></li>
-                        <li class="page-item"><a class="page-link" href="#">5</a></li>
-                        <li class="page-item">
-                            <a class="page-link border-0 down-3" href="#"><i class="icon-left-open-3"></i></a>
-                        </li>
-                    </ul>
-                </nav>
-
+                <!-- pagination -->
+                <div>
+                    <div class="add_top_20">
+                        <ul class="pagination pagination-sm center-content" id="pagination">
+                            <!-- آیتم‌های صفحه‌بندی به صورت داینامیک اضافه خواهند شد -->
+                        </ul>
+                    </div>
+                </div>
                 <!-- /pagination -->
             </div>
         </div>
     </div>
 
+    <script>
+        function createPagination(totalPages, currentPage) {
+            var paginationContainer = document.getElementById('pagination');
+            paginationContainer.innerHTML = '';
 
+            if (totalPages <= 1) return;
+
+            var maxVisiblePages = 5;
+            var startPage, endPage;
+
+            if (totalPages <= maxVisiblePages) {
+                startPage = 1;
+                endPage = totalPages;
+            } else {
+                var maxPagesBeforeCurrentPage = Math.floor(maxVisiblePages / 2);
+                var maxPagesAfterCurrentPage = Math.ceil(maxVisiblePages / 2) - 1;
+
+                if (currentPage <= maxPagesBeforeCurrentPage) {
+                    startPage = 1;
+                    endPage = maxVisiblePages;
+                } else if (currentPage + maxPagesAfterCurrentPage >= totalPages) {
+                    startPage = totalPages - maxVisiblePages + 1;
+                    endPage = totalPages;
+                } else {
+                    startPage = currentPage - maxPagesBeforeCurrentPage;
+                    endPage = currentPage + maxPagesAfterCurrentPage;
+                }
+            }
+
+
+            if (startPage > 1) {
+                var firstPage = document.createElement('li');
+                firstPage.innerHTML = '<a class="page-link border-0 down-3" href="#" data-page="1"><i class="icon-right-open-3"></i></a>';
+                paginationContainer.appendChild(firstPage);
+
+                if (startPage > 2) {
+                    var dots = document.createElement('li');
+                    dots.innerHTML = '<p class="page-link border-0 down-2">...</p>';
+                    paginationContainer.appendChild(dots);
+                }
+            }
+
+            for (var page = startPage; page <= endPage; page++) {
+                var pageItem = document.createElement('li');
+                pageItem.classList.add('page-iter');
+                if (page === currentPage) {
+                    pageItem.classList.add('active');
+                }
+                pageItem.innerHTML = `<a class="page-link" href="#" data-page="${page}">${page}</a>`;
+                paginationContainer.appendChild(pageItem);
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    var dots = document.createElement('li');
+                    dots.innerHTML = '<p class="page-link border-0 down-2">...</p>';
+                    paginationContainer.appendChild(dots);
+                }
+
+                var lastPage = document.createElement('li');
+                lastPage.innerHTML = `<a class="page-link border-0 down-3" href="#" data-page="${totalPages}"><i class="icon-left-open-3"></i></a>`;
+                paginationContainer.appendChild(lastPage);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var currentPage = {{ page_obj.number }}; // شماره صفحه جاری را از سرور دریافت کنید
+            var totalPages = {{ page_obj.paginator.num_pages }}; // تعداد کل صفحات را از سرور دریافت کنید
+
+            createPagination(totalPages, currentPage);
+
+            document.getElementById('pagination').addEventListener('click', function (event) {
+                if (event.target.tagName === 'A' || event.target.tagName === 'I') {
+                    event.preventDefault();
+                    var pageParam = event.target.getAttribute('data-page') || event.target.parentElement.getAttribute('data-page');
+                    var urlParams = new URLSearchParams(window.location.search);
+                    urlParams.set('page', pageParam);
+                    window.location.search = urlParams.toString();
+                }
+            });
+        });
+    </script>
 
     <script>
         function toggleDropdown(id, button) {

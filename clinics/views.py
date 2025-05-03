@@ -71,7 +71,7 @@ def clinic_detail(request, pk):
         'gallery': clinic.gallery.all(),
         'specialties': clinic.specialties.all(),
         'comments': comments,
-        'stars_range': range(5, 0, -1),
+        'stars_range': range(5),
     }
 
     return render(request, 'clinics/clinic_detail.html', context)
