@@ -94,7 +94,7 @@ class CheckCodeView_Login(View):
         form = Check_CodeForm()
         token = request.GET.get('token')
         phone = Otp.objects.get(token=token)
-        return render(request, 'account/check_login_code.html', {'form': form , 'phone':phone})
+        return render(request, 'registration/check_login_code.html', {'form': form , 'phone':phone})
 
     def post(self, request):
         form = Check_CodeForm(request.POST)
@@ -157,7 +157,7 @@ class LogoutView(View):
     def get(self, request):
         logout(request)
         messages.success(request,'شما با موفقیت از حساب کاربری خارج شدید')
-        return redirect('core:homepage')
+        return redirect('doctors:index')
 
 
 
