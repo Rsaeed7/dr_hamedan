@@ -112,7 +112,7 @@
                                 <h3>دکتر {{ doctor.user.get_full_name }}</h3>
                                 <p>{{ doctor.specialization.name }}</p>
                                 <div class="text-right text-info">
-                                    <i class="icon-star-5"><small>4.8</small></i>
+                                    <i class="icon-star-5"><small>{{ doctor.comment_rate }}</small></i>
                                     <small class="icon-location">{{ doctor.address }}</small>
                                     <p class="text-dark small p-t-10">اولین نوبت خالی <span class="text-success p-r-20">10 اسفند</span>
                                     <p class="text-dark small">زمان تقریبی انتظار <span
