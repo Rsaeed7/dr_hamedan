@@ -54,6 +54,7 @@ def post_detail(request, post_id):
                 name=name,
                 email=email,
                 body=body,
+                user=request.user,
                 approved=False  # Needs approval first
             )
             messages.success(request, 'Your comment has been submitted and is awaiting approval.')

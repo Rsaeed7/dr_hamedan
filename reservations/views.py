@@ -8,6 +8,7 @@ from doctors.models import Doctor
 from patients.models import PatientsFile
 from datetime import datetime
 from datetime import timedelta
+@login_required
 def book_appointment(request, doctor_id):
     """Handle booking a new appointment"""
     doctor = get_object_or_404(Doctor, id=doctor_id, is_available=True)
@@ -252,13 +253,13 @@ def view_appointment(request, pk):
     appointment = get_object_or_404(Reservation, pk=pk)
     
     # Check if the user is authorized to view this appointment
-    if request.user.is_staff or request.user.is_superuser:
+    if request.user.is_admin or request.user.is_superuser:
         # Admin can view any appointment
         pass
     elif hasattr(request.user, 'doctor') and appointment.doctor.user == request.user:
         # Doctor can view their own appointments
         pass
-    elif hasattr(request.user, 'patient') and appointment.patient and appointment.patient.user == request.user:
+    elif hasattr(request.user, 'patient') and appointment.patient.user == request.user:
         # Patient can view their own appointments
         pass
     else:
@@ -269,4 +270,4 @@ def view_appointment(request, pk):
         'appointment': appointment,
     }
     
-    return render(request, 'reservations/view_appointment.html', context)
+    return render(request, 'reservations/appointment_view.html', context)

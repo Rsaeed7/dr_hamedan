@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'tailwind',
     
     # Local apps
+    'user.apps.UserConfig',
     'doctors',
     'accounts',
     'reservations',
@@ -57,10 +58,10 @@ INSTALLED_APPS = [
 ]
 
 # Authentication settings
-LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'doctors:doctor_dashboard'
-LOGOUT_REDIRECT_URL = 'home'
-LOGOUT_REDIRECT_URL = 'doctors:doctor_list'
+# LOGIN_URL = 'login'
+# LOGIN_REDIRECT_URL = 'doctors:doctor_dashboard'
+# LOGOUT_REDIRECT_URL = 'home'
+# LOGOUT_REDIRECT_URL = 'doctors:doctor_list'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -70,7 +71,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'accounts.middleware.UserProfileMiddleware',
+    # 'accounts.middleware.UserProfileMiddleware',
 ]
 
 ROOT_URLCONF = 'dr_turn.urls'
@@ -152,7 +153,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Authentication settings
-LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'doctors:doctor_dashboard'
-LOGOUT_REDIRECT_URL = 'home'
+AUTH_USER_MODEL = "user.User"
+
+AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend','user.authentication.EmailAthBackend']

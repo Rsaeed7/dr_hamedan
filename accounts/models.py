@@ -1,6 +1,7 @@
 # accounts/models.py
 from django.db import models
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
+from user.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
@@ -18,7 +19,7 @@ class UserProfile(models.Model):
         verbose_name_plural = _('پروفایل‌های کاربران')
     
     def __str__(self):
-        return f"{self.user.username} - {_('پروفایل')}"
+        return f"{self.user.name} - {_('پروفایل')}"
 
 # Signal to create user profile when a new user is created
 @receiver(post_save, sender=User)
