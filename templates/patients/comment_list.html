@@ -1,0 +1,64 @@
+{% extends  'base/base.html' %}
+{% load static %}
+{% block body %}
+
+    <div class="filters_listing d-lg-none">
+        <div class="container">
+            <a href="{% url 'patients:patient_dashboard' %}" class="text-dr"><i class="icon-right-open"></i>داشبورد</a>
+        </div>
+    </div>
+    <section class="bg-light">
+        <div class="container margin_120_95">
+            <div class="row">
+                {% include  'patients/dashbord_sidebar.html' %}
+                <div class="col-8 box_general">
+                <h5 class="m-b-5">نظرات من</h5>
+                    {% if request.user.doctor_comments.all or request.user.clinic_comments.all or request.user.blog_comments.all or request.user.post_comments.all %}
+                        {% for comment in request.user.doctor_comments.all %}
+                            <div class="strip_list wow fadeIn border-0 bg-bluelight">
+                                <p><a href="{% url 'doctors:doctor_detail' comment.doctor.id %}"> کامنت برای پزشک: {{ comment.doctor }} </a></p>
+                                <p class="text-sm-right fs-10">متن کامنت: {{ comment.text }} </p>
+                                <small class="rounded fs-10  text-left text-success">وضعیت : {{ comment.status_display }}</small>
+                                <a href="{% url 'patients:comments_delete' model_type='dr' id=comment.id %}" class="text-danger fs-10">حذف شود</a>
+                            </div>
+                        {% endfor %}
+
+                        {% for comment in request.user.clinic_comments.all %}
+                            <div class="strip_list wow fadeIn border-0 bg-gradiant2">
+                                 <p><a href="{% url 'clinics:clinic_detail' comment.clinic.id %}"> کامنت برای کلینیک: {{ comment.clinic }} </a></p>
+                                <small class="text-sm-right">متن کامنت: {{ comment.text }} </small>
+                                <p class="rounded fs-10 text-left text-success">وضعیت : {{ comment.status_display }}</p>
+                                <a href="{% url 'patients:comments_delete' model_type='clinic' id=comment.id %}" class="text-danger fs-10">حذف شود</a>
+                            </div>
+                        {% endfor %}
+
+                        {% for comment in request.user.blog_comments.all %}
+                            <div class="strip_list wow fadeIn border-0 bg-gradiant">
+                                <p><a href="{% url 'mag:article' comment.article.id %}"> کامنت برای مقاله:  {{ comment.article }}</a> </p>
+                                <small class="text-sm-right">متن کامنت: {{ comment.text }} </small>
+                                <p class="rounded fs-10 text-left text-success">وضعیت : {{ comment.status_display }}</p>
+                                <a href="{% url 'patients:comments_delete' model_type='mag' id=comment.id %}" class="text-danger fs-10">حذف شود</a>
+                            </div>
+                        {% endfor %}
+
+                        {% for comment in request.user.post_comments.all %}
+                            <div class="strip_list wow fadeIn border-0 bg-gradiant">
+                                <p><a href="{% url 'mag:article' comment.post.id %}"> کامنت برای
+                                    پست: {{ comment.post }}</a></p>
+                                <small class="text-sm-right">متن کامنت: {{ comment.body }} </small>
+                                <p class="rounded fs-10 text-left text-success"> وضعیت : {% if  comment.approved == False %}در حال بررسی{% else %}تایید شده{% endif %}</p>
+                                <a href="{% url 'patients:comments_delete' model_type='post' id=comment.id %}" class="text-danger fs-10">حذف شود</a>
+                            </div>
+                        {% endfor %}
+                        {% else %}
+                        <p>هنوز دیدگاهی ثبت نکرده اید!</p>
+
+
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+{% endblock %}

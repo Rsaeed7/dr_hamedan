@@ -4,13 +4,16 @@ from django.http import JsonResponse
 from .models import Doctor, DoctorAvailability, Specialization, Clinic, City, DrComment, CommentTips
 from reservations.models import Reservation, ReservationDay
 from datetime import datetime, timedelta
-from django.db.models import Q, Sum, Count, Avg
+from django.db.models import  Sum, Avg
 from django.utils import timezone
 from wallet.models import Transaction
 from utils.utils import send_notification
 from django.contrib import messages
 from medimag.models import MagArticle
 from docpages.models import Post
+from django.shortcuts import render
+from django.views.generic import ListView
+from django.db.models import Q
 
 
 def index(request):
@@ -38,20 +41,6 @@ def explore(request):
     }
     return render(request, 'index/medexplore.html', context)
 
-
-from django.views import View
-from django.shortcuts import render
-from django.db.models import Q
-from .models import Doctor, Clinic, Specialization
-
-from django.views import View
-from django.shortcuts import render
-from django.db.models import Q
-from .models import Doctor, Clinic, Specialization, City
-
-from django.views.generic import ListView
-from django.db.models import Q
-from .models import Doctor, Clinic, Specialization
 
 
 class DoctorListView(ListView):
@@ -155,6 +144,7 @@ def doctor_detail(request, pk):
     comments = DrComment.objects.filter(doctor=doctor, status='confirmed')
     tips = CommentTips.objects.all()
     doctor.increment_view_count()
+    posts = doctor.posts.filter(status='published')[:6]
 
     if request.method == 'POST':
         recommendation = request.POST.get('recommendation')
@@ -197,8 +187,9 @@ def doctor_detail(request, pk):
         'doctor': doctor,
         'days': days,
         'comments': comments,
-        'stars_range': range(5, 0, -1),
-        'tips': tips
+        'stars_range': range(5),
+        'tips': tips,
+        'posts':posts
     }
 
     return render(request, 'doctors/dr_detail.html', context)

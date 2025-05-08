@@ -1,0 +1,240 @@
+{% extends  'base/base.html' %}
+{% load static %}
+{% block body %}
+
+    <div class="filters_listing d-lg-none">
+        <div class="container">
+            <a href="{% url 'patients:patient_dashboard' %}" class="text-dr"><i class="icon-right-open"></i>داشبورد</a>
+        </div>
+    </div>
+    <section class="bg-light">
+        <div class="container margin_120_95">
+            <div class="row">
+                {% include  'patients/dashbord_sidebar.html' %}
+                <div class="tab-content box_general col-lg-8">
+                    <ul class="nav center-content margin-10" role="tablist">
+                        <li>
+                            <a class="nav-link  active p_1" id="future-tab" data-toggle="tab"
+                               href="#future"
+                               role="tab" aria-controls="general" aria-expanded="true">نوبت های آینده</a>
+                        </li>
+                        <li>
+                            <a class="nav-link p_1" id="past-tab" data-toggle="tab" href="#past"
+                               role="tab" aria-controls="address">نوبت های گذشته</a>
+                        </li>
+                        <li>
+                            <a class="nav-link p_1" id="all-tab" data-toggle="tab" href="#all"
+                               role="tab" aria-controls="reviews">همه</a>
+                        </li>
+                    </ul>
+                    <div class="tab-pane fade show active" id="future" role="tabpanel"
+                         aria-labelledby="general-tab">
+                        <div class="row">
+                            <div class="col-md-12 p-t-10">
+                                <div class="bg-white shadow rounded-lg p-6">
+                                    {% if future_appointments %}
+                                        <div class="overflow-x-auto text-center">
+                                            <table class="min-w-full divide-y divide-gray-200">
+                                                <thead class="bg-gray-50">
+                                                <tr class="table">
+                                                    <th class="table-active text-center">تصویر پزشک</th>
+                                                    <th class="table-active text-center">نام پزشک</th>
+                                                    <th class="table-active text-center">تاریخ و زمان</th>
+                                                    <th class="table-active text-center">وضعیت</th>
+                                                    <th class="table-active text-center">عملیات</th>
+                                                </tr>
+                                                </thead>
+
+                                                <tbody class="table-light">
+                                                {% for appointment in future_appointments %}
+                                                    <tr>
+                                                        <td>
+                                                            <img class="rounded-10 align-center"
+                                                                 src="{{ appointment.doctor.profile_image.url }}"
+                                                                 height="50" width="50" alt="{{ appointment.doctor }}">
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <span class="text-success"> دکتر {{ appointment.doctor.user.last_name }}</span><br>
+                                                            <small>{{ appointment.doctor.specialization }}</small>
+                                                        </td>
+
+                                                        <td class="px-6 py-4 text-center">
+                                                            {{ appointment.day.date|date:"Y/m/d" }}
+                                                            {{ appointment.time|time:"H:i" }}
+                                                        </td>
+                                                        <td class="px-6 py-4 text-center fs-10">
+                                                            <button class="border-0 rounded-10 px-2  text-white
+                                                {% if appointment.status == 'confirmed' %}bg-success
+                                                {% elif appointment.status == 'pending' %}bg-warning
+                                                {% elif appointment.status == 'completed' %}bg-info
+                                                {% elif appointment.status == 'cancelled' %}bg-dark
+                                                {% endif %}">
+                                                                {% if appointment.status == 'confirmed' %}تایید شده
+                                                                {% elif appointment.status == 'pending' %}در انتظار
+                                                                {% elif appointment.status == 'completed' %}تکمیل شده
+                                                                {% elif appointment.status == 'cancelled' %}لغو شده
+                                                                {% endif %}
+                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                            <a href="{% url 'reservations:view_appointment' appointment.id %}">جزئیات</a>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+
+                                        </div>
+                                    {% else %}
+                                        <p class="text-capitalize icon-info font-weight-light">شما هیچ نوبتی در این
+                                            دسته‌بندی ندارید.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /tab_1 -->
+                    <div class="tab-pane fade" id="past" role="tabpanel"
+                         aria-labelledby="address-tab">
+                        <div class="row">
+                            <div class="col-md-12 p-t-10">
+                                <div class="bg-white shadow rounded-lg p-6">
+                                    {% if past_appointments %}
+                                        <div class="overflow-x-auto text-center">
+                                            <table class="min-w-full divide-y divide-gray-200">
+                                                <thead class="bg-gray-50">
+                                                <tr class="table">
+                                                    <th class="table-active text-center">تصویر پزشک</th>
+                                                    <th class="table-active text-center">نام پزشک</th>
+                                                    <th class="table-active text-center">تاریخ و زمان</th>
+                                                    <th class="table-active text-center">وضعیت</th>
+                                                    <th class="table-active text-center">عملیات</th>
+                                                </tr>
+                                                </thead>
+
+                                                <tbody class="table-light">
+                                                {% for appointment in past_appointments %}
+                                                    <tr>
+                                                        <td>
+                                                            <img class="rounded-10 align-center"
+                                                                 src="{{ appointment.doctor.profile_image.url }}"
+                                                                 height="50" width="50" alt="{{ appointment.doctor }}">
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <span class="text-success"> دکتر {{ appointment.doctor.user.last_name }}</span><br>
+                                                            <small>{{ appointment.doctor.specialization }}</small>
+                                                        </td>
+
+                                                        <td class="px-6 py-4 text-center">
+                                                            {{ appointment.day.date|date:"Y/m/d" }}
+                                                            {{ appointment.time|time:"H:i" }}
+                                                        </td>
+                                                        <td class="px-6 py-4 text-center fs-10">
+                                                            <button class="border-0 rounded-10 px-2  text-white
+                                                {% if appointment.status == 'confirmed' %}bg-success
+                                                {% elif appointment.status == 'pending' %}bg-warning
+                                                {% elif appointment.status == 'completed' %}bg-info
+                                                {% elif appointment.status == 'cancelled' %}bg-dark
+                                                {% endif %}">
+                                                                {% if appointment.status == 'confirmed' %}تایید شده
+                                                                {% elif appointment.status == 'pending' %}در انتظار
+                                                                {% elif appointment.status == 'completed' %}تکمیل شده
+                                                                {% elif appointment.status == 'cancelled' %}لغو شده
+                                                                {% endif %}
+                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                            <a href="{% url 'reservations:view_appointment' appointment.id %}">جزئیات</a>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+
+                                        </div>
+                                    {% else %}
+                                        <p class="text-capitalize icon-info font-weight-light">شما هیچ نوبتی در این
+                                            دسته‌بندی ندارید.
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- /tab_2 -->
+                    <div class="tab-pane fade" id="all" role="tabpanel"
+                         aria-labelledby="reviews-tab">
+                        <div class="row">
+                            <div class="col-md-12 p-t-10">
+                                <div class="bg-white shadow rounded-lg p-6">
+                                    {% if appointments %}
+                                        <div class="overflow-x-auto text-center">
+                                            <table class="min-w-full divide-y divide-gray-200">
+                                                <thead class="bg-gray-50">
+                                                <tr class="table">
+                                                    <th class="table-active text-center">تصویر پزشک</th>
+                                                    <th class="table-active text-center">نام پزشک</th>
+                                                    <th class="table-active text-center">تاریخ و زمان</th>
+                                                    <th class="table-active text-center">وضعیت</th>
+                                                    <th class="table-active text-center">عملیات</th>
+                                                </tr>
+                                                </thead>
+
+                                                <tbody class="table-light">
+                                                {% for appointment in appointments %}
+                                                    <tr>
+                                                        <td>
+                                                            <img class="rounded-10 align-center"
+                                                                 src="{{ appointment.doctor.profile_image.url }}"
+                                                                 height="50" width="50" alt="{{ appointment.doctor }}">
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <span class="text-success"> دکتر {{ appointment.doctor.user.last_name }}</span><br>
+                                                            <small>{{ appointment.doctor.specialization }}</small>
+                                                        </td>
+
+                                                        <td class="px-6 py-4 text-center">
+                                                            {{ appointment.day.date|date:"Y/m/d" }}
+                                                            {{ appointment.time|time:"H:i" }}
+                                                        </td>
+                                                        <td class="px-6 py-4 text-center fs-10">
+                                                            <button class="border-0 rounded-10 px-2  text-white
+                                                {% if appointment.status == 'confirmed' %}bg-success
+                                                {% elif appointment.status == 'pending' %}bg-warning
+                                                {% elif appointment.status == 'completed' %}bg-info
+                                                {% elif appointment.status == 'cancelled' %}bg-dark
+                                                {% endif %}">
+                                                                {% if appointment.status == 'confirmed' %}تایید شده
+                                                                {% elif appointment.status == 'pending' %}در انتظار
+                                                                {% elif appointment.status == 'completed' %}تکمیل شده
+                                                                {% elif appointment.status == 'cancelled' %}لغو شده
+                                                                {% endif %}
+                                                            </button>
+                                                        </td>
+                                                        <td>
+                                                            <a href="{% url 'reservations:view_appointment' appointment.id %}">جزئیات</a>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+
+                                        </div>
+                                    {% else %}
+                                        <p class="text-capitalize icon-info font-weight-light">شما هیچ نوبتی در این
+                                            دسته‌بندی ندارید.
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /tab_3 -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+{% endblock %}

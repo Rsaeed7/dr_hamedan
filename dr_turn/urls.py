@@ -32,8 +32,9 @@ urlpatterns = [
     path('medimag/', include('medimag.urls')),
     path('', include('about_us.urls')),
     # Authentication URLs
-    path('accounts/', include('accounts.urls')),
-    path('accounts/', include('django.contrib.auth.urls')), 
+    # path('accounts/', include('accounts.urls')),
+    # path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/',include('user.urls')),
 ]
 
 if settings.DEBUG:

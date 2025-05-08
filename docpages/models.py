@@ -1,4 +1,6 @@
+# from django.contrib.auth.models import User
 from django.db import models
+from user.models import User
 from django.utils import timezone
 from doctors.models import Doctor
 from django.urls import reverse
@@ -35,6 +37,8 @@ class Comment(models.Model):
     body = models.TextField(verbose_name='متن')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
     approved = models.BooleanField(default=False, verbose_name='تایید شده')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='کاربر', related_name='post_comments',
+                             null=True, blank=True)
     
     def __str__(self):
         return f"Comment by {self.name} on {self.post.title}"
