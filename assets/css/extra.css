@@ -141,7 +141,21 @@
     border-radius: 20px;
 }
 /*---------*/
+.box_dashboard {
+  padding: 10px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  color: #555555;
+  -webkit-box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.05);
+  -moz-box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.05);
+  box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.05);
+  width: 49%;
+  margin-left: 5px;
 
+}
 
 
 .dr_box {
@@ -177,7 +191,26 @@ a.dr_box i {
 }
 
 .bg-bluelight{
-    background: rgba(239, 251, 252, 0.47);
+    background: rgba(239, 251, 252, 0.47) !important;
+}
+
+.bg-light-green{
+    background-color: #e0f9df !important;
+}
+
+.bg-light-blue{
+    background-color: #e5f1f9 !important;
+}
+
+.bg-light-violet{
+    background-color: #f6ecfb !important;
+}
+
+.bg-light-yellow{
+    background-color: #f8ffc7 !important;
+}
+.bg-light-red{
+    background-color: rgba(253, 154, 154, 0.8) !important;
 }
 
 .text_dr {

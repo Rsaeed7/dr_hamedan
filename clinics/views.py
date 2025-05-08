@@ -39,7 +39,7 @@ class ClinicListView(ListView):
         return context
 
 
-@login_required
+
 def clinic_detail(request, pk):
     clinic = get_object_or_404(Clinic, pk=pk)
     doctors = Doctor.objects.filter(clinic=clinic, is_available=True)

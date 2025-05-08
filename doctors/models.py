@@ -1,7 +1,7 @@
 from django.db import models
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 from django.db.models import Avg, Count
-
+from user.models import User
 from clinics.models import Clinic
 from datetime import time, datetime, timedelta
 from django.utils import timezone
@@ -34,7 +34,7 @@ class Specialization(models.Model):
 
 class Doctor(models.Model):
     GENDER_CHOICES = (('male','مرد'),('female','زن'))
-    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name=_('کاربر'))
+    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name=_('کاربر'), related_name='doctor')
     specialization = models.ForeignKey(Specialization, on_delete=models.SET_NULL, null=True, verbose_name=_('تخصص'))
     license_number = models.CharField(max_length=50, unique=True, verbose_name=_('شماره پروانه'))
     city = models.ForeignKey(City,on_delete=models.SET_NULL, null=True, verbose_name=_('شهر محل خدمت'))
@@ -125,7 +125,7 @@ class Doctor(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"دکتر {self.user.get_full_name()} - {self.specialization}"
+        return f"دکتر {self.user.name} - {self.specialization}"
     
     def get_available_slots(self, date):
         """محاسبه زمان‌های خالی برای یک تاریخ مشخص"""

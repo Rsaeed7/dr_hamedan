@@ -12,22 +12,17 @@ def wallet_dashboard(request):
     """Display user's wallet and transaction history summary"""
     # Get user's transactions
     transactions = Transaction.objects.filter(user=request.user).order_by('-created_at')
-    
-    # Calculate balance (sum of completed transactions)
-    balance = sum(
-        t.amount if t.transaction_type in ['deposit', 'refund'] else -t.amount 
-        for t in transactions.filter(status='completed')
-    )
-    
+
+
     # Get recent transactions
-    recent_transactions = transactions[:5]
-    
+    recent_transactions = transactions[:10]
+
+
     context = {
-        'balance': balance,
         'recent_transactions': recent_transactions,
     }
     
-    return render(request, 'wallet/dashboard.html', context)
+    return render(request, 'wallet/wallet.html', context)
 
 @login_required
 def transaction_list(request):
