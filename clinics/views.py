@@ -39,7 +39,7 @@ class ClinicListView(ListView):
         return context
 
 
-@login_required
+
 def clinic_detail(request, pk):
     clinic = get_object_or_404(Clinic, pk=pk)
     doctors = Doctor.objects.filter(clinic=clinic, is_available=True)
@@ -71,7 +71,7 @@ def clinic_detail(request, pk):
         'gallery': clinic.gallery.all(),
         'specialties': clinic.specialties.all(),
         'comments': comments,
-        'stars_range': range(5, 0, -1),
+        'stars_range': range(5),
     }
 
     return render(request, 'clinics/clinic_detail.html', context)

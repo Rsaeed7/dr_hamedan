@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="fa">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="Find easily a doctor in Hamadan">
+	<title>عضویت / ورود</title>
+
+    <link rel="shortcut icon" href="{% static 'img/topicon.png' %}" type="image/x-icon">
+    <link rel="apple-touch-icon" type="image/x-icon" href="{% static 'img/icon57x57.png' %}">
+    <link rel="apple-touch-icon" type="image/x-icon" sizes="72x72" href="{% static 'img/icon72x72.png' %}">
+    <link rel="apple-touch-icon" type="image/x-icon" sizes="114x114" href="{% static 'img/icon114x114.png' %}">
+    <link rel="apple-touch-icon" type="image/x-icon" sizes="144x144" href="{% static 'img/icon144x144.png' %}">
+    <!-- /Icons link -->
+
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/menu.css' %}" rel="stylesheet">
+    <link href="{% static 'css/vendors.css' %}" rel="stylesheet">
+    <link href="{% static 'css/icon_fonts/css/all_icons_min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/extra.css' %}" rel="stylesheet">
+    <link href="{% static 'css/blog.css' %}" rel="stylesheet">
+    <link href="{% static 'css/util.css' %}" rel="stylesheet">
+</head>
+
+<body class="bg_color_2" onload="countdown();">
+
+	<div class="layer"></div>
+	<!-- Mobile menu overlay mask -->
+
+	<div id="preloader">
+		<div data-loader="circle-side"></div>
+	</div>
+
+	<main >
+		<div class="bg_color_2" >
+			<div class=" margin_60_35">
+				<div id="login-2">
+					<form  method="post" id="code_form">
+                        {% csrf_token %}
+						<div class="box_form clearfix">
+                            <h6 class="text_dr_3 text-center"><img src="{% static 'img/logo_small.png' %}"><hr>{{ phone.phone }} <small><a class="text-danger" href="{% url 'account:register' %}">ویرایش</a></small></h6>
+							<div class="box_login">
+								<div class="form-group" dir="ltr">
+                                    <label>کد تایید</label>
+                                    {{ form.code }}
+                                    <small>کد تایید 4 رقمی را وارد کنید</small>
+								</div>
+                                <div class="text-alert text-center" id="code_error">{{ form.code.errors }}</div>
+                                <div class="text-danger" dir="ltr" style="display: flex; width:100%;
+                justify-content:center; ">
+                                    <input id="minutes"
+                                           type="text"
+                                           style="width: 3.5%; border: none; font-size: 14px;
+                      font-weight: bold; color: black;">
+                                    <font size="4">
+                                        :
+                                    </font>
+                                    <input id="seconds"
+                                           type="text"
+                                           style="width: 5.5%; border: none; font-size: 14px;
+                      font-weight: bold; color: black;">
+                                </div>
+								<div class="form-group">
+                                    <button class="btn btn-success col-lg-12" onclick="submit()" >ثبت کد تایید</button>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+				<!-- /login -->
+			</div>
+		</div>
+        
+	</main>
+ <script>
+    function submit(){
+       let phone_item = document.getElementById('id_code')
+       let value = phone_item.value
+
+       if (value.length !== 4){
+
+           document.getElementById('id_code').className = 'input100 text-alert'
+           document.getElementById('code_error').innerText = '!!کد تایید باید 4 رقم باشد'
+
+        }else {
+
+           document.getElementById('code_form').submit()
+       }
+    }
+
+
+
+    let mins = 3;
+    let secs = mins * 60;
+
+    function countdown() {
+        setTimeout('Decrement()', 60);
+    }
+
+    function Decrement() {
+        if (document.getElementById) {
+            minutes = document.getElementById("minutes");
+            seconds = document.getElementById("seconds");
+            if (seconds < 59) {
+                seconds.value = secs;
+            } else {
+                minutes.value = getminutes();
+                seconds.value = getseconds();
+            }
+            if (mins < 1) {
+                minutes.style.color = "red";
+                seconds.style.color = "red";
+            }
+            if (mins < 0) {
+                {#alert('زمان کد یک بار مصرف به پایان رسید');#}
+                minutes.value = 0;
+                seconds.value = 0;
+            } else {
+                secs--;
+                setTimeout('Decrement()', 1000);
+            }
+        }
+    }
+
+    function getminutes() {
+        mins = Math.floor(secs / 60);
+        return mins;
+    }
+
+    function getseconds() {
+        return secs - Math.round(mins * 60);
+    }
+
+    </script>
+<script src="{% static 'js/jquery-2.2.4.min.js' %}"></script>
+<script src="{% static 'js/common_scripts.min.js' %}"></script>
+<script src="{% static 'js/functions.js' %}"></script>
+
+
+
+</body>
+</html>

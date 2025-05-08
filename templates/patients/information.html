@@ -1,0 +1,104 @@
+{% extends  'base/base.html' %}
+{% load static %}
+{% block body %}
+
+    <div class="filters_listing d-lg-none">
+        <div class="container">
+            <a href="{% url 'patients:patient_dashboard' %}" class="text-dr"><i class="icon-right-open"></i>داشبورد</a>
+        </div>
+    </div>
+    <section class="bg-light">
+        <div class="container margin_120_95">
+            <div class="row">
+                {% include  'patients/dashbord_sidebar.html' %}
+                <div class="col-lg-8 ml-auto">
+                    <div class="box_form border-0">
+
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>نام</label>
+                                        <input type="text" id="f_name" name="f_name" value="{{ request.user.first_name }}" required
+                                               class="form-control" placeholder=" نام خود را بنویسید">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>نام خانوادگی</label>
+                                        <input type="text" id="l_name" name="l_name" value="{{ request.user.last_name }}" required
+                                               class="form-control" placeholder=" نام خانوادگی را بنویسید">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>کد ملی</label>
+                                        <input type="text" id="national_id" name="national_id"
+                                               value="{{ patient.national_id|default:'' }}" class="form-control"
+                                               placeholder="کد ملی خود را وارد کنید">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="form-group">
+                                            <label>ایمیل (اختیاری)</label>
+                                            <input name="email" id="email " type="email" class="form-control" value="{{ patient.email }}"
+                                                   placeholder="ایمیل خود را وارد کنید">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>شماره تلفن</label>
+                                        <input type="tel" id="phone" name="phone" value="{{ request.user.phone }}" disabled
+                                               class="form-control" placeholder="09188028729">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>جنسیت</label>
+                                        <select class="form-control" id="gender" name="gender">
+                                            <option value="">جنسیت را انتخاب کنید</option>
+                                            <option {% if patient.gender == 'male' %}selected{% endif %} value="male">مرد</option>
+                                            <option {% if patient.gender == 'female' %}selected{% endif %} value="female">زن</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>سن</label>
+                                        <input type="date" id="birthdate" name="birthdate"
+                                               value="{{ patient.birthdate|date:'Y-m-d' }}" class="form-control"
+                                               placeholder="تاریخ تولد خود را وراد کنید">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>شهر</label>
+                                        <select class="form-control" name="city"  id="city">
+                                            {% for city in cities %}
+                                                <option {% if  patient.city.name == city.name  %}selected{% endif %} value="{{ city.id }}">{{ city.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>سوابق پزشکی (اختیاری)</label>
+                                        <textarea type="text" id="medical_history" name="medical_history" required
+                                                  class="form-control" placeholder="لطفاً بیماری‌های مزمن، حساسیت‌ها یا اطلاعات مهم پزشکی که پزشک باید بداند را ذکر کنید.">{{ patient.medical_history|default:'' }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p class="text-center"><input type="submit" class="btn_1" value="ثبت اطلاعات"></p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+{% endblock %}

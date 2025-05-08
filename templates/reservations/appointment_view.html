@@ -1,0 +1,126 @@
+{% extends  'base/base.html' %}
+{% load static %}
+{% block body %}
+    <section class="bg-light">
+        <div class="container margin_120_95">
+            <div>
+                <h4 class="text-2xl font-bold text-gray-800">جزئیات نوبت</h4>
+                <p class="text-gray-600">نوبت شماره {{ appointment.id }}</p>
+            </div>
+            <div class="row">
+                <div class="box_dashboard col-12 {% if appointment.status == 'confirmed' %}bg-light-green{% elif appointment.status == 'pending' %}bg-light-yellow{% elif appointment.status == 'completed' %}bg-light-blue{% elif appointment.status == 'cancelled' %}bg-light-red{% endif %}">
+                    <h6>
+                        <i class="{% if appointment.status == 'confirmed' %}icon-ok-circled text-success{% elif appointment.status == 'pending' %}icon-spin6 text-warning{% elif appointment.status == 'completed' %}icon-check text-primary{% elif appointment.status == 'cancelled' %}icon-cancel-circled text-danger{% endif %}"></i>
+                        وضعیت : {{ appointment.get_status_display }} </h6>
+                    {% if appointment.status == 'pending' %}
+                        <small class="text-warning">نوبت شما در انتظار تایید پزشک است.</small>
+                    {% elif appointment.status == 'confirmed' %}
+                        <small class="text-success">نوبت شما توسط پزشک تایید شده است.</small>
+                    {% endif %}
+                </div>
+
+                <div class="col-lg-6 box_general booking">
+                    <h5 class="border-bottom">اطلاعات نوبت</h5>
+                    <p class="p-r-10">تاریخ : {{ appointment.day.date|date:"F j, Y" }}</p>
+                    <p class="p-r-10">ساعت: {{ appointment.time|time:"H:i" }}</p>
+                    <p class="p-r-10">هزینه ویزیت: {{ appointment.amount }} تومان</p>
+                    <p class="p-r-10 ">وضعیت پرداخت:
+                        <span class="rounded_pill fs-10 p-l-2 p-r-2 {% if appointment.payment_status == 'paid' %}bg-light-green {% else %}bg-light-yellow{% endif %}">{{ appointment.get_payment_status_display }}</span>
+                    </p>
+                    {% if appointment.notes %}
+                        <p class="fs-12 text-capitalize">توضیحات : {{ appointment.notes }}</p>
+                    {% endif %}
+                    {% if appointment.status == 'pending' or appointment.status == 'confirmed' %}
+                        <a href="{% url 'reservations:cancel_appointment' appointment.id %}"
+                           class="btn btn-outline-danger"
+                           onclick="return confirm('آیا از لغو این نوبت اطمینان دارید؟');">
+                            لغو نوبت
+                        </a>
+                    {% endif %}
+                </div>
+
+
+                <div class="col-lg-6 ml-auto box_general">
+                    {% if user.patient %}
+                        <h5 class="border-bottom">اطلاعات پزشک</h5>
+                        <div class="row p-b-15">
+                            <div class="col-2">
+                                <img src="{{ appointment.doctor.profile_image.url }}"
+                                     alt="دکتر {{ appointment.doctor.user.last_name }}" width="80" height="80"
+                                     class="rounded50">
+                            </div>
+                            <div class="col-10">
+                                <h6>
+                                    دکتر {{ appointment.doctor.user.get_full_name }}</h6>
+                                <p class="text-gray-600">{{ appointment.doctor.specialization }}</p>
+                            </div>
+                        </div>
+                        {% if appointment.doctor.clinic %}
+                            <p>{{ appointment.doctor.clinic.name }}</p>
+                        {% endif %}
+                        <p><i class="icon-phone-squared"></i> {{ appointment.doctor.phone }}</p>
+                        {% if appointment.doctor.user.email %}
+                            <p>ایمیل پزشک : {{ appointment.doctor.user.email }}</p>
+                        {% endif %}
+                        {% if appointment.doctor.address %}
+                            <p><i class="icon-location"></i> {{ appointment.doctor.address }}</p>
+                        {% endif %}
+                        <a href="{% url 'doctors:doctor_detail' appointment.doctor.id %}"
+                           class="text-info">
+                            مشاهده پروفایل پزشک
+                        </a>
+
+                    {% elif user.doctor %}
+                        <h5 class="border-bottom">اطلاعات بیمار</h5>
+                        {% if appointment.patient %}
+
+                            {% if appointment.patient.profile_image %}
+                                <img src="{{ appointment.patient.profile_image.url }}"
+                                     alt="{{ appointment.patient.user.get_full_name }}"
+                                     class="rounded50" width="80" height="80">
+                            {% else %}
+                                <div>
+                                    <p class="text-capitalize">نام بیمار : {{ appointment.patient.name }}</p>
+                                    <p class="text-capitalize">شناسه بیمار: {{ appointment.patient.id }}</p>
+                                </div>
+                                {% if appointment.patient.date_of_birth %}
+                                    <p class="text-capitalize">{{ appointment.patient.date_of_birth|date:"F j, Y" }}تاریخ
+                                        تولد
+                                        : </p>
+                                {% endif %}
+                                <div>
+                                    <label class="font-weight-bold">اطلاعات تماس</label>
+                                    <p>شماره تماس: {{ appointment.patient.phone }}</p>
+                                    <p>ایمیل :{{ appointment.patient.user.email }}</p>
+                                </div>
+                                {% if appointment.patient.address %}
+                                    <p>آدرس : {{ appointment.patient.address }}</p>
+                                {% endif %}
+
+                            {% endif %}
+
+                        {% else %}
+                            <div>
+                                <h5 class="text-capitalize">{{ appointment.name }}</h5>
+                                <p class="text-primary">رزرو مهمان</p>
+                            </div>
+                            
+                            <div>
+                                <p class="font-weight-bold">اطلاعات تماس</p>
+                                <p class="text-capitalize">{{ appointment.phone }}</p>
+                            </div>
+
+                            {% if appointment.email %}
+                                <div>
+                                    <p class="text-capitalize"> ایمیل :{{ appointment.email }}</p>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                    </div>
+
+                </div>
+            </div>
+    </section>
+
+{% endblock %}
