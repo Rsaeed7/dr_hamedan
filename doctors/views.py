@@ -187,7 +187,7 @@ def doctor_detail(request, pk):
         'doctor': doctor,
         'days': days,
         'comments': comments,
-        'stars_range': range(5),
+        'stars_range':  range(5, 0, -1) ,
         'tips': tips,
         'posts':posts
     }
