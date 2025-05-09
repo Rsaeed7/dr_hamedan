@@ -65,7 +65,7 @@ class LoginForm(forms.Form):
 
 class RegisterForm(forms.Form):
     phone = forms.CharField(widget=forms.TextInput(
-        attrs={"class": "form-control", "placeholder": "09*********"}),
+        attrs={"class": "form-control required", "placeholder": "09*********"}),
                             validators=[phone_validator],required=True)
 
 class Check_CodeForm(forms.Form):
