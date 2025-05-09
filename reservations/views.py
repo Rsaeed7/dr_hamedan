@@ -206,7 +206,7 @@ def appointment_status(request, pk):
         'doctor': reservation.doctor,
     }
     
-    return render(request, 'reservations/confirm.html', context)
+    return render(request, 'reservations/status_appointment.html', context)
 
 @login_required
 def manage_reservation_days(request):
