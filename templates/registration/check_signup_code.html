@@ -14,7 +14,6 @@
     <link rel="apple-touch-icon" type="image/x-icon" sizes="72x72" href="{% static 'img/icon72x72.png' %}">
     <link rel="apple-touch-icon" type="image/x-icon" sizes="114x114" href="{% static 'img/icon114x114.png' %}">
     <link rel="apple-touch-icon" type="image/x-icon" sizes="144x144" href="{% static 'img/icon144x144.png' %}">
-    <!-- /Icons link -->
     
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
@@ -26,7 +25,7 @@
     <link href="{% static 'css/util.css' %}" rel="stylesheet">
 </head>
 
-<body class="bg_color_2" onload="countdown();">
+<body class="bg_color_2">
 
 	<div class="layer"></div>
 	<!-- Mobile menu overlay mask -->
@@ -36,113 +35,146 @@
 	</div>
 
 	<main>
-		<div class="bg_color_2" >
-			<div class=" margin_60_35">
+		<div class="bg_color_2">
+			<div class="margin_60_35">
 				<div id="login-2">
-					<form  method="post" id="code_form">
+					<form method="post" id="code_form">
                         {% csrf_token %}
 						<div class="box_form clearfix">
-                            
                             <h6 class="text_dr_3 text-center"><img src="{% static 'img/logo_small.png' %}"><hr>{{ phone.phone }} <small><a class="text-danger" href="{% url 'account:register' %}">ویرایش</a></small></h6>
 							<div class="box_login">
 								<div class="form-group" dir="ltr">
-                                                                            <p dir="rtl"> پروفایلی با شماره تلفن وارد شده پیدا نشد برای عضویت کد تایید را وارد
-                        کنید...!</p>
+                                    <p dir="rtl">پروفایلی با شماره تلفن وارد شده پیدا نشد برای عضویت کد تایید را وارد کنید...!</p>
                                     <label>کد تایید</label>
                                     {{ form.code }}
+                                    {% if messages %}
+                                        {% for message in messages %}
+                                            <p class="text-danger fs-12">{{ message }}</p>
+                                        {% endfor %}
+                                    {% endif %}
+                                    <p class="text-danger fs-9" id="code_error">{{ form.code.errors }}</p>
                                     <small>کد تایید 4 رقمی را وارد کنید</small>
 								</div>
-                                <div class="text-alert text-center" id="code_error">{{ form.code.errors }}</div>
-                                <div class="text-back" style="display: flex; width:100%;
-                justify-content:center; ">
-                                    <input id="minutes"
-                                           type="text"
-                                           style="width: 2%; border: none; font-size: 14px;
-                      font-weight: bold; color: black;">
-                                    <font size="4">
-                                        :
-                                    </font>
-                                    <input id="seconds"
-                                           type="text"
-                                           style="width: 4%; border: none; font-size: 14px;
-                      font-weight: bold; color: black;">
+                                
+                       <div class="text-danger" dir="ltr" style="display: flex; width:100%; justify-content:center;">
+                                    <input id="minutes" type="text" style="width: 3.5%; border: none; font-size: 14px; font-weight: bold; color: black;" readonly>
+                                    <font size="4">:</font>
+                                    <input id="seconds" type="text" style="width: 5.5%; border: none; font-size: 14px; font-weight: bold; color: black;" readonly>
                                 </div>
 								<div class="form-group">
-                                    <button class="btn btn-success col-lg-12" onclick="submit()" >ثبت کد تایید</button>
+                                    <button id="submit_btn" class="btn btn-success col-lg-12" type="submit">ثبت کد تایید</button>
 								</div>
 							</div>
 						</div>
 					</form>
 				</div>
-				<!-- /login -->
 			</div>
 		</div>
 	</main>
- <script>
-    function submit(){
-       let phone_item = document.getElementById('id_code')
-       let value = phone_item.value
 
-       if (value.length !== 4){
+<script>
+// Timer variables
+let timerInterval;
+const initialTime = 180; // 3 minutes in seconds
+const phoneNumber = "{{ phone}}"; // شماره تلفن از context
 
-           document.getElementById('id_code').className = 'input100 text-alert'
-           document.getElementById('code_error').innerText = '!!کد تایید باید 4 رقم باشد'
+// کلید ذخیره سازی در localStorage
+const storageKey = `otpTimer_${phoneNumber}`;
 
-        }else {
+// مقدار اولیه remainingTime
+let remainingTime = localStorage.getItem(storageKey) ? 
+                    parseInt(localStorage.getItem(storageKey)) : 
+                    initialTime;
 
-           document.getElementById('code_form').submit()
-       }
+// Start timer when page loads
+window.onload = function() {
+    // اگر زمان به پایان رسیده بود و شماره تلفن همان است، تایمر را ریست کنیم
+    if (remainingTime <= 0) {
+        remainingTime = initialTime;
+        localStorage.setItem(storageKey, remainingTime);
     }
+    
+    startTimer();
+    updateTimerDisplay();
+    
+    // Validate code input on keyup
+    document.getElementById('id_code').addEventListener('input', function() {
+        validateCode();
+    });
+};
 
-
-
-    let mins = 3;
-    let secs = mins * 60;
-
-    function countdown() {
-        setTimeout('Decrement()', 60);
+function startTimer() {
+    clearInterval(timerInterval);
+    
+    // اگر زمان به پایان رسیده بود، فقط نمایش بده و برگرد
+    if (remainingTime <= 0) {
+        document.getElementById('minutes').style.color = "red";
+        document.getElementById('seconds').style.color = "red";
+        return;
     }
-
-    function Decrement() {
-        if (document.getElementById) {
-            minutes = document.getElementById("minutes");
-            seconds = document.getElementById("seconds");
-            if (seconds < 59) {
-                seconds.value = secs;
-            } else {
-                minutes.value = getminutes();
-                seconds.value = getseconds();
-            }
-            if (mins < 1) {
-                minutes.style.color = "red";
-                seconds.style.color = "red";
-            }
-            if (mins < 0) {
-                {#alert('زمان کد یک بار مصرف به پایان رسید');#}
-                minutes.value = 0;
-                seconds.value = 0;
-            } else {
-                secs--;
-                setTimeout('Decrement()', 1000);
-            }
+    
+    timerInterval = setInterval(function() {
+        remainingTime--;
+        localStorage.setItem(storageKey, remainingTime);
+        
+        updateTimerDisplay();
+        
+        if (remainingTime <= 0) {
+            clearInterval(timerInterval);
+            localStorage.removeItem(storageKey);
+            document.getElementById('minutes').style.color = "red";
+            document.getElementById('seconds').style.color = "red";
         }
-    }
+    }, 1000);
+}
 
-    function getminutes() {
-        mins = Math.floor(secs / 60);
-        return mins;
+function updateTimerDisplay() {
+    const minutes = Math.floor(remainingTime / 60);
+    const seconds = remainingTime % 60;
+    
+    document.getElementById('minutes').value = minutes;
+    document.getElementById('seconds').value = seconds < 10 ? '0' + seconds : seconds;
+    
+    // تغییر رنگ وقتی کمتر از 1 دقیقه باقی مانده
+    if (remainingTime < 60) {
+        document.getElementById('minutes').style.color = "red";
+        document.getElementById('seconds').style.color = "red";
     }
+}
 
-    function getseconds() {
-        return secs - Math.round(mins * 60);
+function validateCode() {
+    const codeInput = document.getElementById('id_code');
+    const codeError = document.getElementById('code_error');
+    const submitBtn = document.getElementById('submit_btn');
+    const value = codeInput.value.trim();
+    
+    if (value.length !== 4 || !/^\d+$/.test(value)) {
+        codeInput.classList.add('text-alert');
+        codeInput.classList.remove('input100');
+        codeError.textContent = value.length > 0 ? '!!کد تایید باید 4 رقم باشد' : '';
+        submitBtn.disabled = true;
+        return false;
+    } else {
+        codeInput.classList.remove('text-alert');
+        codeInput.classList.add('input100');
+        codeError.textContent = '';
+        submitBtn.disabled = false;
+        return true;
     }
+}
 
-    </script>
+function submitForm() {
+    if (validateCode()) {
+        // قبل از ارسال فرم، تایمر را برای این شماره پاک کنید
+        localStorage.removeItem(storageKey);
+        document.getElementById('code_form').submit();
+    }
+}
+</script>
+
 <script src="{% static 'js/jquery-2.2.4.min.js' %}"></script>
 <script src="{% static 'js/common_scripts.min.js' %}"></script>
 <script src="{% static 'js/functions.js' %}"></script>
-
-
 
 </body>
 </html>

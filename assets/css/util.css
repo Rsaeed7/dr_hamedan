@@ -3075,6 +3075,14 @@
     .p-m-1{
         padding: 1px !important;
     }
+    .border-0-m{
+        border: none !important;
+    }
+
+    .shadow-0-m {
+        border: none !important;
+        box-shadow: none !important;
+    }
 }
 
 @media (max-width: 768px) {
