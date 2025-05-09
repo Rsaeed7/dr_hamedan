@@ -1,9 +1,9 @@
 {% load static %}
 <style>
-.dropdown {
-  position: relative; /* این خیلی مهمه */
-  display: inline-block;
-}
+    .dropdown {
+        position: relative; /* این خیلی مهمه */
+        display: inline-block;
+    }
 
 
     .dropdown-content {
@@ -52,7 +52,7 @@
         border-radius: 5px;
         display: flex;
         align-items: center;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         overflow: hidden;
     }
 
@@ -89,13 +89,13 @@
         left: 0;
         height: 3px;
         width: 100%;
-        background: rgba(0,0,0,0.1);
+        background: rgba(0, 0, 0, 0.1);
     }
 
     .alert-timer::before {
         content: '';
         position: absolute;
-        right: 0;  /* شروع از راست */
+        right: 0; /* شروع از راست */
         top: 0;
         height: 100%;
         width: 100%; /* شروع با عرض کامل */
@@ -149,16 +149,20 @@
                                 </div>
                                 <div class="dropdown-content">
                                     {% if user.doctor %}
-                                    <a class="icon-medkit" href="{% url 'doctors:doctor_dashboard' %}">داشبورد پزشک </a>
+                                        <a class="icon-medkit" href="{% url 'doctors:doctor_dashboard' %}">داشبورد
+                                            پزشک </a>
                                     {% endif %}
                                     {% if user.administered_clinics.exists %}
-                                    <a class="icon-hospital" href="{% url 'clinics:clinic_dashboard' %}">داشبورد کلینیک</a>
+                                        <a class="icon-hospital" href="{% url 'clinics:clinic_dashboard' %}">داشبورد
+                                            کلینیک</a>
                                     {% endif %}
-                                    <a class="icon-calendar" href="{% url 'patients:patient_appointments' %}">نوبت های من</a>
-                                    <a class="icon-users-outline" href="{% url 'patients:patient_profile' %}">پروفایل</a>
+                                    <a class="icon-calendar" href="{% url 'patients:patient_appointments' %}">نوبت های
+                                        من</a>
+                                    <a class="icon-users-outline"
+                                       href="{% url 'patients:patient_profile' %}">پروفایل</a>
                                     <a class="icon-wallet" href="{% url 'wallet:wallet_dashboard' %}">کیف پول</a>
                                     {% if user.is_staff %}
-                                    <a class="icon-blogger" href="{% url 'admin:index' %}">پنل مدیریت</a>
+                                        <a class="icon-blogger" href="{% url 'admin:index' %}">پنل مدیریت</a>
                                     {% endif %}
                                     <a class="icon-logout-1" href="{% url 'account:logout' %}">خروج</a>
 
@@ -177,14 +181,15 @@
                 <div class="main-menu">
                     <ul>
                         <li class="d-lg-none">
-                        {% if user.is_authenticated %}
-                            <a href="{% if user.doctor %}{% url 'doctors:doctor_dashboard' %} {% elif user.administered_clinics.exists %}{% url 'clinics:clinic_dashboard' %}{% else %}{% url 'patients:patient_profile' %}{% endif %}">
+                            {% if user.is_authenticated %}
+                                <a href="
+                                        {% if user.doctor %}{% url 'doctors:doctor_dashboard' %} {% elif user.administered_clinics.exists %}{% url 'clinics:clinic_dashboard' %}{% else %}{% url 'patients:patient_profile' %}{% endif %}">
                                 <div class="btn dr_box col-11">
                                     <i class="pe-7s-users"></i>{{ request.user.phone }}
                                 </div>
                             {% else %}
-                            <a href="{% url 'account:register' %}">
-                               <div class="btn dr_box col-11">
+                                <a href="{% url 'account:register' %}">
+                                <div class="btn dr_box col-11">
                                     <i class="icon-login-1"></i>ورود
                                 </div>
                             {% endif %}
@@ -238,23 +243,54 @@
 
 <!-- mobile footer -->
 <div class="bottom-nav" id="bottom-nav">
-    <a href="/" class="nav-item active">
+    <a href="/" class="nav-item {% if request.resolver_match.url_name == 'index' %}active{% endif %}">
         <i class="icon-hospital text-dr"></i>
         <span>خانه</span>
     </a>
 
-    <a href="" class="nav-item">
-        <i class="icon-blogger text-dr"></i>
-        <span>وبلاگ</span>
+    <a href="{% url 'doctors:medexplor' %}"
+       class="nav-item {% if request.resolver_match.url_name == 'medexplor' %}active{% endif %}">
+        <i class="icon-instagramm text-dr"></i>
+        <span>لنز</span>
     </a>
-    <a href="" class="nav-item {% if request.resolver_match.url_name == 'turn_days' %}active{% endif %}">
-        <i class="icon-users text-dr"></i>
+
+    <a href="{% url 'doctors:specializations' %}"
+       class="nav-item {% if request.resolver_match.url_name == 'specializations' %}active{% endif %}">
+        <i class="icon-medkit text-dr"></i>
+        <span>پزشکان</span>
+    </a>
+    {% if request.user.is_authenticated %}
+    <a href="{% url 'patients:patient_appointments' %}"
+       class="nav-item {% if request.resolver_match.url_name == 'patient_appointments' %}active{% endif %}">
+        <i class="icon-calendar-7 text-dr"></i>
         <span>نوبت ها</span>
     </a>
-    <a href="" class="nav-item">
-        <i class="icon-users-2 text-dr"></i>
-        <span>پروفایل</span>
-    </a>
+
+        <a href="{% url 'patients:patient_dashboard' %}"
+           class="nav-item {% if request.resolver_match.url_name == 'patient_dashboard' %}active{% endif %}">
+            <i class="icon-user-outline text-dr"></i>
+            <span>پروفایل</span>
+        </a>
+    {% else %}
+        <a href="{% url 'account:register' %}"
+           class="nav-item">
+            <i class="icon-user-outline text-dr"></i>
+            <span>ورود</span>
+        </a>
+    {% endif %}
+    {% if request.user.doctor %}
+        <a href="{% url 'doctors:doctor_dashboard' %}"
+           class="nav-item {% if request.resolver_match.url_name == 'doctor_dashboard' %}active{% endif %}">
+            <i class="icon-user-md text-dr"></i>
+            <span class="fs-12">پزشک</span>
+        </a>
+    {% endif %}
+    {% if user.administered_clinics.exists %}
+        <a  class="nav-item {% if request.resolver_match.url_name == 'clinic_dashboard' %}active{% endif %}" href="{% url 'clinics:clinic_dashboard' %}">
+        <i class="icon-hospital-1 text-dr"></i>
+            <span>کلینیک</span>
+            </a>
+    {% endif %}
 </div>
 <!-- /mobile footer -->
 <script>
@@ -273,7 +309,7 @@
     });
 
     // اسکریپت مدیریت آلرت‌ها (اضافه شده)
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const alerts = document.querySelectorAll('.floating-alert');
 
         alerts.forEach(alert => {
