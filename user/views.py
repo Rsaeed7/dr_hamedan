@@ -99,6 +99,7 @@ class CheckCodeView_Login(View):
     def post(self, request):
         form = Check_CodeForm(request.POST)
         token = request.GET.get('token')
+        phone = Otp.objects.get(token=token)
         if form.is_valid():
             cd = form.cleaned_data
             otp = Otp.objects.get(token=token)
@@ -115,11 +116,11 @@ class CheckCodeView_Login(View):
                 otp.delete()
                 return redirect('doctors:index')
             else:
-                messages.error(request, 'کد تایید صحیح وارد کنید')
+                messages.error(request, 'کد تایید صحیح نیست')
         else:
             form.add_error('', '• لطفا اطلاعات صحیح وارد کنید!')
 
-        return render(request, 'registration/check_login_code.html', {'form': form })
+        return render(request, 'registration/check_login_code.html', {'form': form , 'phone':phone})
 
 class CheckCodeView_Signup(View):
     def get(self, request):
@@ -131,6 +132,7 @@ class CheckCodeView_Signup(View):
     def post(self, request):
         form = Check_CodeForm(request.POST)
         token = request.GET.get('token')
+        phone = Otp.objects.get(token=token)
         if form.is_valid():
             cd = form.cleaned_data
             otp = Otp.objects.get(token=token)
@@ -147,11 +149,11 @@ class CheckCodeView_Signup(View):
                 otp.delete()
                 return redirect('doctors:index')
             else:
-                messages.error(request, 'کد تایید صحیح وارد کنید')
+                messages.error(request, 'کد تایید صحیح نیست')
         else:
             form.add_error('', '• لطفا اطلاعات صحیح وارد کنید!')
 
-        return render(request, 'registration/check_signup_code.html', {'form': form})
+        return render(request, 'registration/check_signup_code.html', {'form': form, 'phone':phone})
 
 class LogoutView(View):
     def get(self, request):
