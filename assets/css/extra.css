@@ -94,7 +94,8 @@
     right: 0;
     display: flex;
     justify-content: space-around;
-    background-color: rgba(255, 255, 255, 0.89);
+    font-weight: lighter;
+    background-color: rgba(255, 255, 255, 0.97);
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
     padding: 10px 0;
     z-index: 1000;
@@ -115,6 +116,7 @@
     margin-bottom: 5px;
     display: block;
 }
+
 
 .bottom-nav .nav-item:hover {
     color: #007bff;
