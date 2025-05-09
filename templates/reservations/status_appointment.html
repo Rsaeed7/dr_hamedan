@@ -55,10 +55,10 @@
                         <h1 class="icon-clock text-warning">
                         </h1>
                         <h2>در انتظار</h2>
-                        <p class="text-secondary font-weight-bold">                                نوبت شما در انتظار تایید پزشک است.
-                                {% if reservation.payment_status == 'pending' %}
-                                    لطفاً پرداخت را تکمیل کنید.
-                                {% endif %}</p>
+                        <p class="text-secondary font-weight-bold"> نوبت شما در انتظار تایید پزشک است.
+                            {% if reservation.payment_status == 'pending' %}
+                                لطفاً پرداخت را تکمیل کنید.
+                            {% endif %}</p>
                         <a class="btn btn-light" href="{% url 'doctors:index' %}">صفحه اصلی</a>
                         <a href="{% url 'doctors:doctor_detail' doctor.id %}" class="btn btn-success">بازگشت به صفحه
                             پزشک</a>
