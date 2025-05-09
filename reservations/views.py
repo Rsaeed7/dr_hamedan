@@ -78,6 +78,7 @@ def book_appointment(request, doctor_id):
     # Get available dates and slots for this doctor
     days = []
     today = datetime.now().date()
+
     for i in range(7):
         day = today + timedelta(days=i)
         try:
@@ -96,7 +97,7 @@ def book_appointment(request, doctor_id):
         'days': days,
     }
     
-    return render(request, 'reservations/book_appointment.html', context)
+    return render(request, 'reservations/book.html', context)
 
 @login_required
 def confirm_appointment(request, pk):

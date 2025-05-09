@@ -47,12 +47,12 @@
 								<div class="form-group" dir="ltr">
                                     <label>شماره موبایل</label>
 									{{ form.phone}}
-                                    <small id="phone_error" class="text-danger">{{ form.phone.errors }}</small>
+                                    <p id="phone_error" class="text-danger fs-9">{{ form.phone.errors }}</p>
                                     <small>برای ادامه لطفا شماره موبایل خود را وارد کنید</small>
                                     
 								</div>
 								<div class="form-group">
-                                    <button onclick="submit()" class="btn btn-info  col-lg-12" type="submit">دریافت کد تایید</button>
+                                    <button id="submit_btn" class="btn btn-info col-lg-12" type="submit" disabled>دریافت کد تایید</button>
 								</div>
 							</div>
 						</div>
@@ -62,33 +62,56 @@
 			</div>
 		</div>
 	</main>
+
   <script>
-    function submit(){
-       let phone_item = document.getElementById('id_phone')
-       let value = phone_item.value
+    document.addEventListener('DOMContentLoaded', function() {
+        const phoneInput = document.getElementById('id_phone');
+        const submitBtn = document.getElementById('submit_btn');
+        const phoneError = document.getElementById('phone_error');
+        
+        // Initially disable the submit button
+        submitBtn.disabled = true;
+        
+        // Validate phone number on input change
+        phoneInput.addEventListener('input', function() {
+            validatePhoneNumber();
+        });
+        
+        function validatePhoneNumber() {
+            const value = phoneInput.value.trim();
+            
+            // Check if phone number is valid (11 digits and starts with 0)
+            const isValid = value.length === 11 && value.startsWith('0');
+            
+            if (isValid) {
+                phoneInput.classList.remove('text-alert');
+                phoneInput.classList.add('input100');
+                phoneError.textContent = '';
+                submitBtn.disabled = false;
+            } else {
+                phoneInput.classList.add('text-alert');
+                phoneInput.classList.remove('input100');
+                phoneError.textContent = value.length > 0 ? 'شماره تلفن صحیح وارد کنید!' : '';
+                submitBtn.disabled = true;
+            }
+        }
+        
+        // Form submission handler
+        document.getElementById('phone_form').addEventListener('submit', function(e) {
+            const value = phoneInput.value.trim();
+            
+            if (value.length !== 11 || !value.startsWith('0')) {
+                e.preventDefault();
+                phoneInput.classList.add('text-alert');
+                phoneError.textContent = '!!شماره تلفن صحیح وارد کنید';
+            }
+        });
+    });
+  </script>
 
-       if (value.length !== 11){
-
-           document.getElementById('id_phone').className = 'input100 text-alert'
-           document.getElementById('phone_error').innerText = '!!شماره تلفن صحیح وارد کنید'
-
-       }else if((value.indexOf(0) !== 0)){
-
-           document.getElementById('id_phone').className = 'input100 text-alert'
-           document.getElementById('phone_error').innerText = '!!شماره تلفن صحیح وارد کنید'
-
-        }else {
-
-           document.getElementById('phone_form').submit()
-       }
-    }
-
-    </script>
 <script src="{% static 'js/jquery-2.2.4.min.js' %}"></script>
 <script src="{% static 'js/common_scripts.min.js' %}"></script>
 <script src="{% static 'js/functions.js' %}"></script>
-
-
 
 </body>
 </html>
