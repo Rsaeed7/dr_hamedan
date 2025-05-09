@@ -97,7 +97,7 @@ def book_appointment(request, doctor_id):
         'days': days,
     }
     
-    return render(request, 'reservations/book.html', context)
+    return render(request, 'reservations/appointment_book.html', context)
 
 @login_required
 def confirm_appointment(request, pk):
@@ -206,7 +206,7 @@ def appointment_status(request, pk):
         'doctor': reservation.doctor,
     }
     
-    return render(request, 'reservations/appointment_status.html', context)
+    return render(request, 'reservations/confirm.html', context)
 
 @login_required
 def manage_reservation_days(request):

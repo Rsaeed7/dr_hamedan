@@ -1,0 +1,72 @@
+{% extends  'base/base.html' %}
+{% load static %}
+{% block body %}
+
+    <div class="container margin_60">
+    </div>
+    <div class="container margin_120 box_form shadow-0-m animation">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                {% if reservation.status == 'confirmed' %}
+                    <div id="confirm">
+                        <div class="icon icon--order-success svg add_bottom_15">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="72" height="72">
+                                <g fill="none" stroke="#8EC343" stroke-width="2">
+                                    <circle cx="36" cy="36" r="35"
+                                            style="stroke-dasharray:240px, 240px; stroke-dashoffset: 480px;"></circle>
+                                    <path d="M17.417,37.778l9.93,9.909l25.444-25.393"
+                                          style="stroke-dasharray:50px, 50px; stroke-dashoffset: 0px;"></path>
+                                </g>
+                            </svg>
+                        </div>
+                        <h2>نوبت با موفقیت رزرو شد</h2>
+                        <p class="text-success font-weight-bold">نوبت شما رزرو شده است. لطفاً ۱۵ دقیقه قبل از زمان مقرر
+                            حضور داشته باشید.</p>
+                        <a class="btn btn-light" href="{% url 'doctors:index' %}">صفحه اصلی</a>
+                        <a href="{% url 'doctors:doctor_detail' doctor.id %}" class="btn btn-success">بازگشت به صفحه
+                            پزشک</a>
+                    </div>
+                {% elif reservation.status == 'completed' %}
+                    <div id="confirm">
+                        <h1 class="icon-check-outline text-primary">
+                        </h1>
+                        <h2>نوبت تکمیل شده</h2>
+                        <p class="text-info font-weight-bold">این نوبت به پایان رسیده است. از انتخاب خدمات ما
+                            متشکریم.</p>
+                        <a class="btn btn-light" href="{% url 'doctors:index' %}">صفحه اصلی</a>
+                        <a href="{% url 'doctors:doctor_detail' doctor.id %}" class="btn btn-success">بازگشت به صفحه
+                            پزشک</a>
+                    </div>
+                {% elif reservation.status == 'cancelled' %}
+                    <div id="confirm">
+                        <h1 class="icon-cancel text-danger">
+                        </h1>
+                        <h2> نوبت لغو شده است.</h2>
+                        <p class="text-danger font-weight-bold">این نوبت لغو شده است.
+                            {% if reservation.payment_status == 'refunded' %}
+                                مبلغ پرداختی شما بازگشت داده شده است.
+                            {% endif %}</p>
+                        <a class="btn btn-light" href="{% url 'doctors:index' %}">صفحه اصلی</a>
+                        <a href="{% url 'doctors:doctor_detail' doctor.id %}" class="btn btn-success">بازگشت به صفحه
+                            پزشک</a>
+                    </div>
+                {% else %}
+                    <div id="confirm">
+                        <h1 class="icon-clock text-warning">
+                        </h1>
+                        <h2>در انتظار</h2>
+                        <p class="text-secondary font-weight-bold">                                نوبت شما در انتظار تایید پزشک است.
+                                {% if reservation.payment_status == 'pending' %}
+                                    لطفاً پرداخت را تکمیل کنید.
+                                {% endif %}</p>
+                        <a class="btn btn-light" href="{% url 'doctors:index' %}">صفحه اصلی</a>
+                        <a href="{% url 'doctors:doctor_detail' doctor.id %}" class="btn btn-success">بازگشت به صفحه
+                            پزشک</a>
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+    <hr>
+{% endblock %}
