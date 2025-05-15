@@ -1,0 +1,24 @@
+<div class="list-group">
+    {% for message in messages %}
+    <a href="{% url 'doctors:detail' message.pk %}"
+       class="list-group-item list-group-item-action {% if not message.is_read %}list-group-item-primary{% endif %}">
+        <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">
+                {% if message.is_important %}<i class="fas fa-exclamation-circle text-danger me-2"></i>{% endif %}
+                {{ message.subject }}
+            </h5>
+            <small>{{ message.sent_at|timesince }} پیش</small>
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+            <p class="mb-1">
+                از:
+                <strong>{{ message.sender.user.get_full_name }}</strong>
+                ({{ message.sender.specialization.title }})
+            </p>
+            {% if not message.is_read %}<span class="badge bg-primary">جدید</span>{% endif %}
+        </div>
+    </a>
+    {% empty %}
+    <div class="alert alert-info mb-0">هیچ نامه‌ای یافت نشد.</div>
+    {% endfor %}
+</div>

@@ -9,5 +9,11 @@ urlpatterns = [
     path('dashboard/', views.patient_dashboard, name='patient_dashboard'),
     path('comments/', views.comments_view, name='comments'),
     path('comment/delete/<str:model_type>/<int:id>/', views.comment_delete, name='comments_delete'),
+    path('record/<int:pk>/', views.MedicalRecordDetailView.as_view(), name='record-detail'),
+    path('record/create/<int:patient_id>/', views.CreateMedicalRecordView.as_view(), name='create-record'),
+    path('record/<int:record_id>/add-visit/', views.VisitEntryCreateView.as_view(), name='add-visit'),
+    path('reports/', views.ReportListView.as_view(), name='report_list'),
+    path('report/<int:pk>/', views.ReportDetailView.as_view(), name='report_detail'),
+    path('report/create/<int:patient_id>/', views.CreateReportView.as_view(), name='create_report'),
 
 ]
