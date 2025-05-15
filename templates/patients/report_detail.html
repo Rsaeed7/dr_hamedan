@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    body {
+        {% if custom_css %}
+        {{ custom_css|safe }}
+        {% endif %}
+    }
+
+    .a4-container {
+        width: 21cm;
+        height: 29.7cm;
+        margin: auto;
+        padding: 2cm;
+        background: white;
+        border: 1px solid #ccc;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+
+        opacity: 50%; /* مقدار مناسب برای خوانایی */
+    }
+
+    .header, .footer {
+        text-align: center;
+        font-weight: bold;
+        position: relative;
+        z-index: 1;
+    }
+
+    .content {
+        flex-grow: 1;
+        text-align: justify;
+        position: relative;
+        z-index: 1;
+    }
+
+    .image-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .image-container div {
+        width: 100%;
+        max-width: 15cm;
+    }
+
+    .image-container img {
+        width: 100%;
+        height: auto;
+        border: 1px solid #ccc;
+        padding: 5px;
+    }
+</style>
+
+<div class="a4-container">
+    {% if background_image %}
+        <div class="background" style="background-image: url('{{ background_image }}');"></div>
+    {% endif %}
+
+    <div class="header">
+        <h1>{{ report.title }}</h1>
+    </div>
+
+    <div class="content text-gray-700 space-y-2">
+        <p><strong>نام بیمار:</strong> {{ report.name }}</p>
+        <p><strong>سن بیمار:</strong> {{ report.age }}</p>
+        <p><strong>پزشک:</strong> {{ report.doctor }}</p>
+        <p><strong>پزشک درخواست‌کننده:</strong> {{ report.dr_requesting }}</p>
+        <p><strong>تاریخ:</strong> {{ report.created_at|date:"Y/m/d" }}</p>
+        <div class="prose prose-sm max-w-none text-gray-800">
+            {{ report.content|linebreaks }}
+        </div>
+    </div>
+
+    {% if report.images.all %}
+    <div class="image-container">
+        {% for image in report.images.all %}
+        <div>
+            <img src="{{ image.image.url }}" alt="{{ image.caption }}">
+            <p class="text-sm text-gray-600 text-center">{{ image.caption }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <p class="text-gray-500">تصویری برای این گزارش ثبت نشده است.</p>
+    {% endif %}
+
+    <div class="footer">
+        <a href="?pdf=1" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+            دانلود PDF
+        </a>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import PatientsFile
+from .models import PatientsFile,DrReportSettings
+
+admin.site.register(DrReportSettings)
 
 @admin.register(PatientsFile)
 class PatientsFileAdmin(admin.ModelAdmin):
