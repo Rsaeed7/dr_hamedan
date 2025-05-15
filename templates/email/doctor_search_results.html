@@ -1,0 +1,29 @@
+{% for doctor in results %}
+<div class="doctor-item p-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-0"
+     data-doctor='{
+         "id": "{{ doctor.id }}",
+         "name": "{{ doctor.name }}",
+         "specialization": "{{ doctor.specialization }}",
+         "image": "{% if doctor.image %}{{ doctor.image }}{% endif %}"
+     }'>
+    <div class="flex items-center">
+        {% if doctor.image %}
+        <img class="h-10 w-10 rounded-full mr-3" src="{{ doctor.image }}" alt="">
+        {% else %}
+        <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center mr-3">
+            <span class="text-gray-600">{{ doctor.name|first }}</span>
+        </div>
+        {% endif %}
+        <div>
+            <p class="font-medium">{{ doctor.name }}</p>
+            <p class="text-sm text-gray-600">
+                {{ doctor.specialization }} - {{ doctor.license }}
+            </p>
+        </div>
+    </div>
+</div>
+{% empty %}
+<div class="p-4 text-center text-gray-500">
+    پزشکی با این مشخصات یافت نشد
+</div>
+{% endfor %}

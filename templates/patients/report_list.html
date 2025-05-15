@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-6 text-gray-800">لیست گزارش‌های پزشکی</h1>
+
+<div class="overflow-x-auto">
+    <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
+        <thead class="bg-gray-100 text-gray-700 text-sm">
+            <tr>
+                <th class="py-3 px-4 text-right border-b">عنوان گزارش</th>
+                <th class="py-3 px-4 text-right border-b">بیمار</th>
+                <th class="py-3 px-4 text-right border-b">تاریخ ایجاد</th>
+                <th class="py-3 px-4 text-right border-b">عملیات</th>
+            </tr>
+        </thead>
+        <tbody class="text-sm text-gray-700">
+            {% for report in reports %}
+            <tr class="hover:bg-gray-50">
+                <td class="py-2 px-4 border-b">{{ report.title }}</td>
+                <td class="py-2 px-4 border-b">{{ report.patient.user.get_full_name }}</td>
+                <td class="py-2 px-4 border-b">{{ report.created_at|date:"Y/m/d" }}</td>
+                <td class="py-2 px-4 border-b space-x-2 space-x-reverse">
+                    <a href="{% url 'patients:report_detail' report.pk %}" class="inline-block bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold py-1 px-3 rounded">مشاهده</a>
+                    <a href="{% url 'patients:report_detail' report.pk %}?pdf=1" class="inline-block bg-yellow-400 hover:bg-yellow-500 text-white text-xs font-semibold py-1 px-3 rounded">دانلود PDF</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center py-4 text-gray-500">هیچ گزارشی ثبت نشده است.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- صفحه‌بندی (Tailwind) -->
+{% if is_paginated %}
+<nav class="mt-6 flex justify-center">
+    <ul class="inline-flex items-center gap-1">
+        {% if page_obj.has_previous %}
+        <li>
+            <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-1 border border-gray-300 text-gray-600 rounded hover:bg-gray-100">قبلی</a>
+        </li>
+        {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+        <li>
+            <a href="?page={{ num }}" class="px-3 py-1 border {% if num == page_obj.number %}bg-blue-600 text-white{% else %}border-gray-300 text-gray-600 hover:bg-gray-100{% endif %} rounded">
+                {{ num }}
+            </a>
+        </li>
+        {% endfor %}
+        {% if page_obj.has_next %}
+        <li>
+            <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-1 border border-gray-300 text-gray-600 rounded hover:bg-gray-100">بعدی</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="max-w-5xl mx-auto px-4 py-8">
+        <h1 class="text-2xl font-bold mb-4">پرونده پزشکی - {{ record.patient.name }}</h1>
+
+        <!-- 📋 اطلاعات بیمار و پزشک -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white shadow rounded-2xl p-4 mb-6">
+            <div>
+                <p><strong>بیمار:</strong> {{ record.patient.name }}</p>
+                <p><strong>تاریخ تولد:</strong> {{ record.patient.birthdate|date:"Y/m/d" }}</p>
+                <p><strong>جنسیت:</strong> {{ record.patient.get_gender_display }}</p>
+            </div>
+            <div>
+                <p><strong>پزشک:</strong> {{ record.doctor }}</p>
+                <p><strong>ایجاد پرونده:</strong> {{ record.created_at|date:"Y/m/d" }}</p>
+                <p><strong>آخرین بروزرسانی:</strong> {{ record.updated_at|date:"Y/m/d" }}</p>
+            </div>
+        </div>
+
+        <!-- 🕒 لیست ویزیت‌ها -->
+        <div class="bg-white shadow rounded-2xl p-4 mb-6">
+            <h2 class="text-xl font-semibold mb-3">ویزیت‌های قبلی</h2>
+            {% if visits %}
+                <ul class="space-y-3">
+                    {% for visit in visits %}
+                        <li class="border p-3 rounded-lg bg-gray-50">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <span class="font-medium">{{ visit.visit_date|date:"Y/m/d - H:i" }}</span>
+                                    <span class="text-sm text-gray-600 ms-4">{{ visit.diagnosis|default:"—" }}</span>
+                                </div>
+                                <button type="button" onclick="toggleDetails('visit-{{ visit.id }}')"
+                                        class="text-sm text-blue-600 hover:underline">
+                                    جزئیات
+                                </button>
+                            </div>
+
+                            <div id="visit-{{ visit.id }}" class="mt-3 hidden text-sm text-gray-700 space-y-2">
+                                <p><strong>شرح حال:</strong> {{ visit.chief_complaint|default:"—" }}</p>
+                                <p><strong>تشخیص:</strong> {{ visit.diagnosis|default:"—" }}</p>
+                                <p><strong>یادداشت پزشک:</strong> {{ visit.notes|default:"—" }}</p>
+                                <p><strong>معاینه بالینی:</strong> {{ visit.physical_exam|default:"—" }}</p>
+                                <p><strong>طرح درمان:</strong> {{ visit.treatment_plan|default:"—" }}</p>
+                                <p><strong>داروهای تجویز شده:</strong> {{ visit.prescribed_medications|default:"—" }}</p>
+                            </div>
+                        </li>
+                    {% empty %}
+                        <li class="text-gray-500 text-sm">ویزیتی ثبت نشده است.</li>
+                    {% endfor %}
+                </ul>
+
+
+            {% else %}
+                <p class="text-gray-500">هنوز ویزیتی ثبت نشده است.</p>
+            {% endif %}
+        </div>
+
+        <!-- ➕ فرم ثبت ویزیت جدید -->
+        <div class="bg-white shadow rounded-2xl p-4">
+            <h2 class="text-xl font-semibold mb-3">افزودن ویزیت جدید</h2>
+            <form method="post" action="{% url 'patients:add-visit' record.id %}" enctype="multipart/form-data"
+                  class="space-y-4">
+                {% csrf_token %}
+                {% for field in visit_form %}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ field.label_tag }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <p class="text-red-500 text-sm">{{ field.errors }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <button type="submit"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl shadow">
+                    ثبت ویزیت
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function toggleDetails(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('hidden');
+        }
+    </script>
+
+{% endblock %}

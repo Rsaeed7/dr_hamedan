@@ -23,4 +23,13 @@ urlpatterns = [
     path('update-settings/', views.update_settings, name='update_settings'),
     path('update-payment-settings/', views.update_payment_settings, name='update_payment_settings'),
     path('medexplor/', views.explore, name='medexplor'),
+
+    path('inbox/', views.InboxView.as_view(), name='inbox'),
+    path('doctor-search/', views.doctor_search, name='doctor-search'),
+    path('sent/', views.SentMessagesView.as_view(), name='sent'),
+    path('send/', views.SendMessageView.as_view(), name='send'),
+    path('view/<uuid:pk>/', views.MessageDetailView.as_view(), name='detail'),
+    path('reply/<uuid:pk>/', views.ReplyMessageView.as_view(), name='reply'),
+    path('delete/<uuid:pk>/', views.DeleteMessageView.as_view(), name='delete'),
+    path('important/', views.ImportantMessagesView.as_view(), name='important'),
 ] 

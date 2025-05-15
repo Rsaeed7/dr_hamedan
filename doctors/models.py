@@ -1,13 +1,16 @@
+import random
+import uuid
+
 from django.db import models
 # from django.contrib.auth.models import User
 from django.db.models import Avg, Count
 from user.models import User
 from clinics.models import Clinic
 from datetime import time, datetime, timedelta
-from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db import models
 from django.utils.translation import gettext_lazy as _
-
+from django.utils import timezone
 
 class City(models.Model):
     name = models.CharField(max_length=50, verbose_name=_('نام شهر'))
@@ -30,7 +33,6 @@ class Specialization(models.Model):
 
     def __str__(self):
         return self.name
-    
 
 class Doctor(models.Model):
     GENDER_CHOICES = (('male','مرد'),('female','زن'))
@@ -185,8 +187,6 @@ class Doctor(models.Model):
         
         return sum(res.amount for res in completed_reservations)
 
-
-
 class DrServices(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='service', verbose_name='پزشک')
     service = models.CharField(max_length=50,null=True,blank=True)
@@ -197,7 +197,6 @@ class DrServices(models.Model):
     class Meta:
         verbose_name = 'خدمت'
         verbose_name_plural = 'خدمات'
-
 
 class CommentTips(models.Model):
     tip = models.CharField(max_length=50 , verbose_name='نکته')
@@ -239,9 +238,6 @@ class DrComment(models.Model):
         else:
             return 'تایید شده'
 
-
-
-
 class DoctorAvailability(models.Model):
     DAYS_OF_WEEK = [
         (0, _('شنبه')),
@@ -271,3 +267,74 @@ class DoctorAvailability(models.Model):
     
     def get_day_of_week_display(self):
         return dict(self.DAYS_OF_WEEK).get(self.day_of_week, '')
+
+class Email(models.Model):
+    sender = models.ForeignKey(
+        Doctor,
+        on_delete=models.CASCADE,
+        related_name='sent_messages',
+        verbose_name=_('فرستنده')
+    )
+    recipient = models.ForeignKey(
+        Doctor,
+        on_delete=models.CASCADE,
+        related_name='received_messages',
+        verbose_name=_('گیرنده')
+    )
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    subject = models.CharField(max_length=200, verbose_name=_('موضوع'))
+    body = models.TextField(verbose_name=_('متن نامه'))
+    sent_at = models.DateTimeField(auto_now_add=True, verbose_name=_('زمان ارسال'))
+    read_at = models.DateTimeField(null=True, blank=True, verbose_name=_('زمان خواندن'))
+    is_read = models.BooleanField(default=False, verbose_name=_('خوانده شده'))
+    is_important = models.BooleanField(default=False, verbose_name=_('مهم'))
+    tracking_number = models.CharField(
+        max_length=5,
+        unique=True,
+        editable=False,
+        verbose_name=_('شماره رهگیری')
+    )
+
+
+
+    class Meta:
+        verbose_name = _('نامه')
+        verbose_name_plural = _('نامه‌ها')
+        ordering = ['-sent_at']
+        constraints = [
+            models.CheckConstraint(
+                check=~models.Q(sender=models.F('recipient')),
+                name='prevent_self_message'
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.subject} - {self.sender.user.get_full_name()} به {self.recipient.user.get_full_name()}"
+
+    def mark_as_read(self):
+        if not self.is_read:
+            self.is_read = True
+            self.read_at = timezone.now()
+            self.save()
+
+    def mark_as_unread(self):
+        if self.is_read:
+            self.is_read = False
+            self.read_at = None
+            self.save()
+
+    def toggle_importance(self):
+        self.is_important = not self.is_important
+        self.save()
+
+    def save(self, *args, **kwargs):
+        if not self.tracking_number:
+            while True:
+                code = str(random.randint(10000, 99999))  # عدد ۵ رقمی
+                if not Email.objects.filter(tracking_number=code).exists():
+                    self.tracking_number = code
+                    break
+
+        super().save(*args, **kwargs)
+
+
