@@ -1,13 +1,26 @@
+import tempfile
 import time
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from .models import PatientsFile
+from django.template.loader import render_to_string
+from django.utils.decorators import method_decorator
+from django.views import View
+from weasyprint import HTML
+
 from doctors.models import DrComment as dr_comment
 from medimag.models import Comment as mag_comment
 from docpages.models import Comment as post_comment
 from clinics.models import ClinicComment as clinic_comment
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from datetime import datetime
+from .models import PatientsFile
+from django.views.generic import DetailView, CreateView, ListView
+from django.urls import reverse, reverse_lazy
+from .models import MedicalRecord, VisitEntry,MedicalReport
+from .forms import VisitEntryForm, MedicalRecordForm, ReportForm
+from django.views.generic.edit import CreateView
 
 # Create your views here.
 @login_required()
@@ -34,12 +47,6 @@ def comment_delete(request, model_type, id):
     messages.success(request, 'کامنت با موفقیت حذف شد')
     return redirect('patients:comments')
 
-
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from datetime import datetime
-from .models import PatientsFile
 
 
 @login_required
@@ -149,3 +156,125 @@ def patient_dashboard(request):
     }
     
     return render(request, 'patients/dashboard.html', context)
+
+
+
+
+class MedicalRecordDetailView(DetailView):
+    model = MedicalRecord
+    template_name = 'patients/medical_record_detail.html'
+    context_object_name = 'record'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['visit_form'] = VisitEntryForm()
+        context['visits'] = self.object.visits.all()
+        return context
+
+class CreateMedicalRecordView(CreateView):
+    model = MedicalRecord
+    form_class = MedicalRecordForm
+    template_name = 'patients/record_form.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.patient_id = kwargs.get('patient_id')
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.doctor = self.request.user.doctor
+        form.instance.patient_id = self.patient_id
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('patients:record-detail', args=[self.object.id])
+
+class VisitEntryCreateView(CreateView):
+    model = VisitEntry
+    form_class = VisitEntryForm
+
+    def form_valid(self, form):
+        record = get_object_or_404(MedicalRecord, pk=self.kwargs['record_id'])
+        form.instance.record = record
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('patients:record-detail', kwargs={'pk': self.kwargs['record_id']})
+
+class CreateReportView(CreateView):
+    model = MedicalReport
+    form_class = ReportForm
+    template_name = 'patients/create_report.html'
+    success_url = reverse_lazy('patients:report_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        patient = PatientsFile.objects.get(id=self.kwargs['patient_id'])
+        context['patient'] = patient  # ارسال نام بیمار به تمپلیت
+        return context
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        patient = PatientsFile.objects.get(id=self.kwargs['patient_id'])
+        kwargs['patient_name'] = patient.name  # ارسال نام بیمار
+        kwargs['patient_age'] = patient.age  # ارسال سن بیمار
+        return kwargs
+
+    def form_valid(self, form):
+        form.instance.doctor = self.request.user.doctor
+        form.instance.patient_id = self.kwargs['patient_id']
+        form.instance.name = form.instance.patient.name  # تنظیم نام بیمار از مدل مرتبط
+
+        return super().form_valid(form)
+
+
+class ReportDetailView(DetailView):
+    model = MedicalReport
+    template_name = 'patients/report_detail.html'
+    context_object_name = 'report'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        doctor = self.request.user.doctor
+        template_settings = getattr(doctor, 'template_settings', None)
+        context['background_image'] = template_settings.background_image.url if template_settings and template_settings.background_image else None
+        context['custom_css'] = template_settings.custom_css if template_settings else ''
+        context['saeed'] = 'saeed'
+        return context
+
+    def get(self, request, *args, **kwargs):
+        if 'pdf' in request.GET:
+            report = self.get_object()
+
+            # دریافت تنظیمات قالب پزشک
+            doctor = request.user.doctor
+            template_settings = getattr(doctor, 'template_settings', None)
+            background_image = template_settings.background_image.url if template_settings and template_settings.background_image else None
+            custom_css = template_settings.custom_css if template_settings else ''
+
+            # ارسال مقدار `background_image` و `custom_css` به قالب PDF
+            html_string = render_to_string(
+                'patients/report_pdf.html',
+                {
+                    'report': report,
+                    'request': request,
+                    'background_image': background_image,
+                    'custom_css': custom_css,
+                }
+            )
+            html = HTML(string=html_string, base_url=request.build_absolute_uri('/'))
+            pdf = html.write_pdf()
+            response = HttpResponse(pdf, content_type='application/pdf')
+            response['Content-Disposition'] = f'filename=report_{report.id}.pdf'
+            return response
+
+        return super().get(request, *args, **kwargs)
+
+
+class ReportListView(ListView):
+    model = MedicalReport
+    template_name = 'patients/report_list.html'
+    context_object_name = 'reports'
+    paginate_by = 10  # اختیاری: صفحه‌بندی هر ۱۰ گزارش
+
+    def get_queryset(self):
+        # فیلتر کردن گزارش‌ها بر اساس پزشک لاگین‌شده
+        return MedicalReport.objects.filter(doctor=self.request.user.doctor).order_by('-created_at')

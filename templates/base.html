@@ -10,159 +10,172 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
-    <!-- Header/Navigation -->
-    <header class="bg-gradient-to-r from-blue-600 to-indigo-700 shadow-lg">
-        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <a href="{% url 'doctors:doctor_list' %}" class="flex items-center space-x-2">
-                    <span class="text-2xl font-bold text-white">دکتر </span>
+<!-- Header/Navigation -->
+<header class="bg-gradient-to-r from-blue-600 to-indigo-700 shadow-lg">
+    <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <a href="{% url 'doctors:doctor_list' %}" class="flex items-center space-x-2">
+                <span class="text-2xl font-bold text-white">دکتر </span>
+            </a>
+
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="{% url 'doctors:doctor_list' %}"
+                   class="text-blue-100 hover:text-white transition-colors flex items-center">
+                    <heroicon-outline-user-group class="w-5 h-5 mr-1"/>
+                    پزشکان
                 </a>
-                
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="{% url 'doctors:doctor_list' %}" class="text-blue-100 hover:text-white transition-colors flex items-center">
-                        <heroicon-outline-user-group class="w-5 h-5 mr-1" />
-                        پزشکان
-                    </a>
-                    <a href="{% url 'clinics:clinic_list' %}" class="text-blue-100 hover:text-white transition-colors flex items-center">
-                        <heroicon-outline-building-office-2 class="w-5 h-5 mr-1" />
-                        کلینیک‌ها
-                    </a>
-                    
-                    <div class="relative group">
-                        <button class="flex items-center text-blue-100 hover:text-white transition-colors">
-                            <heroicon-outline-academic-cap class="w-5 h-5 mr-1" />
-                            <span>تخصص‌ها</span>
-                            <heroicon-outline-chevron-down class="w-4 h-4 ml-1" />
-                        </button>
-                        <div class="absolute left-0 mt-2 w-56 origin-top-left bg-white rounded-lg shadow-xl ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                            {% for specialization in specializations %}
-                                <a href="{% url 'doctors:doctor_list' %}?specialty={{ specialization.name }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                    {{ specialization.name }}
-                                </a>
-                            {% empty %}
-                                <div class="px-4 py-2 text-sm text-gray-500">هیچ تخصصی موجود نیست</div>
-                            {% endfor %}
-                        </div>
+                <a href="{% url 'clinics:clinic_list' %}"
+                   class="text-blue-100 hover:text-white transition-colors flex items-center">
+                    <heroicon-outline-building-office-2 class="w-5 h-5 mr-1"/>
+                    کلینیک‌ها
+                </a>
+
+                <div class="relative group">
+                    <button class="flex items-center text-blue-100 hover:text-white transition-colors">
+                        <heroicon-outline-academic-cap class="w-5 h-5 mr-1"/>
+                        <span>تخصص‌ها</span>
+                        <heroicon-outline-chevron-down class="w-4 h-4 ml-1"/>
+                    </button>
+                    <div class="absolute left-0 mt-2 w-56 origin-top-left bg-white rounded-lg shadow-xl ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                        {% for specialization in specializations %}
+                            <a href="{% url 'doctors:doctor_list' %}?specialty={{ specialization.name }}"
+                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                {{ specialization.name }}
+                            </a>
+                        {% empty %}
+                            <div class="px-4 py-2 text-sm text-gray-500">هیچ تخصصی موجود نیست</div>
+                        {% endfor %}
                     </div>
-                    
-                    {% if user.is_authenticated %}
+                </div>
+
+                {% if user.is_authenticated %}
                     <div class="relative group">
                         <button class="flex items-center space-x-2 text-blue-100 hover:text-white transition-colors">
                             <span class="font-medium">{{ user.get_full_name }}</span>
-                            <heroicon-outline-chevron-down class="w-4 h-4" />
+                            <heroicon-outline-chevron-down class="w-4 h-4"/>
                         </button>
                         <div class="absolute right-0 mt-2 w-56 origin-top-right bg-white rounded-lg shadow-xl ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                             {% if user.doctor %}
-                            <a href="{% url 'doctors:doctor_dashboard' %}" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
-                                <heroicon-outline-briefcase class="w-5 h-5 mr-2 text-blue-600" />
-                                داشبورد پزشک
-                            </a>
+                                <a href="{% url 'doctors:doctor_dashboard' %}"
+                                   class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                    <heroicon-outline-briefcase class="w-5 h-5 mr-2 text-blue-600"/>
+                                    داشبورد پزشک
+                                </a>
                             {% endif %}
-                            
+
                             {% if user.administered_clinics.exists %}
-                            <a href="{% url 'clinics:clinic_dashboard' %}" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
-                                <heroicon-outline-building-office class="w-5 h-5 mr-2 text-green-600" />
-                                داشبورد کلینیک
-                            </a>
+                                <a href="{% url 'clinics:clinic_dashboard' %}"
+                                   class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                    <heroicon-outline-building-office class="w-5 h-5 mr-2 text-green-600"/>
+                                    داشبورد کلینیک
+                                </a>
                             {% endif %}
-                            
+
                             <div class="py-1">
-                                <a href="{% url 'patients:patient_dashboard' %}" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
-                                    <heroicon-outline-calendar class="w-5 h-5 mr-2 text-purple-600" />
+                                <a href="{% url 'patients:patient_dashboard' %}"
+                                   class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                    <heroicon-outline-calendar class="w-5 h-5 mr-2 text-purple-600"/>
                                     نوبت‌های من
                                 </a>
-                                <a href="{% url 'patients:patient_profile' %}" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
-                                    <heroicon-outline-user-circle class="w-5 h-5 mr-2 text-indigo-600" />
+                                <a href="{% url 'patients:patient_profile' %}"
+                                   class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                    <heroicon-outline-user-circle class="w-5 h-5 mr-2 text-indigo-600"/>
                                     پروفایل
                                 </a>
-                                <a href="{% url 'wallet:wallet_dashboard' %}" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
-                                    <heroicon-outline-wallet class="w-5 h-5 mr-2 text-yellow-600" />
+                                <a href="{% url 'wallet:wallet_dashboard' %}"
+                                   class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                    <heroicon-outline-wallet class="w-5 h-5 mr-2 text-yellow-600"/>
                                     کیف پول
                                 </a>
                             </div>
-                            
+
                             <div class="py-1">
                                 {% if user.is_staff %}
-                                <a href="{% url 'admin:index' %}" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
-                                    <heroicon-outline-cog-6-tooth class="w-5 h-5 mr-2 text-gray-600" />
-                                    پنل مدیریت
-                                </a>
+                                    <a href="{% url 'admin:index' %}"
+                                       class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                        <heroicon-outline-cog-6-tooth class="w-5 h-5 mr-2 text-gray-600"/>
+                                        پنل مدیریت
+                                    </a>
                                 {% endif %}
-                                <a href="{% url 'account:login' %}" class="flex items-center px-4 py-3 text-sm text-red-600 hover:bg-gray-50">
-                                    <heroicon-outline-arrow-left-on-rectangle class="w-5 h-5 mr-2" />
+                                <a href="{% url 'account:login' %}"
+                                   class="flex items-center px-4 py-3 text-sm text-red-600 hover:bg-gray-50">
+                                    <heroicon-outline-arrow-left-on-rectangle class="w-5 h-5 mr-2"/>
                                     خروج
                                 </a>
                             </div>
                         </div>
                     </div>
-                    {% else %}
-                    <a href="{% url 'account:login' %}" class="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg hover:bg-white/30 transition-colors text-white flex items-center">
-                        <heroicon-outline-arrow-right-on-rectangle class="w-5 h-5 mr-2" />
+                {% else %}
+                    <a href="{% url 'account:login' %}"
+                       class="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg hover:bg-white/30 transition-colors text-white flex items-center">
+                        <heroicon-outline-arrow-right-on-rectangle class="w-5 h-5 mr-2"/>
                         ورود
                     </a>
-                    {% endif %}
-                </div>
+                {% endif %}
             </div>
-        </nav>
-    </header>
 
-    <!-- Messages -->
-    {% if messages %}
+        </div>
+    </nav>
+</header>
+
+<!-- Messages -->
+{% if messages %}
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 mt-4">
         {% for message in messages %}
-        <div class="p-4 rounded-lg mb-4 flex items-center {% if message.tags == 'error' %}bg-red-50 text-red-800{% elif message.tags == 'success' %}bg-green-50 text-green-800{% else %}bg-blue-50 text-blue-800{% endif %}">
-            <heroicon-outline-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% else %}information-circle{% endif %} class="w-6 h-6 mr-3 shrink-0" />
-            <span>{{ message }}</span>
-        </div>
+            <div class="p-4 rounded-lg mb-4 flex items-center {% if message.tags == 'error' %}bg-red-50 text-red-800{% elif message.tags == 'success' %}bg-green-50 text-green-800{% else %}bg-blue-50 text-blue-800{% endif %}">
+                <heroicon-outline-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}
+                    exclamation-circle{% else %}information-circle{% endif %} class="w-6 h-6 mr-3 shrink-0"/>
+                <span>{{ message }}</span>
+            </div>
         {% endfor %}
     </div>
-    {% endif %}
+{% endif %}
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {% block content %}
-        {% endblock %}
-    </main>
+<!-- Main Content -->
+<main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    {% block content %}
+    {% endblock %}
+</main>
 
-    <!-- Footer -->
-    <footer class="border-t border-gray-200 mt-16 bg-white">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">دکتر </h3>
-                    <p class="text-sm text-gray-500">دسترسی به خدمات درمانی را برای همه آسان و راحت می‌کنیم.</p>
-                </div>
-                <div>
-                    <h4 class="text-sm font-semibold text-gray-900 mb-4">خدمات</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">پیدا کردن پزشک</a></li>
-                        <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">رزرو نوبت</a></li>
-                        <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">مشاوره آنلاین</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-sm font-semibold text-gray-900 mb-4">شرکت</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">درباره ما</a></li>
-                        <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">فرصت‌های شغلی</a></li>
-                        <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">بلاگ</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-sm font-semibold text-gray-900 mb-4">قوانین</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">حریم خصوصی</a></li>
-                        <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">شرایط استفاده</a></li>
-                        <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">تماس با ما</a></li>
-                    </ul>
-                </div>
+<!-- Footer -->
+<footer class="border-t border-gray-200 mt-16 bg-white">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">دکتر </h3>
+                <p class="text-sm text-gray-500">دسترسی به خدمات درمانی را برای همه آسان و راحت می‌کنیم.</p>
             </div>
-            <div class="border-t border-gray-100 mt-8 pt-8 text-center md:text-left">
-                <p class="text-sm text-gray-500">&copy; {% now "Y" %} دکتر . تمامی حقوق محفوظ است.</p>
+            <div>
+                <h4 class="text-sm font-semibold text-gray-900 mb-4">خدمات</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">پیدا کردن پزشک</a></li>
+                    <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">رزرو نوبت</a></li>
+                    <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">مشاوره آنلاین</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-sm font-semibold text-gray-900 mb-4">شرکت</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">درباره ما</a></li>
+                    <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">فرصت‌های شغلی</a></li>
+                    <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">بلاگ</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-sm font-semibold text-gray-900 mb-4">قوانین</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">حریم خصوصی</a></li>
+                    <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">شرایط استفاده</a></li>
+                    <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">تماس با ما</a></li>
+                </ul>
             </div>
         </div>
-    </footer>
+        <div class="border-t border-gray-100 mt-8 pt-8 text-center md:text-left">
+            <p class="text-sm text-gray-500">&copy; {% now "Y" %} دکتر . تمامی حقوق محفوظ است.</p>
+        </div>
+    </div>
+</footer>
 
-    {% block extra_js %}{% endblock %}
+{% block extra_js %}{% endblock %}
 </body>
 </html>

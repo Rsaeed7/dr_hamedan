@@ -1,6 +1,9 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.views.decorators.http import require_GET
+
+from patients.models import MedicalRecord
 from .models import Doctor, DoctorAvailability, Specialization, Clinic, City, DrComment, CommentTips
 from reservations.models import Reservation, ReservationDay
 from datetime import datetime, timedelta
@@ -12,8 +15,14 @@ from django.contrib import messages
 from medimag.models import MagArticle
 from docpages.models import Post
 from django.shortcuts import render
-from django.views.generic import ListView
 from django.db.models import Q
+from django.views.generic import ListView, DetailView, CreateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
+from django.urls import reverse_lazy
+from django.shortcuts import get_object_or_404
+from .models import Email,Doctor
+from .forms import EmailForm
 
 
 def index(request):
@@ -388,6 +397,10 @@ def doctor_appointments(request):
 
     # مرتب‌سازی بر اساس تاریخ و زمان
     appointments = appointments.order_by('day__date', 'time')
+    # اضافه کن بعد از مرتب‌سازی
+    for appointment in appointments:
+        record = MedicalRecord.objects.filter(patient=appointment.patient, doctor=doctor).first()
+        appointment.medical_record = record
 
     context = {
         'doctor': doctor,
@@ -711,3 +724,204 @@ def update_payment_settings(request):
             messages.success(request, "تنظیمات پرداخت با موفقیت بروزرسانی شد.")
 
     return redirect('doctors:doctor_earnings')
+
+
+
+class DoctorMessageMixin(LoginRequiredMixin):
+    """میکسین برای اطمینان از اینکه کاربر فعلی یک پزشک است"""
+
+    def dispatch(self, request, *args, **kwargs):
+        if not hasattr(request.user, 'doctor'):
+            messages.error(request, 'شما مجوز دسترسی به این صفحه را ندارید.')
+            return redirect('doctors:dashboard')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['unread_count'] = Email.objects.filter(
+            recipient=self.request.user.doctor,
+            is_read=False
+        ).count()
+        return context
+
+
+class InboxView(DoctorMessageMixin, ListView):
+    model = Email
+    template_name = 'email/inbox.html'
+    context_object_name = 'messages'
+    paginate_by = 100
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_query = self.request.GET.get('search')
+
+
+        if search_query:
+            queryset = queryset.filter(
+                Q(tracking_number__icontains=search_query) |
+                Q(subject__icontains=search_query) |
+                Q(body__icontains=search_query) |
+                Q(sender__user__first_name__icontains=search_query) |
+                Q(sender__user__last_name__icontains=search_query)
+            )
+        return Email.objects.filter(
+            recipient=self.request.user.doctor
+        ).select_related(
+            'sender__user',
+            'sender__specialization'
+        ).order_by('-is_read', '-sent_at')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['search_query'] = self.request.GET.get('search', '')
+        return context
+
+
+@require_GET
+def doctor_search(request):
+    query = request.GET.get('q', '')
+
+    if not query:
+        return JsonResponse({'results': []})
+
+    doctors = Doctor.objects.filter(
+        Q(user__first_name__icontains=query) |
+        Q(user__last_name__icontains=query) |
+        Q(specialization__title__icontains=query)
+    ).select_related('user', 'specialization')[:10]
+
+    results = [
+        {
+            'id': doctor.id,
+            'name': doctor.user.get_full_name(),
+            'specialization': doctor.specialization.title if doctor.specialization else '',
+            'license': doctor.license_number,
+            'image': doctor.profile_image.url if doctor.profile_image else ''
+        }
+        for doctor in doctors
+    ]
+
+    return JsonResponse({'results': results})
+
+
+class SentMessagesView(DoctorMessageMixin, ListView):
+    model = Email
+    template_name = 'email/sent.html'
+    context_object_name = 'messages'
+    paginate_by = 10
+
+    def get_queryset(self):
+        return Email.objects.filter(
+            sender=self.request.user.doctor
+        ).select_related(
+            'recipient__user',
+            'recipient__specialization'
+        ).order_by('-sent_at')
+
+
+class ImportantMessagesView(DoctorMessageMixin, ListView):
+    model = Email
+    template_name = 'email/important.html'
+    context_object_name = 'messages'
+    paginate_by = 10
+
+    def get_queryset(self):
+        return Email.objects.filter(
+            Q(recipient=self.request.user.doctor) & Q(is_important=True)
+        ).select_related(
+            'sender__user',
+            'sender__specialization'
+        ).order_by('-is_read', '-sent_at')
+
+
+class MessageDetailView(DoctorMessageMixin, DetailView):
+    model = Email
+    template_name = 'email/detail.html'
+    context_object_name = 'message'
+
+    def get_queryset(self):
+        return Email.objects.filter(
+            Q(recipient=self.request.user.doctor) | Q(sender=self.request.user.doctor)
+        ).select_related(
+            'sender__user',
+            'sender__specialization',
+            'recipient__user',
+            'recipient__specialization'
+        )
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        message = self.object
+
+        # اگر نامه برای کاربر فعلی است و خوانده نشده، آن را به عنوان خوانده شده علامت بزن
+        if message.recipient == request.user.doctor and not message.is_read:
+            message.is_read = True
+            message.read_at = timezone.now()
+            message.save()
+
+        return response
+
+
+class SendMessageView(DoctorMessageMixin, CreateView):
+    model = Email
+    form_class = EmailForm
+    template_name = 'email/send.html'
+    success_url = reverse_lazy('doctors:inbox')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['current_doctor'] = self.request.user.doctor
+        return kwargs
+
+    def form_valid(self, form):
+        form.instance.sender = self.request.user.doctor
+        response = super().form_valid(form)
+        messages.success(self.request, 'نامه با موفقیت ارسال شد.')
+        return response
+
+
+class ReplyMessageView(DoctorMessageMixin, CreateView):
+    model = Email
+    form_class = EmailForm
+    template_name = 'email/reply.html'
+    success_url = reverse_lazy('doctors:inbox')
+
+    def get_initial(self):
+        original_message = get_object_or_404(Email, pk=self.kwargs['pk'])
+        return {
+            'subject': f"پاسخ: {original_message.subject}",
+            'recipient': original_message.sender,
+        }
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['original_message'] = get_object_or_404(Email, pk=self.kwargs['pk'])
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['current_doctor'] = self.request.user.doctor
+        return kwargs
+
+    def form_valid(self, form):
+        form.instance.sender = self.request.user.doctor
+        form.instance.recipient = get_object_or_404(Email, pk=self.kwargs['pk']).sender  # ✅ این خط مهمه
+        response = super().form_valid(form)
+        messages.success(self.request, 'پاسخ شما با موفقیت ارسال شد.')
+        return response
+
+
+class DeleteMessageView(DoctorMessageMixin, DeleteView):
+    model = Email
+    success_url = reverse_lazy('doctors:inbox')
+    template_name = 'email/email_confirm_delete.html'
+
+    def get_queryset(self):
+        # کاربر فقط می‌تواند نامه‌های دریافتی یا ارسالی خود را حذف کند
+        return Email.objects.filter(
+            Q(recipient=self.request.user.doctor) | Q(sender=self.request.user.doctor)
+        )
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, 'نامه با موفقیت حذف شد.')
+        return super().delete(request, *args, **kwargs)

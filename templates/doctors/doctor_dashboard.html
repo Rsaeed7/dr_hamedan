@@ -143,6 +143,8 @@
             <a href="{% url 'home:doctor_detail' doctor.id %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
                 مشاهده پروفایل عمومی
             </a>
+                        <a href="{% url 'doctors:inbox' %}"  class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">نامه ها</a>
+                        <a href="{% url 'patients:report_list' %}"  class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">ریپورت ها</a>
         </nav>
         
         <div class="mt-auto p-6">
