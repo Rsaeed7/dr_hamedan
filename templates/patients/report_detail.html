@@ -1,113 +1,162 @@
-{% extends 'base.html' %}
-
-{% block content %}
-
-<style>
-    body {
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دکتر همدان  - ریپورت پزشکی</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Heroicons CDN -->
+    <script src="https://unpkg.com/@heroicons/v2.0.18/24/outline/index.js"></script>
+            <style>
+        body {
         {% if custom_css %}
-        {{ custom_css|safe }}
+            {{ custom_css|safe }}
         {% endif %}
-    }
+        }
 
-    .a4-container {
-        width: 21cm;
-        height: 29.7cm;
-        margin: auto;
-        padding: 2cm;
-        background: white;
-        border: 1px solid #ccc;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        position: relative;
-        overflow: hidden;
-    }
+        .a4-container {
+            width: 21cm;
+            height: 29.7cm;
+            margin: auto;
+            padding: 2cm;
+            background: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
 
-    .background {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-size: cover;
-        background-position: center;
+        @media screen and (max-width: 768px) {
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                overflow-x: hidden;
+            }
 
-        opacity: 50%; /* مقدار مناسب برای خوانایی */
-    }
+            .a4-container {
+                transform: scale(0.6); /* صفحه را ۶۰٪ کوچک‌تر می‌کند */
+                transform-origin: top center; /* حفظ موقعیت اصلی */
+                width: 21cm; /* اندازه اصلی را حفظ می‌کند */
+                height: 29.7cm;
+            }
+        }
 
-    .header, .footer {
-        text-align: center;
-        font-weight: bold;
-        position: relative;
-        z-index: 1;
-    }
 
-    .content {
-        flex-grow: 1;
-        text-align: justify;
-        position: relative;
-        z-index: 1;
-    }
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
 
-    .image-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        justify-content: center;
-    }
+            opacity: 0.9; /* مقدار مناسب برای خوانایی */
+        }
 
-    .image-container div {
-        width: 100%;
-        max-width: 15cm;
-    }
+        .relative {
+            position: relative;
+        }
 
-    .image-container img {
-        width: 100%;
-        height: auto;
-        border: 1px solid #ccc;
-        padding: 5px;
-    }
-</style>
+        .header, .footer {
+            text-align: center;
+            font-weight: bold;
+            position: relative;
+            z-index: 1;
+        }
 
-<div class="a4-container">
-    {% if background_image %}
-        <div class="background" style="background-image: url('{{ background_image }}');"></div>
-    {% endif %}
+        .content {
+            flex-grow: 1;
+            text-align: justify;
+            position: relative;
+            z-index: 1;
+        }
 
-    <div class="header">
-        <h1>{{ report.title }}</h1>
-    </div>
+        .image-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            position: relative;
+        }
 
-    <div class="content text-gray-700 space-y-2">
-        <p><strong>نام بیمار:</strong> {{ report.name }}</p>
-        <p><strong>سن بیمار:</strong> {{ report.age }}</p>
-        <p><strong>پزشک:</strong> {{ report.doctor }}</p>
-        <p><strong>پزشک درخواست‌کننده:</strong> {{ report.dr_requesting }}</p>
-        <p><strong>تاریخ:</strong> {{ report.created_at|date:"Y/m/d" }}</p>
-        <div class="prose prose-sm max-w-none text-gray-800">
-            {{ report.content|linebreaks }}
+        .image-container div {
+            width: 100%;
+            max-width: 15cm;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: auto;
+            border: 1px solid #ccc;
+            padding: 5px;
+        }
+
+        .single-line-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            position: relative;
+        }
+
+        .single-line-table td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            white-space: nowrap; /* جلوگیری از رفتن به خط بعدی */
+        }
+
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
+
+<main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+
+    <div class="a4-container ">
+        {% if background_image %}
+            <div class="background" style="background-image: url('{{ background_image }}');"></div>
+        {% endif %}
+
+
+
+        <table class="single-line-table " style="margin-top: 100px">
+            <tr>
+                <td><strong>نام بیمار:</strong> {{ report.name }}</td>
+                <td><strong>پزشک معالج:</strong> {{ report.dr_requesting }}</td>
+                <td><strong>تاریخ پذیرش:</strong> {{ report.created_at|date:"Y/m/d" }}</td>
+                <td><strong>سن بیمار:</strong> {{ report.age }}</td>
+            </tr>
+        </table>
+
+        <div class="header">
+            <h1>نوع بررسی : {{ report.title }} </h1>
+        </div>
+
+        <div class="prose prose-sm max-w-none text-gray-800 relative"> {{ report.content|linebreaks }} </div>
+        {% if report.images.all %}
+            <div class="image-container">
+                {% for image in report.images.all %}
+                    <div>
+                        <img src="{{ image.image.url }}" alt="{{ image.caption }}">
+                        <p class="text-sm text-gray-600 text-center">{{ image.caption }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-500">تصویری برای این گزارش ثبت نشده است.</p>
+        {% endif %}
+
+        <div class="footer">
+            <a href="?pdf=1"
+               class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+                دانلود PDF
+            </a>
         </div>
     </div>
-
-    {% if report.images.all %}
-    <div class="image-container">
-        {% for image in report.images.all %}
-        <div>
-            <img src="{{ image.image.url }}" alt="{{ image.caption }}">
-            <p class="text-sm text-gray-600 text-center">{{ image.caption }}</p>
-        </div>
-        {% endfor %}
-    </div>
-    {% else %}
-        <p class="text-gray-500">تصویری برای این گزارش ثبت نشده است.</p>
-    {% endif %}
-
-    <div class="footer">
-        <a href="?pdf=1" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
-            دانلود PDF
-        </a>
-    </div>
-</div>
-
-{% endblock %}
+</main>
+</body>
+</html>

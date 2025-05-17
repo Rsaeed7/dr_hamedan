@@ -905,7 +905,7 @@ class ReplyMessageView(DoctorMessageMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.sender = self.request.user.doctor
-        form.instance.recipient = get_object_or_404(Email, pk=self.kwargs['pk']).sender  # ✅ این خط مهمه
+        form.instance.recipient = get_object_or_404(Email, pk=self.kwargs['pk']).sender
         response = super().form_valid(form)
         messages.success(self.request, 'پاسخ شما با موفقیت ارسال شد.')
         return response

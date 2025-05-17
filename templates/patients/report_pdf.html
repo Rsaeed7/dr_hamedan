@@ -14,6 +14,7 @@
             direction: rtl;
             margin: 0;
             padding: 0;
+            background-color: white;
         }
 
         .a4-container {
@@ -21,6 +22,8 @@
             height: 297mm;
             position: relative;
             overflow: hidden;
+            padding: 2cm;
+            box-sizing: border-box;
         }
 
         .background {
@@ -31,52 +34,52 @@
             height: 100%;
             background-size: cover;
             background-position: center;
-            opacity: 50%; /* مقدار مناسب برای خوانایی متن */
-            z-index: 0;
-            background-repeat: no-repeat; /* اضافه کنید */
+            background-repeat: no-repeat;
+            opacity: 0.4; /* مقدار مناسب برای خوانایی متن */
+            z-index: -1;
         }
 
-        .content {
-            position: relative;
-            z-index: 1;
-            padding: 2cm;
-            height: 100%;
-            box-sizing: border-box;
-        }
-
-        h1 {
+        .header {
             text-align: center;
+            font-weight: bold;
             margin-bottom: 1cm;
         }
 
-        .field {
-            margin-bottom: 10px;
+        .single-line-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .single-line-table td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            white-space: nowrap;
             font-size: 14px;
         }
 
         .report-text {
-            margin-top: 20px;
             text-align: justify;
             line-height: 1.8;
             font-size: 14px;
+            margin-top: 20px;
         }
 
         .images {
-            margin-top: 20px;
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
+            margin-top: 20px;
         }
 
         .image-container {
-            width: 48%;
+            width: 100%;
             page-break-inside: avoid;
         }
 
         .image-container img {
             width: 100%;
             height: auto;
-            display: block;
             border: 1px solid #ccc;
         }
 
@@ -90,32 +93,38 @@
 <body>
     <div class="a4-container">
         {% if background_image %}
-            <div class="background" style="background-image: url('{{ background_image }}')"></div>
+            <div class="background" style="background-image: url('{{ background_image }}');"></div>
         {% endif %}
-        <div class="content">
+
+
+
+        <table class="single-line-table" style="margin-top: 100px">
+            <tr>
+                <td><strong>نام بیمار:</strong> {{ report.name }}</td>
+                <td><strong>پزشک معالج:</strong> {{ report.dr_requesting }}</td>
+                <td><strong>تاریخ پذیرش:</strong> {{ report.created_at|date:"Y/m/d" }}</td>
+                <td><strong>سن بیمار:</strong> {{ report.age }}</td>
+            </tr>
+        </table>
+
+            <div class="header">
             <h1>{{ report.title }}</h1>
-
-            <div class="field"><strong>نام بیمار:</strong> {{ report.name }} {{ saeed }}</div>
-            <div class="field"><strong>سن بیمار:</strong> {{ report.age }}</div>
-            <div class="field"><strong>پزشک معالج:</strong> {{ report.doctor }}</div>
-            <div class="field"><strong>پزشک درخواست‌کننده:</strong> {{ report.dr_requesting }}</div>
-            <div class="field"><strong>تاریخ:</strong> {{ report.created_at|date:"Y/m/d" }}</div>
-
-            <div class="report-text">
-                {{ report.content|linebreaks }}
-            </div>
-
-            {% if report.images.all %}
-            <div class="images">
-                {% for image in report.images.all %}
-                <div class="image-container">
-                    <img src="{{ image.image.url }}" alt="{{ image.caption }}">
-                    <div class="image-caption">{{ image.caption }}</div>
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
         </div>
+
+        <div class="report-text">
+            {{ report.content|linebreaks }}
+        </div>
+
+        {% if report.images.all %}
+        <div class="images">
+            {% for image in report.images.all %}
+            <div class="image-container">
+                <img src="{{ image.image.url }}" alt="{{ image.caption }}">
+                <div class="image-caption">{{ image.caption }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
     </div>
 </body>
 </html>

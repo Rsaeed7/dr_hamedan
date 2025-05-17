@@ -1,12 +1,8 @@
-import tempfile
-import time
+
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
-from django.utils.decorators import method_decorator
-from django.views import View
 from weasyprint import HTML
-
 from doctors.models import DrComment as dr_comment
 from medimag.models import Comment as mag_comment
 from docpages.models import Comment as post_comment
@@ -18,8 +14,8 @@ from datetime import datetime
 from .models import PatientsFile
 from django.views.generic import DetailView, CreateView, ListView
 from django.urls import reverse, reverse_lazy
-from .models import MedicalRecord, VisitEntry,MedicalReport
-from .forms import VisitEntryForm, MedicalRecordForm, ReportForm
+from .models import MedicalRecord, VisitEntry,MedicalReport,DrReportSettings
+from .forms import VisitEntryForm, MedicalRecordForm, ReportForm,DrReportSettingsForm,EditReportForm
 from django.views.generic.edit import CreateView
 
 # Create your views here.
@@ -273,8 +269,59 @@ class ReportListView(ListView):
     model = MedicalReport
     template_name = 'patients/report_list.html'
     context_object_name = 'reports'
-    paginate_by = 10  # اختیاری: صفحه‌بندی هر ۱۰ گزارش
+    paginate_by = 10
 
     def get_queryset(self):
-        # فیلتر کردن گزارش‌ها بر اساس پزشک لاگین‌شده
-        return MedicalReport.objects.filter(doctor=self.request.user.doctor).order_by('-created_at')
+        query_name = self.request.GET.get('name', '')
+        query_title = self.request.GET.get('title', '')
+        query_dr_requesting = self.request.GET.get('dr_requesting', '')
+
+
+        queryset = MedicalReport.objects.filter(doctor=self.request.user.doctor)
+
+        if query_name:
+            queryset = queryset.filter(name__icontains=query_name)
+        if query_title:
+            queryset = queryset.filter(title__icontains=query_title)
+        if query_dr_requesting:
+            queryset = queryset.filter(dr_requesting__icontains=query_dr_requesting)
+
+        return queryset.order_by('-created_at')
+
+
+@login_required
+def edit_report(request, report_pk):
+    report = get_object_or_404(MedicalReport, pk=report_pk)
+
+    # فقط پزشک معالج بتواند ویرایش کند
+    if request.user.doctor != report.doctor:
+        return redirect('patients:report_list')
+
+    if request.method == "POST":
+        form = EditReportForm(request.POST, instance=report)
+        if form.is_valid():
+            form.save()
+            return redirect('patients:report_detail', report_pk)  # استفاده از `report_pk`
+    else:
+        form = EditReportForm(instance=report)
+
+    return render(request, 'patients/edit_report.html', {'form': form, 'report': report})
+
+
+
+
+@login_required
+def edit_report_settings(request):
+    doctor = request.user.doctor
+    settings, created = DrReportSettings.objects.get_or_create(doctor=doctor)
+
+    if request.method == 'POST':
+        form = DrReportSettingsForm(request.POST, request.FILES, instance=settings)
+        if form.is_valid():
+            form.save()
+            return redirect('patients:report_settings')
+
+    else:
+        form = DrReportSettingsForm(instance=settings)
+
+    return render(request, 'patients/report_settings.html', {'form': form})
