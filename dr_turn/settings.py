@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     # Local apps
     'user.apps.UserConfig',
     'doctors',
-    'accounts',
     'reservations',
     'clinics',
     'patients',

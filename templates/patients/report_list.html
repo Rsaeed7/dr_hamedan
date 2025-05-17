@@ -1,10 +1,18 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <form method="GET" class="mb-4 flex items-center gap-2">
+    <input type="text" name="name" placeholder="نام بیمار" value="{{ request.GET.name }}" class="px-3 py-2 border rounded">
+    <input type="text" name="title" placeholder="عنوان گزارش" value="{{ request.GET.title }}" class="px-3 py-2 border rounded">
+    <input type="text" name="dr_requesting" placeholder="پزشک درخواست‌کننده" value="{{ request.GET.dr_requesting }}" class="px-3 py-2 border rounded">
+    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">جستجو</button>
+</form>
+
 <h1 class="text-2xl font-bold mb-6 text-gray-800">لیست گزارش‌های پزشکی</h1>
 
 <div class="overflow-x-auto">
-    <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
+    <a href="{% url 'patients:report_settings' %}" class="inline-block bg-yellow-500 hover:bg-blue-600 text-white text-xs font-semibold py-1 px-3 rounded">تنظمیات قالب ریپورت</a>
+    <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm " style="margin-top: 10px">
         <thead class="bg-gray-100 text-gray-700 text-sm">
             <tr>
                 <th class="py-3 px-4 text-right border-b">عنوان گزارش</th>
@@ -22,6 +30,7 @@
                 <td class="py-2 px-4 border-b space-x-2 space-x-reverse">
                     <a href="{% url 'patients:report_detail' report.pk %}" class="inline-block bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold py-1 px-3 rounded">مشاهده</a>
                     <a href="{% url 'patients:report_detail' report.pk %}?pdf=1" class="inline-block bg-yellow-400 hover:bg-yellow-500 text-white text-xs font-semibold py-1 px-3 rounded">دانلود PDF</a>
+                    <a href="{% url 'patients:edit_report' report.pk %}" class="inline-block bg-red-300 hover:bg-red-500 text-white text-xs font-semibold py-1 px-3 rounded">ویرایش گزارش</a>
                 </td>
             </tr>
             {% empty %}

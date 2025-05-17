@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <h1 class="text-2xl font-bold mb-4">ویرایش گزارش پزشکی</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="space-y-4">
+            {{ form.as_p }}
+            {{ form.images }}
+        </div>
+
+        <button type="submit" class="mt-4 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+            ذخیره تغییرات
+        </button>
+
+        <a href="{% url 'patients:report_detail' report.id %}" class="mt-4 bg-yellow-500 text-white py-2 px-4 rounded hover:bg-blue-700">
+            لغو و بازگشت
+        </a>
+    </form>
+</div>
+{% endblock %}

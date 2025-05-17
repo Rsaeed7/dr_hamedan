@@ -14,6 +14,8 @@ urlpatterns = [
     path('record/<int:record_id>/add-visit/', views.VisitEntryCreateView.as_view(), name='add-visit'),
     path('reports/', views.ReportListView.as_view(), name='report_list'),
     path('report/<int:pk>/', views.ReportDetailView.as_view(), name='report_detail'),
+    path('report/edit/<int:report_pk>/', views.edit_report, name='edit_report'),
     path('report/create/<int:patient_id>/', views.CreateReportView.as_view(), name='create_report'),
+    path('report/settings', views.edit_report_settings, name='report_settings'),
 
 ]
