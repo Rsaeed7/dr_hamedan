@@ -1,5 +1,5 @@
 from django import forms
-from .models import VisitEntry,MedicalRecord, MedicalReport, ReportImage
+from .models import VisitEntry,MedicalRecord, MedicalReport, ReportImage,DrReportSettings
 
 class VisitEntryForm(forms.ModelForm):
     class Meta:
@@ -28,7 +28,7 @@ class VisitEntryForm(forms.ModelForm):
 class MedicalRecordForm(forms.ModelForm):
     class Meta:
         model = MedicalRecord
-        exclude = ['doctor', 'patient']  # چون از view ست می‌کنیم
+        exclude = ['doctor', 'patient']
         widgets = {
             'symptoms': forms.Textarea(attrs={'rows': 3, 'class': 'w-full rounded border'}),
             'diagnosis': forms.Textarea(attrs={'rows': 3, 'class': 'w-full rounded border'}),
@@ -44,7 +44,7 @@ class MedicalRecordForm(forms.ModelForm):
 
 
 class MultipleFileInput(forms.ClearableFileInput):
-    allow_multiple_selected = True  # اجازه انتخاب چند فایل
+    allow_multiple_selected = True
 
 class MultipleFileField(forms.FileField):
     def __init__(self, *args, **kwargs):
@@ -54,7 +54,13 @@ class MultipleFileField(forms.FileField):
     def clean(self, data, initial=None):
         if not data and initial:
             return initial
+
+
+        if not isinstance(data, (list, tuple)):
+            data = [data]
+
         return [super().clean(d, initial) for d in data]
+
 
 class ReportForm(forms.ModelForm):
     name = forms.CharField(
@@ -71,7 +77,7 @@ class ReportForm(forms.ModelForm):
     )
     images = MultipleFileField(label="تصاویر گزارش", required=False)
     dr_requesting = forms.CharField(label="پزشک درخواست کننده", required=False,
-                                    widget=forms.TextInput(attrs={'class': 'px-4 py-2 border border-gray-300 rounded-md', 'placeholder': 'نام پزشک درخواست کننده'})
+                                    widget=forms.TextInput(attrs={'class': 'px-4 py-2 border border-gray-300 rounded-md', 'placeholder': 'پزشک معالج'})
                                     )
     age = forms.IntegerField(
         label="سن بیمار",
@@ -104,3 +110,33 @@ class ReportForm(forms.ModelForm):
                     caption=f"تصویر گزارش {report.title}"
                 )
         return report
+
+
+
+class EditReportForm(forms.ModelForm):
+    class Meta:
+        model = MedicalReport
+        fields = ['title', 'name', 'age', 'dr_requesting', 'content']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'px-4 py-2 border border-gray-300 rounded-md'}),
+            'name': forms.TextInput(attrs={'class': 'px-4 py-2 border border-gray-300 rounded-md'}),
+            'age': forms.NumberInput(attrs={'class': 'px-4 py-2 border border-gray-300 rounded-md'}),
+            'dr_requesting': forms.TextInput(attrs={'class': 'px-4 py-2 border border-gray-300 rounded-md'}),
+            'content': forms.Textarea(attrs={'class': 'px-4 py-2 border border-gray-300 rounded-md', 'rows': 4}),
+        }
+        labels = {
+            'title': 'نوع بررسی',
+            'name': 'نام بیمار',
+            'age': 'سن بیمار',
+            'dr_requesting': 'پزشک معالج',
+            'content': 'توضیحات گزارش',
+        }
+
+
+class DrReportSettingsForm(forms.ModelForm):
+    class Meta:
+        model = DrReportSettings
+        fields = ['background_image',]
+        labels = {
+            'custom_css': 'استایل سفارشی',
+        }
