@@ -1,0 +1,93 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block body %}
+            <section class="box_general col-12 text-center my-4">
+            <p class="mb-3 fw-bold">مراحل درخواست خدمات پزشکی و پرستاری در محل</p>
+
+            <!-- نسخه دسکتاپ -->
+            <div class="d-none d-lg-flex justify-content-center align-items-center flex-wrap gap-2">
+                <span class="btn btn-sm btn-light">انتخاب نوع خدمت</span>
+                <i class="icon-left-1 p-t-2"></i>
+                <span class="btn btn-sm btn-light {% if request.resolver_match.url_name == 'request_service' %}active{% endif %}">ثبت درخواست</span>
+                <i class="icon-left-1 p-t-2"></i>
+                <span class="btn btn-sm btn-light">تماس جهت هماهنگی</span>
+                <i class="icon-left-1 p-t-2"></i>
+                <span class="btn btn-sm btn-light">انجام خدمت</span>
+            </div>
+
+            <!-- نسخه موبایل -->
+            <div class="d-flex d-lg-none flex-column align-items-center gap-2">
+                <span class="btn btn-sm btn-light w-100">انتخاب شهر و نوع خدمت</span>
+                <i class="icon-down-1"></i>
+                <span class="btn btn-sm btn-light w-100 {% if request.resolver_match.url_name == 'request_service' %}active{% endif %}">ثبت درخواست</span>
+                <i class="icon-down-1"></i>
+                <span class="btn btn-sm btn-light w-100">ثبت درخواست</span>
+                <i class="icon-down-1"></i>
+                <span class="btn btn-sm btn-light w-100">تماس جهت هماهنگی</span>
+                <i class="icon-down-1"></i>
+                <span class="btn btn-sm btn-light w-100">انجام خدمت</span>
+            </div>
+        </section>
+<section class="container mt-4 m-b-10 box_general">
+  <h3 class="mb-4">درخواست خدمت: {{ service.name }}</h3>
+  <p class="text-muted">هزینه حدودی: {{ service.estimated_price|floatformat:0 }} تومان</p>
+
+  <form method="post" enctype="multipart/form-data" class="mt-4">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <div class="mb-3">
+      <label for="{{ form.first_name.id_for_label }}">{{ form.first_name.label }}</label>
+      {{ form.first_name }}
+      {{ form.first_name.errors }}
+    </div>
+
+    <div class="mb-3">
+      <label for="{{ form.last_name.id_for_label }}">{{ form.last_name.label }}</label>
+      {{ form.last_name }}
+      {{ form.last_name.errors }}
+    </div>
+
+    <div class="mb-3">
+      <label for="{{ form.city.id_for_label }}">{{ form.city.label }}</label>
+      {{ form.city }}
+      {{ form.city.errors }}
+    </div>
+
+    <div class="mb-3">
+      <label for="{{ form.requested_date.id_for_label }}">{{ form.requested_date.label }}</label>
+      {{ form.requested_date }}
+      {{ form.requested_date.errors }}
+    </div>
+
+    <div class="mb-3">
+      <label for="{{ form.requested_time.id_for_label }}">{{ form.requested_time.label }}</label>
+      {{ form.requested_time }}
+      {{ form.requested_time.errors }}
+    </div>
+
+    <div class="mb-3">
+      <label for="{{ form.address.id_for_label }}">{{ form.address.label }}</label>
+      {{ form.address }}
+      {{ form.address.errors }}
+    </div>
+
+    <div class="mb-3">
+      <label for="{{ form.extra_notes.id_for_label }}">{{ form.extra_notes.label }}</label>
+      {{ form.extra_notes }}
+      {{ form.extra_notes.errors }}
+    </div>
+
+    {% if requires_prescription %}
+      <div class="mb-3">
+        <label for="{{ form.prescription_file.id_for_label }}">{{ form.prescription_file.label }}</label>
+        {{ form.prescription_file }}
+        {{ form.prescription_file.errors }}
+      </div>
+    {% endif %}
+
+    <button type="submit" class="btn btn-primary">ثبت درخواست</button>
+  </form>
+</section>
+{% endblock %}

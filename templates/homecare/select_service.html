@@ -1,0 +1,137 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block body %}
+
+    <section class=" col-12 text-center my-4 box_general">
+        <p class="mb-3 fw-bold">مراحل درخواست خدمات پزشکی و پرستاری در محل</p>
+
+        <!-- نسخه دسکتاپ -->
+        <div class="d-none d-lg-flex justify-content-center align-items-center flex-wrap gap-2">
+            <span class="btn btn-sm btn-light {% if request.resolver_match.url_name == 'select_service' %}active{% endif %}">انتخاب نوع خدمت</span>
+            <i class="icon-left-1 p-t-5"></i>
+            <span class="btn btn-sm btn-light">ثبت درخواست</span>
+            <i class="icon-left-1 p-t-5"></i>
+            <span class="btn btn-sm btn-light">تماس جهت هماهنگی</span>
+            <i class="icon-left-1 p-t-5"></i>
+            <span class="btn btn-sm btn-light">انجام خدمت</span>
+        </div>
+
+        <!-- نسخه موبایل -->
+        <div class="d-flex d-lg-none flex-column align-items-center gap-2">
+            <span class="btn btn-sm btn-light active w-100 {% if request.resolver_match.url_name == 'select_service' %}active{% endif %}">انتخاب نوع خدمت</span>
+            <i class="icon-down-1"></i>
+            <span class="btn btn-sm btn-light w-100">ثبت درخواست</span>
+            <i class="icon-down-1"></i>
+            <span class="btn btn-sm btn-light w-100">تماس جهت هماهنگی</span>
+            <i class="icon-down-1"></i>
+            <span class="btn btn-sm btn-light w-100">انجام خدمت</span>
+        </div>
+    </section>
+
+
+    <div class="container mt-4 box_general">
+        <h3 class="mb-4">انتخاب خدمت در محل</h3>
+
+        <!-- فیلتر شهر -->
+        <form method="get" class="mb-4 row align-items-end">
+            <div class="col-12 mb-3">
+                <label for="city" class="form-label">شهر محل سکونت خود را انتخاب کنید</label>
+                <select id="city" name="city" class="form-select form-control" onchange="this.form.submit()">
+                    <option value="">همه شهرها</option>
+                    {% for city in cities %}
+                        <option value="{{ city.id }}"
+                                {% if selected_city and city.id == selected_city.id %}selected{% endif %}>{{ city.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+
+        <!-- نمایش دسته‌بندی‌ها -->
+        <section class="col-12 mb-5">
+            <div class="list_home">
+                <p class="mb-3 fw-bold">چه نوع خدماتی نیاز دارید؟</p>
+                <ul class="row list-unstyled g-3">
+                    {% for category in categories %}
+                        <li class="col-md-3 col-sm-6 col-12 m-b-5 ">
+                            <a href="?category={{ category.id }}{% if selected_city %}&city={{ selected_city.id }}{% endif %}"
+                               class="d-flex flex-column align-items-center text-center border rounded-10 p-3 bg-white h-100 shadow-sm hover-shadow">
+                                <img src="{{ category.icon.url }}" width="60" height="60" class="mb-2"
+                                     alt="{{ category.name }} icon">
+                                <span class="fw-semibold text-dark">{{ category.name }}</span>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </section>
+
+
+        <!-- نمایش خدمات -->
+        {% if selected_category %}
+            <h5 class="mb-3">انتخاب خدمات مرتبط با"{{ selected_category.name }}"</h5>
+
+            {% if services %}
+                <div class="row g-3">
+                    {% for service in services %}
+                        <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch m-b-5">
+                            <a href="{% url 'homecare:request_service' service.id %}"
+                               class="text-decoration-none w-100">
+                                <div class="card shadow-sm rounded-10">
+                                    <div class="card-body d-flex flex-column">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <img src="{{ service.icon.url }}" width="40" height="40">
+                                            <h6 class="card-title mb-0 p-r-10">{{ service.name }}</h6>
+                                            <span class="fs-9 ">هزینه حدودی از {{ service.estimated_price|floatformat:0 }} تومان</span>
+                                        </div>
+                                        <p class="card-text text-muted small mt-auto">{{ service.description|truncatechars:60 }}</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-warning mt-3">
+                    متأسفانه هنوز خدماتی در این دسته و شهر موجود نیست.
+                </div>
+            {% endif %}
+        {% endif %}
+
+    </div>
+
+
+        <section class="container text-center my-4 box_general bg-light-blue">
+            <p class="mb-3 fw-bold">با ثبت درخواست برای ویزیت پزشکی یا اقدامات پرستاری در محل شما در سریع ترین زمان ممکن همکاران ما در دکتر همدان با شم تماس گرفته و هماهنگی لازم را برای انجام خدمات در محل مورد نظر شما به انجام میرسانند</p>
+
+        </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const citySelect = document.getElementById('city');
+
+            // وقتی شهر انتخاب شد، اسکرول کن به بخش دسته‌بندی‌ها
+            citySelect.addEventListener('change', function () {
+                // صبر کن تا صفحه با انتخاب شهر دوباره بارگذاری بشه
+                setTimeout(() => {
+                    const categorySection = document.querySelector('.list_home');
+                    if (categorySection) {
+                        categorySection.scrollIntoView({behavior: 'smooth', block: 'start'});
+                    }
+                }, 500);
+            });
+
+            // اگر کاربر قبلاً دسته‌بندی انتخاب کرده
+            {% if selected_category %}
+                // اسکرول به بخش خدمات بعد از لود
+                setTimeout(() => {
+                    const servicesSection = document.querySelector('.row.g-3');
+                    if (servicesSection) {
+                        servicesSection.scrollIntoView({behavior: 'smooth', block: 'start'});
+                    }
+                }, 500);
+            {% endif %}
+        });
+    </script>
+
+{% endblock %}

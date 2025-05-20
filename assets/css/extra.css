@@ -211,6 +211,11 @@ a.dr_box i {
 .bg-light-yellow{
     background-color: #f8ffc7 !important;
 }
+
+.bg-light-blue2{
+    background-color: rgba(187, 231, 243, 0.73) !important;
+}
+
 .bg-light-red{
     background-color: rgba(253, 154, 154, 0.8) !important;
 }

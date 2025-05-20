@@ -35,6 +35,7 @@ urlpatterns = [
     # path('accounts/', include('accounts.urls')),
     # path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/',include('user.urls')),
+    path('homecare/', include('homecare.urls')),
 ]
 
 if settings.DEBUG:
