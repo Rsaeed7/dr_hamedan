@@ -93,7 +93,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def name(self):
-        return self.get_full_name()
+        return f"{self.phone} - {self.get_full_name()}"
 
 
 class Otp(models.Model):

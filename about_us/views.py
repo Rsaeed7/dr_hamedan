@@ -11,6 +11,9 @@ def page_not_found(request):
 def about_us(request):
     return render(request, 'about_us/about_us.html')
 
+def for_doctors(request):
+    return render(request, 'about_us/for_doctors.html')
+
 
 
 def contact_us(request):

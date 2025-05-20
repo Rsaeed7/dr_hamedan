@@ -1,4 +1,4 @@
-
+from homecare.models import HomeCareRequest
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
@@ -73,7 +73,7 @@ def patient_profile(request):
             user.save()
 
             # 2. Update PatientFile model
-            patient.name = f"{user.first_name} {user.last_name}".strip()
+            # patient.name = f"{user.first_name} {user.last_name}".strip()
             patient.phone = user.phone
             patient.email = user.email
             patient.national_id = request.POST.get('national_id', patient.national_id)
@@ -133,26 +133,47 @@ def patient_appointments(request):
     }
     return render(request, 'patients/appointment.html', context)
 
+
+
 @login_required
 def patient_dashboard(request):
-    """Patient's dashboard with upcoming appointments and quick links"""
-    # Get the patient file for this user
+    """Patient's dashboard with upcoming appointments and homecare requests"""
+
     try:
         patient = PatientsFile.objects.get(user=request.user)
     except PatientsFile.DoesNotExist:
         messages.error(request, "Please complete your profile first.")
         return redirect('patients:patient_profile')
-    
-    # Get upcoming appointments
+
     upcoming_appointments = patient.get_upcoming_appointments()[:3]
-    
+
+    homecare_requests = HomeCareRequest.objects.filter(patient=patient).order_by('-created_at')[:4]
+
     context = {
         'patient': patient,
         'upcoming_appointments': upcoming_appointments,
+        'homecare_requests': homecare_requests,
     }
-    
+
     return render(request, 'patients/dashboard.html', context)
 
+@login_required
+def homecare_request_list(request):
+    """Patient's  homecare requests"""
+
+    try:
+        patient = PatientsFile.objects.get(user=request.user)
+    except PatientsFile.DoesNotExist:
+        return redirect('patients:patient_profile')
+
+
+    homecare_requests = HomeCareRequest.objects.filter(patient=patient).order_by('-created_at')
+
+    context = {
+        'homecare_requests': homecare_requests,
+    }
+
+    return render(request, 'patients/homecare_request_list.html', context)
 
 
 
