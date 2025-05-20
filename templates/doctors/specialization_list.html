@@ -30,12 +30,15 @@
 
 
             <div class="main_title m-t-20">
-                <h4>لیست تمام خدمات</h4>
+                <h4>لیست تمام خدمات پزشکی و پرستاری در محل شما</h4>
             </div>
             <section class="col-xl-12 col-lg-12 col-md-12">
                 <div class="list_home">
                     <ul>
-                        <li><a href="#">به زودی </a></li>
+                        {% for service in services %}
+                        <li><a href="{% url 'homecare:request_service' service.id %}"><img src="{{ service.icon.url }}" width="15" height="15">
+                            {{ service.name }}</a></li>
+                        {% endfor %}
                     </ul>
                 </div>
             </section>

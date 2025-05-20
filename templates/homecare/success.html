@@ -17,7 +17,7 @@
 
         <!-- نسخه موبایل -->
         <div class="d-flex d-lg-none flex-column align-items-center gap-2">
-            <span class="btn btn-sm btn-light active w-100">انتخاب نوع خدمت</span>
+            <span class="btn btn-sm btn-light w-100">انتخاب نوع خدمت</span>
             <i class="icon-down-1"></i>
             <span class="btn btn-sm btn-light w-100">ثبت درخواست</span>
             <i class="icon-down-1"></i>
@@ -27,8 +27,9 @@
         </div>
     </section>
 <div class="container mt-5 text-center">
-  <h2>درخواست شما با موفقیت ثبت شد</h2>
-  <p>متشکریم که از خدمات ما استفاده می‌کنید.</p>
-  <a href="{% url 'homecare:select_service' %}" class="btn btn-primary mt-3">بازگشت به انتخاب خدمات</a>
+    <i class="icon-ok-circled-1 fs-50 text-success"></i>
+  <h2 class="text-success">درخواست شما با موفقیت ثبت شد</h2>
+    <p>همکاران ما به زودی با شما تماس خواهند گرفت</p>
+  <a href="{% url 'homecare:select_service' %}" class="btn btn-success mt-3 m-b-20">بازگشت به انتخاب خدمات</a>
 </div>
 {% endblock %}

@@ -24,8 +24,7 @@ class PatientsFile(models.Model):
         verbose_name = 'پرونده بیمار'
         verbose_name_plural = 'پرونده‌های بیماران'
     
-    def __str__(self):
-        return f"{self.name} - {self.phone}"
+
     
     def get_reservations(self):
         """Get all reservations for this patient"""
@@ -64,8 +63,13 @@ class PatientsFile(models.Model):
         )
         return age  # مقدار نهایی سن بیمار
 
+    @property
     def name(self):
         return self.user.name
+
+
+    def __str__(self):
+        return f"{self.user}"
 
 
 
