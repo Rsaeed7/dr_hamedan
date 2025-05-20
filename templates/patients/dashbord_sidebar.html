@@ -5,7 +5,8 @@
         >
             <li class="list-group-item rounded-0">
                 <img src="{% static 'img/user.png' %}" width="50">
-                <span class="p-r-10"> {% if user.name %}{{ user.get_full_name }} <br> <small>{{ user.phone }}</small>{% else %}{{ user.phone }}{% endif %} </span>
+                <span class="p-r-10"> {% if user.name %}{{ user.get_full_name }} <br>
+                    <small>{{ user.phone }}</small>{% else %}{{ user.phone }}{% endif %} </span>
 
             </li>
             <li class="list-group-item {% if request.resolver_match.url_name == 'patient_dashboard' %} item-active {% endif %}">
@@ -26,6 +27,10 @@
             </li>
             <li class="list-group-item {% if request.resolver_match.url_name == 'comments' %}item-active{% endif %}">
                 <i class="icon-comment-empty m-l-5"></i><a href="{% url 'patients:comments' %}">نظرات من</a>
+            </li>
+            <li class="list-group-item {% if request.resolver_match.url_name == 'homecare_request_list' %}item-active{% endif %}">
+                <i class="icon-stethoscope m-l-5"></i><a href="{% url 'patients:homecare_request_list' %}">خدمات پزشکی
+                و پرستاری در محل</a>
             </li>
             <li class="list-group-item">
                 <i class="icon-logout-1 m-l-5"></i><a href="{% url 'account:logout' %}">خروج</a>

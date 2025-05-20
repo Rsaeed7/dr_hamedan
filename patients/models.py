@@ -9,7 +9,7 @@ from user.models import User
 class PatientsFile(models.Model):
     GENDER_CHOICES = (('male', 'مرد'), ('female', 'زن'))
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, verbose_name='کاربر', related_name='patient')
-    name = models.CharField(max_length=255, verbose_name='نام')
+    # name = models.CharField(max_length=255, verbose_name='نام')
     phone = models.CharField(max_length=20, verbose_name='شماره تلفن')
     email = models.EmailField(verbose_name='ایمیل', null=True, blank=True, unique=True)
     national_id = models.CharField(max_length=20, blank=True, null=True, verbose_name='کد ملی')
@@ -25,7 +25,7 @@ class PatientsFile(models.Model):
         verbose_name_plural = 'پرونده‌های بیماران'
     
     def __str__(self):
-        return self.name
+        return f"{self.name} - {self.phone}"
     
     def get_reservations(self):
         """Get all reservations for this patient"""
@@ -63,6 +63,9 @@ class PatientsFile(models.Model):
                 (today.month, today.day) < (self.birthdate.month, self.birthdate.day)
         )
         return age  # مقدار نهایی سن بیمار
+
+    def name(self):
+        return self.user.name
 
 
 

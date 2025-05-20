@@ -148,6 +148,12 @@
                                     <i class="icon-user-2 fs-15"></i>{{ user.phone }}
                                 </div>
                                 <div class="dropdown-content">
+                                    {% if request.user.is_staff or request.user.is_superuser %}
+                                        <a href="{% url 'homecare:admin_requests_list' %}"
+                                           class="icon-ambulance">
+                                            مدیریت خدمات در منزل
+                                        </a>
+                                    {% endif %}
                                     {% if user.doctor %}
                                         <a class="icon-medkit" href="{% url 'doctors:doctor_dashboard' %}">داشبورد
                                             پزشک </a>
@@ -212,12 +218,13 @@
                                 {% endfor %}
                             </ul>
                         </li>
-                        <li>
-                            <a href="{% url 'doctors:doctor_list' %}">مشاوره آنلاین</a>
 
-                        </li>
                         <li><a href="{% url 'mag:list' %}">مجله پزشکی</a></li>
                         <li><a href="{% url 'clinics:clinic_list' %}">مراکز درمانی</a></li>
+                                            <li>
+                            <a href="{% url 'homecare:select_service' %}">خدمات پزشکی در محل</a>
+
+                        </li>
                         <li><a href="{% url 'doctors:medexplor' %}" class="text_dr_2">لنزپزشکی</a></li>
                     </ul>
                 </div>

@@ -71,7 +71,15 @@
                                 </a>
                             {% endif %}
 
+
                             <div class="py-1">
+                                {% if request.user.is_staff or request.user.is_superuser %}
+                                                  <a href="{% url 'homecare:admin_requests_list' %}"
+                                   class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                    <heroicon-outline-calendar class="w-5 h-5 mr-2 text-purple-600"/>
+                                   مدیریت خدمات در منزل
+                                </a>
+                                    {% endif %}
                                 <a href="{% url 'patients:patient_dashboard' %}"
                                    class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
                                     <heroicon-outline-calendar class="w-5 h-5 mr-2 text-purple-600"/>
