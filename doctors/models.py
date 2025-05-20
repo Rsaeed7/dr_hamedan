@@ -21,6 +21,17 @@ class City(models.Model):
         verbose_name = _('شهر')
         verbose_name_plural = _('شهرها')
 
+class Supplementary_insurance(models.Model):
+    name = models.CharField(max_length=50, verbose_name=_('نام بیمه تکمیلی'))
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = _('بیمه تکمیلی')
+        verbose_name_plural = _('بیمه های تکمیلی')
+
+
 class Specialization(models.Model):
     name = models.CharField(max_length=100, verbose_name=_('نام تخصص'))
     description = models.TextField(blank=True, verbose_name=_('توضیحات'))
@@ -49,6 +60,7 @@ class Doctor(models.Model):
     clinic = models.ForeignKey(Clinic, on_delete=models.SET_NULL, null=True, blank=True, related_name='doctors', verbose_name=_('کلینیک'))
     address = models.TextField(blank=True, null=True, verbose_name=_('آدرس'))
     phone = models.CharField(max_length=20, verbose_name=_('شماره تماس'))
+    Insurance = models.ManyToManyField(Supplementary_insurance, verbose_name=_('بیمه های تکمیلی طرف قرارداد') , blank=True ,null=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('تاریخ ایجاد'))
     updated_at = models.DateTimeField(auto_now=True, verbose_name=_('تاریخ بروزرسانی'))
     gender = models.CharField(choices=GENDER_CHOICES, max_length=10, verbose_name=_('جنسیت'), null=True, blank=True)
