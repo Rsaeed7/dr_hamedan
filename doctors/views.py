@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 
 from patients.models import MedicalRecord
-from .models import Doctor, DoctorAvailability, Specialization, Clinic, City, DrComment, CommentTips
+from .models import Doctor, DoctorAvailability, Specialization, Clinic, City, DrComment, CommentTips ,Email,Supplementary_insurance
 from reservations.models import Reservation, ReservationDay
 from datetime import datetime, timedelta
 from django.db.models import  Sum, Avg
@@ -21,8 +21,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404
-from .models import Email,Doctor
 from .forms import EmailForm
+from homecare.models import Service
 
 
 def index(request):
@@ -40,7 +40,8 @@ def index(request):
 
 
 def specializations(request):
-    return render(request, 'doctors/specialization_list.html')
+    services = Service.objects.all()
+    return render(request, 'doctors/specialization_list.html' , {'services': services})
 
 
 def explore(request):
@@ -71,7 +72,7 @@ class DoctorListView(ListView):
             )
 
             # فیلتر تخصص - فقط اگر مقدار انتخاب شده باشد
-        if params['specialty'] and params['specialty'][0]:  # تغییر اینجا
+        if params['specialty'] and params['specialty'][0]:
             queryset = queryset.filter(specialization__name__in=params['specialty'])
 
             # فیلتر جنسیت
@@ -79,15 +80,18 @@ class DoctorListView(ListView):
             queryset = queryset.filter(gender=params['gender'])
 
             # فیلتر شهر - فقط اگر مقدار انتخاب شده باشد
-        if params['city'] and params['city'][0]:  # تغییر اینجا
+        if params['city'] and params['city'][0]:
             queryset = queryset.filter(city__name__in=params['city'])
+
+        if params['supplementary'] and params['supplementary'][0]:
+                queryset = queryset.filter(Insurance__name__in=params['supplementary'])
 
             # فیلتر کلینیک
         if params['clinic']:
             queryset = queryset.filter(clinic__name__icontains=params['clinic'])
 
             # فیلتر روزهای کاری - فقط اگر مقدار انتخاب شده باشد
-        if params['days'] and params['days'][0]:  # تغییر اینجا
+        if params['days'] and params['days'][0]:
             day_mapping = {
                 'شنبه': 0, 'یکشنبه': 1, 'دوشنبه': 2,
                 'سه‌شنبه': 3, 'چهارشنبه': 4, 'پنج‌شنبه': 5
@@ -125,6 +129,7 @@ class DoctorListView(ListView):
             'days': self.request.GET.getlist('days'),
             'city': self.request.GET.getlist('city'),
             'clinic': self.request.GET.get('clinic', ''),
+            'supplementary': self.request.GET.getlist('supplementary')
         }
 
     def get_context_data(self, **kwargs):
@@ -134,6 +139,8 @@ class DoctorListView(ListView):
         context.update({
             'clinics': Clinic.objects.all(),
             'specializations': Specialization.objects.all().order_by('name'),
+            'Insurance': Supplementary_insurance.objects.all().order_by('name'),
+            'supplementary_list': params['supplementary'],
             'current_filters': params,
             'day_list': ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنج‌شنبه'],
             'specialty': params['specialty'],

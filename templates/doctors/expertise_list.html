@@ -34,149 +34,169 @@
             <aside class="col-xl-3 col-lg-3" id="sidebar">
                 <div class="box_general_3 booking">
                     <h6 class="text_dr_3"><i class="icon-filter-1"></i>فیلترها</h6>
-                    <form method="get" action="{% url 'doctors:doctor_list' %}" id="filter-form" class="auto-submit-form">
-    <!-- تخصص (چند انتخابی) -->
-    <div class="filter-section">
-        <button class="btn-filter" type="button" onclick="toggleDropdown('specialty', this)">
-            تخصص <span class="arrow"><i class="icon-angle-down"></i></span>
-        </button>
-        <ul id="specialty" class="filter-dropdown">
-            {% for special in specializations %}
-                <li>
-                    <input name="specialty" type="checkbox" class="custom-checkbox auto-submit"
-                           value="{{ special.name }}"
-                           {% if special.name in specialty %}checked{% endif %}>
-                    <label>{{ special.name }}</label>
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
+                    <form method="get" action="{% url 'doctors:doctor_list' %}" id="filter-form"
+                          class="auto-submit-form">
+                        <!-- تخصص (چند انتخابی) -->
+                        <div class="filter-section">
+                            <button class="btn-filter" type="button" onclick="toggleDropdown('specialty', this)">
+                                تخصص <span class="arrow"><i class="icon-angle-down"></i></span>
+                            </button>
+                            <ul id="specialty" class="filter-dropdown">
+                                {% for special in specializations %}
+                                    <li>
+                                        <input name="specialty" type="checkbox" class="custom-checkbox auto-submit"
+                                               value="{{ special.name }}"
+                                               {% if special.name in specialty %}checked{% endif %}>
+                                        <label>{{ special.name }}</label>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
 
-    <!-- جنسیت (تک انتخابی) -->
-    <div class="filter-section">
-        <button class="btn-filter" type="button" onclick="toggleDropdown('gender', this)">
-            جنسیت <span class="arrow"><i class="icon-angle-down"></i></span>
-        </button>
-        <ul id="gender" class="filter-dropdown">
-            <li>
-                <input type="radio" name="gender" class="custom-radio auto-submit" value="male"
-                       {% if request.GET.gender == 'male' %}checked{% endif %}>
-                <label>مرد</label>
-            </li>
-            <li>
-                <input type="radio" name="gender" class="custom-radio auto-submit" value="female"
-                       {% if request.GET.gender == 'female' %}checked{% endif %}>
-                <label>زن</label>
-            </li>
-        </ul>
-    </div>
+                        <!-- جنسیت (تک انتخابی) -->
+                        <div class="filter-section">
+                            <button class="btn-filter" type="button" onclick="toggleDropdown('gender', this)">
+                                جنسیت <span class="arrow"><i class="icon-angle-down"></i></span>
+                            </button>
+                            <ul id="gender" class="filter-dropdown">
+                                <li>
+                                    <input type="radio" name="gender" class="custom-radio auto-submit" value="male"
+                                           {% if request.GET.gender == 'male' %}checked{% endif %}>
+                                    <label>مرد</label>
+                                </li>
+                                <li>
+                                    <input type="radio" name="gender" class="custom-radio auto-submit" value="female"
+                                           {% if request.GET.gender == 'female' %}checked{% endif %}>
+                                    <label>زن</label>
+                                </li>
+                            </ul>
+                        </div>
 
-    <!-- مرتب‌سازی (تک انتخابی) -->
-    <div class="filter-section">
-        <button class="btn-filter" type="button" onclick="toggleDropdown('sort', this)">
-            مرتب‌سازی <span class="arrow"><i class="icon-angle-down"></i></span>
-        </button>
-        <ul id="sort" class="filter-dropdown">
-            <li>
-                <input type="radio" name="sort" class="custom-radio auto-submit" value="پر بازدیدترین"
-                       {% if request.GET.sort == 'پر بازدیدترین' %}checked{% endif %}>
-                <label>پر بازدیدترین</label>
-            </li>
-            <li>
-                <input type="radio" name="sort" class="custom-radio auto-submit" value="بالاترین امتیاز"
-                       {% if request.GET.sort == 'بالاترین امتیاز' %}checked{% endif %}>
-                <label>بالاترین امتیاز</label>
-            </li>
-            <li>
-                <input type="radio" name="sort" class="custom-radio auto-submit" value="نزدیک‌ترین نوبت خالی"
-                       {% if request.GET.sort == 'نزدیک‌ترین نوبت خالی' %}checked{% endif %}>
-                <label>نزدیک‌ترین نوبت خالی</label>
-            </li>
-        </ul>
-    </div>
+                        <!-- مرتب‌سازی (تک انتخابی) -->
+                        <div class="filter-section">
+                            <button class="btn-filter" type="button" onclick="toggleDropdown('sort', this)">
+                                مرتب‌سازی <span class="arrow"><i class="icon-angle-down"></i></span>
+                            </button>
+                            <ul id="sort" class="filter-dropdown">
+                                <li>
+                                    <input type="radio" name="sort" class="custom-radio auto-submit"
+                                           value="پر بازدیدترین"
+                                           {% if request.GET.sort == 'پر بازدیدترین' %}checked{% endif %}>
+                                    <label>پر بازدیدترین</label>
+                                </li>
+                                <li>
+                                    <input type="radio" name="sort" class="custom-radio auto-submit"
+                                           value="بالاترین امتیاز"
+                                           {% if request.GET.sort == 'بالاترین امتیاز' %}checked{% endif %}>
+                                    <label>بالاترین امتیاز</label>
+                                </li>
+                                <li>
+                                    <input type="radio" name="sort" class="custom-radio auto-submit"
+                                           value="نزدیک‌ترین نوبت خالی"
+                                           {% if request.GET.sort == 'نزدیک‌ترین نوبت خالی' %}checked{% endif %}>
+                                    <label>نزدیک‌ترین نوبت خالی</label>
+                                </li>
+                            </ul>
+                        </div>
 
-    <!-- روزهای کاری (چند انتخابی) -->
-    <div class="filter-section">
-        <button class="btn-filter" type="button" onclick="toggleDropdown('days', this)">
-            روزهای کاری <span class="arrow"><i class="icon-angle-down"></i></span>
-        </button>
-        <ul id="days" class="filter-dropdown">
-            {% for day in day_list %}
-                <li>
-                    <input type="checkbox" name="days" class="custom-checkbox auto-submit" value="{{ day }}"
-                           {% if day in days %}checked{% endif %}>
-                    <label>{{ day }}</label>
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
+                        <!-- روزهای کاری (چند انتخابی) -->
+                        <div class="filter-section">
+                            <button class="btn-filter" type="button" onclick="toggleDropdown('days', this)">
+                                روزهای کاری <span class="arrow"><i class="icon-angle-down"></i></span>
+                            </button>
+                            <ul id="days" class="filter-dropdown">
+                                {% for day in day_list %}
+                                    <li>
+                                        <input type="checkbox" name="days" class="custom-checkbox auto-submit"
+                                               value="{{ day }}"
+                                               {% if day in days %}checked{% endif %}>
+                                        <label>{{ day }}</label>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
 
-    <!-- شهر (چند انتخابی) -->
-    <div class="filter-section">
-        <button class="btn-filter" type="button" onclick="toggleDropdown('city', this)">
-            شهر <span class="arrow"><i class="icon-angle-down"></i></span>
-        </button>
-        <ul id="city" class="filter-dropdown">
-            {% for city in cities %}
-                <li>
-                    <input type="checkbox" name="city" class="custom-checkbox auto-submit"
-                           value="{{ city.name }}"
-                           {% if city.name in city_list %}checked{% endif %}>
-                    <label>{{ city.name }}</label>
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
+                        <!-- شهر (چند انتخابی) -->
+                        <div class="filter-section">
+                            <button class="btn-filter" type="button" onclick="toggleDropdown('city', this)">
+                                شهر <span class="arrow"><i class="icon-angle-down"></i></span>
+                            </button>
+                            <ul id="city" class="filter-dropdown">
+                                {% for city in cities %}
+                                    <li>
+                                        <input type="checkbox" name="city" class="custom-checkbox auto-submit"
+                                               value="{{ city.name }}"
+                                               {% if city.name in city_list %}checked{% endif %}>
+                                        <label>{{ city.name }}</label>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="filter-section">
+                            <button class="btn-filter" type="button" onclick="toggleDropdown('supplementary', this)">
+                                بیمه تکمیلی <span class="arrow"><i class="icon-angle-down"></i></span>
+                            </button>
+                            <ul id="supplementary" class="filter-dropdown">
+                                {% for supplementary in Insurance %}
+                                    <li>
+                                        <input type="checkbox" name="supplementary" class="custom-checkbox auto-submit"
+                                               value="{{ supplementary.name }}"
+                                           {% if supplementary.name in supplementary_list %}checked{% endif %} >
+                                        <label>{{ supplementary.name }}</label>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
 
-    <div class="filter-actions">
-        <a href="{% url 'doctors:doctor_list' %}" class="btn-reset btn" type="button">
-            حذف همه فیلترها <i class="icon-cancel-1"></i>
-        </a>
-    </div>
-</form>
+                        <div class="filter-actions">
+                            <a href="{% url 'doctors:doctor_list' %}" class="btn-reset btn" type="button">
+                                حذف همه فیلترها <i class="icon-cancel-1"></i>
+                            </a>
+                        </div>
+                    </form>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // اعمال خودکار فرم با تغییر هر فیلتر
-    const autoSubmitElements = document.querySelectorAll('.auto-submit');
-    
-    autoSubmitElements.forEach(element => {
-        element.addEventListener('change', function() {
-            // برای checkbox‌ها و radioها
-            if (this.type === 'checkbox' || this.type === 'radio') {
-                // اعمال فرم پس از یک تاخیر کوتاه
-                setTimeout(() => {
-                    document.getElementById('filter-form').submit();
-                }, 300);
-            }
-        });
-    });
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            // اعمال خودکار فرم با تغییر هر فیلتر
+                            const autoSubmitElements = document.querySelectorAll('.auto-submit');
 
-    // بهبود عملکرد dropdownها
-    function toggleDropdown(id, button) {
-        const dropdown = document.getElementById(id);
-        dropdown.classList.toggle('show');
-        
-        // بستن dropdownهای دیگر
-        document.querySelectorAll('.filter-dropdown').forEach(item => {
-            if (item.id !== id && item.classList.contains('show')) {
-                item.classList.remove('show');
-            }
-        });
-    }
+                            autoSubmitElements.forEach(element => {
+                                element.addEventListener('change', function () {
+                                    // برای checkbox‌ها و radioها
+                                    if (this.type === 'checkbox' || this.type === 'radio') {
+                                        // اعمال فرم پس از یک تاخیر کوتاه
+                                        setTimeout(() => {
+                                            document.getElementById('filter-form').submit();
+                                        }, 300);
+                                    }
+                                });
+                            });
 
-    // بستن dropdownها با کلیک خارج از آنها
-    window.addEventListener('click', function(event) {
-        if (!event.target.matches('.btn-filter')) {
-            document.querySelectorAll('.filter-dropdown').forEach(dropdown => {
-                if (dropdown.classList.contains('show')) {
-                    dropdown.classList.remove('show');
-                }
-            });
-        }
-    });
-});
-</script>
+                            // بهبود عملکرد dropdownها
+                            function toggleDropdown(id, button) {
+                                const dropdown = document.getElementById(id);
+                                dropdown.classList.toggle('show');
+
+                                // بستن dropdownهای دیگر
+                                document.querySelectorAll('.filter-dropdown').forEach(item => {
+                                    if (item.id !== id && item.classList.contains('show')) {
+                                        item.classList.remove('show');
+                                    }
+                                });
+                            }
+
+                            // بستن dropdownها با کلیک خارج از آنها
+                            window.addEventListener('click', function (event) {
+                                if (!event.target.matches('.btn-filter')) {
+                                    document.querySelectorAll('.filter-dropdown').forEach(dropdown => {
+                                        if (dropdown.classList.contains('show')) {
+                                            dropdown.classList.remove('show');
+                                        }
+                                    });
+                                }
+                            });
+                        });
+                    </script>
 
 
                 </div>

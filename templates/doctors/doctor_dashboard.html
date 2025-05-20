@@ -108,7 +108,9 @@
 <div class="flex flex-col md:flex-row rtl">
     <!-- Sidebar -->
     <div class="w-full md:w-64 bg-white shadow-md sidebar">
+        <a href="{% url 'doctors:doctor_profile' %}">
         <div class="p-6 border-b border-gray-200">
+
             <div class="flex items-center">
                 {% if doctor.profile_image %}
                     <img src="{{ doctor.profile_image.url }}" alt="{{ doctor }}" class="w-10 h-10 rounded-full object-cover ml-3">
@@ -123,6 +125,7 @@
                 </div>
             </div>
         </div>
+        </a>
         
         <nav class="mt-4">
             <a href="{% url 'doctors:doctor_dashboard' %}" class="block px-6 py-3 text-blue-600 border-r-4 border-blue-600 bg-blue-50 font-medium">

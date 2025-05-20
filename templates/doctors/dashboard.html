@@ -97,6 +97,7 @@
     <!-- Sidebar -->
     <div class="w-full md:w-64 bg-white shadow-md sidebar">
         <div class="p-6 border-b border-gray-200">
+        <a href="{% url 'doctors:doctor_profile' %}">
             <div class="flex items-center">
                 {% if doctor.profile_image %}
                     <img src="{{ doctor.profile_image.url }}" alt="{{ doctor }}" class="w-10 h-10 rounded-full object-cover ml-3">
@@ -110,6 +111,7 @@
                     <p class="text-sm text-gray-600">{{ doctor.specialization }}</p>
                 </div>
             </div>
+        </a>
         </div>
         
         <nav class="mt-4">
