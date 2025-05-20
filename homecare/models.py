@@ -49,7 +49,7 @@ class HomeCareRequest(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="وضعیت درخواست")
 
     def __str__(self):
-        return f"{self.patient} - {self.service} - {self.requested_date}"
+        return f"{self.patient.user.name} - {self.service} - {self.requested_date}"
 
     class Meta:
         verbose_name = "درخواست خدمات در محل"

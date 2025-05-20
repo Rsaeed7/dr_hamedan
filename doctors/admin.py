@@ -1,8 +1,9 @@
 from django.contrib import admin
-from .models import Doctor, DoctorAvailability, Specialization,City,DrServices,DrComment,CommentTips,Email
+from .models import Doctor, DoctorAvailability, Specialization,City,DrServices,DrComment,CommentTips,Email,Supplementary_insurance
 
 admin.site.register(Email)
 admin.site.register(City)
+admin.site.register(Supplementary_insurance)
 
 admin.site.register(DrComment)
 admin.site.register(CommentTips)
