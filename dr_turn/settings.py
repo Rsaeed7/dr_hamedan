@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'docpages',
     'medimag.apps.MedimagConfig',
     'about_us.apps.AboutUsConfig',
+    'homecare.apps.HomecareConfig',
 ]
 
 # Authentication settings

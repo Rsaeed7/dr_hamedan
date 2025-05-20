@@ -1,0 +1,77 @@
+{% extends  'base/base.html' %}
+{% load static %}
+{% block body %}
+
+    <div class="filters_listing d-lg-none">
+        <div class="container">
+            <a href="{% url 'patients:patient_dashboard' %}" class="text-dr"><i class="icon-right-open"></i>داشبورد</a>
+        </div>
+    </div>
+    <section class="bg-light">
+        <div class="container margin_120_95">
+            <div class="row">
+                {% include  'patients/dashbord_sidebar.html' %}
+                <div class="col-12 col-lg-8 box_general">
+                    <h5 class="m-b-5">درخواست های خدمات پزشکی و پرستاری در محل</h5>
+                    {% if homecare_requests %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped mt-2">
+                                <thead class="table-light">
+                                <tr>
+                                    <th>نوع خدمت</th>
+                                    <th>تاریخ</th>
+                                    <th>ساعت</th>
+                                    <th>وضعیت</th>
+                                    <th>جزئیات</th>
+                                    <th>لغو</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for request in homecare_requests %}
+                                    <tr>
+                                        <td>{{ request.service.name }}</td>
+                                        <td>{{ request.requested_date|date:"Y/m/d" }}</td>
+                                        <td>{{ request.requested_time|time:"H:i" }}</td>
+                                        <td class="font-weight-bold
+                    {% if request.status == 'confirmed' %}text-success icon-ok
+                    {% elif request.status == 'rejected' %}text-danger icon-cancel
+                    {% elif request.status == 'pending' %}text-warning icon-spin5
+                    {% elif request.status == 'contacted' %}text-primary icon-chat-3
+                    {% elif request.status == 'cancelled_by_patient' %}text-danger icon-cancel-circle
+                    {% endif %}">
+                                            {{ request.get_status_display }}
+                                        </td>
+                                        <td>
+                                            {% if request.prescription_file %}
+                                                <a href="{{ request.prescription_file.url }}" target="_blank">نسخه</a>
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if request.status == 'pending' or request.status == 'contacted' %}
+                                                <a href="{% url 'homecare:cancel_homecare' request.id %}"
+                                                   class="btn btn-danger rounded-10 fs-10 p-1 "
+                                                   onclick="return confirm('آیا مطمئن هستید؟');"> لغو درخواست</a>
+                                            {% elif request.status == 'cancelled_by_patient' %}
+                                                <span class="text-muted">لغو شده</span>
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                    {% else %}
+                        <p>تاکنون درخواستی ثبت نکرده اید!</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+{% endblock %}

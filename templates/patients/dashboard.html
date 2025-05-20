@@ -7,36 +7,43 @@
                 <aside class="col-lg-4">
                     <div class="box_general_5 border-0 booking">
 
-                       <ul class="list-group"
-        >
-            <li class="list-group-item rounded-0">
-                <img src="{% static 'img/user.png' %}" width="50">
-                <span class="p-r-10"> {% if user.name %}{{ user.get_full_name }} <br> <small>{{ user.phone }}</small>{% else %}{{ user.phone }}{% endif %} </span>
+                        <ul class="list-group"
+                        >
+                            <li class="list-group-item rounded-0">
+                                <img src="{% static 'img/user.png' %}" width="50">
+                                <span class="p-r-10"> {% if user.name %}{{ user.get_full_name }} <br>
+                                    <small>{{ user.phone }}</small>{% else %}{{ user.phone }}{% endif %} </span>
 
-            </li>
-            <li class="list-group-item {% if request.resolver_match.url_name == 'patient_dashboard' %} item-active {% endif %}">
-                <i class="icon-menu-3 m-l-5 "></i><a href="{% url 'patients:patient_dashboard' %}">داشبورد</a>
-            </li>
-            <li class="list-group-item {% if request.resolver_match.url_name == 'patient_profile' %} item-active {% endif %}">
-                <i class="icon-user-7 m-l-5"></i><a href="{% url 'patients:patient_profile' %}">اطلاعات
-                کاربری</a>
-            </li>
-            <li class="list-group-item {% if request.resolver_match.url_name == 'patient_appointments' %}item-active{% endif %}">
-                <i class="icon-calendar-7 m-l-5 "></i><a
-                    href="{% url 'patients:patient_appointments' %}">نوبت های من</a>
-            </li>
-            <li class="list-group-item {% if request.resolver_match.app_name == 'wallet' %} item-active {% endif %}">
-                <i class="icon-wallet m-l-5"></i><a href="{% url 'wallet:wallet_dashboard' %}">کیف پول
-                <span
-                        class="m-r-70"> {{ balance|floatformat:2 }} تومان  </span></a>
-            </li>
-            <li class="list-group-item {% if request.resolver_match.url_name == 'comments' %}item-active{% endif %}">
-                <i class="icon-comment-empty m-l-5"></i><a href="{% url 'patients:comments' %}">نظرات من</a>
-            </li>
-            <li class="list-group-item">
-                <i class="icon-logout-1 m-l-5"></i><a href="{% url 'account:logout' %}">خروج</a>
-            </li>
-        </ul>
+                            </li>
+                            <li class="list-group-item {% if request.resolver_match.url_name == 'patient_dashboard' %} item-active {% endif %}">
+                                <i class="icon-menu-3 m-l-5 "></i><a href="{% url 'patients:patient_dashboard' %}">داشبورد</a>
+                            </li>
+                            <li class="list-group-item {% if request.resolver_match.url_name == 'patient_profile' %} item-active {% endif %}">
+                                <i class="icon-user-7 m-l-5"></i><a href="{% url 'patients:patient_profile' %}">اطلاعات
+                                کاربری</a>
+                            </li>
+                            <li class="list-group-item {% if request.resolver_match.url_name == 'patient_appointments' %}item-active{% endif %}">
+                                <i class="icon-calendar-7 m-l-5 "></i><a
+                                    href="{% url 'patients:patient_appointments' %}">نوبت های من</a>
+                            </li>
+                            <li class="list-group-item {% if request.resolver_match.app_name == 'wallet' %} item-active {% endif %}">
+                                <i class="icon-wallet m-l-5"></i><a href="{% url 'wallet:wallet_dashboard' %}">کیف پول
+                                <span
+                                        class="m-r-70"> {{ balance|floatformat:2 }} تومان  </span></a>
+                            </li>
+                            <li class="list-group-item {% if request.resolver_match.url_name == 'comments' %}item-active{% endif %}">
+                                <i class="icon-comment-empty m-l-5"></i><a href="{% url 'patients:comments' %}">نظرات
+                                من</a>
+                            </li>
+                            <li class="list-group-item {% if request.resolver_match.url_name == 'homecare_request_list' %}item-active{% endif %}">
+                                <i class="icon-stethoscope m-l-5"></i><a
+                                    href="{% url 'patients:homecare_request_list' %}">خدمات پزشکی و پرستاری در محل</a>
+                            </li>
+
+                            <li class="list-group-item">
+                                <i class="icon-logout-1 m-l-5"></i><a href="{% url 'account:logout' %}">خروج</a>
+                            </li>
+                        </ul>
                     </div>
                 </aside>
 
@@ -101,6 +108,62 @@
                                 <p class="text-center">هنوز نوبت فعالی ندارید!</p>
 
                             {% endif %}
+                            {% if homecare_requests %}
+                                <div class="table-responsive">
+                                    <h5 class="mt-4">درخواست‌های خدمات در منزل شما</h5>
+                                    <table class="table table-bordered table-striped mt-2">
+                                        <thead class="table-light">
+                                        <tr>
+                                            <th>نوع خدمت</th>
+                                            <th>تاریخ</th>
+                                            <th>ساعت</th>
+                                            <th>وضعیت</th>
+                                            <th>جزئیات</th>
+                                            <th>لغو</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for request in homecare_requests %}
+                                            <tr>
+                                                <td>{{ request.service.name }}</td>
+                                                <td>{{ request.requested_date|date:"Y/m/d" }}</td>
+                                                <td>{{ request.requested_time|time:"H:i" }}</td>
+                                                <td class="font-weight-bold
+                    {% if request.status == 'confirmed' %}text-success icon-ok
+                    {% elif request.status == 'rejected' %}text-danger icon-cancel
+                    {% elif request.status == 'pending' %}text-warning icon-spin5
+                    {% elif request.status == 'contacted' %}text-primary icon-chat-3
+                    {% elif request.status == 'cancelled_by_patient' %}text-danger icon-cancel-circle
+                    {% endif %}">
+                                                    {{ request.get_status_display }}
+                                                </td>
+                                                <td>
+                                                    {% if request.prescription_file %}
+                                                        <a href="{{ request.prescription_file.url }}" target="_blank">نسخه</a>
+                                                    {% else %}
+                                                        -
+                                                    {% endif %}
+                                                </td>
+                                                <td class="text-center">
+                                                    {% if request.status == 'pending' or request.status == 'contacted' %}
+                                                        <a href="{% url 'homecare:cancel_homecare' request.id %}"
+                                                           class="btn btn-danger rounded-10 fs-10 p-1 "
+                                                           onclick="return confirm('آیا مطمئن هستید؟');"> لغو
+                                                            درخواست</a>
+                                                    {% elif request.status == 'cancelled_by_patient' %}
+                                                        <span class="text-muted">لغو شده</span>
+                                                    {% else %}
+                                                        -
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            {% endif %}
+
                         </div>
                     </div>
 
