@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto p-4 flex flex-col h-screen max-w-4xl">
+    <!-- Chat Header -->
+    <div class="flex justify-between items-center border-b pb-4 mb-4">
+        <div>
+            <h1 class="text-xl font-bold">
+                {% if is_doctor %}
+                گفتگو با بیمار: {{ chat_room.request.patient.user.get_full_name }}
+                {% else %}
+                گفتگو با دکتر {{ chat_room.request.doctor.user.get_full_name }}
+                {% endif %}
+            </h1>
+            <p class="text-sm text-gray-500">
+                تخصص: {{ chat_room.request.doctor.specialty }}
+            </p>
+        </div>
+        <div class="flex items-center space-x-2">
+            <span class="text-sm {% if chat_room.request.doctor.availability.is_available %}text-green-500{% else %}text-gray-500{% endif %}">
+                {% if chat_room.request.doctor.availability.is_available %}آنلاین{% else %}آفلاین{% endif %}
+            </span>
+            <a href="{% url 'chat:chat_room_list' %}" class="text-sm px-3 py-1 bg-gray-100 rounded hover:bg-gray-200">
+                بازگشت
+            </a>
+        </div>
+    </div>
+
+    <!-- Messages Container -->
+    <div id="chat-messages" class="flex-1 overflow-y-auto space-y-4 mb-4 p-2">
+        {% for message in messages %}
+        <div class="flex {% if message.sender == request.user %}justify-end{% else %}justify-start{% endif %}">
+            <div class="max-w-xs md:max-w-md lg:max-w-lg rounded-lg px-4 py-2
+                {% if message.sender == request.user %}
+                    bg-blue-100 text-blue-900
+                {% else %}
+                    {% if is_doctor %}bg-gray-100{% else %}bg-green-100{% endif %}
+                {% endif %}">
+                <div class="flex items-center space-x-2">
+                    {% if message.sender != request.user %}
+                    <span class="font-semibold">
+                        {% if is_doctor %}
+                        بیمار
+                        {% else %}
+                        دکتر
+                        {% endif %}
+                    </span>
+                    {% endif %}
+                    <span class="text-xs text-gray-500">{{ message.created_at|date:"H:i" }}</span>
+                </div>
+                <p class="mt-1">{{ message.content }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Message Input Form -->
+    <div class="border-t pt-4">
+        <form id="message-form" class="flex">
+            {% csrf_token %}
+            <input type="text" name="content" placeholder="پیام خود را بنویسید..."
+                   class="flex-1 border rounded-r-none p-2 focus:outline-none focus:ring-1 focus:ring-blue-500">
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-r hover:bg-blue-700">
+                ارسال
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+const roomId = "{{ chat_room.id }}";
+const isDoctor = {% if is_doctor %}true{% else %}false{% endif %};
+
+// WebSocket connection
+const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+const wsPath = `${wsProtocol}${window.location.host}/ws/medical-chat/${roomId}/`;
+const chatSocket = new WebSocket(wsPath);
+
+// Scroll to bottom of messages
+function scrollToBottom() {
+    const container = document.getElementById('chat-messages');
+    container.scrollTop = container.scrollHeight;
+}
+
+// Handle incoming messages
+chatSocket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    const messagesContainer = document.getElementById('chat-messages');
+
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `flex ${data.is_doctor && !isDoctor ? 'justify-start' : 'justify-end'}`;
+
+    messageDiv.innerHTML = `
+        <div class="max-w-xs md:max-w-md lg:max-w-lg rounded-lg px-4 py-2
+            ${data.is_doctor && !isDoctor ? 'bg-green-100' : 'bg-blue-100'}">
+            <div class="flex items-center space-x-2">
+                <span class="font-semibold">
+                    ${data.is_doctor ? 'دکتر' : 'بیمار'}
+                </span>
+                <span class="text-xs text-gray-500">${new Date(data.timestamp).toLocaleTimeString('fa-IR', {hour: '2-digit', minute:'2-digit'})}</span>
+            </div>
+            <p class="mt-1">${data.message}</p>
+        </div>
+    `;
+
+    messagesContainer.appendChild(messageDiv);
+    scrollToBottom();
+};
+
+// Handle form submission
+document.getElementById('message-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const messageInput = this.querySelector('input[name="content"]');
+    const message = messageInput.value.trim();
+
+    if (message) {
+        chatSocket.send(JSON.stringify({
+            'message': message
+        }));
+        messageInput.value = '';
+    }
+});
+
+// Handle connection closed
+chatSocket.onclose = function(e) {
+    console.error('اتصال چت بسته شد');
+    // Optionally show reconnect button
+};
+
+// Initial scroll to bottom
+window.addEventListener('load', scrollToBottom);
+</script>
+
+<style>
+#chat-messages {
+    scrollbar-width: thin;
+    scrollbar-color: #e2e8f0 #f8fafc;
+}
+#chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+#chat-messages::-webkit-scrollbar-track {
+    background: #f8fafc;
+}
+#chat-messages::-webkit-scrollbar-thumb {
+    background-color: #e2e8f0;
+    border-radius: 3px;
+}
+</style>
+{% endblock %}
