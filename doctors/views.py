@@ -59,6 +59,8 @@ class DoctorListView(ListView):
     context_object_name = 'doctors'
     paginate_by = 10
 
+
+
     def get_queryset(self):
         queryset = super().get_queryset().filter(is_available=True)
         params = self.get_filter_params()
@@ -146,6 +148,8 @@ class DoctorListView(ListView):
             'specialty': params['specialty'],
             'days': params['days'],
             'city_list': params['city'],
+            'available_doctors':  Doctor.objects.filter(availability__is_available=True ).select_related('user'),
+
         })
         return context
 

@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto p-4">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold">چت‌های پشتیبانی پزشکی من</h1>
+        <a href="{% url 'chat:list_doctors' %}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+            درخواست چت جدید
+        </a>
+    </div>
+
+    <!-- بخش پزشکان آنلاین -->
+    <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-4">پزشکان آنلاین</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for doctor in available_doctors %}
+            <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div class="flex items-start space-x-3">
+                    <div class="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                        <span class="text-blue-600 text-xl">دکتر</span>
+                    </div>
+                    <div>
+                        <h3 class="font-medium">دکتر {{ doctor.user.get_full_name }}</h3>
+                        <p class="text-sm text-gray-600">{{ doctor.specialty }}</p>
+                        <div class="mt-2">
+                            <a href="{% url 'create_request' doctor.id %}" 
+                               class="text-sm px-3 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200">
+                                درخواست مشاوره
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-gray-500 col-span-3 py-4 text-center">در حال حاضر پزشک آنلاینی وجود ندارد</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- بخش چت‌های فعال -->
+    <div class="bg-white rounded-lg shadow p-4">
+        <h2 class="text-xl font-semibold mb-4 border-b pb-2">گفتگوهای جاری</h2>
+        {% if chat_rooms %}
+        <div class="space-y-3">
+            {% for room in chat_rooms %}
+            <a href="{% url 'chat:chat_room' room.id %}" class="block border rounded-lg p-4 hover:bg-gray-50">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="font-medium">دکتر {{ room.request.doctor.user.get_full_name }}</h3>
+                        <p class="text-sm text-gray-500">
+                            آخرین فعالیت: {{ room.last_activity|date:"Y/m/d H:i" }}
+                        </p>
+                        {% if room.last_message %}
+                        <p class="text-sm mt-1">
+                            <span class="font-medium">آخرین پیام:</span> 
+                            {{ room.last_message.content|truncatechars:50 }}
+                        </p>
+                        {% endif %}
+                    </div>
+                    <div class="flex items-center">
+                        {% if room.request.status == 'approved' %}
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
+                            فعال
+                        </span>
+                        {% elif room.request.status == 'pending' %}
+                        <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">
+                            در انتظار تایید
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-8">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" 
+                      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">هنوز گفتگویی ندارید</h3>
+            <p class="mt-1 text-sm text-gray-500">برای شروع یک گفتگوی جدید با پزشک مورد نظر خود روی دکمه "درخواست چت جدید" کلیک کنید.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .hover\:bg-gray-50:hover {
+        background-color: #f9fafb;
+    }
+    .transition-shadow {
+        transition: box-shadow 0.2s ease-in-out;
+    }
+</style>
+{% endblock %}
