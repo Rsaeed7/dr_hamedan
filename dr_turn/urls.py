@@ -36,6 +36,7 @@ urlpatterns = [
     # path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/',include('user.urls')),
     path('homecare/', include('homecare.urls')),
+    path('chat-visit/', include('chatmed.urls')),
 ]
 
 if settings.DEBUG:

@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 
+from decouple import config
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,11 +29,15 @@ SECRET_KEY = 'django-insecure-mgzuw-1o1@qa2!rt0xz2k9*gn$_4ozw2i$+lat#gfgc@1ridgw
 DEBUG = True
 
 ALLOWED_HOSTS = []
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+REDIS_DB = 1
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,8 +49,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_jalali',
     'tailwind',
+    'channels',
     
     # Local apps
+    'chatmed',
     'user.apps.UserConfig',
     'doctors',
     'reservations',
@@ -55,6 +63,7 @@ INSTALLED_APPS = [
     'medimag.apps.MedimagConfig',
     'about_us.apps.AboutUsConfig',
     'homecare.apps.HomecareConfig',
+
 ]
 
 # Authentication settings
@@ -71,6 +80,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
     # 'accounts.middleware.UserProfileMiddleware',
 ]
 
@@ -93,7 +103,17 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'dr_turn.wsgi.application'
+ASGI_APPLICATION = "dr_turn.asgi.application"
 
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",  # برای لوکال
+        # برای محیط هاست اصلی اینو فعال کن:
+        # "BACKEND": "channels_redis.core.RedisChannelLayer",
+        # "CONFIG": {"hosts": [("127.0.0.1", 6379)]},
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases

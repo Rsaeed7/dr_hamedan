@@ -20,18 +20,24 @@
                 <i class="icon-calendar-7 m-l-5 "></i><a
                     href="{% url 'patients:patient_appointments' %}">نوبت های من</a>
             </li>
+            <li class="list-group-item {% if request.resolver_match.url_name == 'patient_appointments' %}item-active{% endif %}">
+                <i class="icon-chat-inv m-l-5 "></i><a
+                    href="{% url 'chat:chat_home' %}">دریافت مشاوره آنلاین</a>
+            </li>
             <li class="list-group-item {% if request.resolver_match.app_name == 'wallet' %} item-active {% endif %}">
                 <i class="icon-wallet m-l-5"></i><a href="{% url 'wallet:wallet_dashboard' %}">کیف پول
                 <span
                         class="m-r-70"> {{ balance|floatformat:2 }} تومان  </span></a>
             </li>
             <li class="list-group-item {% if request.resolver_match.url_name == 'comments' %}item-active{% endif %}">
-                <i class="icon-comment-empty m-l-5"></i><a href="{% url 'patients:comments' %}">نظرات من</a>
+                <i class="icon-comment-empty m-l-5"></i><a href="{% url 'patients:comments' %}">نظرات
+                من</a>
             </li>
             <li class="list-group-item {% if request.resolver_match.url_name == 'homecare_request_list' %}item-active{% endif %}">
-                <i class="icon-stethoscope m-l-5"></i><a href="{% url 'patients:homecare_request_list' %}">خدمات پزشکی
-                و پرستاری در محل</a>
+                <i class="icon-stethoscope m-l-5"></i><a
+                    href="{% url 'patients:homecare_request_list' %}">خدمات پزشکی و پرستاری در محل</a>
             </li>
+
             <li class="list-group-item">
                 <i class="icon-logout-1 m-l-5"></i><a href="{% url 'account:logout' %}">خروج</a>
             </li>
