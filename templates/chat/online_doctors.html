@@ -11,13 +11,13 @@
     <div class="container margin_60_35">
 
         <div class="scroll-container">
-        {% if available_doctors %}
+        {% if doctors %}
             <div id="breadcrumb">
 
                 <div class="container">
                     <p>پزشکانی که هم اکنون آنلاین هستند</p>
                     <ul class="scroll-container scroll-wrapper">
-                        {% for doctor in available_doctors %}
+                        {% for doctor in doctors %}
                             <li class="online-status">
                                 <div title="دکتر {{ doctor.user.get_full_name}} | {{ doctor.specialization }}">
                                     <a href="{% url 'doctors:doctor_detail' doctor.pk %}">
@@ -39,7 +39,7 @@
             <aside class="col-xl-3 col-lg-3" id="sidebar">
                 <div class="box_general_3 booking">
                     <h6 class="text_dr_3"><i class="icon-filter-1"></i>فیلترها</h6>
-                    <form method="get" action="{% url 'doctors:doctor_list' %}" id="filter-form"
+                    <form method="get" action="{% url 'chat:list_doctors' %}" id="filter-form"
                           class="auto-submit-form">
                         <!-- تخصص (چند انتخابی) -->
                         <div class="filter-section">
@@ -55,25 +55,6 @@
                                         <label>{{ special.name }}</label>
                                     </li>
                                 {% endfor %}
-                            </ul>
-                        </div>
-
-                        <!-- جنسیت (تک انتخابی) -->
-                        <div class="filter-section">
-                            <button class="btn-filter" type="button" onclick="toggleDropdown('gender', this)">
-                                جنسیت <span class="arrow"><i class="icon-angle-down"></i></span>
-                            </button>
-                            <ul id="gender" class="filter-dropdown">
-                                <li>
-                                    <input type="radio" name="gender" class="custom-radio auto-submit" value="male"
-                                           {% if request.GET.gender == 'male' %}checked{% endif %}>
-                                    <label>مرد</label>
-                                </li>
-                                <li>
-                                    <input type="radio" name="gender" class="custom-radio auto-submit" value="female"
-                                           {% if request.GET.gender == 'female' %}checked{% endif %}>
-                                    <label>زن</label>
-                                </li>
                             </ul>
                         </div>
 
@@ -99,59 +80,11 @@
                                     <input type="radio" name="sort" class="custom-radio auto-submit"
                                            value="نزدیک‌ترین نوبت خالی"
                                            {% if request.GET.sort == 'نزدیک‌ترین نوبت خالی' %}checked{% endif %}>
-                                    <label>نزدیک‌ترین نوبت خالی</label>
+                                    <label>پزشکان آنلاین</label>
                                 </li>
                             </ul>
                         </div>
 
-                        <!-- روزهای کاری (چند انتخابی) -->
-                        <div class="filter-section">
-                            <button class="btn-filter" type="button" onclick="toggleDropdown('days', this)">
-                                روزهای کاری <span class="arrow"><i class="icon-angle-down"></i></span>
-                            </button>
-                            <ul id="days" class="filter-dropdown">
-                                {% for day in day_list %}
-                                    <li>
-                                        <input type="checkbox" name="days" class="custom-checkbox auto-submit"
-                                               value="{{ day }}"
-                                               {% if day in days %}checked{% endif %}>
-                                        <label>{{ day }}</label>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-
-                        <!-- شهر (چند انتخابی) -->
-                        <div class="filter-section">
-                            <button class="btn-filter" type="button" onclick="toggleDropdown('city', this)">
-                                شهر <span class="arrow"><i class="icon-angle-down"></i></span>
-                            </button>
-                            <ul id="city" class="filter-dropdown">
-                                {% for city in cities %}
-                                    <li>
-                                        <input type="checkbox" name="city" class="custom-checkbox auto-submit"
-                                               value="{{ city.name }}"
-                                               {% if city.name in city_list %}checked{% endif %}>
-                                        <label>{{ city.name }}</label>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                        <div class="filter-section">
-                            <button class="btn-filter" type="button" onclick="toggleDropdown('supplementary', this)">
-                                بیمه تکمیلی <span class="arrow"><i class="icon-angle-down"></i></span>
-                            </button>
-                            <ul id="supplementary" class="filter-dropdown">
-                                {% for supplementary in Insurance %}
-                                    <li>
-                                        <input type="checkbox" name="supplementary" class="custom-checkbox auto-submit"
-                                               value="{{ supplementary.name }}"
-                                           {% if supplementary.name in supplementary_list %}checked{% endif %} >
-                                        <label>{{ supplementary.name }}</label>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
 
                         <div class="filter-actions">
                             <a href="{% url 'doctors:doctor_list' %}" class="btn-reset btn" type="button">
@@ -166,22 +99,6 @@
                 </div>
             </aside>
             <div class="col-lg-9">
-                <ul class="nav center-content margin-10  bg-gradiant3" role="tablist">
-                    <li>
-                        <a class="nav-link  active p_1" id="general-tab" data-toggle="tab"
-                           href="#turn"
-                           role="tab" aria-controls="turn" aria-expanded="true">نوبت حضوری</a>
-                    </li>
-                    <li>
-                        <a class="nav-link p_1" id="phone_turn-tab" data-toggle="tab" href="#phone_turn"
-                           role="tab" aria-controls="phone_turn">مشاوره تلفنی</a>
-                    </li>
-                    <li>
-                        <a class="nav-link p_1" id="text_turn-tab" data-toggle="tab" href="#text_turn"
-                           role="tab" aria-controls="text_turn">مشاوره متنی</a>
-                    </li>
-                </ul>
-
                 <div class="row tab-pane fade show active" id="turn" role="tabpanel"
                      aria-labelledby="turn-tab">
                     {% for doctor in doctors %}
@@ -200,13 +117,11 @@
 
                                     <h3>{{ doctor.user.get_full_name }}</h3>
                                     <p class="text-capitalize border-light">{{ doctor.specialization }}</p>
-                                    <p class="text-right"><i class="icon-location-inv"></i>{{ doctor.address }}</p>
-                                    <small>اولین نوبت خالی 4 اسفند</small>
                                     <div class="m-t-10">
                                         <a href="{% url 'doctors:doctor_detail' doctor.pk %}"
-                                           class="btn btn-outline-info">مشاهده پروفایل پزشک</a>
-                                        <a href="{% url 'reservations:book_appointment' doctor.pk %}"
-                                           class="btn btn-success">دریافت نوبت</a>
+                                           class="text-dark">مشاهده پروفایل پزشک</a>
+                                        <a href="{% url 'chat:request_chat' doctor.id %}"
+                                           class="btn btn-info col-12 m-t-10">مشاوره متنی آنلاین</a>
                                     </div>
                                 </div>
                             </div>
@@ -216,7 +131,7 @@
                     {% endfor %}
 
                 </div>
-                <div id="phone_turn"></div>
+
                 <!-- pagination -->
                 <div>
                     <div class="add_top_20">

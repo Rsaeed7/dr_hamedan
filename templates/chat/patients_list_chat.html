@@ -1,0 +1,66 @@
+{% extends  'base/base.html' %}
+{% load static %}
+{% block body %}
+
+    <div class="filters_listing d-lg-none">
+        <div class="container">
+            <a href="{% url 'patients:patient_dashboard' %}" class="text-dr"><i class="icon-right-open"></i>داشبورد</a>
+        </div>
+    </div>
+    <section class="bg-light">
+        <div class="container margin_120_95">
+            <div class="row">
+                {% include  'patients/dashbord_sidebar.html' %}
+                <div class="col-lg-8 ml-auto">
+                    <div class="box_form border-0">
+
+                        {% if chat_rooms %}
+                            <a href="{% url 'chat:list_doctors' %}"
+                               class="btn btn-success" style="float: left;">
+                                درخواست مشاوره انلاین جدید
+                            </a>
+                            <h4 class=" m-b-20">گفت و گو های جاری</h4>
+
+                            {% for room in chat_rooms %}
+                                <a href="{% url 'chat:chat_room' room.id %}">
+                                    <div class="strip_list wow fadeIn border-0 bg-bluelight">
+                                        <figure>
+                                            <img class="rounded" src="{{ room.request.doctor.profile_image.url }}"
+                                                 alt="{{ room.request.doctor.doctor }}">
+                                        </figure>
+                                        <small>
+                                            <span class="bg-light rounded fs-10">{{ room.request.doctor.specialization }}</span>
+                                        </small>
+                                        <h3>دکتر {{ room.request.doctor.user.get_full_name }}</h3>
+                                        <p class="small"> آخرین
+                                            پیام: {{ room.last_message.content|truncatechars:50 }}</p>
+                                        <small class="text-sm-right"><i
+                                                class="icon-clock-alt"></i>آخرین
+                                            فعالیت {{ room.last_activity|date:"Y/m/d H:i" }}</small>
+
+                                        <ul>
+                                            <li><span class="p-l-10 p-r-10 small ">ادامه گفت و گو</span></li>
+                                            <li><span
+                                                    class="p-l-10 p-r-10 small rounded-10 tex   {% if room.request.status == 'approved' %}bg-light-green
+                                            {% elif room.request.status == 'pending' %}bg-light-yellow
+                                            {% endif %}">
+                                            {% if room.request.status == 'approved' %}فعال
+                                            {% elif room.request.status == 'pending' %}در انتظار تایید
+                                            {% endif %}</span></li>
+                                        </ul>
+                                    </div>
+                                </a>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-center">گفت و گوی فعالی ندارید!</p>
+                            <a href="#" class="btn btn-outline-primary col-12">آغاز ویزیت آنلاین و متنی</a>
+
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+{% endblock %}

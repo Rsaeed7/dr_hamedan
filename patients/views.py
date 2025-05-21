@@ -52,7 +52,7 @@ def patient_profile(request):
     patient, created = PatientsFile.objects.get_or_create(
         user=user,
         defaults={
-            'name': user.get_full_name() or user.first_name,
+            # 'name': user.get_full_name() or user.first_name,
             'phone': user.phone,
             'email': user.email
         }
