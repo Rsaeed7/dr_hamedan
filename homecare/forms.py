@@ -1,15 +1,16 @@
 from django import forms
+from django_jalali.forms import jDateField
 from .models import HomeCareRequest
 
 class HomeCareRequestForm(forms.ModelForm):
     first_name = forms.CharField(label="نام", required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
     last_name = forms.CharField(label="نام خانوادگی", required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    requested_date = jDateField(label="تاریخ مورد نظر")
 
     class Meta:
         model = HomeCareRequest
         fields = ['requested_date', 'requested_time', 'city', 'address', 'extra_notes', 'prescription_file']
         widgets = {
-            'requested_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'requested_time': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
             'city': forms.Select(attrs={'class': 'form-control'}),
             'address': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),

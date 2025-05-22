@@ -44,6 +44,8 @@
         padding-right: 1rem;
     }
 </style>
+<!-- Add Jalali Datepicker CSS -->
+<link rel="stylesheet" href="https://unpkg.com/persian-datepicker@latest/dist/css/persian-datepicker.min.css">
 {% endblock %}
 
 {% block content %}
@@ -110,8 +112,8 @@
                         
                         <div>
                             <label for="birthdate" class="block text-sm font-medium text-gray-700 mb-1">تاریخ تولد (اختیاری)</label>
-                            <input type="date" id="birthdate" name="birthdate" value="{{ patient.birthdate|date:'Y-m-d' }}" 
-                                   class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <input type="text" id="birthdate" name="birthdate" value="{{ patient.birthdate|date:'Y-m-d' }}" 
+                                   class="jalali-datepicker block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                         </div>
                     </div>
                     
@@ -138,4 +140,25 @@
         </div>
     </div>
 </div>
-{% endblock %} 
+{% endblock %}
+
+{% block extra_js %}
+<!-- Add jQuery if not already included -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Add Jalali Datepicker -->
+<script src="https://unpkg.com/persian-date@latest/dist/persian-date.min.js"></script>
+<script src="https://unpkg.com/persian-datepicker@latest/dist/js/persian-datepicker.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.jalali-datepicker').persianDatepicker({
+            format: 'YYYY/MM/DD',
+            altField: '#birthdate',
+            altFormat: 'YYYY-MM-DD',
+            observer: true,
+            initialValue: true,
+            autoClose: true,
+            initialValueType: 'gregorian'
+        });
+    });
+</script>
+{% endblock %}

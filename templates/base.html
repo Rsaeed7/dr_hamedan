@@ -7,6 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Heroicons CDN -->
     <script src="https://unpkg.com/@heroicons/v2.0.18/24/outline/index.js"></script>
+    <!-- Jalali Date Picker CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/persian-datepicker@latest/dist/css/persian-datepicker.min.css">
     {% block extra_css %}{% endblock %}
 </head>
 <body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
@@ -183,6 +185,11 @@
         </div>
     </div>
 </footer>
+
+<!-- Jalali Datepicker Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://unpkg.com/persian-date@latest/dist/persian-date.min.js"></script>
+<script src="https://unpkg.com/persian-datepicker@latest/dist/js/persian-datepicker.min.js"></script>
 
 {% block extra_js %}{% endblock %}
 </body>

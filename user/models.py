@@ -1,6 +1,7 @@
 from django.utils import timezone
 from django.utils import timezone
 from django.db import models
+from django_jalali.db import models as jmodels
 from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin,BaseUserManager
 
@@ -73,8 +74,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_admin = models.BooleanField(default=False, verbose_name="ادمین")
     is_staff = models.BooleanField(default=False, verbose_name="کارمند")
 
-    date_joined = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ عضویت")
-    last_login = models.DateTimeField(auto_now=True, verbose_name="آخرین ورود")
+    date_joined = jmodels.jDateTimeField(auto_now_add=True, verbose_name="تاریخ عضویت")
+    last_login = jmodels.jDateTimeField(auto_now=True, verbose_name="آخرین ورود")
 
     objects = UserManager()
 
@@ -100,7 +101,7 @@ class Otp(models.Model):
     token = models.CharField(max_length=100, null=True)
     phone = models.CharField(max_length=12)
     code = models.SmallIntegerField()
-    expires = models.DateTimeField(auto_now_add=True)  # افزودن فیلد زمان ایجاد
+    expires = jmodels.jDateTimeField(auto_now_add=True)  # افزودن فیلد زمان ایجاد
 
     def is_expired(self):
         expiration_time = timezone.now() - timezone.timedelta(minutes=3)  # مدت زمان انقضا

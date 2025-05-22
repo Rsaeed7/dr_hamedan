@@ -1,5 +1,6 @@
 {% extends  'base/base.html' %}
 {% load static %}
+{% load jalali_tags %}
 {% block body %}
     <section class="bg-light">
         <div class="container margin_120_95">
@@ -21,7 +22,7 @@
 
                 <div class="col-lg-6 box_general booking">
                     <h5 class="border-bottom">اطلاعات نوبت</h5>
-                    <p class="p-r-10">تاریخ : {{ appointment.day.date|date:"F j, Y" }}</p>
+                    <p class="p-r-10">تاریخ : {{ appointment.day.date|jformat:"j F Y" }}</p>
                     <p class="p-r-10">ساعت: {{ appointment.time|time:"H:i" }}</p>
                     <p class="p-r-10">هزینه ویزیت: {{ appointment.amount }} تومان</p>
                     <p class="p-r-10 ">وضعیت پرداخت:
@@ -84,7 +85,7 @@
                                     <p class="text-capitalize">شناسه بیمار: {{ appointment.patient.id }}</p>
                                 </div>
                                 {% if appointment.patient.date_of_birth %}
-                                    <p class="text-capitalize">{{ appointment.patient.date_of_birth|date:"F j, Y" }}تاریخ
+                                    <p class="text-capitalize">{{ appointment.patient.date_of_birth|jformat:"j F Y" }}تاریخ
                                         تولد
                                         : </p>
                                 {% endif %}

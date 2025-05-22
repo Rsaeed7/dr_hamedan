@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load jalali_tags %}
 
 {% block title %}رزرو نوبت با {{ doctor }} - دکتر همدان{% endblock %}
 
@@ -91,7 +92,7 @@
                         <select id="date" name="date" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
                             <option value="">-- انتخاب تاریخ --</option>
                             {% for day in days %}
-                                <option value="{{ day.date|date:'Y-m-d' }}">{{ day.date|date:'l, F j, Y' }}</option>
+                                <option value="{{ day.date|date:'Y-m-d' }}">{{ day.date|jformat:"l j F Y" }}</option>
                             {% endfor %}
                         </select>
                     </div>
