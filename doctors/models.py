@@ -4,6 +4,7 @@ import uuid
 from django.db import models
 # from django.contrib.auth.models import User
 from django.db.models import Avg, Count
+from django_jalali.db import models as jmodels
 from user.models import User
 from clinics.models import Clinic
 from datetime import time, datetime, timedelta
@@ -61,8 +62,8 @@ class Doctor(models.Model):
     address = models.TextField(blank=True, null=True, verbose_name=_('آدرس'))
     phone = models.CharField(max_length=20, verbose_name=_('شماره تماس'))
     Insurance = models.ManyToManyField(Supplementary_insurance, verbose_name=_('بیمه های تکمیلی طرف قرارداد') , blank=True ,null=True)
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('تاریخ ایجاد'))
-    updated_at = models.DateTimeField(auto_now=True, verbose_name=_('تاریخ بروزرسانی'))
+    created_at = jmodels.jDateTimeField(auto_now_add=True, verbose_name=_('تاریخ ایجاد'))
+    updated_at = jmodels.jDateTimeField(auto_now=True, verbose_name=_('تاریخ بروزرسانی'))
     gender = models.CharField(choices=GENDER_CHOICES, max_length=10, verbose_name=_('جنسیت'), null=True, blank=True)
     view_count = models.PositiveIntegerField(default=93, verbose_name='تعداد بازدید')
 
@@ -230,7 +231,7 @@ class DrComment(models.Model):
     text = models.TextField(verbose_name='متن کامنت')
     recommendation = models.CharField(max_length=25, choices=Recommendation_CHOICES, verbose_name='توصیه',default=Recommendation_CHOICES[1], null=True, blank=True)
     rate = models.SmallIntegerField(verbose_name='امتیاز', blank=True, null=True,validators=[MinValueValidator(1), MaxValueValidator(5)])
-    date = models.DateTimeField(verbose_name='تاریخ ثبت', auto_now_add=True)
+    date = jmodels.jDateTimeField(verbose_name='تاریخ ثبت', auto_now_add=True)
     tips = models.ManyToManyField(CommentTips, related_name='comment_tips' , verbose_name='نکات مثبت و منفی', blank=True,null=True)
     status = models.CharField( max_length=10, choices=STATUS_CHOICES, default="checking", verbose_name="وضعیت")
     waiting_time = models.CharField(max_length=30,choices=WAITING_CHOICES, verbose_name="زمان انتظار",default=WAITING_CHOICES[1])
@@ -265,8 +266,8 @@ class DoctorAvailability(models.Model):
     day_of_week = models.IntegerField(choices=DAYS_OF_WEEK, verbose_name=_('روز هفته'))
     start_time = models.TimeField(verbose_name=_('زمان شروع'))
     end_time = models.TimeField(verbose_name=_('زمان پایان'))
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('تاریخ ایجاد'))
-    updated_at = models.DateTimeField(auto_now=True, verbose_name=_('تاریخ بروزرسانی'))
+    created_at = jmodels.jDateTimeField(auto_now_add=True, verbose_name=_('تاریخ ایجاد'))
+    updated_at = jmodels.jDateTimeField(auto_now=True, verbose_name=_('تاریخ بروزرسانی'))
 
     class Meta:
         verbose_name = _('زمان‌بندی پزشک')
@@ -296,18 +297,11 @@ class Email(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     subject = models.CharField(max_length=200, verbose_name=_('موضوع'))
     body = models.TextField(verbose_name=_('متن نامه'))
-    sent_at = models.DateTimeField(auto_now_add=True, verbose_name=_('زمان ارسال'))
-    read_at = models.DateTimeField(null=True, blank=True, verbose_name=_('زمان خواندن'))
+    sent_at = jmodels.jDateTimeField(auto_now_add=True, verbose_name=_('زمان ارسال'))
+    read_at = jmodels.jDateTimeField(null=True, blank=True, verbose_name=_('زمان خواندن'))
     is_read = models.BooleanField(default=False, verbose_name=_('خوانده شده'))
     is_important = models.BooleanField(default=False, verbose_name=_('مهم'))
-    tracking_number = models.CharField(
-        max_length=5,
-        unique=True,
-        editable=False,
-        verbose_name=_('شماره رهگیری')
-    )
-
-
+    tracking_number = models.CharField(max_length=20, verbose_name=_('شماره رهگیری'), unique=True, blank=True, null=True)
 
     class Meta:
         verbose_name = _('نامه')

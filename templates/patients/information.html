@@ -1,5 +1,6 @@
 {% extends  'base/base.html' %}
 {% load static %}
+{% load jalali_tags %}
 {% block body %}
 
     <div class="filters_listing d-lg-none">
@@ -68,8 +69,8 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>سن</label>
-                                        <input type="date" id="birthdate" name="birthdate"
-                                               value="{{ patient.birthdate|date:'Y-m-d' }}" class="form-control"
+                                        <input type="text" id="birthdate" name="birthdate"
+                                               value="{{ patient.birthdate|jformat:'Y-m-d' }}" class="form-control jalali-datepicker"
                                                placeholder="تاریخ تولد خود را وراد کنید">
                                         <small>{{ patient.age }} سال </small>
                                     </div>
@@ -101,5 +102,23 @@
         </div>
     </section>
 
+    <!-- Add jQuery if not already included -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Add Jalali Datepicker -->
+    <script src="https://unpkg.com/persian-date@latest/dist/persian-date.min.js"></script>
+    <script src="https://unpkg.com/persian-datepicker@latest/dist/js/persian-datepicker.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.jalali-datepicker').persianDatepicker({
+                format: 'YYYY/MM/DD',
+                altField: '#birthdate',
+                altFormat: 'YYYY-MM-DD',
+                observer: true,
+                initialValue: true,
+                autoClose: true,
+                initialValueType: 'gregorian'
+            });
+        });
+    </script>
 
 {% endblock %}

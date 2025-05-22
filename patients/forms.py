@@ -1,7 +1,10 @@
 from django import forms
+from django_jalali.forms import jDateTimeField, jDateField
 from .models import VisitEntry,MedicalRecord, MedicalReport, ReportImage,DrReportSettings
 
 class VisitEntryForm(forms.ModelForm):
+    visit_date = jDateTimeField(label='تاریخ ویزیت')
+    
     class Meta:
         model = VisitEntry
         fields = [
@@ -15,7 +18,6 @@ class VisitEntryForm(forms.ModelForm):
             'attachment',
         ]
         widgets = {
-            'visit_date': forms.DateTimeInput(attrs={'type': 'datetime-local' }),
             'chief_complaint': forms.Textarea(attrs={'rows': 2 , 'class': 'w-full rounded border'}),
             'diagnosis': forms.Textarea(attrs={'rows': 2, 'class': 'w-full rounded border' }),
             'physical_exam': forms.Textarea(attrs={'rows': 2 , 'class': 'w-full rounded border'}),

@@ -2,6 +2,7 @@ from datetime import date
 
 from django.db import models
 from django.utils import timezone
+from django_jalali.db import models as jmodels
 from doctors.models import Doctor
 from doctors.models import City
 from user.models import User
@@ -14,10 +15,10 @@ class PatientsFile(models.Model):
     email = models.EmailField(verbose_name='ایمیل', null=True, blank=True, unique=True)
     national_id = models.CharField(max_length=20, blank=True, null=True, verbose_name='کد ملی')
     medical_history = models.TextField(blank=True, null=True, verbose_name='سابقه پزشکی')
-    birthdate = models.DateField(blank=True, null=True, verbose_name='تاریخ تولد')
+    birthdate = jmodels.jDateField(blank=True, null=True, verbose_name='تاریخ تولد')
     gender = models.CharField(choices=GENDER_CHOICES,max_length=10, blank=True, null=True , verbose_name='جنسیت')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
+    created_at = jmodels.jDateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
+    updated_at = jmodels.jDateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
     city = models.ForeignKey(City, on_delete=models.CASCADE, null=True, blank=True, verbose_name='شهر')
     
     class Meta:
@@ -76,8 +77,8 @@ class PatientsFile(models.Model):
 class MedicalRecord(models.Model):
     patient = models.ForeignKey(PatientsFile, on_delete=models.CASCADE, related_name='records', verbose_name='بیمار')
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='records', verbose_name='پزشک')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد پرونده')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name='آخرین بروزرسانی')
+    created_at = jmodels.jDateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد پرونده')
+    updated_at = jmodels.jDateTimeField(auto_now=True, verbose_name='آخرین بروزرسانی')
 
     class Meta:
         verbose_name = 'پرونده پزشکی'
@@ -90,7 +91,7 @@ class MedicalRecord(models.Model):
 
 class VisitEntry(models.Model):
     record = models.ForeignKey('MedicalRecord', on_delete=models.CASCADE, related_name='visits', verbose_name='پرونده')
-    visit_date = models.DateTimeField(default=timezone.now, verbose_name='تاریخ ویزیت')
+    visit_date = jmodels.jDateTimeField(default=timezone.now, verbose_name='تاریخ ویزیت')
     chief_complaint = models.TextField(verbose_name='شرح مشکل')
     diagnosis = models.TextField(blank=True, null=True, verbose_name='تشخیص')
     physical_exam = models.TextField(blank=True, null=True, verbose_name='معاینه بالینی')
@@ -117,8 +118,8 @@ class MedicalReport(models.Model):
     dr_requesting = models.CharField(max_length=50,blank=True,null=True,verbose_name='پزشک درخواست کننده')
     content = models.TextField(verbose_name='شرح')  # متن گزارش
     age = models.IntegerField(blank=True,null=True,verbose_name='سن بیمار')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = jmodels.jDateTimeField(auto_now_add=True)
+    updated_at = jmodels.jDateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.title} - {self.patient}"

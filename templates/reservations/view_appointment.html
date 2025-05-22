@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load jalali_tags %}
 
 {% block title %}جزئیات نوبت - دکتر همدان{% endblock %}
 
@@ -133,7 +134,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                         <div>
                             <p class="text-sm font-medium text-gray-600">تاریخ</p>
-                            <p class="text-gray-800">{{ appointment.day.date|date:"F j, Y" }}</p>
+                            <p class="text-gray-800">{{ appointment.day.date|jformat:"j F Y" }}</p>
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-600">زمان</p>
@@ -262,7 +263,7 @@
                                 {% if appointment.patient.date_of_birth %}
                                     <div>
                                         <p class="text-sm font-medium text-gray-600">تاریخ تولد</p>
-                                        <p class="text-gray-800">{{ appointment.patient.date_of_birth|date:"F j, Y" }}</p>
+                                        <p class="text-gray-800">{{ appointment.patient.date_of_birth|jformat:"j F Y" }}</p>
                                     </div>
                                 {% endif %}
 
