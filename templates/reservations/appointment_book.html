@@ -1,7 +1,8 @@
 {% extends 'base/base.html' %}
 {% load static %}
 {% block body %}
-{% include  'base/search.html' %}
+    {% include  'base/search.html' %}
+    {% load persian_date %}
     <!-- /search -->
 
     <div class="container margin_60">
@@ -9,6 +10,7 @@
             <div class="col-xl-8 col-lg-8 order-2 order-lg-1">
                 <div id="section_1">
                     <div class="tab-content box_general_3 shadow-0-m p-m-1">
+                    {% if days %}
                         <div class="tab-pane fade show active text-center" id="book" role="tabpanel">
 
                             <!-- انتخاب روز -->
@@ -19,9 +21,10 @@
                                         <div class="w-auto mx-2 my-2 day-card" data-date="{{ day.date|date:'Y-m-d' }}">
                                             <button class="btn btn-outline-dark spacer day-btn fs-12"
                                                     style="height: 70px;width: 80px">
-                                                {{ day.date|date:"l" }}<br>
-                                                {{ day.date|date:"j F" }}<br>
-                                                <small>{{ day.slots|length }} نوبت خالی </small>
+                                                {{ day.date|persian_weekday }}<br>
+                                                {{ day.date|date:'j' }} {{ day.date|persian_month_name }}
+                                                <br>
+                                                <small>{{ day.slots|length }} نوبت خالی </small><br>
                                             </button>
                                         </div>
                                     {% endfor %}
@@ -61,7 +64,8 @@
                                                             <label>نام<span class="text-danger">*</span></label>
                                                             <input type="text" class="form-control" id="name"
                                                                    name="name"
-                                                                   value="{% if request.user.is_authenticated %}{{ request.user.get_full_name }}{% endif %}"
+                                                                   value="
+                                                                           {% if request.user.is_authenticated %}{{ request.user.get_full_name }}{% endif %}"
                                                                    required>
                                                             <small class="text-danger font-weight-light"
                                                                    id="name_alarm"></small>
@@ -73,7 +77,8 @@
                                                                     class="text-danger">*</span></label>
                                                             <input type="tel" class="form-control" id="phone"
                                                                    name="phone"
-                                                                   value="{% if request.user.is_authenticated %}{{ request.user.phone }}{% endif %}"
+                                                                   value="
+                                                                           {% if request.user.is_authenticated %}{{ request.user.phone }}{% endif %}"
                                                                    required>
                                                             <small class="text-danger font-weight-light"
                                                                    id="phone_alarm"></small>
@@ -113,6 +118,9 @@
                             </div>
 
                         </div>
+                    {% else %}
+                    <p class="box_general bg-light-yellow text-center icon-attention-alt-1">در حال حاضر نوبت فعالی برای این پزشک وجود ندارد</p>
+                    {% endif %}
                     </div>
                 </div>
             </div>
