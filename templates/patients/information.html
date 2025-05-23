@@ -1,35 +1,35 @@
-{% extends  'base/base.html' %}
+{% extends 'base/base.html' %}
 {% load static %}
 
 {% block body %}
-
     <div class="filters_listing d-lg-none">
         <div class="container">
-            <a href="{% url 'patients:patient_dashboard' %}" class="text-dr"><i class="icon-right-open"></i>داشبورد</a>
+            <a href="{% url 'patients:patient_dashboard' %}" class="text-dr"><i class="icon-right-open"></i> داشبورد</a>
         </div>
     </div>
     <section class="bg-light">
         <div class="container margin_120_95">
             <div class="row">
-                {% include  'patients/dashbord_sidebar.html' %}
+                {% include 'patients/dashbord_sidebar.html' %}
                 <div class="col-lg-8 ml-auto">
                     <div class="box_form border-0">
-
                         <form method="post">
                             {% csrf_token %}
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>نام</label>
-                                        <input type="text" id="f_name" name="f_name" value="{{ request.user.first_name }}" required
-                                               class="form-control" placeholder=" نام خود را بنویسید">
+                                        <input type="text" id="f_name" name="f_name"
+                                               value="{{ request.user.first_name }}" required
+                                               class="form-control" placeholder="نام خود را بنویسید">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>نام خانوادگی</label>
-                                        <input type="text" id="l_name" name="l_name" value="{{ request.user.last_name }}" required
-                                               class="form-control" placeholder=" نام خانوادگی را بنویسید">
+                                        <input type="text" id="l_name" name="l_name"
+                                               value="{{ request.user.last_name }}" required
+                                               class="form-control" placeholder="نام خانوادگی را بنویسید">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -42,17 +42,17 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <div class="form-group">
-                                            <label>ایمیل (اختیاری)</label>
-                                            <input name="email" id="email " type="email" class="form-control" value="{{ patient.email }}"
-                                                   placeholder="ایمیل خود را وارد کنید">
-                                        </div>
+                                        <label>ایمیل (اختیاری)</label>
+                                        <input name="email" id="email" type="email" class="form-control"
+                                               value="{{ patient.email }}"
+                                               placeholder="ایمیل خود را وارد کنید">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>شماره تلفن</label>
-                                        <input type="tel" id="phone" name="phone" value="{{ request.user.phone }}" disabled
+                                        <input type="tel" id="phone" name="phone" value="{{ request.user.phone }}"
+                                               disabled
                                                class="form-control" placeholder="09188028729">
                                     </div>
                                 </div>
@@ -61,26 +61,33 @@
                                         <label>جنسیت</label>
                                         <select class="form-control" id="gender" name="gender">
                                             <option value="">جنسیت را انتخاب کنید</option>
-                                            <option {% if patient.gender == 'male' %}selected{% endif %} value="male">مرد</option>
-                                            <option {% if patient.gender == 'female' %}selected{% endif %} value="female">زن</option>
+                                            <option {% if patient.gender == 'male' %}selected{% endif %} value="male">
+                                                مرد
+                                            </option>
+                                            <option {% if patient.gender == 'female' %}selected{% endif %}
+                                                    value="female">زن
+                                            </option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>سن</label>
-                                        <input type="text" id="birthdate" name="birthdate"
-                                               value="{{ patient.birthdate }}" class="form-control jalali-datepicker"
-                                               placeholder="تاریخ تولد خود را وراد کنید">
-                                        <small>{{ patient.age }} سال </small>
+                                        <label>تاریخ تولد</label>
+                                        <input type="text" id="birthdate_display" class="form-control"
+                                               placeholder="تاریخ تولد خود را وارد کنید" value="{{ patient.birthdate|date:'Y-m-d' }}">
+                                        <input type="hidden" id="birthdate" name="birthdate"
+                                               value="{{ patient.birthdate|date:'Y-m-d' }}">
+
+                                        <small>{{ patient.age }} سال</small>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>شهر</label>
-                                        <select class="form-control" name="city"  id="city">
+                                        <select class="form-control" name="city" id="city">
                                             {% for city in cities %}
-                                                <option {% if  patient.city.name == city.name  %}selected{% endif %} value="{{ city.id }}">{{ city.name }}</option>
+                                                <option {% if patient.city.name == city.name %}selected{% endif %}
+                                                        value="{{ city.id }}">{{ city.name }}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
@@ -88,12 +95,12 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>سوابق پزشکی (اختیاری)</label>
-                                        <textarea type="text" id="medical_history" name="medical_history" required
-                                                  class="form-control" placeholder="لطفاً بیماری‌های مزمن، حساسیت‌ها یا اطلاعات مهم پزشکی که پزشک باید بداند را ذکر کنید.">{{ patient.medical_history|default:'' }}</textarea>
+                                        <textarea type="text" id="medical_history" name="medical_history"
+                                                  class="form-control"
+                                                  placeholder="لطفاً بیماری‌های مزمن، حساسیت‌ها یا اطلاعات مهم پزشکی که پزشک باید بداند را ذکر کنید.">{{ patient.medical_history|default:'' }}</textarea>
                                     </div>
                                 </div>
                             </div>
-
                             <p class="text-center"><input type="submit" class="btn_1" value="ثبت اطلاعات"></p>
                         </form>
                     </div>
@@ -102,23 +109,23 @@
         </div>
     </section>
 
-    <!-- Add jQuery if not already included -->
+    <!-- Persian Datepicker -->
+    <link rel="stylesheet" href="https://unpkg.com/persian-datepicker@latest/dist/css/persian-datepicker.min.css"/>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Add Jalali Datepicker -->
     <script src="https://unpkg.com/persian-date@latest/dist/persian-date.min.js"></script>
     <script src="https://unpkg.com/persian-datepicker@latest/dist/js/persian-datepicker.min.js"></script>
     <script>
-        $(document).ready(function() {
-            $('.jalali-datepicker').persianDatepicker({
+        $(document).ready(function () {
+            $('#birthdate_display').persianDatepicker({
                 format: 'YYYY/MM/DD',
                 altField: '#birthdate',
                 altFormat: 'YYYY-MM-DD',
                 observer: true,
-                initialValue: true,
-                autoClose: true,
-                initialValueType: 'gregorian'
+                initialValue: !!'{{ birthdate }}',
+                initialValueType: 'persian',
+                autoClose: true
             });
         });
-    </script>
 
+    </script>
 {% endblock %}

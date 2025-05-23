@@ -11,6 +11,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from datetime import datetime
+import jdatetime
 from .models import PatientsFile
 from django.views.generic import DetailView, CreateView, ListView
 from django.urls import reverse, reverse_lazy
@@ -45,35 +46,49 @@ def comment_delete(request, model_type, id):
 
 
 
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import PatientsFile  # مدل خودت
+import datetime
+
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.contrib import messages
+import jdatetime
+
 @login_required
 def patient_profile(request):
-    """View and edit patient profile (updates both User and PatientsFile)"""
     user = request.user
     patient, created = PatientsFile.objects.get_or_create(
         user=user,
         defaults={
-            # 'name': user.get_full_name() or user.first_name,
             'phone': user.phone,
             'email': user.email
         }
     )
 
+    # تبدیل تاریخ تولد میلادی به شمسی برای نمایش در فرم
+    if patient.birthdate:
+        jalali_birthdate = jdatetime.date.fromgregorian(date=patient.birthdate).strftime('%Y/%m/%d')
+    else:
+        jalali_birthdate = ''
+
     if request.method == 'POST':
         try:
-            # 1. Update User model fields
+            # آپدیت User
             user.first_name = request.POST.get('f_name', user.first_name)
             user.last_name = request.POST.get('l_name', user.last_name)
             user.email = request.POST.get('email', user.email)
 
-            # Only update phone if it's changed and not empty
             new_phone = request.POST.get('phone')
             if new_phone and new_phone != user.phone:
                 user.phone = new_phone
 
             user.save()
 
-            # 2. Update PatientFile model
-            # patient.name = f"{user.first_name} {user.last_name}".strip()
+            # آپدیت PatientFile
             patient.phone = user.phone
             patient.email = user.email
             patient.national_id = request.POST.get('national_id', patient.national_id)
@@ -84,10 +99,9 @@ def patient_profile(request):
                 patient.city_id = int(request.POST.get('city'))
 
             if 'birthdate' in request.POST and request.POST['birthdate']:
-                patient.birthdate = datetime.strptime(
-                    request.POST['birthdate'],
-                    '%Y-%m-%d'
-                ).date()
+                jalali_date_str = request.POST['birthdate'].replace('-', '/')
+                year, month, day = map(int, jalali_date_str.split('/'))
+                patient.birthdate = jdatetime.date(year, month, day).togregorian()
 
             patient.save()
 
@@ -97,14 +111,14 @@ def patient_profile(request):
         except Exception as e:
             messages.error(request, f"خطا در به‌روزرسانی پروفایل: {str(e)}")
 
-    # Prepare context for GET request
     context = {
         'patient': patient,
         'user': user,
+        'jalali_birthdate': jalali_birthdate,
         'birthdate': patient.birthdate.strftime('%Y-%m-%d') if patient.birthdate else ''
     }
-
     return render(request, 'patients/information.html', context)
+
 
 @login_required
 def patient_appointments(request):
