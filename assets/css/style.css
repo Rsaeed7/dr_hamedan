@@ -3637,6 +3637,37 @@ ul.bullets li:before {
   background-color: rgba(26, 186, 211, 0.28);
 }
 
+
+
+
+#online_visit {
+  width: 250px;
+  height: 40px;
+  background: #1e4460;
+  text-align: center;
+  padding: 10px;
+  line-height: 20px;
+  position: fixed;
+  bottom: 85px;
+  right: 15px;
+  cursor: pointer;
+  display: none;
+  color: #ffffff;
+  font-size: 15px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  border-radius: 50px;
+  z-index: 99;
+}
+#online_visit:before {
+  font-family: "fontello";
+  content: "\e935";
+  color: #81c88f;
+  margin-left: 5px;
+}
+
+
 /*-------- badges --------*/
 
 

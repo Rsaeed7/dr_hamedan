@@ -166,23 +166,16 @@
                 </div>
             </aside>
             <div class="col-lg-9">
-                <ul class="nav center-content margin-10  bg-gradiant3" role="tablist">
+                <ul class=" center-content margin-10" role="tablist">
                     <li>
-                        <a class="nav-link  active p_1" id="general-tab" data-toggle="tab"
-                           href="#turn"
-                           role="tab" aria-controls="turn" aria-expanded="true">نوبت حضوری</a>
+                        <a class="nav-link  active p_1  dr_box2">دریافت نوبت حضوری</a>
                     </li>
                     <li>
-                        <a class="nav-link p_1" id="phone_turn-tab" data-toggle="tab" href="#phone_turn"
-                           role="tab" aria-controls="phone_turn">مشاوره تلفنی</a>
-                    </li>
-                    <li>
-                        <a class="nav-link p_1" id="text_turn-tab" data-toggle="tab" href="#text_turn"
-                           role="tab" aria-controls="text_turn">مشاوره متنی</a>
+                        <a class="nav-link p_1 font-weight-light"  href="{% url 'chat:list_doctors' %}"> مشاوره آنلاین و متنی میخواهید؟ <span class="text-success font-weight-bold">دریافت مشاوره آنلاین</span></a>
                     </li>
                 </ul>
 
-                <div class="row tab-pane fade show active" id="turn" role="tabpanel"
+                <div class="row tab-pane fade show active" id="turn"
                      aria-labelledby="turn-tab">
                     {% for doctor in doctors %}
                         <div class="col-md-6">
@@ -216,7 +209,7 @@
                     {% endfor %}
 
                 </div>
-                <div id="phone_turn"></div>
+
                 <!-- pagination -->
                 <div>
                     <div class="add_top_20">
