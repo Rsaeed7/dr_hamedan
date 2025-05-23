@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'django_jalali',
     'tailwind',
     'channels',
+
     
     # Local apps
     'chatmed',

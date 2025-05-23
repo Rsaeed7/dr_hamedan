@@ -6,6 +6,7 @@ app_name = 'chat'
 urlpatterns = [
     # درخواست‌های چت
     path('request/<int:doctor_id>/', views.request_chat, name='request_chat'),
+    path('request-status/<int:request_id>/', views.request_status, name='request_status'),
     path('requests/<int:request_id>/<str:action>/', views.manage_chat_request, name='manage_request'),
 
     # اتاق‌های چت
@@ -21,5 +22,7 @@ urlpatterns = [
     # صفحه اصلی
     path('', views.home, name='chat_home'),
 
-    path('doctors/', views.list_doctors, name='list_doctors'),
+    path('online_doctors/', views.list_doctors, name='list_doctors'),
+
+    path('room/<int:room_id>/close/', views.close_chat, name='close_chat'),
 ]

@@ -133,7 +133,7 @@
     position: relative;
     border: 1px solid #e0e0e0;
     border-radius: 15px;
-    background: white; /* پس‌زمینه سفید */
+    background: white;
     cursor: pointer;
     transition: all 0.2s;
     overflow: hidden;
@@ -156,20 +156,20 @@
 }
 
 .tip-input:checked + .tip-content {
-    background: #e3f2fd; /* آبی روشن هنگام انتخاب */
+    background: #e3f2fd;
     color: #1976d2;
     border-color: #90caf9;
 }
 
-/* حالت hover */
+
 .compact-tip:hover {
     border-color: #90caf9;
 }
 
-/* تنظیم تعداد آیتم در هر ردیف */
+
 @media (min-width: 768px) {
     .compact-tip {
-        flex: 0 0 calc(20% - 6px); /* 5 آیتم در هر ردیف */
+        flex: 0 0 calc(20% - 6px);
     }
 }
 
@@ -478,25 +478,24 @@
                         <a href="{% url 'reservations:book_appointment' doctor.pk %}" class="btn btn-success col-lg-12 m-b-10 m-t-15">دریافت نوبت</a>
                 </div>
     
+{#                <div class="box_general_3 booking border-0-m">#}
+{#                        <div class="m-t-2 m-b-20">#}
+{#                            <h6 class="text_dr_3"><i class="icon-user-add-outline"></i>دریافت مشاوره تلفنی</h6>#}
+{#                            <small class="text_dr_3">هزینه مشاوره 150 هزار تومان</small>#}
+{#                        </div>#}
+{#                        <small class="rev-info text-sm-right">مشاوره تلفنی به مدت <span#}
+{#                                class="text-info">15 دقیقه</span></small>#}
+{#                        <a href="" class="btn btn-info col-lg-12 m-b-10 m-t-15">دریافت مشاوره تلفنی</a>#}
+{#                </div>#}
                 <div class="box_general_3 booking border-0-m">
-                        <div class="m-t-2 m-b-20">
-                            <h6 class="text_dr_3"><i class="icon-user-add-outline"></i>دریافت مشاوره تلفنی</h6>
-                            <small class="text_dr_3">هزینه مشاوره 150 هزار تومان</small>
-                        </div>
-                        <small class="rev-info text-sm-right">مشاوره تلفنی به مدت <span
-                                class="text-info">15 دقیقه</span></small>
-                        <a href="" class="btn btn-info col-lg-12 m-b-10 m-t-15">دریافت مشاوره تلفنی</a>
-                </div>
-                <div class="box_general_3 booking border-0-m">
-                    <form>
                         <div class="m-t-2 m-b-20">
                             <h6 class="text_dr_3"><i class="icon-user-add-outline"></i>دریافت مشاوره متنی آنلاین</h6>
                             <small class="text_dr_3">هزینه مشاوره 100 هزار تومان</small>
                         </div>
-                        <small class="rev-info text-sm-right">مشاوره تلفنی به مدت <span
+                        <small class="rev-info text-sm-right">مشاوره متنی به مدت <span
                                 class="text-info">30 دقیقه</span></small>
-                        <a href="" class="btn btn-primary col-lg-12 m-b-10 m-t-15">دریافت مشاوره متنی</a>
-                    </form>
+                        <a href="{% url 'chat:request_chat' doctor.id %}" class="btn btn-primary col-lg-12 m-b-10 m-t-15">دریافت مشاوره متنی</a>
+
                 </div>
 
             </aside>

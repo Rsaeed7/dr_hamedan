@@ -1,3 +1,5 @@
+from django.contrib import messages
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
@@ -8,15 +10,18 @@ from doctors.models import Doctor
 from patients.models import PatientsFile as Patient
 
 
+
 @login_required
 def request_chat(request, doctor_id):
     """
     بیمار درخواست چت با پزشک را ارسال می‌کند
+    و به صفحه وضعیت هدایت می‌شود
     """
     doctor = get_object_or_404(Doctor, id=doctor_id)
 
     if not hasattr(request.user, 'patient'):
-        return JsonResponse({'status': 'error', 'message': 'فقط بیماران می‌توانند درخواست چت ارسال کنند'}, status=403)
+        messages.error(request, 'فقط بیماران می‌توانند درخواست چت ارسال کنند')
+        return redirect('home')
 
     patient = request.user.patient
 
@@ -27,11 +32,8 @@ def request_chat(request, doctor_id):
     ).first()
 
     if existing_request:
-        return JsonResponse({
-            'status': 'exists',
-            'request_id': existing_request.id,
-            'current_status': existing_request.get_status_display()
-        })
+        messages.info(request, 'شما قبلاً برای این پزشک درخواست ارسال کرده‌اید')
+        return redirect('chat:request_status', request_id=existing_request.id)
 
     # ایجاد درخواست جدید
     new_request = ChatRequest.objects.create(
@@ -39,9 +41,27 @@ def request_chat(request, doctor_id):
         doctor=doctor
     )
 
-    return JsonResponse({
-        'status': 'created',
-        'request_id': new_request.id
+    messages.success(request, 'درخواست چت با موفقیت ثبت شد')
+    return redirect('chat:request_status', request_id=new_request.id)
+
+
+@login_required
+def request_status(request, request_id):
+    """نمایش وضعیت درخواست چت"""
+    chat_request = get_object_or_404(ChatRequest, id=request_id)
+
+    # بررسی مالکیت درخواست
+    if hasattr(request.user, 'patient'):
+        if chat_request.patient != request.user.patient:
+            raise PermissionDenied
+    elif hasattr(request.user, 'doctor'):
+        if chat_request.doctor != request.user.doctor:
+            raise PermissionDenied
+    else:
+        raise PermissionDenied
+
+    return render(request, 'chat/status_request.html', {
+        'request': chat_request
     })
 
 
@@ -252,3 +272,21 @@ def list_doctors(request):
     return render(request, 'chat/online_doctors.html', {
         'doctors': available_doctors
     })
+
+
+@require_POST
+@login_required
+def close_chat(request, room_id):
+    chat_room = get_object_or_404(ChatRoom, id=room_id)
+
+    # بررسی اینکه کاربر پزشک است
+    if not hasattr(request.user, 'doctor') or chat_room.request.doctor != request.user.doctor:
+        return JsonResponse({'status': 'error', 'message': 'شما مجاز به پایان دادن این چت نیستید'}, status=403)
+
+    reason = request.POST.get('reason', '')
+
+    try:
+        chat_room.close_chat(request.user, reason)
+        return JsonResponse({'status': 'success', 'message': 'چت با موفقیت پایان یافت'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)

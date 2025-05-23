@@ -16,9 +16,10 @@
 
                         {% if chat_rooms %}
                             <a href="{% url 'chat:list_doctors' %}"
-                               class="btn btn-success" style="float: left;">
+                               class="btn btn-success float-l ">
                                 درخواست مشاوره انلاین جدید
                             </a>
+                            <br><br><br>
                             <h4 class=" m-b-20">گفت و گو های جاری</h4>
 
                             {% for room in chat_rooms %}
@@ -31,9 +32,9 @@
                                         <small>
                                             <span class="bg-light rounded fs-10">{{ room.request.doctor.specialization }}</span>
                                         </small>
-                                        <h3>دکتر {{ room.request.doctor.user.get_full_name }}</h3>
-                                        <p class="small"> آخرین
-                                            پیام: {{ room.last_message.content|truncatechars:50 }}</p>
+                                        <h3 class="fs-15"><span class="fs-10">دکتر</span> {{ room.request.doctor.user.get_full_name }}</h3>
+                                        <p class="fs-8"> آخرین
+                                            پیام: {{ room.messages.first.content|truncatechars:50 }}</p>
                                         <small class="text-sm-right"><i
                                                 class="icon-clock-alt"></i>آخرین
                                             فعالیت {{ room.last_activity|date:"Y/m/d H:i" }}</small>
@@ -53,7 +54,7 @@
                             {% endfor %}
                         {% else %}
                             <p class="text-center">گفت و گوی فعالی ندارید!</p>
-                            <a href="#" class="btn btn-outline-primary col-12">آغاز ویزیت آنلاین و متنی</a>
+                            <a href="{% url 'chat:doctor_list' %}" class="btn btn-outline-primary col-12">آغاز ویزیت آنلاین و متنی</a>
 
                         {% endif %}
                     </div>
