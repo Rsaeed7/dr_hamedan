@@ -1,0 +1,61 @@
+{% extends  'base/base.html' %}
+{% load static %}
+{% block body %}
+
+    <div class="filters_listing d-lg-none">
+        <div class="container">
+            <a href="{% url 'patients:patient_dashboard' %}" class="text-dr"><i class="icon-right-open"></i>داشبورد</a>
+        </div>
+    </div>
+
+    <section class="bg-light">
+        <div class="container margin_120_95">
+            <div class="row">
+                <div class="col-lg-12 ml-auto">
+                    <div class=" border-0">
+                        <h6 class="col-12 icon-info-circled">وضعیت درخواست مشاوره آنلاین</h6>
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-dismissible
+                            {% if message.tags == 'success' %}bg-light-green
+                            {% elif message.tags == 'info' %}bg-light-blue
+                            {% endif %}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        <div class="strip_list wow fadeIn border-0 bg-light-blue p-4 ">
+                            <figure>
+                                <img class="rounded" src="{{ request.doctor.profile_image.url }}"
+                                     alt="{{ request.doctor.doctor }}">
+                            </figure>
+                            <small>
+                                <span class="bg-light rounded fs-10">{{ request.doctor.specialization }}</span>
+                            </small>
+                            <h3>دکتر {{ request.doctor.user.get_full_name }}</h3>
+
+                            <small class="text-sm-right"><i
+                                    class="icon-clock-alt"></i> تاریخ درخواست {{ request.created_at|date:"Y/m/d H:i" }}
+                            </small>
+
+
+                            <p class="p-t-10 p-r-4"> وضعیت درخواست : <span
+                                    class="p-l-10 p-r-10  rounded-10 tex  m-b-10 m-t-20 {% if request.status == 'approved' %}bg-light-green
+                                            {% elif request.status == 'pending' %}bg-light-yellow
+                                            {% else %}bg-danger text-white
+                                            {% endif %}">
+                                            {% if request.status == 'approved' %}  فعال
+                                            {% elif request.status == 'pending' %}در انتظار تایید
+                                            {% else %}رد شده
+                                            {% endif %}</span > {% if request.status == 'approved' %}<a href="{% url 'chat:chat_room' request.chat_room.id %}" class="p-l-10 p-r-10 rounded-10 text-white m-b-10 m-t-20 bg-primary m-r-10" >برو به گفت و گو</a> {% endif %}</p>
+
+                        </div>
+                        <a href="{% url 'chat:list_doctors' %}" class="float-l">درخواست مشاوره آنلاین جدید</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+{% endblock %}
