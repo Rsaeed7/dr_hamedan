@@ -68,6 +68,12 @@
         border-left: 4px solid #f44336;
     }
 
+    /* استایل برای پیام‌های اینفو */
+    .floating-alert.info {
+        background-color: #f3feff;
+        border-left: 4px solid #3588bf;
+    }
+
     /* استایل آیکون */
     .alert-icon {
         margin-right: 10px;
@@ -80,6 +86,10 @@
 
     .error .alert-icon {
         color: #f44336;
+    }
+
+    .info .alert-icon {
+        color: #3588bf;
     }
 
     /* تایمر از راست پر و به چپ خالی میشود */
@@ -108,6 +118,10 @@
 
     .error .alert-timer::before {
         background: #f44336;
+    }
+
+    .info .alert-timer::before {
+        background: #3588bf;
     }
 
     @keyframes timer {
@@ -233,6 +247,7 @@
 
 
     </div>
+
 </header>
 {% if messages %}
     {% for message in messages %}
@@ -241,6 +256,8 @@
                 <i class="icon-ok-5 m-l-2"></i>
             {% elif message.tags == 'error' %}
                 <i class="icon-cancel-6 m-l-2"></i>
+            {% elif message.tags == 'info' %}
+                <i class="icon-info m-l-2"></i>
             {% endif %}
             {{ message }}
             <div class="alert-timer"></div> <!-- تایمر جدید -->
@@ -301,7 +318,7 @@
 </div>
 <!-- /mobile footer -->
 <script>
-    // اسکریپت اصلی شما بدون تغییر
+
     window.addEventListener("scroll", function () {
         var bottomNav = document.getElementById("bottom-nav");
         var scrollPosition = window.scrollY + window.innerHeight;

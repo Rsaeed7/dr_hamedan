@@ -743,7 +743,7 @@ input:checked + .slider:before {
 
 .status-indicator {
     position: absolute;
-    top: 0; /* تغییر از bottom به top */
+    top: 0;
     right: 1px;
     width: 12px;
     height: 12px;

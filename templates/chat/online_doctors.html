@@ -99,6 +99,14 @@
                 </div>
             </aside>
             <div class="col-lg-9">
+                <ul class=" center-content margin-10" role="tablist">
+                    <li>
+                        <a class="nav-link  active p_1  dr_box2">دریافت مشاوره آنلاین</a>
+                    </li>
+                    <li>
+                        <a class="nav-link p_1 font-weight-light" href="{% url 'doctors:doctor_list' %}">نوبت ویزیت حضوری در مطب پزشک میخواهید؟<span class="text-info font-weight-bold">دریافت نوبت حضوری</span></a>
+                    </li>
+                </ul>
                 <div class="row tab-pane fade show active" id="turn" role="tabpanel"
                      aria-labelledby="turn-tab">
                     {% for doctor in doctors %}
@@ -127,7 +135,7 @@
                             </div>
                         </div>
                     {% empty %}
-                        <h6>پزشکی با مشخصات مورد نیاز شما یافت نشد!</h6>
+                        <h6>پزشکی آنلاین با مشخصات مورد نیاز شما یافت نشد!</h6>
                     {% endfor %}
 
                 </div>
