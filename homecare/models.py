@@ -1,4 +1,5 @@
 from django.db import models
+from django_jalali.db import models as jmodels
 from doctors.models import City
 from patients.models import PatientsFile
 
@@ -39,13 +40,13 @@ class HomeCareRequest(models.Model):
 
     patient = models.ForeignKey(PatientsFile, on_delete=models.CASCADE, verbose_name="بیمار")
     service = models.ForeignKey(Service, on_delete=models.SET_NULL, null=True, verbose_name="خدمت درخواستی")
-    requested_date = models.DateField(verbose_name="تاریخ مورد نظر")
+    requested_date = jmodels.jDateField(verbose_name="تاریخ مورد نظر")
     requested_time = models.TimeField(verbose_name="ساعت مورد نظر")
     city = models.ForeignKey(City, on_delete=models.CASCADE)
     address = models.TextField(verbose_name="آدرس دقیق بیمار")
     extra_notes = models.TextField(blank=True, verbose_name="توضیحات اضافی")
     prescription_file = models.FileField(upload_to='prescriptions/', blank=True, null=True, verbose_name="فایل نسخه")
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = jmodels.jDateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="وضعیت درخواست")
 
     def __str__(self):

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load jalali_tags %}
 
 {% block title %}تاریخچه تراکنش‌ها - دکتر همدان{% endblock %}
 
@@ -162,7 +163,7 @@
                                 {% for transaction in transactions %}
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ transaction.created_at|date:"M d, Y H:i" }}
+                                            {{ transaction.created_at|jformat:"j F Y H:i" }}
                                         </td>
                                         <td class="px-6 py-4 text-sm text-gray-900">
                                             {{ transaction.description|default:"" }}

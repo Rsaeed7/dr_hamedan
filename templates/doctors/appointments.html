@@ -1,56 +1,98 @@
 {% extends 'base.html' %}
 
-{% block title %}نوبت‌های من - دکتر {% endblock %}
+{% block title %}نوبت‌های من - دکتر همدان{% endblock %}
 
 {% block extra_css %}
-    <style>
-        .sidebar {
-            height: calc(100vh - 4rem);
-        }
+<!-- Add Jalali Datepicker CSS -->
+<link rel="stylesheet" href="https://unpkg.com/persian-datepicker@latest/dist/css/persian-datepicker.min.css">
+<style>
+    .sidebar {
+        height: calc(100vh - 4rem);
+    }
 
-        .main-content {
-            height: calc(100vh - 4rem);
-            overflow-y: auto;
-        }
+    .main-content {
+        height: calc(100vh - 4rem);
+        overflow-y: auto;
+    }
 
-        @media (max-width: 768px) {
-            .sidebar, .main-content {
-                height: auto;
-            }
+    @media (max-width: 768px) {
+        .sidebar, .main-content {
+            height: auto;
         }
+    }
 
-        .appointment-card {
-            transition: all 0.2s;
-        }
+    .appointment-card {
+        transition: all 0.2s;
+    }
 
-        .appointment-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
+    .appointment-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
 
-        /* RTL Direction */
-        body {
-            direction: rtl;
-            text-align: right;
-        }
+    /* RTL Direction */
+    body {
+        direction: rtl;
+        text-align: right;
+    }
 
-        /* Fix for dropdown menus */
-        .dropdown-menu {
-            left: auto !important;
-            right: 0 !important;
-        }
+    /* Fix for dropdown menus */
+    .dropdown-menu {
+        left: auto !important;
+        right: 0 !important;
+    }
 
-        /* Fix for icons positioning */
-        .icon-left {
-            margin-right: 0;
-            margin-left: 0.5rem;
-        }
+    /* Fix for icons positioning */
+    .icon-left {
+        margin-right: 0;
+        margin-left: 0.5rem;
+    }
 
-        /* Fix for form elements */
-        select, input {
-            text-align: right;
-        }
-    </style>
+    /* Fix for form elements */
+    select, input {
+        text-align: right;
+    }
+
+    /* RTL specific styles */
+    .rtl .mr-3 {
+        margin-right: 0;
+        margin-left: 0.75rem;
+    }
+    
+    .rtl .text-right {
+        text-align: left;
+    }
+    
+    .rtl .justify-between {
+        justify-content: space-between;
+    }
+    
+    .rtl .items-center {
+        align-items: center;
+    }
+    
+    .rtl .flex-row {
+        flex-direction: row-reverse;
+    }
+    
+    .rtl .flex-col {
+        flex-direction: column;
+    }
+    
+    .rtl .gap-4 {
+        gap: 1rem;
+    }
+    
+    .rtl .md:pr-4 {
+        padding-right: 0;
+        padding-left: 1rem;
+    }
+    
+    .rtl .md:pl-4 {
+        padding-left: 0;
+        padding-right: 1rem;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -151,14 +193,14 @@
 
                     <div>
                         <label for="date_from" class="block text-sm font-medium text-gray-700 mb-1">از تاریخ</label>
-                        <input type="date" id="date_from" name="date_from" value="{{ date_from|date:'Y-m-d' }}"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        <input type="text" id="date_from" name="date_from" value="{{ date_from|date:'Y-m-d' }}"
+                               class="jalali-datepicker w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     </div>
 
                     <div>
                         <label for="date_to" class="block text-sm font-medium text-gray-700 mb-1">تا تاریخ</label>
-                        <input type="date" id="date_to" name="date_to" value="{{ date_to|date:'Y-m-d' }}"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        <input type="text" id="date_to" name="date_to" value="{{ date_to|date:'Y-m-d' }}"
+                               class="jalali-datepicker w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     </div>
 
                     <div class="flex items-end">
@@ -374,4 +416,24 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Add jQuery if not already included -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Add Jalali Datepicker -->
+<script src="https://unpkg.com/persian-date@latest/dist/persian-date.min.js"></script>
+<script src="https://unpkg.com/persian-datepicker@latest/dist/js/persian-datepicker.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.jalali-datepicker').persianDatepicker({
+            format: 'YYYY/MM/DD',
+            altFormat: 'YYYY-MM-DD',
+            observer: true,
+            initialValue: true,
+            autoClose: true,
+            initialValueType: 'gregorian'
+        });
+    });
+</script>
 {% endblock %}

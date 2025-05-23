@@ -1,3 +1,4 @@
+{% load jalali_tags %}
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
@@ -127,7 +128,7 @@
             <tr>
                 <td><strong>نام بیمار:</strong> {{ report.name }}</td>
                 <td><strong>پزشک معالج:</strong> {{ report.dr_requesting }}</td>
-                <td><strong>تاریخ پذیرش:</strong> {{ report.created_at|date:"Y/m/d" }}</td>
+                <td><strong>تاریخ پذیرش:</strong> {{ report.created_at|jformat:"Y/m/d" }}</td>
                 <td><strong>سن بیمار:</strong> {{ report.age }}</td>
             </tr>
         </table>

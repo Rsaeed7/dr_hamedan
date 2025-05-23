@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load jalali_tags %}
 
 {% block title %}کیف پول من - دکتر همدان{% endblock %}
 
@@ -135,7 +136,7 @@
                                 {% for transaction in recent_transactions %}
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ transaction.created_at|date:"Y/m/d" }}
+                                            {{ transaction.created_at|jformat:"Y/m/d" }}
                                         </td>
                                         <td class="px-6 py-4 text-sm text-gray-900">
                                             {{ transaction.description|default:"" }}
