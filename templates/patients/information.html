@@ -1,6 +1,6 @@
 {% extends  'base/base.html' %}
 {% load static %}
-{% load jalali_tags %}
+
 {% block body %}
 
     <div class="filters_listing d-lg-none">
@@ -70,7 +70,7 @@
                                     <div class="form-group">
                                         <label>سن</label>
                                         <input type="text" id="birthdate" name="birthdate"
-                                               value="{{ patient.birthdate|jformat:'Y-m-d' }}" class="form-control jalali-datepicker"
+                                               value="{{ patient.birthdate }}" class="form-control jalali-datepicker"
                                                placeholder="تاریخ تولد خود را وراد کنید">
                                         <small>{{ patient.age }} سال </small>
                                     </div>
