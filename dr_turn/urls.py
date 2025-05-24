@@ -28,6 +28,7 @@ urlpatterns = [
     path('patients/', include('patients.urls')),
     path('wallet/', include('wallet.urls')),
     path('docpages/', include('docpages.urls')),
+    path('discounts/', include('discounts.urls')),
     path('', include('doctors.urls', namespace='home')),  # Home page will be handled by doctors app
     path('medimag/', include('medimag.urls')),
     path('', include('about_us.urls')),
