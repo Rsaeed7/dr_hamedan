@@ -57,10 +57,10 @@
         <div class="bg-white rounded-lg shadow-md p-6">
             <div class="flex items-center mb-6">
                 <div class="w-12 h-12 rounded-full bg-blue-200 flex items-center justify-center ml-3">
-                    <span class="text-blue-600 text-xl font-bold">{{ user.first_name|first|default:user.username|first|upper }}</span>
+                    <span class="text-blue-600 text-xl font-bold">{{ user.first_name|first|default:user.phone|first|upper }}</span>
                 </div>
                 <div>
-                    <h3 class="text-lg font-semibold text-gray-800">{{ user.get_full_name|default:user.username }}</h3>
+                    <h3 class="text-lg font-semibold text-gray-800">{{ user.get_full_name|default:user.phone }}</h3>
                     <p class="text-gray-600 text-sm">بیمار</p>
                 </div>
             </div>

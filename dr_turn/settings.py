@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'medimag.apps.MedimagConfig',
     'about_us.apps.AboutUsConfig',
     'homecare.apps.HomecareConfig',
+    'discounts.apps.DiscountsConfig',
 
 ]
 

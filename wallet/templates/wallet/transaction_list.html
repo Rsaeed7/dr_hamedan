@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لیست تراکنش‌ها - دکتر همدان</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h1 class="text-2xl font-bold text-gray-800 mb-6">لیست تراکنش‌ها</h1>
+            
+            {% if transactions %}
+                <div class="overflow-x-auto">
+                    <table class="w-full table-auto">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="px-4 py-2 text-right">نوع تراکنش</th>
+                                <th class="px-4 py-2 text-right">مبلغ</th>
+                                <th class="px-4 py-2 text-right">وضعیت</th>
+                                <th class="px-4 py-2 text-right">تاریخ</th>
+                                <th class="px-4 py-2 text-right">توضیحات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in transactions %}
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="px-4 py-2">
+                                        {% if transaction.transaction_type == 'deposit' %}
+                                            <span class="text-green-600">واریز</span>
+                                        {% elif transaction.transaction_type == 'withdraw' %}
+                                            <span class="text-red-600">برداشت</span>
+                                        {% elif transaction.transaction_type == 'payment' %}
+                                            <span class="text-blue-600">پرداخت</span>
+                                        {% else %}
+                                            {{ transaction.get_transaction_type_display }}
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-4 py-2">
+                                        {{ transaction.amount|floatformat:0 }} تومان
+                                    </td>
+                                    <td class="px-4 py-2">
+                                        {% if transaction.status == 'completed' %}
+                                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm">تکمیل شده</span>
+                                        {% elif transaction.status == 'pending' %}
+                                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-sm">در انتظار</span>
+                                        {% elif transaction.status == 'failed' %}
+                                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-sm">ناموفق</span>
+                                        {% else %}
+                                            {{ transaction.get_status_display }}
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-4 py-2">
+                                        {{ transaction.created_at|date:"Y/m/d H:i" }}
+                                    </td>
+                                    <td class="px-4 py-2">
+                                        {{ transaction.description|default:"—" }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-8">
+                    <p class="text-gray-500">هیچ تراکنشی یافت نشد.</p>
+                </div>
+            {% endif %}
+            
+            <div class="mt-6">
+                <a href="{% url 'wallet:wallet_dashboard' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+                    بازگشت به داشبورد
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

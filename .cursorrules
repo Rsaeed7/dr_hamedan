@@ -1,0 +1,154 @@
+# Dr. Turn - Doctor Appointment Booking System - Cursor Rules
+
+You are an expert Django developer working on the Dr. Turn project, a comprehensive doctor appointment booking system. This project manages doctors, patients, clinics, reservations, and related healthcare workflows.
+
+## Project Overview
+- **Main Framework**: Django 5.2 with DRF
+- **Language**: Python 3.13, Persian/Farsi UI
+- **Database**: SQLite (dev), PostgreSQL recommended for production
+- **Frontend**: HTML/CSS with Tailwind CSS, Vanilla JavaScript
+- **Date System**: Persian/Jalali calendar using django-jalali
+- **Real-time**: Django Channels for WebSocket support
+- **Architecture**: Multi-app Django project with clear separation of concerns
+
+## Key Django Apps
+- `user`: Custom user model and authentication
+- `doctors`: Doctor profiles, availability, specializations
+- `patients`: Patient management and profiles  
+- `clinics`: Clinic management and doctor affiliations
+- `reservations`: Core appointment booking system
+- `wallet`: Payment and transaction management
+- `chatmed`: Real-time messaging system
+- `medimag`: Medical imaging functionality
+- `homecare`: Home healthcare services
+- `docpages`: Doctor content management
+- `about_us`: Static content pages
+
+## Code Style Guidelines
+
+### Python/Django Standards
+- Follow PEP 8 and Django coding standards
+- Use meaningful variable and function names in English
+- Write docstrings for complex methods and classes
+- Use type hints where appropriate
+- Follow Django model/view/template conventions
+
+### Model Design Patterns
+- Use `jmodels.jDateTimeField` for datetime fields (Jalali calendar support)
+- Always include `verbose_name` for model fields in Persian
+- Use proper `related_name` for ForeignKey relationships
+- Include `Meta` class with `verbose_name` and `verbose_name_plural` in Persian
+- Use `__str__` methods that return meaningful representations
+
+### View Patterns
+- Use class-based views for CRUD operations
+- Include proper permission checks and authentication
+- Return JSON responses for AJAX requests
+- Handle exceptions gracefully with user-friendly messages
+- Use pagination for list views
+
+### Template Guidelines
+- Load required template tags: `{% load jformat %}` for Jalali dates
+- Use `{{ date_field|jformat:"%Y/%m/%d" }}` for date formatting
+- Follow RTL (right-to-left) layout patterns for Persian UI
+- Use Tailwind CSS classes for styling
+- Include CSRF tokens in forms
+- Use semantic HTML structure
+
+### URL Patterns
+- Use namespaced URLs with app prefixes
+- Follow RESTful conventions where possible
+- Use descriptive URL names
+- Include proper URL parameters validation
+
+## Specific Project Patterns
+
+### Date Handling
+- Always use `jmodels.jDateTimeField` for Persian calendar
+- Format dates in templates with `|jformat:"%Y/%m/%d"`
+- Use `django_jalali` utilities for date conversions
+- Consider timezone handling with `USE_TZ = True`
+
+### User Authentication
+- Custom user model in `user.models.User`
+- Support both email and username authentication
+- Include proper user type distinctions (doctor, patient, admin)
+
+### Appointment System
+- Use `ReservationDay` for publishing available dates
+- Handle time slot calculations with 30-minute intervals
+- Implement proper status tracking (pending, confirmed, completed, cancelled)
+- Include payment status integration
+
+### Real-time Features
+- Use Django Channels for WebSocket connections
+- Implement proper channel layer configuration
+- Handle connection authentication and authorization
+
+### Payment Integration
+- Use wallet system for transaction management
+- Track payment status and earnings calculations
+- Include proper audit trails for financial data
+
+## File Organization
+
+### Static Files
+- CSS/JS in `assets/` directory
+- Media files in `media/` for user uploads
+- Use Django's static file handling
+
+### Templates
+- Base template in `templates/base.html`
+- App-specific templates in `templates/{app_name}/`
+- Use template inheritance and include patterns
+- Follow consistent naming conventions
+
+## Security Guidelines
+- Always validate user input
+- Use CSRF protection for forms
+- Implement proper permission checks
+- Sanitize user-generated content
+- Use Django's built-in security features
+
+## Performance Considerations
+- Use `select_related()` and `prefetch_related()` for queries
+- Implement proper caching strategies
+- Optimize database queries
+- Use pagination for large datasets
+- Consider using database indexes
+
+## Testing Patterns
+- Write unit tests for models and views
+- Use Django's test client for integration tests
+- Test permission and authentication logic
+- Include edge cases and error conditions
+
+## Common Tasks
+
+### Adding New Models
+1. Define model with proper Meta class and Persian verbose names
+2. Create and run migrations
+3. Register in admin.py with Persian admin interface
+4. Add to relevant URLs and views
+5. Create templates with Jalali date support
+
+### Creating Views
+1. Use appropriate base classes (ListView, DetailView, etc.)
+2. Include authentication and permission checks
+3. Handle GET and POST requests properly
+4. Return appropriate responses (HTML, JSON, redirects)
+5. Include proper error handling
+
+### Working with Dates
+1. Use `jmodels.jDateTimeField` in models
+2. Load `jformat` tags in templates
+3. Format dates with Persian calendar
+4. Handle timezone conversions properly
+
+### AJAX Integration
+1. Include CSRF tokens in AJAX requests
+2. Return JSON responses with proper status codes
+3. Handle errors gracefully in JavaScript
+4. Update UI dynamically without page refresh
+
+Remember to maintain consistency with existing code patterns and follow the Persian/RTL UI conventions throughout the project. 
