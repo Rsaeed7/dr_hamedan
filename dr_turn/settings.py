@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'about_us.apps.AboutUsConfig',
     'homecare.apps.HomecareConfig',
     'discounts.apps.DiscountsConfig',
+    'sms_reminders',
 
 ]
 
@@ -178,4 +179,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = "user.User"
 
 AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend','user.authentication.EmailAthBackend']
+
+# SMS Configuration
+SMS_API_KEY = 'wZYwHS1oPJTV5pJ8SJUkdfrZf7Vh2iFzFN84sdUPc9bjE4s8fE6BN8k0KzNm4e1Y'
+SMS_LINE_NUMBER = '30007487130094'
+
+# SMS Reminder Settings
+SMS_REMINDER_ENABLED = True
+SMS_REMINDER_HOURS = [24, 2]  # Send reminders 24 hours and 2 hours before appointment
 
