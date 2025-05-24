@@ -144,8 +144,8 @@ class DiscountUsageAdmin(admin.ModelAdmin):
 @admin.register(AutomaticDiscount)
 class AutomaticDiscountAdmin(admin.ModelAdmin):
     list_display = (
-        'name', 'discount', 'is_first_appointment', 'min_appointments_count', 
-        'is_weekend', 'is_active', 'created_at'
+        'name', 'discount', 'is_first_appointment', 'max_free_appointments',
+        'min_appointments_count', 'is_weekend', 'is_active', 'created_at'
     )
     list_filter = ('is_active', 'is_first_appointment', 'is_weekend', 'created_at')
     search_fields = ('name', 'discount__title')
@@ -157,10 +157,10 @@ class AutomaticDiscountAdmin(admin.ModelAdmin):
         }),
         ('شرایط خودکار', {
             'fields': (
-                'is_first_appointment', 'min_appointments_count', 
+                'is_first_appointment', 'max_free_appointments', 'min_appointments_count', 
                 'is_weekend', 'specific_days'
             ),
-            'description': 'شرایطی که باید برای اعمال خودکار تخفیف برقرار باشد'
+            'description': 'شرایطی که باید برای اعمال خودکار تخفیف برقرار باشد. برای نوبت‌های رایگان، max_free_appointments را تنظیم کنید.'
         })
     )
 

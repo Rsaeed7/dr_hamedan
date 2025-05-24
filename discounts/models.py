@@ -159,6 +159,15 @@ class Discount(models.Model):
         if not self.can_be_used_by_user(user):
             return False, "امکان استفاده از این تخفیف وجود ندارد"
         
+        # بررسی شرایط تخفیف خودکار اگر وجود دارد
+        try:
+            automatic_discount = self.automaticdiscount
+            if not automatic_discount.check_conditions(reservation, user):
+                return False, "شرایط تخفیف خودکار برآورده نشده است"
+        except AutomaticDiscount.DoesNotExist:
+            # این تخفیف خودکار نیست، ادامه دهید
+            pass
+        
         # بررسی قابلیت اعمال تخفیف
         if not self._is_applicable_to_reservation(reservation):
             return False, "این تخفیف برای این نوبت قابل اعمال نیست"
@@ -259,6 +268,7 @@ class AutomaticDiscount(models.Model):
     # شرایط خودکار
     min_appointments_count = models.PositiveIntegerField(null=True, blank=True, verbose_name=_('حداقل تعداد نوبت'))
     is_first_appointment = models.BooleanField(default=False, verbose_name=_('اولین نوبت'))
+    max_free_appointments = models.PositiveIntegerField(null=True, blank=True, verbose_name=_('حداکثر نوبت‌های رایگان'))
     is_weekend = models.BooleanField(default=False, verbose_name=_('آخر هفته'))
     specific_days = models.CharField(max_length=20, blank=True, verbose_name=_('روزهای خاص'))  # 0,1,2,3,4,5,6
     
@@ -277,16 +287,46 @@ class AutomaticDiscount(models.Model):
         if not self.is_active:
             return False
         
-        # بررسی اولین نوبت
+        # بررسی اولین نوبت (backward compatibility)
         if self.is_first_appointment:
-            previous_reservations = user.patient.reservations.exclude(id=reservation.id) if hasattr(user, 'patient') else []
-            if previous_reservations.exists():
+            try:
+                previous_reservations = user.patient.reservations.exclude(id=reservation.id)
+                if previous_reservations.exists():
+                    return False
+            except AttributeError:
+                # User doesn't have a patient profile
+                return False
+        
+        # بررسی نوبت‌های رایگان (first N appointments)
+        if self.max_free_appointments:
+            try:
+                # Count completed appointments (paid appointments)
+                completed_appointments = user.patient.reservations.filter(
+                    status='completed'
+                ).exclude(id=reservation.id).count()
+                
+                # Add pending/confirmed paid appointments  
+                paid_pending = user.patient.reservations.filter(
+                    status__in=['pending', 'confirmed'],
+                    payment_status='paid'
+                ).exclude(id=reservation.id).count()
+                
+                total_paid_appointments = completed_appointments + paid_pending
+                
+                # Check if user has used all free appointments
+                if total_paid_appointments >= self.max_free_appointments:
+                    return False
+            except AttributeError:
+                # User doesn't have a patient profile
                 return False
         
         # بررسی تعداد نوبت‌های قبلی
         if self.min_appointments_count:
-            completed_appointments = user.patient.reservations.filter(status='completed').count() if hasattr(user, 'patient') else 0
-            if completed_appointments < self.min_appointments_count:
+            try:
+                completed_appointments = user.patient.reservations.filter(status='completed').count()
+                if completed_appointments < self.min_appointments_count:
+                    return False
+            except AttributeError:
                 return False
         
         # بررسی روز هفته
