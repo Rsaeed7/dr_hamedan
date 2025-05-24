@@ -1,1 +1,1 @@
-# Management commands for discounts app 
+# Management package for discounts app 
