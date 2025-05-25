@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}مدیریت پست‌ها - دکتر همدان{% endblock %}
-
+{% load persian_date %}
 {% block extra_css %}
 <style>
     /* RTL specific styles */
@@ -224,7 +224,7 @@
                             
                             <div class="flex justify-between items-center">
                                 <div class="text-sm text-gray-500">
-                                    <span>{{ post.created_at|date:"j F Y" }}</span>
+                                    <span>{{ post.created_at|persian_date_info }}</span>
                                     <span class="mx-1">&bull;</span>
                                     <span>{{ post.likes }} لایک</span>
                                     <span class="mx-1">&bull;</span>

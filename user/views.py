@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.views import View
 from django.views.generic import TemplateView
 
+from patients.models import PatientsFile
 from .forms import LoginForm, RegisterForm, Check_CodeForm, UserAddress
 from django.contrib.auth import authenticate, login ,logout
 from django.contrib import messages
@@ -27,41 +28,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 
 
-
-
-class ProfileView(LoginRequiredMixin,TemplateView):
-    template_name = 'registration/profile.html'
-
-
-class LoginView(View):
-    def get(self, request):
-        if request.user.is_authenticated:
-            return redirect('core:homepage')
-        else:
-            form = LoginForm()
-            return render(request, 'registration/sign_in.html',{'form':form})
-    def post(self, request):
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            user = authenticate(username=cd['username'], password=cd['password'])
-            if user is not None:
-                login(request, user)
-                messages.success(request, f'{user.name} خوش آمدی ')
-                return redirect('core:homepage')
-            else:
-                form.add_error('username','• شماره موبایل یا رمز عبور نادرست است!')
-        else:
-            form.add_error('','• لطفا اطلاعات صحیح وارد کنید!')
-
-        return render(request, 'registration/sign_in.html',{'form':form})
-
-
-
 class RegisterView(View):
     def get(self, request):
         if request.user.is_authenticated:
-            return redirect('core:homepage')
+            return redirect('doctors:index')
         else:
             form = RegisterForm()
             return render(request, 'registration/login.html', {'form': form})
@@ -147,6 +117,13 @@ class CheckCodeView_Signup(View):
                 login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                 messages.success(request, 'عضویت  و ورود موفقیت آمیز')
                 otp.delete()
+                patient, created = PatientsFile.objects.get_or_create(
+                    user=user,
+                    defaults={
+                        'phone': user.phone,
+                        'email': user.email
+                    }
+                )
                 return redirect('doctors:index')
             else:
                 messages.error(request, 'کد تایید صحیح نیست')
@@ -160,79 +137,3 @@ class LogoutView(View):
         logout(request)
         messages.success(request,'شما با موفقیت از حساب کاربری خارج شدید')
         return redirect('doctors:index')
-
-
-
-# class AddAddressView(View):
-#     def post(self, request):
-#         if not request.user.is_authenticated:
-#             return redirect('core:homepage')
-#         else:
-#             form = AddressForm(request.POST)
-#             if form.is_valid():
-#                 address = form.save(commit=False)
-#                 address.user = request.user
-#                 address.save()
-#                 next_page = request.GET.get('next')
-#                 if next_page:
-#                     return redirect(next_page)
-#                 else:
-#                     return redirect('account:address_list')
-#     def get(self, request):
-#         if not request.user.is_authenticated:
-#             return redirect('core:homepage')
-#         else:
-#             form = AddressForm()
-#             return render(request, 'account/add_address.html' , {'form':form})
-
-@login_required()
-def address_view(request):
-    return render(request, 'registration/address_list.html')
-@login_required()
-def delete_address(request,id):
-    address = get_object_or_404(UserAddress,id=id)
-    address.delete()
-    time.sleep(3)
-    return redirect('account:address_list')
-
-
-
-# @login_required()
-# def wishlist_view(request):
-#     return render(request,'account/user-wishlist.html')
-#
-#
-# @login_required()
-# def wishlist_delete(request,id):
-#     product_wish = get_object_or_404(UserWishList,id=id)
-#     product_wish.delete()
-#     time.sleep(2)
-#     return redirect('account:wishlist')
-
-@login_required()
-def Informaiton(request):
-    if request.method == 'POST':
-        name = request.POST.get('name')
-        email = request.POST.get('email')
-        age = request.POST.get('age')
-        gender = request.POST.get('gender')
-        email_validator = EmailValidator()
-        try:
-            email_validator(email)
-        except ValidationError:
-            messages.error(request, "ایمیل وارد شده معتبر نیست")
-            return redirect('account:information')
-        # چک کردن تکراری بودن ایمیل
-        if User.objects.filter(email=email).exclude(id=request.user.id).exists():
-            messages.error(request, "ایمیل وارد شده تکراری است")
-            return redirect('account:information')
-        user = User.objects.filter(id=request.user.id)
-        if not age:
-            age = None
-        if not email or name == '':
-            return redirect('account:information')
-        user.update(name=name, email=email, age=age, gender=gender)
-        messages.success(request, "اطلاعات با موفقیت به روز شد")
-        return redirect('account:information')
-
-    return render(request, 'registration/account_Information.html')

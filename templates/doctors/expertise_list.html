@@ -1,7 +1,7 @@
 {% extends  'base/base.html' %}
 {% load static %}
 {% block body %}
-
+{% load persian_date %}
 
     <!-- Search -->
     {% include  'base/search.html' %}
@@ -194,7 +194,11 @@
                                     <h3>{{ doctor.user.get_full_name }}</h3>
                                     <p class="text-capitalize border-light">{{ doctor.specialization }}</p>
                                     <p class="text-right"><i class="icon-location-inv"></i>{{ doctor.address }}</p>
-                                    <small>اولین نوبت خالی 4 اسفند</small>
+                                    {% if doctor.get_first_available_day %}
+                                    <small>اولین نوبت خالی {{ doctor.get_first_available_day|persian_date_info }}</small>
+                                    {% else %}
+                                    <small class="text-danger">فعلا نوبت خالی وجود ندارد</small>
+                                    {% endif %}
                                     <div class="m-t-10">
                                         <a href="{% url 'doctors:doctor_detail' doctor.pk %}"
                                            class="btn btn-outline-info">مشاهده پروفایل پزشک</a>
@@ -205,7 +209,7 @@
                             </div>
                         </div>
                     {% empty %}
-                        <h6>پزشکی با مشخصات مورد نیاز شما یافت نشد!</h6>
+                        <h6 class="centered icon-info-4">پزشکی با مشخصات مورد نیاز شما یافت نشد!</h6>
                     {% endfor %}
 
                 </div>

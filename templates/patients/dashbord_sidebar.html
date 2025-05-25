@@ -20,7 +20,7 @@
                 <i class="icon-calendar-7 m-l-5 "></i><a
                     href="{% url 'patients:patient_appointments' %}">نوبت های من</a>
             </li>
-            <li class="list-group-item {% if request.resolver_match.url_name == 'patient_appointments' %}item-active{% endif %}">
+            <li class="list-group-item {% if request.resolver_match.url_name == 'chat_home' %}item-active{% endif %}">
                 <i class="icon-chat-inv m-l-5 "></i><a
                     href="{% url 'chat:chat_home' %}">دریافت مشاوره آنلاین</a>
             </li>

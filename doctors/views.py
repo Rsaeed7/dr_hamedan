@@ -2,7 +2,6 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
-
 from patients.models import MedicalRecord
 from .models import Doctor, DoctorAvailability, Specialization, Clinic, City, DrComment, CommentTips ,Email,Supplementary_insurance
 from reservations.models import Reservation, ReservationDay
@@ -11,18 +10,16 @@ from django.db.models import  Sum, Avg
 from django.utils import timezone
 from wallet.models import Transaction
 from utils.utils import send_notification
-from django.contrib import messages
 from medimag.models import MagArticle
 from docpages.models import Post
-from django.shortcuts import render
 from django.db.models import Q
 from django.views.generic import ListView, DetailView, CreateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404
 from .forms import EmailForm
 from homecare.models import Service
+import time
 
 
 def index(request):
@@ -167,6 +164,8 @@ def doctor_detail(request, pk):
     posts = doctor.posts.filter(status='published')[:6]
 
     if request.method == 'POST':
+        if not request.user.is_authenticated:
+            return redirect('account:register')
         recommendation = request.POST.get('recommendation')
         rating = request.POST.get('rating')
         text = request.POST.get('text')

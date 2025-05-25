@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}{{ post.title }} - دکتر {{ post.doctor.user.last_name }}{% endblock %}
-
+{% load persian_date %}
 {% block extra_css %}
 <style>
     /* RTL specific styles */
@@ -85,7 +85,7 @@
                 
                 <div>
                     <h4 class="text-sm font-medium text-gray-900">دکتر {{ post.doctor.user.get_full_name }}</h4>
-                    <p class="text-xs text-gray-500">{{ post.created_at|date:"j F Y" }} ساعت {{ post.created_at|time:"H:i" }}</p>
+                    <p class="text-xs text-gray-500">{{ post.created_at|persian_date_info }} ساعت {{ post.created_at|time:"H:i" }}</p>
                 </div>
             </div>
             
@@ -127,7 +127,7 @@
                             <div class="flex-1">
                                 <div class="flex items-center mb-1">
                                     <h3 class="text-sm font-medium text-gray-900">{{ comment.name }}</h3>
-                                    <span class="ml-2 text-xs text-gray-500">{{ comment.created_at|date:"j F Y" }}</span>
+                                    <span class="ml-2 text-xs text-gray-500">{{ comment.created_at|persian_date_info }}</span>
                                 </div>
                                 <div class="text-sm text-gray-700">
                                     {{ comment.body|linebreaks }}

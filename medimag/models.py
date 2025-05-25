@@ -4,7 +4,7 @@ from django.db import models
 from user.models import User
 from django.urls.base import reverse
 import jdatetime
-
+from django_jalali.db import models as jmodels
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True , verbose_name="نام دسته بندی")
@@ -22,7 +22,7 @@ class MagArticle(models.Model):
     title = models.CharField(max_length=100, verbose_name='عنوان')
     description = models.TextField(verbose_name='متن مقاله', blank=True)
     image = models.ImageField(upload_to='blog', verbose_name='تصویر')
-    date = models.DateTimeField(verbose_name='زمان', auto_now_add=True)
+    date = jmodels.jDateTimeField(verbose_name='زمان', auto_now_add=True)
     category = models.ForeignKey(Category,on_delete=models.CASCADE,verbose_name='دسته بندی' ,related_name='category' , null=True , blank=True)
     writer = models.ForeignKey(User, on_delete=models.CASCADE , verbose_name='نویسنده')
     slug = models.SlugField(unique=True, allow_unicode=True , verbose_name='اسلاگ', blank=True)
@@ -31,12 +31,7 @@ class MagArticle(models.Model):
     def __str__(self):
         return self.title
 
-    def JaliliDatepublished(self):
-        return jdatetime.date.fromgregorian(
-            day=self.date.day,
-            month=self.date.month,
-            year=self.date.year,
-        )
+
 
     def get_absolute_url(self):
         return reverse('mag:article',kwargs={'slug': self.slug})
@@ -59,7 +54,7 @@ class Comment(models.Model):
     name = models.CharField(max_length=100, verbose_name='نام کاربر')
     text = models.TextField(verbose_name='متن کامنت')
     parent = models.ForeignKey("self", on_delete=models.CASCADE , verbose_name='کامنت والد', related_name='related_comments', null=True, blank=True)
-    date = models.DateTimeField(verbose_name='تاریخ ثبت', auto_now_add=True)
+    date = jmodels.jDateTimeField(verbose_name='تاریخ ثبت', auto_now_add=True)
     is_reply = models.BooleanField(default=False, verbose_name="آیا این یک پاسخ است؟")
     status = models.CharField(
         max_length=10, choices=STATUS_CHOICES, default="checking", verbose_name="وضعیت"
@@ -77,12 +72,12 @@ class Comment(models.Model):
         verbose_name = "کامنت"
         verbose_name_plural = "کامنت ها"
 
-    def JaliliDatepublished(self):
-        return jdatetime.date.fromgregorian(
-            day=self.date.day,
-            month=self.date.month,
-            year=self.date.year,
-        )
+    # def JaliliDatepublished(self):
+    #     return jdatetime.date.fromgregorian(
+    #         day=self.date.day,
+    #         month=self.date.month,
+    #         year=self.date.year,
+    #     )
 
     def __str__(self):
         repl = "reply" if self.is_reply else "comment"
