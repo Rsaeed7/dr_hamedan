@@ -1,6 +1,7 @@
 {% extends  'base/base.html' %}
 {% load static %}
 {% block body %}
+{% load persian_date %}
     <style>
         .masonry-container-gallery {
             column-count: 2;
@@ -271,7 +272,7 @@
                                                         <div class="rev-info">{% if comment.user.first_name %}
                                                             {{ comment.user.get_full_name }}{% else %}کاربر دکتر
                                                             همدان{% endif %}</div>
-                                                        <small>{{ comment.date }}</small>
+                                                        <small>{{ comment.date|persian_date_info }}</small>
                                                         <div class="rating text-left">
                                                             {% for i in stars_range %}
                                                                 <i class="{% if i < comment.rate %}icon_star voted{% else %}icon_star{% endif %}"></i>
@@ -457,7 +458,11 @@ $(document).ready(function() {
 
     <script>
         function showFormModal() {
-            document.getElementById("formModal").classList.remove("hidden");
+            {% if user.is_authenticated %}
+                document.getElementById("formModal").classList.remove("hidden");
+            {% else %}
+                window.location.href = "{% url 'account:register' %}?message=برای+ثبت+نظر+وارد+شوید";
+            {% endif %}
         }
 
         function closeFormModal() {

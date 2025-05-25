@@ -4,6 +4,9 @@ from user.models import User
 from django.utils import timezone
 from doctors.models import Doctor
 from django.urls import reverse
+from django_jalali.db import models as jmodels
+
+
 class Post(models.Model):
     STATUS_CHOICES = (
         ('draft', 'Draft'),
@@ -14,8 +17,8 @@ class Post(models.Model):
     title = models.CharField(max_length=200, verbose_name='عنوان')
     content = models.TextField(verbose_name='محتوا')
     image = models.ImageField(upload_to='post_images/', blank=True, null=True, verbose_name='تصویر')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
+    created_at = jmodels.jDateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
+    updated_at = jmodels.jDateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
     likes = models.PositiveIntegerField(default=0, verbose_name='لایک‌ها')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='published', verbose_name='وضعیت')
     
@@ -35,7 +38,7 @@ class Comment(models.Model):
     name = models.CharField(max_length=100, verbose_name='نام')
     email = models.EmailField(verbose_name='ایمیل')
     body = models.TextField(verbose_name='متن')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
+    created_at = jmodels.jDateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
     approved = models.BooleanField(default=False, verbose_name='تایید شده')
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='کاربر', related_name='post_comments',
                              null=True, blank=True)

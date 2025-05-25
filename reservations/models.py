@@ -3,11 +3,12 @@ from django_jalali.db import models as jmodels
 from patients.models import PatientsFile
 from doctors.models import Doctor
 
+
 class ReservationDay(models.Model):
     date = jmodels.jDateField(verbose_name='تاریخ')
     published = models.BooleanField(default=True, verbose_name='منتشر شده')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
+    created_at = jmodels.jDateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
+    updated_at = jmodels.jDateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
     
     def __str__(self):
         return f"{self.date} - {'Published' if self.published else 'Unpublished'}"
@@ -39,8 +40,8 @@ class Reservation(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name='وضعیت')
     payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='pending', verbose_name='وضعیت پرداخت')
     amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='مبلغ')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
+    created_at = jmodels.jDateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
+    updated_at = jmodels.jDateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
     transaction = models.ForeignKey('wallet.Transaction', on_delete=models.SET_NULL, null=True, blank=True, related_name='reservations', verbose_name='تراکنش')
     notes = models.TextField(blank=True, null=True, verbose_name='یادداشت‌ها')
     

@@ -3,7 +3,7 @@ from django.utils import timezone
 from doctors.models import Doctor
 from patients.models import PatientsFile as Patient
 from user.models import User
-
+from django_jalali.db import models as jmodels
 
 class ChatRequest(models.Model):
     PENDING = 'pending'
@@ -34,8 +34,8 @@ class ChatRequest(models.Model):
         default=PENDING,
         verbose_name='وضعیت'
     )
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
+    created_at = jmodels.jDateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
+    updated_at = jmodels.jDateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
 
     class Meta:
         unique_together = ('patient', 'doctor')
@@ -58,11 +58,11 @@ class ChatRoom(models.Model):
         default=True,
         verbose_name='فعال'
     )
-    created_at = models.DateTimeField(
+    created_at = jmodels.jDateTimeField(
         auto_now_add=True,
         verbose_name='تاریخ ایجاد'
     )
-    last_activity = models.DateTimeField(
+    last_activity = jmodels.jDateTimeField(
         auto_now=True,
         verbose_name='آخرین فعالیت'
     )
@@ -92,7 +92,7 @@ class Message(models.Model):
     )
     content = models.TextField(verbose_name='محتوا')
 
-    created_at = models.DateTimeField(
+    created_at = jmodels.jDateTimeField(
         default=timezone.now,
         verbose_name='تاریخ ارسال'
     )
@@ -123,7 +123,7 @@ class DoctorAvailability(models.Model):
         default=False,
         verbose_name='وضعیت دسترسی'
     )
-    last_active = models.DateTimeField(
+    last_active = jmodels.jDateTimeField(
         auto_now=True,
         verbose_name='آخرین فعالیت'
     )

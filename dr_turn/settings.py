@@ -101,6 +101,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'context_processors.context_processors.context_processors',
             ],
+            'builtins': ['reservations.templatetags.persian_date'],
         },
     },
 ]
@@ -151,13 +152,15 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'fa-ir'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Tehran'
+
+USE_TZ = True
 
 USE_I18N = True
 
-USE_TZ = True
+
 
 
 # Static files (CSS, JavaScript, Images)

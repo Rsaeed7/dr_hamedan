@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load persian_date %}
 
 {% block content %}
     <form method="GET" class="mb-4 flex items-center gap-2">
@@ -15,19 +15,19 @@
     <a href="{% url 'patients:report_settings' %}" class="inline-block bg-yellow-500 hover:bg-blue-600 text-white text-xs font-semibold py-1 px-3 rounded">تنظمیات قالب ریپورت</a>
     <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm " style="margin-top: 10px">
         <thead class="bg-gray-100 text-gray-700 text-sm">
-            <tr>
-                <th class="py-3 px-4 text-right border-b">عنوان گزارش</th>
-                <th class="py-3 px-4 text-right border-b">بیمار</th>
-                <th class="py-3 px-4 text-right border-b">تاریخ ایجاد</th>
-                <th class="py-3 px-4 text-right border-b">عملیات</th>
+            <tr >
+                <th class="py-3 px-4 border-b">عنوان گزارش</th>
+                <th class="py-3 px-4 border-b">بیمار</th>
+                <th class="py-3 px-4 border-b">تاریخ ایجاد</th>
+                <th class="py-3 px-4 border-b">عملیات</th>
             </tr>
         </thead>
-        <tbody class="text-sm text-gray-700">
+        <tbody class="text-sm text-gray-700 text-center">
             {% for report in reports %}
             <tr class="hover:bg-gray-50">
                 <td class="py-2 px-4 border-b">{{ report.title }}</td>
                 <td class="py-2 px-4 border-b">{{ report.patient.user.get_full_name }}</td>
-                <td class="py-2 px-4 border-b">{{ report.created_at|jformat:"Y/m/d" }}</td>
+                <td class="py-2 px-4 border-b">{{ report.created_at|date:"Y/m/d" }}</td>
                 <td class="py-2 px-4 border-b space-x-2 space-x-reverse">
                     <a href="{% url 'patients:report_detail' report.pk %}" class="inline-block bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold py-1 px-3 rounded">مشاهده</a>
                     <a href="{% url 'patients:report_detail' report.pk %}?pdf=1" class="inline-block bg-yellow-400 hover:bg-yellow-500 text-white text-xs font-semibold py-1 px-3 rounded">دانلود PDF</a>
