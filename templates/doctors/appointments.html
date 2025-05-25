@@ -249,7 +249,7 @@
                                                     {% if appointment.patient.user.first_name %}
                                                         {{ appointment.patient.user.first_name|first }}{{ appointment.patient.user.last_name|first }}
                                                     {% else %}
-                                                        {{ appointment.patient.user.username|first|upper }}
+                                                        {{ appointment.patient.user.phone|first|upper }}
                                                     {% endif %}
                                                 </span>
                                                 </div>

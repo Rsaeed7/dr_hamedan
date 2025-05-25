@@ -4,142 +4,481 @@ from django.http import JsonResponse
 from django.contrib import messages
 from django.conf import settings
 from django.urls import reverse
-from .models import Transaction
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
+from django.db import transaction as db_transaction
+from django.db.models import Q, Sum
+from django.utils import timezone
+from django.core.paginator import Paginator
+from decimal import Decimal
+import json
+import uuid
+
+from .models import Transaction, Wallet, PaymentGateway
 from reservations.models import Reservation
+from discounts.models import DiscountUsage
+
 
 @login_required
 def wallet_dashboard(request):
-    """Display user's wallet and transaction history summary"""
-    # Get user's transactions
-    transactions = Transaction.objects.filter(user=request.user).order_by('-created_at')
-
-
-    # Get recent transactions
-    recent_transactions = transactions[:10]
-
-
+    """داشبورد کیف پول کاربر"""
+    # دریافت یا ایجاد کیف پول کاربر
+    wallet, created = Wallet.objects.get_or_create(user=request.user)
+    
+    # دریافت تراکنش‌های اخیر
+    recent_transactions = Transaction.objects.filter(
+        user=request.user
+    ).select_related('gateway', 'related_transaction').order_by('-created_at')[:10]
+    
+    # محاسبه آمار
+    completed_transactions = Transaction.objects.filter(
+        user=request.user, status='completed'
+    )
+    
+    total_deposits = completed_transactions.filter(
+        transaction_type__in=['deposit', 'refund', 'bonus']
+    ).aggregate(total=Sum('net_amount'))['total'] or Decimal('0')
+    
+    total_withdrawals = completed_transactions.filter(
+        transaction_type__in=['withdrawal', 'payment', 'commission', 'penalty']
+    ).aggregate(total=Sum('net_amount'))['total'] or Decimal('0')
+    
+    pending_transactions = Transaction.objects.filter(
+        user=request.user, status__in=['pending', 'processing']
+    ).count()
+    
     context = {
+        'wallet': wallet,
         'recent_transactions': recent_transactions,
+        'total_deposits': total_deposits,
+        'total_withdrawals': total_withdrawals,
+        'pending_transactions': pending_transactions,
+        'balance': wallet.balance,
     }
     
-    return render(request, 'wallet/wallet.html', context)
+    return render(request, 'wallet/wallet_dashboard.html', context)
+
 
 @login_required
 def transaction_list(request):
-    """Display all user transactions"""
-    # Get filter parameters
+    """لیست تمام تراکنش‌های کاربر"""
+    # دریافت پارامترهای فیلتر
     transaction_type = request.GET.get('type', 'all')
     status = request.GET.get('status', 'all')
     
-    # Get all user transactions
-    transactions = Transaction.objects.filter(user=request.user).order_by('-created_at')
+    # دریافت تراکنش‌های کاربر
+    transactions = Transaction.objects.filter(
+        user=request.user
+    ).select_related('gateway', 'related_transaction').order_by('-created_at')
     
-    # Apply filters
+    # اعمال فیلترها
     if transaction_type != 'all':
         transactions = transactions.filter(transaction_type=transaction_type)
     
     if status != 'all':
         transactions = transactions.filter(status=status)
     
+    # صفحه‌بندی
+    paginator = Paginator(transactions, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    # محاسبه آمار
+    completed_count = transactions.filter(status='completed').count()
+    pending_count = transactions.filter(status__in=['pending', 'processing']).count()
+    
+    # دریافت کیف پول
+    wallet = get_object_or_404(Wallet, user=request.user)
+    
     context = {
-        'transactions': transactions,
+        'transactions': page_obj,
         'transaction_type': transaction_type,
         'status': status,
+        'completed_count': completed_count,
+        'pending_count': pending_count,
+        'balance': wallet.balance,
+        'transaction_types': Transaction.TRANSACTION_TYPES,
+        'status_choices': Transaction.STATUS_CHOICES,
     }
     
-    return render(request, 'wallet/transactions.html', context)
+    return render(request, 'wallet/transaction_list.html', context)
 
-def process_payment(request, reservation_id):
-    """Process payment for a reservation"""
-    # Get the reservation
-    reservation = get_object_or_404(Reservation, id=reservation_id, status='pending', payment_status='pending')
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def deposit(request):
+    """واریز به کیف پول"""
+    wallet, created = Wallet.objects.get_or_create(user=request.user)
     
     if request.method == 'POST':
-        # Here you would integrate with a payment gateway
-        # For demo purposes, we'll create a transaction and simulate payment
+        try:
+            amount = Decimal(request.POST.get('amount', '0'))
+            payment_method = request.POST.get('payment_method', 'gateway')
+            
+            # اعتبارسنجی مبلغ
+            if amount < Decimal('1000'):
+                messages.error(request, 'حداقل مبلغ واریز ۱۰۰۰ تومان است.')
+                return render(request, 'wallet/deposit.html', {'wallet': wallet})
+            
+            if amount > Decimal('50000000'):
+                messages.error(request, 'حداکثر مبلغ واریز ۵۰ میلیون تومان است.')
+                return render(request, 'wallet/deposit.html', {'wallet': wallet})
+            
+            # انتخاب درگاه پرداخت
+            gateway = PaymentGateway.objects.filter(is_active=True).first()
+            if not gateway and payment_method == 'gateway':
+                messages.error(request, 'درگاه پرداخت فعالی یافت نشد.')
+                return render(request, 'wallet/deposit.html', {'wallet': wallet})
+            
+            # ایجاد تراکنش
+            with db_transaction.atomic():
+                transaction = Transaction.objects.create(
+                    user=request.user,
+                    wallet=wallet,
+                    amount=amount,
+                    transaction_type='deposit',
+                    payment_method=payment_method,
+                    gateway=gateway,
+                    description=f'واریز {amount} تومان به کیف پول',
+                    tracking_code=str(uuid.uuid4())[:12].upper()
+                )
+                
+                if payment_method == 'gateway' and gateway:
+                    # هدایت به درگاه پرداخت
+                    return redirect('wallet:payment_gateway', transaction_id=transaction.id)
+                else:
+                    # پردازش مستقیم (برای تست)
+                    transaction.mark_as_completed()
+                    messages.success(request, f'مبلغ {amount} تومان با موفقیت به کیف پول شما اضافه شد.')
+                    return redirect('wallet:wallet_dashboard')
         
-        # Create a transaction record
-        transaction = Transaction.objects.create(
-            user=request.user if request.user.is_authenticated else reservation.patient.user,
-            amount=reservation.amount,
-            transaction_type='payment',
-            status='pending',
-            description=f"Payment for appointment with {reservation.doctor} on {reservation.day.date} at {reservation.time}"
-        )
+        except (ValueError, TypeError):
+            messages.error(request, 'مبلغ وارد شده نامعتبر است.')
+        except Exception as e:
+            messages.error(request, 'خطای سیستمی رخ داده است.')
+    
+    context = {
+        'wallet': wallet,
+        'min_amount': 1000,
+        'max_amount': 50000000,
+    }
+    
+    return render(request, 'wallet/deposit.html', context)
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def withdraw(request):
+    """برداشت از کیف پول"""
+    wallet = get_object_or_404(Wallet, user=request.user)
+    
+    if request.method == 'POST':
+        try:
+            amount = Decimal(request.POST.get('amount', '0'))
+            bank_account = request.POST.get('bank_account', '').strip()
+            
+            # اعتبارسنجی
+            if amount < Decimal('10000'):
+                messages.error(request, 'حداقل مبلغ برداشت ۱۰ هزار تومان است.')
+                return render(request, 'wallet/withdraw.html', {'wallet': wallet})
+            
+            if not wallet.can_withdraw(amount):
+                messages.error(request, 'موجودی کافی در کیف پول شما وجود ندارد.')
+                return render(request, 'wallet/withdraw.html', {'wallet': wallet})
+            
+            if not bank_account:
+                messages.error(request, 'شماره حساب بانکی را وارد کنید.')
+                return render(request, 'wallet/withdraw.html', {'wallet': wallet})
+            
+            # ایجاد تراکنش برداشت
+            with db_transaction.atomic():
+                transaction = Transaction.objects.create(
+                    user=request.user,
+                    wallet=wallet,
+                    amount=amount,
+                    transaction_type='withdrawal',
+                    payment_method='transfer',
+                    description=f'برداشت {amount} تومان از کیف پول',
+                    tracking_code=str(uuid.uuid4())[:12].upper(),
+                    metadata={'bank_account': bank_account}
+                )
+                
+                # مسدود کردن موجودی
+                if wallet.freeze_balance(amount):
+                    messages.success(request, 
+                        f'درخواست برداشت {amount} تومان ثبت شد. '
+                        f'کد پیگیری: {transaction.tracking_code}'
+                    )
+                    return redirect('wallet:wallet_dashboard')
+                else:
+                    transaction.mark_as_failed('عدم موجودی کافی')
+                    messages.error(request, 'خطا در پردازش درخواست برداشت.')
         
-        # Link transaction to reservation
-        reservation.transaction = transaction
-        reservation.save()
+        except (ValueError, TypeError):
+            messages.error(request, 'مبلغ وارد شده نامعتبر است.')
+        except Exception as e:
+            messages.error(request, 'خطای سیستمی رخ داده است.')
+    
+    context = {
+        'wallet': wallet,
+        'min_amount': 10000,
+    }
+    
+    return render(request, 'wallet/withdraw.html', context)
+
+
+def process_payment(request, reservation_id):
+    """پردازش پرداخت برای رزرو"""
+    # دریافت رزرو
+    reservation = get_object_or_404(
+        Reservation, 
+        id=reservation_id, 
+        status='pending', 
+        payment_status='pending'
+    )
+    
+    # بررسی مالکیت رزرو
+    if request.user.is_authenticated:
+        if not (reservation.patient.user == request.user or 
+                (hasattr(request.user, 'patient') and reservation.patient == request.user.patient)):
+            messages.error(request, 'شما مجاز به مشاهده این صفحه نیستید.')
+            return redirect('home')
+    
+    # دریافت یا ایجاد کیف پول
+    user = request.user if request.user.is_authenticated else reservation.patient.user
+    wallet, created = Wallet.objects.get_or_create(user=user)
+    
+    # محاسبه مبلغ نهایی (با تخفیف)
+    final_amount = reservation.amount
+    discount_info = None
+    
+    if hasattr(reservation, 'discount_usage'):
+        discount_usage = reservation.discount_usage
+        final_amount = discount_usage.final_amount
+        discount_info = {
+            'original_amount': discount_usage.original_amount,
+            'discount_amount': discount_usage.discount_amount,
+            'final_amount': discount_usage.final_amount,
+            'discount_title': discount_usage.discount.title
+        }
+    
+    if request.method == 'POST':
+        payment_method = request.POST.get('payment_method', 'gateway')
         
-        # In a real system, redirect to payment gateway
-        # For demo, simulate successful payment
-        return redirect('wallet:payment_callback')
+        try:
+            with db_transaction.atomic():
+                # ایجاد تراکنش پرداخت
+                transaction = Transaction.objects.create(
+                    user=user,
+                    wallet=wallet,
+                    amount=final_amount,
+                    transaction_type='payment',
+                    payment_method=payment_method,
+                    description=f"پرداخت نوبت پزشک {reservation.doctor} در تاریخ {reservation.day.date}",
+                    tracking_code=str(uuid.uuid4())[:12].upper(),
+                    metadata={
+                        'reservation_id': reservation.id,
+                        'doctor_id': reservation.doctor.id,
+                        'discount_applied': discount_info is not None
+                    }
+                )
+                
+                # ربط تراکنش به رزرو
+                reservation.transaction = transaction
+                reservation.save()
+                
+                if payment_method == 'wallet':
+                    # پرداخت از کیف پول
+                    if wallet.can_withdraw(final_amount):
+                        transaction.status = 'completed'
+                        transaction.processed_at = timezone.now()
+                        transaction.save()
+                        
+                        # کسر از کیف پول
+                        wallet.subtract_balance(final_amount)
+                        
+                        # تایید رزرو
+                        reservation.payment_status = 'paid'
+                        reservation.status = 'confirmed'
+                        reservation.save()
+                        
+                        messages.success(request, 'پرداخت با موفقیت انجام شد!')
+                        return redirect('reservations:appointment_status', pk=reservation.id)
+                    else:
+                        transaction.mark_as_failed('موجودی کافی نیست')
+                        messages.error(request, 'موجودی کیف پول شما کافی نیست.')
+                
+                elif payment_method == 'gateway':
+                    # هدایت به درگاه پرداخت
+                    return redirect('wallet:payment_gateway', transaction_id=transaction.id)
+        
+        except Exception as e:
+            messages.error(request, 'خطای سیستمی رخ داده است.')
+    
+    # دریافت درگاه‌های پرداخت فعال
+    active_gateways = PaymentGateway.objects.filter(is_active=True)
     
     context = {
         'reservation': reservation,
+        'wallet': wallet,
+        'final_amount': final_amount,
+        'discount_info': discount_info,
+        'active_gateways': active_gateways,
+        'can_pay_with_wallet': wallet.can_withdraw(final_amount),
     }
     
     return render(request, 'wallet/payment.html', context)
 
+
+def payment_gateway(request, transaction_id):
+    """هدایت به درگاه پرداخت"""
+    transaction = get_object_or_404(Transaction, id=transaction_id)
+    
+    # بررسی مالکیت تراکنش
+    if request.user.is_authenticated and transaction.user != request.user:
+        messages.error(request, 'دسترسی غیرمجاز.')
+        return redirect('home')
+    
+    if not transaction.gateway:
+        messages.error(request, 'درگاه پرداخت مشخص نشده است.')
+        return redirect('wallet:wallet_dashboard')
+    
+    try:
+        # ایجاد Authority برای پرداخت
+        transaction.authority = str(uuid.uuid4())[:20].upper()
+        transaction.save()
+        
+        # در حالت واقعی، اینجا باید درخواست به API درگاه پرداخت ارسال شود
+        # برای دمو، مستقیماً به صفحه callback می‌رویم
+        
+        # شبیه‌سازی درگاه پرداخت
+        callback_url = request.build_absolute_uri(
+            reverse('wallet:payment_callback') + 
+            f'?Authority={transaction.authority}&Status=OK'
+        )
+        
+        # در محیط واقعی، اینجا باید به سایت درگاه پرداخت redirect شود
+        return redirect(callback_url)
+    
+    except Exception as e:
+        transaction.mark_as_failed('خطا در اتصال به درگاه پرداخت')
+        messages.error(request, 'خطا در اتصال به درگاه پرداخت.')
+        return redirect('wallet:wallet_dashboard')
+
+
 def payment_callback(request):
-    """Handle payment gateway callback"""
-    # In a real system, this would verify the payment with the gateway
-    # For demo purposes, we'll simulate a successful payment
+    """پردازش callback درگاه پرداخت"""
+    authority = (request.GET.get('Authority') or request.GET.get('authority') or 
+                 request.POST.get('Authority') or request.POST.get('authority'))
+    status = (request.GET.get('Status') or request.GET.get('status') or 
+              request.POST.get('Status') or request.POST.get('status'))
     
-    # Get payment reference from query params
-    transaction_id = request.GET.get('transaction_id')
-    status = request.GET.get('status', 'completed')  # Default to completed for demo
+    if not authority:
+        messages.error(request, 'کد پیگیری پرداخت یافت نشد')
+        return redirect('wallet:wallet_dashboard')
     
-    if transaction_id:
-        # Find the transaction
+    try:
+        transaction = Transaction.objects.get(authority=authority)
+        
+        if status == 'OK':
+            # پرداخت موفق
+            if transaction.status == 'pending':
+                transaction.mark_as_completed()
+                messages.success(request, f'پرداخت با موفقیت انجام شد. مبلغ {transaction.amount:,} تومان پردازش شد.')
+            else:
+                messages.info(request, 'این تراکنش قبلاً پردازش شده است')
+        else:
+            # پرداخت ناموفق
+            transaction.mark_as_failed()
+            messages.error(request, 'پرداخت ناموفق بود. لطفاً مجدداً تلاش کنید.')
+    
+    except Transaction.DoesNotExist:
+        messages.error(request, 'تراکنش مورد نظر یافت نشد')
+    except Exception as e:
+        messages.error(request, 'خطا در پردازش پرداخت')
+    
+    return redirect('wallet:wallet_dashboard')
+
+
+@login_required
+def transaction_detail(request, transaction_id):
+    """جزئیات تراکنش"""
+    transaction = get_object_or_404(Transaction, id=transaction_id, user=request.user)
+    
+    context = {
+        'transaction': transaction,
+    }
+    
+    return render(request, 'wallet/transaction_detail.html', context)
+
+
+@login_required
+@require_http_methods(["POST"])
+def request_refund(request, transaction_id):
+    """درخواست بازگشت وجه"""
+    transaction = get_object_or_404(Transaction, id=transaction_id, user=request.user)
+    
+    if not transaction.can_be_refunded():
+        return JsonResponse({
+            'success': False,
+            'message': 'امکان بازگشت وجه برای این تراکنش وجود ندارد.'
+        })
+    
+    try:
+        reason = request.POST.get('reason', '').strip()
+        
+        with db_transaction.atomic():
+            refund = transaction.create_refund(reason=reason)
+            
+            if refund:
+                messages.success(request, 
+                    f'درخواست بازگشت وجه ثبت شد. '
+                    f'کد پیگیری: {refund.tracking_code}'
+                )
+                return JsonResponse({
+                    'success': True,
+                    'message': 'درخواست بازگشت وجه با موفقیت ثبت شد.',
+                    'refund_id': refund.id
+                })
+            else:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'خطا در ثبت درخواست بازگشت وجه.'
+                })
+    
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': 'خطای سیستمی رخ داده است.'
+        })
+
+
+@login_required
+def wallet_api_balance(request):
+    """API دریافت موجودی کیف پول"""
+    try:
+        wallet = Wallet.objects.get(user=request.user)
+        return JsonResponse({
+            'success': True,
+            'balance': float(wallet.balance),
+            'pending_balance': float(wallet.pending_balance),
+            'frozen_balance': float(wallet.frozen_balance),
+            'total_balance': float(wallet.get_total_balance())
+        })
+    except Wallet.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'message': 'کیف پول یافت نشد.'
+        })
+
+
+# اضافه کردن context processor helper
+def get_user_balance(user):
+    """دریافت موجودی کاربر برای context processor"""
+    if user.is_authenticated:
         try:
-            transaction = Transaction.objects.get(id=transaction_id)
-            transaction.status = status
-            transaction.save()
-            
-            # Update reservation if this transaction is linked to one
-            reservations = transaction.reservations.all()
-            if reservations.exists():
-                reservation = reservations.first()
-                reservation.payment_status = 'paid' if status == 'completed' else 'failed'
-                reservation.save()
-                
-                if status == 'completed':
-                    # Auto-confirm the appointment
-                    reservation.confirm_appointment()
-                    messages.success(request, "Payment successful! Your appointment has been confirmed.")
-                else:
-                    messages.error(request, "Payment failed. Please try again.")
-            
-            return redirect('reservations:appointment_status', pk=reservation.id)
-        
-        except Transaction.DoesNotExist:
-            messages.error(request, "Transaction not found.")
-    
-    # Demo: Just simulate a successful payment for the most recent pending reservation
-    if request.user.is_authenticated:
-        recent_transaction = Transaction.objects.filter(
-            user=request.user,
-            status='pending',
-            transaction_type='payment'
-        ).order_by('-created_at').first()
-        
-        if recent_transaction:
-            recent_transaction.status = 'completed'
-            recent_transaction.save()
-            
-            # Update reservation
-            reservations = recent_transaction.reservations.all()
-            if reservations.exists():
-                reservation = reservations.first()
-                reservation.payment_status = 'paid'
-                reservation.save()
-                
-                # Auto-confirm the appointment
-                reservation.confirm_appointment()
-                messages.success(request, "Payment successful! Your appointment has been confirmed.")
-                
-                return redirect('reservations:appointment_status', pk=reservation.id)
-    
-    messages.info(request, "Payment process completed.")
-    return redirect('home')
+            wallet = Wallet.objects.get(user=user)
+            return wallet.balance
+        except Wallet.DoesNotExist:
+            return Decimal('0.00')
+    return Decimal('0.00')

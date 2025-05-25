@@ -1,0 +1,343 @@
+{% load jformat %}
+
+<!-- Discount Widget -->
+<div id="discount-widget" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+        <i class="fas fa-percent text-green-600 ml-2"></i>
+        اعمال تخفیف
+    </h3>
+
+    <!-- Current Discount Display -->
+    <div id="current-discount" class="hidden mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+        <div class="flex items-center justify-between">
+            <div>
+                <h4 class="text-sm font-medium text-green-800" id="discount-title"></h4>
+                <p class="text-sm text-green-600" id="discount-description"></p>
+                <div class="mt-2 text-sm">
+                    <span class="text-gray-600">مبلغ اصلی:</span>
+                    <span id="original-amount" class="font-medium"></span>
+                    <span class="text-gray-600 mr-4">تخفیف:</span>
+                    <span id="discount-amount" class="font-medium text-green-600"></span>
+                    <span class="text-gray-600 mr-4">مبلغ نهایی:</span>
+                    <span id="final-amount" class="font-bold text-green-800"></span>
+                </div>
+            </div>
+            <button type="button" id="remove-discount-btn" 
+                    class="text-red-600 hover:text-red-800 focus:outline-none">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Coupon Code Section -->
+    <div id="coupon-section" class="mb-6">
+        <label for="coupon-code" class="block text-sm font-medium text-gray-700 mb-2">
+            کد تخفیف
+        </label>
+        <div class="flex gap-2">
+            <input type="text" 
+                   id="coupon-code" 
+                   placeholder="کد تخفیف خود را وارد کنید"
+                   class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+            <button type="button" 
+                    id="apply-coupon-btn"
+                    class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                <span class="btn-text">اعمال</span>
+                <span class="btn-loading hidden">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </span>
+            </button>
+        </div>
+        <div id="coupon-message" class="mt-2 text-sm hidden"></div>
+    </div>
+
+    <!-- Automatic Discount Check -->
+    <div class="mb-4">
+        <button type="button" 
+                id="check-automatic-btn"
+                class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
+            <span class="btn-text">بررسی تخفیفات خودکار</span>
+            <span class="btn-loading hidden">
+                <i class="fas fa-spinner fa-spin"></i>
+            </span>
+        </button>
+        <div id="automatic-message" class="mt-2 text-sm hidden"></div>
+    </div>
+
+    <!-- Available Discounts -->
+    <div id="available-discounts" class="hidden">
+        <h4 class="text-sm font-medium text-gray-700 mb-3">تخفیفات قابل اعمال:</h4>
+        <div id="discounts-list" class="space-y-2"></div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const discountWidget = {
+        reservationId: null,
+        currentDiscount: null,
+        
+        init: function(reservationId) {
+            this.reservationId = reservationId;
+            this.bindEvents();
+            this.loadAvailableDiscounts();
+        },
+        
+        bindEvents: function() {
+            // Apply coupon code
+            document.getElementById('apply-coupon-btn').addEventListener('click', () => {
+                this.applyCouponCode();
+            });
+            
+            // Check automatic discounts
+            document.getElementById('check-automatic-btn').addEventListener('click', () => {
+                this.checkAutomaticDiscounts();
+            });
+            
+            // Remove discount
+            document.getElementById('remove-discount-btn').addEventListener('click', () => {
+                this.removeDiscount();
+            });
+            
+            // Enter key on coupon input
+            document.getElementById('coupon-code').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    this.applyCouponCode();
+                }
+            });
+        },
+        
+        applyCouponCode: function() {
+            const couponCode = document.getElementById('coupon-code').value.trim();
+            if (!couponCode) {
+                this.showMessage('coupon-message', 'کد تخفیف را وارد کنید', 'error');
+                return;
+            }
+            
+            this.setLoading('apply-coupon-btn', true);
+            
+            fetch('{% url "discounts:apply_coupon_code" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    coupon_code: couponCode,
+                    reservation_id: this.reservationId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.showCurrentDiscount({
+                        title: 'کد تخفیف اعمال شد',
+                        description: data.message,
+                        original_amount: data.original_amount,
+                        discount_amount: data.discount_amount,
+                        final_amount: data.final_amount
+                    });
+                    this.showMessage('coupon-message', data.message, 'success');
+                    document.getElementById('coupon-code').value = '';
+                    this.hideDiscountSections();
+                } else {
+                    this.showMessage('coupon-message', data.message, 'error');
+                }
+            })
+            .catch(error => {
+                this.showMessage('coupon-message', 'خطا در اعمال کد تخفیف', 'error');
+            })
+            .finally(() => {
+                this.setLoading('apply-coupon-btn', false);
+            });
+        },
+        
+        checkAutomaticDiscounts: function() {
+            this.setLoading('check-automatic-btn', true);
+            
+            fetch('{% url "discounts:check_automatic_discounts" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    reservation_id: this.reservationId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.showCurrentDiscount({
+                        title: data.discount_title,
+                        description: data.message,
+                        original_amount: data.original_amount,
+                        discount_amount: data.discount_amount,
+                        final_amount: data.final_amount
+                    });
+                    this.showMessage('automatic-message', data.message, 'success');
+                    this.hideDiscountSections();
+                } else {
+                    this.showMessage('automatic-message', data.message, 'info');
+                }
+            })
+            .catch(error => {
+                this.showMessage('automatic-message', 'خطا در بررسی تخفیفات خودکار', 'error');
+            })
+            .finally(() => {
+                this.setLoading('check-automatic-btn', false);
+            });
+        },
+        
+        removeDiscount: function() {
+            fetch('{% url "discounts:remove_discount" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    reservation_id: this.reservationId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.hideCurrentDiscount();
+                    this.showDiscountSections();
+                    this.showMessage('coupon-message', data.message, 'success');
+                    // Update amount display if exists
+                    this.updateAmountDisplay(data.original_amount);
+                }
+            })
+            .catch(error => {
+                console.error('Error removing discount:', error);
+            });
+        },
+        
+        loadAvailableDiscounts: function() {
+            fetch(`{% url "discounts:get_available_discounts" %}?reservation_id=${this.reservationId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.discounts.length > 0) {
+                    this.displayAvailableDiscounts(data.discounts);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading available discounts:', error);
+            });
+        },
+        
+        displayAvailableDiscounts: function(discounts) {
+            const container = document.getElementById('discounts-list');
+            const section = document.getElementById('available-discounts');
+            
+            container.innerHTML = '';
+            
+            discounts.forEach(discount => {
+                const discountEl = document.createElement('div');
+                discountEl.className = 'p-3 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer';
+                discountEl.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h5 class="text-sm font-medium text-gray-900">${discount.title}</h5>
+                            <p class="text-xs text-gray-600">${discount.description}</p>
+                            <p class="text-xs text-green-600 mt-1">تخفیف: ${discount.discount_amount.toLocaleString()} تومان</p>
+                        </div>
+                        <span class="text-xs text-gray-500">${discount.discount_type}</span>
+                    </div>
+                `;
+                
+                container.appendChild(discountEl);
+            });
+            
+            section.classList.remove('hidden');
+        },
+        
+        showCurrentDiscount: function(discount) {
+            document.getElementById('discount-title').textContent = discount.title;
+            document.getElementById('discount-description').textContent = discount.description;
+            document.getElementById('original-amount').textContent = discount.original_amount.toLocaleString() + ' تومان';
+            document.getElementById('discount-amount').textContent = discount.discount_amount.toLocaleString() + ' تومان';
+            document.getElementById('final-amount').textContent = discount.final_amount.toLocaleString() + ' تومان';
+            
+            document.getElementById('current-discount').classList.remove('hidden');
+            this.currentDiscount = discount;
+            
+            // Update amount display if exists
+            this.updateAmountDisplay(discount.final_amount);
+        },
+        
+        hideCurrentDiscount: function() {
+            document.getElementById('current-discount').classList.add('hidden');
+            this.currentDiscount = null;
+        },
+        
+        hideDiscountSections: function() {
+            document.getElementById('coupon-section').classList.add('hidden');
+            document.getElementById('check-automatic-btn').parentElement.classList.add('hidden');
+            document.getElementById('available-discounts').classList.add('hidden');
+        },
+        
+        showDiscountSections: function() {
+            document.getElementById('coupon-section').classList.remove('hidden');
+            document.getElementById('check-automatic-btn').parentElement.classList.remove('hidden');
+            document.getElementById('available-discounts').classList.remove('hidden');
+        },
+        
+        updateAmountDisplay: function(amount) {
+            // Update any amount display elements on the page
+            const amountElements = document.querySelectorAll('[data-amount-display]');
+            amountElements.forEach(el => {
+                el.textContent = amount.toLocaleString() + ' تومان';
+            });
+        },
+        
+        showMessage: function(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `mt-2 text-sm ${this.getMessageClass(type)}`;
+            element.classList.remove('hidden');
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                element.classList.add('hidden');
+            }, 5000);
+        },
+        
+        getMessageClass: function(type) {
+            switch(type) {
+                case 'success': return 'text-green-600';
+                case 'error': return 'text-red-600';
+                case 'info': return 'text-blue-600';
+                default: return 'text-gray-600';
+            }
+        },
+        
+        setLoading: function(buttonId, loading) {
+            const button = document.getElementById(buttonId);
+            const text = button.querySelector('.btn-text');
+            const spinner = button.querySelector('.btn-loading');
+            
+            if (loading) {
+                text.classList.add('hidden');
+                spinner.classList.remove('hidden');
+                button.disabled = true;
+            } else {
+                text.classList.remove('hidden');
+                spinner.classList.add('hidden');
+                button.disabled = false;
+            }
+        }
+    };
+    
+    // Initialize widget if reservation ID is available
+    const reservationId = document.querySelector('[data-reservation-id]')?.dataset.reservationId;
+    if (reservationId) {
+        discountWidget.init(reservationId);
+    }
+    
+    // Make widget globally available
+    window.discountWidget = discountWidget;
+});
+</script> 
