@@ -26,22 +26,22 @@
     <table class="min-w-full bg-white border border-gray-200">
       <thead>
         <tr class="bg-gray-100 text-gray-700 uppercase text-sm font-semibold">
-          <th class="py-3 px-6 text-left">شناسه</th>
-          <th class="py-3 px-6 text-left">بیمار</th>
-          <th class="py-3 px-6 text-left">خدمت</th>
-          <th class="py-3 px-6 text-left">تاریخ و ساعت</th>
-          <th class="py-3 px-6 text-left">شهر</th>
-          <th class="py-3 px-6 text-left">وضعیت</th>
-          <th class="py-3 px-6 text-center">عملیات</th>
+          <th class="py-3 px-6">شناسه</th>
+          <th class="py-3 px-6">بیمار</th>
+          <th class="py-3 px-6">خدمت</th>
+          <th class="py-3 px-6">تاریخ و ساعت</th>
+          <th class="py-3 px-6">شهر</th>
+          <th class="py-3 px-6">وضعیت</th>
+          <th class="py-3 px-6">عملیات</th>
         </tr>
       </thead>
       <tbody class="text-gray-600 text-sm">
         {% for req in page_obj.object_list %}
-          <tr class="border-b border-gray-200 hover:bg-gray-50">
+          <tr class="border-b border-gray-200 hover:bg-gray-50 text-center">
             <td class="py-3 px-6">{{ req.id }}</td>
             <td class="py-3 px-6">{{ req.patient.user.get_full_name }}</td>
             <td class="py-3 px-6">{{ req.service.name }}</td>
-            <td class="py-3 px-6">{{ req.requested_date }} {{ req.requested_time|time:"H:i" }}</td>
+            <td class="py-3 px-6">{{ req.requested_date }} <br>{{ req.requested_time|time:"H:i" }}</td>
             <td class="py-3 px-6">{{ req.city.name }}</td>
             <td class="py-3 px-6 font-semibold">
               {% if req.status == 'pending' %}در انتظار بررسی

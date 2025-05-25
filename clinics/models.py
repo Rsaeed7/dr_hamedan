@@ -1,4 +1,5 @@
 from django.db import models
+from django_jalali.db import models as jmodels
 # from django.contrib.auth.models import User
 from user.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator, EmailValidator
@@ -14,8 +15,8 @@ class Clinic(models.Model):
     logo = models.ImageField(upload_to='clinic_logos/', blank=True, null=True, verbose_name='لوگو')
     description = models.TextField(blank=True, null=True, verbose_name='توضیحات')
     admin = models.ForeignKey(User, on_delete=models.CASCADE, related_name='administered_clinics', verbose_name='مدیر')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
+    created_at = jmodels.jDateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
+    updated_at = jmodels.jDateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
     view_count = models.PositiveIntegerField(default=88, verbose_name='تعداد بازدید')
 
     def increment_view_count(self):
@@ -85,7 +86,7 @@ class ClinicGallery(models.Model):
     clinic = models.ForeignKey(Clinic, on_delete=models.CASCADE, related_name='gallery', verbose_name='کلینیک')
     image = models.ImageField(upload_to='clinic_gallery/', verbose_name='تصویر')
     title = models.CharField(max_length=255, blank=True, null=True, verbose_name='عنوان')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
+    created_at =jmodels.jDateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
 
     def __str__(self):
         return f"{self.clinic.name} Gallery Image - {self.id}"
@@ -104,7 +105,7 @@ class ClinicComment(models.Model):
     text = models.TextField(verbose_name='متن کامنت')
     recommendation = models.CharField(max_length=25, choices=Recommendation_CHOICES, verbose_name='توصیه',default=Recommendation_CHOICES[1], null=True, blank=True)
     rate = models.SmallIntegerField(verbose_name='امتیاز', blank=True, null=True,validators=[MinValueValidator(1), MaxValueValidator(5)])
-    date = models.DateTimeField(verbose_name='تاریخ ثبت', auto_now_add=True)
+    date = jmodels.jDateTimeField(verbose_name='تاریخ ثبت', auto_now_add=True)
     status = models.CharField(
         max_length=10, choices=STATUS_CHOICES, default="checking", verbose_name="وضعیت"
     )

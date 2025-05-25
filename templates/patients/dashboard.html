@@ -1,6 +1,7 @@
 {% extends  'base/base.html' %}
 {% load static %}
 {% block body %}
+{% load persian_date %}
     <section class="bg-light">
         <div class="container margin_120_95">
             <div class="row">
@@ -92,7 +93,7 @@
                                         </small>
                                         <h3>دکتر {{ appointment.doctor.user.last_name }}</h3>
                                         <small class="text-sm-right"><i
-                                                class="icon-calendar"></i>{{ appointment.day.date|date:"Y/m/d" }}
+                                                class="icon-calendar"></i>{{ appointment.day.date|persian_date_info }}
                                             ساعت {{ appointment.time|time:"H:i" }}</small>
                                         <ul>
                                             <li><a class="p-l-10 p-r-10 small bg-light-yellow rounded-10"
@@ -130,7 +131,7 @@
                                         {% for request in homecare_requests %}
                                             <tr>
                                                 <td>{{ request.service.name }}</td>
-                                                <td>{{ request.requested_date|date:"Y/m/d" }}</td>
+                                                <td>{{ request.requested_date|persian_date_info }}</td>
                                                 <td>{{ request.requested_time|time:"H:i" }}</td>
                                                 <td class="font-weight-bold
                     {% if request.status == 'confirmed' %}text-success icon-ok

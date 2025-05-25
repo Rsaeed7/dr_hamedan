@@ -107,7 +107,7 @@
                                         پنل مدیریت
                                     </a>
                                 {% endif %}
-                                <a href="{% url 'account:login' %}"
+                                <a href="{% url 'account:logout' %}"
                                    class="flex items-center px-4 py-3 text-sm text-red-600 hover:bg-gray-50">
                                     <heroicon-outline-arrow-left-on-rectangle class="w-5 h-5 mr-2"/>
                                     خروج
@@ -116,7 +116,7 @@
                         </div>
                     </div>
                 {% else %}
-                    <a href="{% url 'account:login' %}"
+                    <a href="{% url 'account:register' %}"
                        class="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg hover:bg-white/30 transition-colors text-white flex items-center">
                         <heroicon-outline-arrow-right-on-rectangle class="w-5 h-5 mr-2"/>
                         ورود
@@ -134,8 +134,8 @@
         {% for message in messages %}
             <div class="p-4 rounded-lg mb-4 flex items-center {% if message.tags == 'error' %}bg-red-50 text-red-800{% elif message.tags == 'success' %}bg-green-50 text-green-800{% else %}bg-blue-50 text-blue-800{% endif %}">
                 <heroicon-outline-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}
-                    exclamation-circle{% else %}information-circle{% endif %} class="w-6 h-6 mr-3 shrink-0"/>
-                <span>{{ message }}</span>
+                    exclamation-circle{% else %}information-circle{% endif %} class="w-full h-6 mr-3 shrink-0"/>
+                <p>{{ message }}</p>
             </div>
         {% endfor %}
     </div>
