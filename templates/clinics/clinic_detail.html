@@ -458,7 +458,11 @@ $(document).ready(function() {
 
     <script>
         function showFormModal() {
-            document.getElementById("formModal").classList.remove("hidden");
+            {% if user.is_authenticated %}
+                document.getElementById("formModal").classList.remove("hidden");
+            {% else %}
+                window.location.href = "{% url 'account:register' %}?message=برای+ثبت+نظر+وارد+شوید";
+            {% endif %}
         }
 
         function closeFormModal() {
