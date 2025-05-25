@@ -7,18 +7,15 @@ from doctors.models import DrComment as dr_comment
 from medimag.models import Comment as mag_comment
 from docpages.models import Comment as post_comment
 from clinics.models import ClinicComment as clinic_comment
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from datetime import datetime
-import jdatetime
-from .models import PatientsFile
 from django.views.generic import DetailView, CreateView, ListView
 from django.urls import reverse, reverse_lazy
 from .models import MedicalRecord, VisitEntry,MedicalReport,DrReportSettings
 from .forms import VisitEntryForm, MedicalRecordForm, ReportForm,DrReportSettingsForm,EditReportForm
 from django.views.generic.edit import CreateView
-
+from .models import PatientsFile  # مدل خودت
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+import jdatetime
 # Create your views here.
 @login_required()
 def comments_view(request):
@@ -46,17 +43,6 @@ def comment_delete(request, model_type, id):
 
 
 
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from .models import PatientsFile  # مدل خودت
-import datetime
-
-
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from django.contrib import messages
-import jdatetime
 
 @login_required
 def patient_profile(request):
@@ -81,11 +67,9 @@ def patient_profile(request):
             user.first_name = request.POST.get('f_name', user.first_name)
             user.last_name = request.POST.get('l_name', user.last_name)
             user.email = request.POST.get('email', user.email)
-
             new_phone = request.POST.get('phone')
             if new_phone and new_phone != user.phone:
                 user.phone = new_phone
-
             user.save()
 
             # آپدیت PatientFile

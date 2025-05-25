@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load persian_date %}
 {% block title %}پاسخ به نامه - {{ original_message.subject }}{% endblock %}
 
 {% block content %}
@@ -21,7 +21,7 @@
                         <span class="font-medium">{{ original_message.sender.user.get_full_name }}</span>
                         <span class="text-sm text-gray-500 mr-2">{{ original_message.sender.specialization.title }}</span>
                     </div>
-                    <span class="text-sm text-gray-500">{{ original_message.sent_at|date:"Y/m/d H:i" }}</span>
+                    <span class="text-sm text-gray-500">{{ original_message.sent_at|persian_date_info }}</span>
                 </div>
                 <div class="prose max-w-none">
                     {{ original_message.body|linebreaks }}

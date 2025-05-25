@@ -1,7 +1,7 @@
 {% extends  'base/base.html' %}
 {% load static %}
 {% block body %}
-
+{% load persian_date %}
     <!-- Head -->
     <section class="hero_home version_2">
         <div class="content text-dark">
@@ -114,9 +114,13 @@
                                 <div class="text-right text-info">
                                     <i class="icon-star-5"><small>{{ doctor.comment_rate }}</small></i>
                                     <small class="icon-location">{{ doctor.address }}</small>
-                                    <p class="text-dark small p-t-10">اولین نوبت خالی <span class="text-success p-r-20">10 اسفند</span>
+                                    {% if doctor.get_first_available_day %}
+                                    <p class="text-dark small p-t-10">اولین نوبت خالی <span class="text-success p-r-20">{{ doctor.get_first_available_day|persian_date_info }}</span>
+                                    {% else %}
+                                    <p class="text-dark small p-t-10">اولین نوبت خالی <span class="text-success p-r-20">فعلا نوبت خالی وجود ندارد</span>
+                                    {% endif %}
                                     <p class="text-dark small">زمان تقریبی انتظار <span
-                                            class="text-success p-r-20">2 ساعت</span>
+                                    class="text-success p-r-20">{{ doctor.get_most_common_waiting_time }}</span>
                                     </p>
                                     <button href="{% url 'doctors:doctor_detail' doctor.pk %}"
                                             class="btn btn-outline-success col-md-12">دریافت نوبت

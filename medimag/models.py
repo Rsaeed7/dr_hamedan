@@ -31,12 +31,7 @@ class MagArticle(models.Model):
     def __str__(self):
         return self.title
 
-    # def JaliliDatepublished(self):
-    #     return jdatetime.date.fromgregorian(
-    #         day=self.date.day,
-    #         month=self.date.month,
-    #         year=self.date.year,
-    #     )
+
 
     def get_absolute_url(self):
         return reverse('mag:article',kwargs={'slug': self.slug})

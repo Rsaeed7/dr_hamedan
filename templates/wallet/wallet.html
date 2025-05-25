@@ -1,5 +1,6 @@
 {% extends  'base/base.html' %}
 {% load static %}
+{% load persian_date %}
 {% block body %}
     <div class="filters_listing d-lg-none">
         <div class="container">
@@ -84,7 +85,7 @@
                                                         </td>
 
                                                         <td class="px-6 py-4 text-center">
-                                                            {{ transaction.created_at|date:"Y/m/d" }}
+                                                            {{ transaction.created_at|persian_date_info }}
                                                         </td>
                                                         <td class="px-6 py-4 text-center fs-10">
                                                                        <button class="border-0 rounded-10 px-2 text-white 

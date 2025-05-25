@@ -5,21 +5,21 @@ from .models import HomeCareRequest
 class HomeCareRequestForm(forms.ModelForm):
     first_name = forms.CharField(label="نام", required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
     last_name = forms.CharField(label="نام خانوادگی", required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    requested_date = jDateField(label="تاریخ مورد نظر")
+    requested_date = forms.HiddenInput()
 
     class Meta:
         model = HomeCareRequest
         fields = ['requested_date', 'requested_time', 'city', 'address', 'extra_notes', 'prescription_file']
         widgets = {
-            'requested_time': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
+            'requested_time': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control col-6'}),
             'city': forms.Select(attrs={'class': 'form-control'}),
             'address': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
             'extra_notes': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
             'prescription_file': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'requested_date': forms.HiddenInput(),
         }
         labels = {
-            'requested_date': 'تاریخ مورد نظر',
-            'requested_time': 'ساعت مورد نظر',
+            'requested_time': 'ساعت حدودی مورد نظر',
             'city': 'شهر',
             'address': 'آدرس دقیق',
             'extra_notes': 'توضیحات اضافی',

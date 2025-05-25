@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load persian_date %}
 {% block title %}نوبت‌های من - دکتر همدان{% endblock %}
 
 {% block extra_css %}
@@ -295,7 +295,7 @@
 
                                     <div class="flex flex-col space-y-2 md:space-y-0 md:flex-row md:space-x-reverse md:space-x-4 md:items-center">
                                         <div class="text-left">
-                                            <p class="text-sm font-medium text-gray-600">{{ appointment.day.date|date:"l، d F Y" }}</p>
+                                            <p class="text-sm font-medium text-gray-600">{{ appointment.day.date|persian_weekday }} {{ appointment.day.date|date:'j' }} {{ appointment.day.date|persian_month_name }}</p>
                                             <p class="text-lg font-semibold text-gray-800">{{ appointment.time|time:"H:i" }}</p>
                                             <span class="inline-flex items-center mt-1 px-2.5 py-0.5 rounded-full text-xs font-medium
                                             {% if appointment.status == 'confirmed' %}
