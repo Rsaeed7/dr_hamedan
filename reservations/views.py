@@ -6,13 +6,18 @@ from django.urls import reverse
 from .models import Reservation, ReservationDay
 from doctors.models import Doctor
 from patients.models import PatientsFile
-from datetime import datetime
-from datetime import timedelta
+# from datetime import datetime
+# from datetime import timedelta
+import jdatetime
+from jdatetime import datetime
+from jdatetime import timedelta
+
+
 @login_required
 def book_appointment(request, doctor_id):
     """Handle booking a new appointment"""
     doctor = get_object_or_404(Doctor, id=doctor_id, is_available=True)
-    
+
     if request.method == 'POST':
         # Process form data
         date_str = request.POST.get('date')
@@ -20,20 +25,20 @@ def book_appointment(request, doctor_id):
         name = request.POST.get('name')
         phone = request.POST.get('phone')
         national_id = request.POST.get('national_id', '')
-        
+
         if date_str and time_str and name and phone:
             try:
                 # Parse date
                 date_parts = date_str.split('-')
                 booking_date = datetime(int(date_parts[0]), int(date_parts[1]), int(date_parts[2])).date()
-                
+
                 # Parse time
                 time_parts = time_str.split(':')
                 booking_time = datetime.strptime(time_str, '%H:%M').time()
-                
+
                 # Get or create ReservationDay
                 reservation_day, _ = ReservationDay.objects.get_or_create(date=booking_date)
-                
+
                 # Check if time slot is still available
                 if booking_time in doctor.get_available_slots(booking_date):
                     # Create or get patient file
@@ -53,7 +58,7 @@ def book_appointment(request, doctor_id):
                             phone=phone,
                             national_id=national_id
                         )
-                    
+
                     # Create reservation
                     reservation = Reservation.objects.create(
                         day=reservation_day,
@@ -65,7 +70,7 @@ def book_appointment(request, doctor_id):
                         status='pending',
                         payment_status='pending'
                     )
-                    
+
                     # Redirect to payment page
                     return redirect('wallet:process_payment', reservation_id=reservation.id)
                 else:
@@ -96,7 +101,7 @@ def book_appointment(request, doctor_id):
         'doctor': doctor,
         'days': days,
     }
-    
+
     return render(request, 'reservations/appointment_book.html', context)
 
 @login_required

@@ -1,11 +1,11 @@
 from datetime import date
-
 from django.db import models
 from django.utils import timezone
 from django_jalali.db import models as jmodels
 from doctors.models import Doctor
 from doctors.models import City
 from user.models import User
+import jdatetime
 
 class PatientsFile(models.Model):
     GENDER_CHOICES = (('male', 'مرد'), ('female', 'زن'))
@@ -58,7 +58,7 @@ class PatientsFile(models.Model):
         """ محاسبه سن بیمار بر اساس تاریخ تولد """
         if not self.birthdate:
             return None  # اگر تاریخ تولد وارد نشده باشد، مقدار None برمی‌گردد
-        today = date.today()
+        today = jdatetime.date.today()
         age = today.year - self.birthdate.year - (
                 (today.month, today.day) < (self.birthdate.month, self.birthdate.day)
         )

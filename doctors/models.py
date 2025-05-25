@@ -1,17 +1,16 @@
 import random
 import uuid
-
-from django.db import models
-# from django.contrib.auth.models import User
 from django.db.models import Avg, Count
 from django_jalali.db import models as jmodels
 from user.models import User
 from clinics.models import Clinic
-from datetime import time, datetime, timedelta
+# from datetime import time, datetime, timedelta
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
+from datetime import datetime, timedelta
+import jdatetime
 
 class City(models.Model):
     name = models.CharField(max_length=50, verbose_name=_('نام شهر'))
@@ -66,6 +65,22 @@ class Doctor(models.Model):
     updated_at = jmodels.jDateTimeField(auto_now=True, verbose_name=_('تاریخ بروزرسانی'))
     gender = models.CharField(choices=GENDER_CHOICES, max_length=10, verbose_name=_('جنسیت'), null=True, blank=True)
     view_count = models.PositiveIntegerField(default=93, verbose_name='تعداد بازدید')
+
+    def get_first_available_day(self, max_days=30):
+        """
+        برگرداندن تاریخ شمسی اولین روزی که دکتر نوبت خالی دارد.
+        :param max_days: بیشترین تعداد روزهایی که بررسی می‌شود.
+        :return: jdatetime.date یا None اگر نوبت خالی پیدا نشد.
+        """
+        today = datetime.today().date()
+
+        for i in range(max_days):
+            date = today + timedelta(days=i)
+            if self.get_available_slots(date):
+                # تبدیل به تاریخ شمسی و برگشت
+                return jdatetime.date.fromgregorian(date=date)
+
+        return None
 
     def increment_view_count(self):
         """افزایش تعداد بازدیدها"""

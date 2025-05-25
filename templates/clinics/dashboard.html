@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}داشبورد کلینیک - دکتر همدان{% endblock %}
-
+{% load persian_date %}
 {% block extra_css %}
 <style>
     /* RTL specific styles */
@@ -157,7 +157,7 @@
                                             <div class="text-sm text-gray-500">{{ appointment.doctor.specialization }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-900">{{ appointment.day.date|date:"Y/m/d" }}</div>
+                                            <div class="text-sm text-gray-900">{{ appointment.day.date|persian_date_info }}</div>
                                             <div class="text-sm text-gray-500">{{ appointment.time|time:"H:i" }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">

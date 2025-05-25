@@ -81,9 +81,9 @@
                                     <h3><a href="{% url 'mag:article' object.slug %}">{{ object.title }}</a></h3>
                                     <p>{{ object.description | truncatewords:70 }}</p>
                                     <ul>
-                                        <li><i class="icon-feather"></i>{{ object.writer.username }}</li>
-                                        <li><i class="icon-calendar-empty"></i>{{ object.JaliliDatepublished }}</li>
-                                        <li><i class="icon-comment-3"></i>2</li>
+                                        <li><i class="icon-feather"></i>{{ object.writer.get_full_name }}</li>
+                                        <li><i class="icon-calendar-empty"></i>{{ object.date|persian_date_info }}</li>
+                                        <li><i class="icon-comment-3"></i>{{ object.comments.count }}</li>
                                     </ul>
                                 </div>
                             </div>
