@@ -111,13 +111,13 @@
                                 >
                                 <h3>دکتر {{ doctor.user.get_full_name }}</h3>
                                 <p>{{ doctor.specialization.name }}</p>
-                                <div class="text-right text-info">
+                                <div class="text-right text-secondary">
                                     <i class="icon-star-5"><small>{{ doctor.comment_rate }}</small></i>
                                     <small class="icon-location">{{ doctor.address }}</small>
                                     {% if doctor.get_first_available_day %}
                                     <p class="text-dark small p-t-10">اولین نوبت خالی <span class="text-success p-r-20">{{ doctor.get_first_available_day|persian_date_info }}</span>
                                     {% else %}
-                                    <p class="text-dark small p-t-10">اولین نوبت خالی <span class="text-success p-r-20">فعلا نوبت خالی وجود ندارد</span>
+                                    <p class="text-dark small p-t-10">اولین نوبت خالی <span class="text-danger p-r-20">فعلا نوبت خالی وجود ندارد</span>
                                     {% endif %}
                                     <p class="text-dark small">زمان تقریبی انتظار <span
                                     class="text-success p-r-20">{{ doctor.get_most_common_waiting_time }}</span>
@@ -218,7 +218,7 @@
                                 {% endif %}
                                 <h3>{{ clinic.name }}</h3>
                                 <p>مرکز جراحی محدود</p>
-                                <div class="text-right text-info">
+                                <div class="text-right text-secondary">
                                     <small class="icon-location">{{ clinic.address }}</small>
                                     <hr>
                                     <button class="btn btn-outline-warning col-md-12">مشاهده پروفایل</button>
