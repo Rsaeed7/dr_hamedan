@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>برداشت - دکتر همدان</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Vazir', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-2xl mx-auto">
+            <!-- Header -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800 mb-2">برداشت از کیف پول</h1>
+                        <p class="text-gray-600">مبلغ و اطلاعات حساب بانکی را وارد کنید</p>
+                    </div>
+                    <a href="{% url 'wallet:wallet_dashboard' %}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition duration-200">
+                        بازگشت
+                    </a>
+                </div>
+            </div>
+
+            <!-- Current Balance -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-blue-500 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"/>
+                    </svg>
+                    <div>
+                        <p class="text-sm text-blue-700">موجودی قابل برداشت</p>
+                        <p class="text-lg font-semibold text-blue-800">{{ wallet.balance|floatformat:0 }} تومان</p>
+                        {% if wallet.pending_balance > 0 %}
+                            <p class="text-xs text-blue-600">در انتظار تایید: {{ wallet.pending_balance|floatformat:0 }} تومان</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Withdraw Form -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <form method="POST" id="withdrawForm">
+                    {% csrf_token %}
+                    
+                    <!-- Amount Input -->
+                    <div class="mb-6">
+                        <label for="amount" class="block text-sm font-medium text-gray-700 mb-2">مبلغ برداشت (تومان)</label>
+                        <input type="number" 
+                               id="amount" 
+                               name="amount" 
+                               min="50000" 
+                               max="{{ wallet.balance }}"
+                               step="1000"
+                               class="w-full border border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                               placeholder="مثال: 100000"
+                               required>
+                        <p class="text-sm text-gray-500 mt-1">حداقل مبلغ برداشت: ۵۰,۰۰۰ تومان</p>
+                    </div>
+
+                    <!-- Quick Amount Buttons -->
+                    <div class="mb-6">
+                        <p class="text-sm font-medium text-gray-700 mb-3">مبالغ پیشنهادی:</p>
+                        <div class="grid grid-cols-3 gap-3">
+                            {% if wallet.balance >= 100000 %}
+                                <button type="button" onclick="setAmount(100000)" class="quick-amount-btn bg-gray-100 hover:bg-red-100 border border-gray-300 rounded-lg py-2 px-4 text-sm font-medium transition duration-200">
+                                    ۱۰۰,۰۰۰
+                                </button>
+                            {% endif %}
+                            {% if wallet.balance >= 200000 %}
+                                <button type="button" onclick="setAmount(200000)" class="quick-amount-btn bg-gray-100 hover:bg-red-100 border border-gray-300 rounded-lg py-2 px-4 text-sm font-medium transition duration-200">
+                                    ۲۰۰,۰۰۰
+                                </button>
+                            {% endif %}
+                            {% if wallet.balance >= 500000 %}
+                                <button type="button" onclick="setAmount(500000)" class="quick-amount-btn bg-gray-100 hover:bg-red-100 border border-gray-300 rounded-lg py-2 px-4 text-sm font-medium transition duration-200">
+                                    ۵۰۰,۰۰۰
+                                </button>
+                            {% endif %}
+                            {% if wallet.balance >= 1000000 %}
+                                <button type="button" onclick="setAmount(1000000)" class="quick-amount-btn bg-gray-100 hover:bg-red-100 border border-gray-300 rounded-lg py-2 px-4 text-sm font-medium transition duration-200">
+                                    ۱,۰۰۰,۰۰۰
+                                </button>
+                            {% endif %}
+                            {% if wallet.balance >= 2000000 %}
+                                <button type="button" onclick="setAmount(2000000)" class="quick-amount-btn bg-gray-100 hover:bg-red-100 border border-gray-300 rounded-lg py-2 px-4 text-sm font-medium transition duration-200">
+                                    ۲,۰۰۰,۰۰۰
+                                </button>
+                            {% endif %}
+                            {% if wallet.balance > 50000 %}
+                                <button type="button" onclick="setAmount({{ wallet.balance }})" class="quick-amount-btn bg-gray-100 hover:bg-red-100 border border-gray-300 rounded-lg py-2 px-4 text-sm font-medium transition duration-200">
+                                    کل موجودی
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Bank Account Information -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">اطلاعات حساب بانکی</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Account Holder Name -->
+                            <div>
+                                <label for="account_holder" class="block text-sm font-medium text-gray-700 mb-2">نام صاحب حساب</label>
+                                <input type="text" 
+                                       id="account_holder" 
+                                       name="account_holder" 
+                                       class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                       placeholder="نام و نام خانوادگی"
+                                       required>
+                            </div>
+
+                            <!-- Bank Name -->
+                            <div>
+                                <label for="bank_name" class="block text-sm font-medium text-gray-700 mb-2">نام بانک</label>
+                                <select id="bank_name" 
+                                        name="bank_name" 
+                                        class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                        required>
+                                    <option value="">انتخاب بانک</option>
+                                    <option value="mellat">بانک ملت</option>
+                                    <option value="melli">بانک ملی ایران</option>
+                                    <option value="tejarat">بانک تجارت</option>
+                                    <option value="saderat">بانک صادرات ایران</option>
+                                    <option value="parsian">بانک پارسیان</option>
+                                    <option value="pasargad">بانک پاسارگاد</option>
+                                    <option value="saman">بانک سامان</option>
+                                    <option value="sepah">بانک سپه</option>
+                                    <option value="refah">بانک رفاه کارگران</option>
+                                    <option value="keshavarzi">بانک کشاورزی</option>
+                                    <option value="other">سایر</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Account Number -->
+                        <div class="mt-4">
+                            <label for="account_number" class="block text-sm font-medium text-gray-700 mb-2">شماره حساب</label>
+                            <input type="text" 
+                                   id="account_number" 
+                                   name="account_number" 
+                                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                   placeholder="شماره حساب بانکی"
+                                   pattern="[0-9]+"
+                                   required>
+                        </div>
+
+                        <!-- IBAN -->
+                        <div class="mt-4">
+                            <label for="iban" class="block text-sm font-medium text-gray-700 mb-2">شماره شبا (اختیاری)</label>
+                            <input type="text" 
+                                   id="iban" 
+                                   name="iban" 
+                                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                   placeholder="IR123456789012345678901234"
+                                   pattern="IR[0-9]{24}">
+                            <p class="text-sm text-gray-500 mt-1">شماره شبا باید با IR شروع شود و ۲۶ رقم باشد</p>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-6">
+                        <label for="description" class="block text-sm font-medium text-gray-700 mb-2">توضیحات (اختیاری)</label>
+                        <textarea id="description" 
+                                  name="description" 
+                                  rows="3" 
+                                  class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                  placeholder="توضیحات اضافی در مورد این برداشت..."></textarea>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" 
+                            class="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center">
+                        <svg class="w-5 h-5 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"/>
+                        </svg>
+                        درخواست برداشت
+                    </button>
+                </form>
+            </div>
+
+            <!-- Important Notice -->
+            <div class="bg-orange-50 border border-orange-200 rounded-lg p-4 mt-6">
+                <div class="flex">
+                    <svg class="w-5 h-5 text-orange-400 ml-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                    </svg>
+                    <div>
+                        <h3 class="text-sm font-medium text-orange-800">نکات مهم</h3>
+                        <div class="mt-2 text-sm text-orange-700">
+                            <ul class="list-disc list-inside space-y-1">
+                                <li>درخواست برداشت پس از بررسی در حداکثر ۲۴ ساعت پردازش می‌شود</li>
+                                <li>اطلاعات حساب بانکی باید دقیق و صحیح باشد</li>
+                                <li>نام صاحب حساب باید با نام کاربری شما مطابقت داشته باشد</li>
+                                <li>حداقل مبلغ برداشت ۵۰,۰۰۰ تومان است</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function setAmount(amount) {
+            document.getElementById('amount').value = amount;
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.quick-amount-btn').forEach(btn => {
+                btn.classList.remove('bg-red-100', 'border-red-300');
+                btn.classList.add('bg-gray-100', 'border-gray-300');
+            });
+            
+            // Add active class to clicked button
+            event.target.classList.remove('bg-gray-100', 'border-gray-300');
+            event.target.classList.add('bg-red-100', 'border-red-300');
+        }
+
+        // Format number input
+        document.getElementById('amount').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/,/g, '');
+            if (value && !isNaN(value)) {
+                e.target.value = parseInt(value).toLocaleString();
+            }
+        });
+
+        // Format account number
+        document.getElementById('account_number').addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+
+        // Format IBAN
+        document.getElementById('iban').addEventListener('input', function(e) {
+            let value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            if (value && !value.startsWith('IR')) {
+                value = 'IR' + value;
+            }
+            e.target.value = value;
+        });
+
+        // Remove formatting before form submission
+        document.getElementById('withdrawForm').addEventListener('submit', function(e) {
+            let amountInput = document.getElementById('amount');
+            amountInput.value = amountInput.value.replace(/,/g, '');
+        });
+    </script>
+</body>
+</html> 

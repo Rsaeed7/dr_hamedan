@@ -215,7 +215,7 @@
                                 {% for transaction in transactions %}
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {{ transaction.created_at|jformat:"j F Y" }}
+                                        {{ transaction.created_at|date:"j F Y" }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                         {{ transaction.description }}

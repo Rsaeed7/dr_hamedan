@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>داشبورد کیف پول - دکتر همدان</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-3xl font-bold text-gray-900 mb-8">داشبورد کیف پول</h1>
+            
+            <!-- Balance Card -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-semibold text-gray-800">موجودی کل</h2>
+                        <p class="text-3xl font-bold text-blue-600">{{ wallet.balance|floatformat:0 }} تومان</p>
+                    </div>
+                    <div class="text-right">
+                        <h3 class="text-sm font-medium text-gray-600">موجودی مسدود</h3>
+                        <p class="text-xl font-semibold text-red-500">{{ wallet.frozen_balance|floatformat:0 }} تومان</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <a href="{% url 'wallet:deposit' %}" class="bg-green-500 hover:bg-green-600 text-white p-6 rounded-lg text-center transition-colors">
+                    <div class="text-2xl mb-2">💰</div>
+                    <h3 class="font-semibold">افزودن موجودی</h3>
+                    <p class="text-sm opacity-90">شارژ کیف پول</p>
+                </a>
+                
+                <a href="{% url 'wallet:withdraw' %}" class="bg-blue-500 hover:bg-blue-600 text-white p-6 rounded-lg text-center transition-colors">
+                    <div class="text-2xl mb-2">💳</div>
+                    <h3 class="font-semibold">برداشت</h3>
+                    <p class="text-sm opacity-90">انتقال به حساب</p>
+                </a>
+                
+                <a href="{% url 'wallet:transaction_list' %}" class="bg-purple-500 hover:bg-purple-600 text-white p-6 rounded-lg text-center transition-colors">
+                    <div class="text-2xl mb-2">📊</div>
+                    <h3 class="font-semibold">تراکنش‌ها</h3>
+                    <p class="text-sm opacity-90">مشاهده تاریخچه</p>
+                </a>
+            </div>
+            
+            <!-- Recent Transactions -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">آخرین تراکنش‌ها</h2>
+                
+                {% if recent_transactions %}
+                <div class="space-y-4">
+                    {% for transaction in recent_transactions %}
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                        <div>
+                            <p class="font-medium text-gray-800">{{ transaction.get_transaction_type_display }}</p>
+                            <p class="text-sm text-gray-600">{{ transaction.created_at|date:"Y/m/d H:i" }}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold {% if transaction.transaction_type == 'deposit' %}text-green-600{% else %}text-red-600{% endif %}">
+                                {% if transaction.transaction_type == 'deposit' %}+{% else %}-{% endif %}{{ transaction.amount|floatformat:0 }} تومان
+                            </p>
+                            <span class="text-xs px-2 py-1 rounded-full {% if transaction.status == 'completed' %}bg-green-100 text-green-800{% elif transaction.status == 'pending' %}bg-yellow-100 text-yellow-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                {{ transaction.get_status_display }}
+                            </span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-gray-500 text-center py-8">هیچ تراکنشی یافت نشد</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

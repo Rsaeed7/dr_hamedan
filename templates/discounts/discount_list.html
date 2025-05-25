@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load jformat %}
+
+{% block title %}تخفیفات موجود{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">تخفیفات موجود</h1>
+        <p class="text-gray-600">از تخفیفات ویژه برای نوبت‌گیری استفاده کنید</p>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+        <form method="get" class="flex flex-wrap gap-4">
+            <div class="flex-1 min-w-48">
+                <label for="type" class="block text-sm font-medium text-gray-700 mb-1">نوع تخفیف</label>
+                <select name="type" id="type" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <option value="">همه انواع</option>
+                    {% for value, label in discount_types %}
+                        <option value="{{ value }}" {% if request.GET.type == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="flex-1 min-w-48">
+                <label for="specialization" class="block text-sm font-medium text-gray-700 mb-1">تخصص</label>
+                <select name="specialization" id="specialization" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <option value="">همه تخصص‌ها</option>
+                    <!-- اینجا باید تخصص‌ها از دیتابیس لود شوند -->
+                </select>
+            </div>
+            
+            <div class="flex items-end">
+                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    اعمال فیلتر
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Discounts Grid -->
+    {% if discounts %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {% for discount in discounts %}
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+                    <div class="p-6">
+                        <!-- Discount Badge -->
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                {% if discount.discount_type.type == 'percentage' %}
+                                    {{ discount.percentage }}% تخفیف
+                                {% elif discount.discount_type.type == 'fixed_amount' %}
+                                    {{ discount.fixed_amount }} تومان تخفیف
+                                {% endif %}
+                            </span>
+                            
+                            {% if discount.usage_limit %}
+                                <span class="text-xs text-gray-500">
+                                    {{ discount.used_count }}/{{ discount.usage_limit }} استفاده
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Title and Description -->
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ discount.title }}</h3>
+                        <p class="text-gray-600 text-sm mb-4 line-clamp-3">{{ discount.description }}</p>
+
+                        <!-- Applicable To -->
+                        <div class="mb-4">
+                            <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">قابل اعمال برای:</span>
+                            <p class="text-sm text-gray-700 mt-1">
+                                {% if discount.applicable_to == 'all' %}
+                                    همه خدمات
+                                {% elif discount.applicable_to == 'doctor' %}
+                                    پزشکان خاص
+                                {% elif discount.applicable_to == 'specialization' %}
+                                    تخصص‌های خاص
+                                {% elif discount.applicable_to == 'clinic' %}
+                                    کلینیک‌های خاص
+                                {% elif discount.applicable_to == 'first_time' %}
+                                    بیماران جدید
+                                {% elif discount.applicable_to == 'returning' %}
+                                    بیماران قدیمی
+                                {% endif %}
+                            </p>
+                        </div>
+
+                        <!-- Conditions -->
+                        {% if discount.min_amount %}
+                            <div class="mb-4">
+                                <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">حداقل مبلغ:</span>
+                                <p class="text-sm text-gray-700">{{ discount.min_amount }} تومان</p>
+                            </div>
+                        {% endif %}
+
+                        <!-- Validity -->
+                        <div class="mb-4">
+                            <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">اعتبار:</span>
+                            <p class="text-sm text-gray-700">
+                                تا {{ discount.end_date|jformat:"%Y/%m/%d" }}
+                            </p>
+                        </div>
+
+                        <!-- Action Button -->
+                        <div class="pt-4 border-t border-gray-100">
+                            <a href="{% url 'discounts:discount_detail' discount.pk %}" 
+                               class="w-full bg-blue-600 text-white text-center py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors inline-block">
+                                مشاهده جزئیات
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+            <div class="flex justify-center">
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.specialization %}&specialization={{ request.GET.specialization }}{% endif %}" 
+                           class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            قبلی
+                        </a>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-blue-50 text-sm font-medium text-blue-600">
+                                {{ num }}
+                            </span>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <a href="?page={{ num }}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.specialization %}&specialization={{ request.GET.specialization }}{% endif %}" 
+                               class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                {{ num }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.specialization %}&specialization={{ request.GET.specialization }}{% endif %}" 
+                           class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            بعدی
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+        {% endif %}
+    {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-12">
+            <div class="mx-auto h-24 w-24 text-gray-400 mb-4">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">تخفیفی یافت نشد</h3>
+            <p class="text-gray-500">در حال حاضر تخفیف فعالی وجود ندارد.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

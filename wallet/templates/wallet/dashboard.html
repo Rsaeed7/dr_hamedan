@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>کیف پول</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Vazir', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h1 class="text-2xl font-bold text-gray-800 mb-2">کیف پول</h1>
+                <p class="text-gray-600">مدیریت موجودی و تراکنش‌های مالی</p>
+            </div>
+
+            <!-- Wallet Balance Card -->
+            <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg shadow-lg p-6 mb-6 text-white">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-lg font-semibold mb-2">موجودی کیف پول</h2>
+                        <p class="text-3xl font-bold">{{ wallet.balance|floatformat:0 }} تومان</p>
+                        {% if wallet.pending_balance > 0 %}
+                            <p class="text-sm opacity-90 mt-1">در انتظار تایید: {{ wallet.pending_balance|floatformat:0 }} تومان</p>
+                        {% endif %}
+                        {% if wallet.frozen_balance > 0 %}
+                            <p class="text-sm opacity-90 mt-1">مسدود شده: {{ wallet.frozen_balance|floatformat:0 }} تومان</p>
+                        {% endif %}
+                    </div>
+                    <div class="text-right">
+                        <svg class="w-16 h-16 opacity-80" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <a href="{% url 'wallet:deposit' %}" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg text-center transition duration-200">
+                    <svg class="w-5 h-5 inline-block ml-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"/>
+                    </svg>
+                    شارژ کیف پول
+                </a>
+                <a href="{% url 'wallet:withdraw' %}" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg text-center transition duration-200">
+                    <svg class="w-5 h-5 inline-block ml-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"/>
+                    </svg>
+                    برداشت از کیف پول
+                </a>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800">آخرین تراکنش‌ها</h3>
+                    <a href="{% url 'wallet:transaction_list' %}" class="text-blue-500 hover:text-blue-600 text-sm">مشاهده همه</a>
+                </div>
+                
+                {% if recent_transactions %}
+                    <div class="space-y-3">
+                        {% for transaction in recent_transactions %}
+                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-full flex items-center justify-center ml-3
+                                        {% if transaction.transaction_type == 'deposit' %}bg-green-100 text-green-600
+                                        {% elif transaction.transaction_type == 'withdraw' %}bg-red-100 text-red-600
+                                        {% else %}bg-blue-100 text-blue-600{% endif %}">
+                                        {% if transaction.transaction_type == 'deposit' %}
+                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"/>
+                                            </svg>
+                                        {% elif transaction.transaction_type == 'withdraw' %}
+                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"/>
+                                            </svg>
+                                        {% else %}
+                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9z"/>
+                                            </svg>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-gray-800">{{ transaction.get_transaction_type_display }}</p>
+                                        <p class="text-sm text-gray-500">{{ transaction.created_at|date:"Y/m/d - H:i" }}</p>
+                                    </div>
+                                </div>
+                                <div class="text-left">
+                                    <p class="font-semibold
+                                        {% if transaction.transaction_type == 'deposit' %}text-green-600
+                                        {% elif transaction.transaction_type == 'withdraw' %}text-red-600
+                                        {% else %}text-gray-600{% endif %}">
+                                        {% if transaction.transaction_type == 'withdraw' %}-{% endif %}
+                                        {{ transaction.amount|floatformat:0 }} تومان
+                                    </p>
+                                    <p class="text-xs text-gray-500">{{ transaction.get_status_display }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-8">
+                        <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9z"/>
+                        </svg>
+                        <p class="text-gray-500">هنوز تراکنشی انجام نشده است</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
