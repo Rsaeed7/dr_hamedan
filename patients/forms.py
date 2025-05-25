@@ -3,12 +3,10 @@ from django_jalali.forms import jDateTimeField, jDateField
 from .models import VisitEntry,MedicalRecord, MedicalReport, ReportImage,DrReportSettings
 
 class VisitEntryForm(forms.ModelForm):
-    visit_date = jDateTimeField(label='تاریخ ویزیت')
     
     class Meta:
         model = VisitEntry
         fields = [
-            'visit_date',
             'chief_complaint',
             'diagnosis',
             'physical_exam',

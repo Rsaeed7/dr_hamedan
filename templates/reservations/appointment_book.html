@@ -1,8 +1,8 @@
 {% extends 'base/base.html' %}
 {% load static %}
 {% block body %}
-    {% include  'base/search.html' %}
-    {% load persian_date %}
+{% include  'base/search.html' %}
+{% load persian_date %}
     <!-- /search -->
 
     <div class="container margin_60">
@@ -10,117 +10,126 @@
             <div class="col-xl-8 col-lg-8 order-2 order-lg-1">
                 <div id="section_1">
                     <div class="tab-content box_general_3 shadow-0-m p-m-1">
-                    {% if days %}
-                        <div class="tab-pane fade show active text-center" id="book" role="tabpanel">
+                        {% if days %}
+                            <div class="tab-pane fade show active text-center" id="book" role="tabpanel">
 
-                            <!-- انتخاب روز -->
-                            <div class="flex bg-bluelight p-t-20 p-b-0 rounded" id="day-selection">
-                                <button class="btn-scroll2 icon-right-open-big" id="slideRight" type="button"></button>
-                                <div id="contain" class="form-group add_bottom_45 flex scrollable">
-                                    {% for day in days %}
-                                        <div class="w-auto mx-2 my-2 day-card" data-date="{{ day.date|date:'Y-m-d' }}">
-                                            <button class="btn btn-outline-dark spacer day-btn fs-12"
-                                                    style="height: 70px;width: 80px">
-                                                {{ day.date|persian_weekday }}<br>
-                                                {{ day.date|date:'j' }} {{ day.date|persian_month_name }}
-                                                <br>
-                                                <small>{{ day.slots|length }} نوبت خالی </small><br>
-                                            </button>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                                <button id="slideLeft" class="btn-scroll2 icon-left-open-big" type="button"></button>
-                            </div>
-
-                            <!-- نمایش ساعت‌ها -->
-                            <div id="time-slot-container" class="mt-3" style="display: none;">
-                                <ul class="legend">
-                                    <li><strong></strong>نوبت های خالی</li>
-                                    <li><strong></strong>نوبت های رزرو شده</li>
-                                </ul>
-                                <div id="time-slots" class="row"></div>
-                            </div>
-
-                            <!-- فرم رزرو -->
-                            <div class="hidden" id="information">
-                                <div id="formModal" class="modal text-right">
-                                    <div class="modal-content">
-                                        <span class="close" onclick="closeFormModal()">&times;</span>
-                                        <div id="booking-form" style="display: none;">
-                                            <div class="alert alert-info mt-3">
-                                                شما در حال رزرو نوبت برای: <strong
-                                                    id="appointment-date-time"></strong><br>
-                                                هزینه ویزیت: {{ doctor.consultation_fee }} تومان
+                                <!-- انتخاب روز -->
+                                <div class="flex bg-bluelight p-t-20 p-b-0 rounded" id="day-selection">
+                                    <button class="btn-scroll2 icon-right-open-big" id="slideRight"
+                                            type="button"></button>
+                                    <div id="contain" class="form-group add_bottom_45 flex scrollable">
+                                        {% for day in days %}
+                                            <div class="w-auto mx-2 my-2 day-card"
+                                                 data-date="{{ day.date|date:'Y-m-d' }}">
+                                                <button class="btn btn-outline-dark spacer day-btn fs-12"
+                                                        style="height: 70px;width: 80px">
+                                                    {{ day.date|persian_weekday }}<br>
+                                                    {{ day.date|date:'j' }} {{ day.date|persian_month_name }}
+                                                    <br>
+                                                    <small>{{ day.slots|length }} نوبت خالی </small><br>
+                                                </button>
+                                            {{ day.date|persian_date_info }}
+                                            {{ day.date }}
                                             </div>
+                                        {% endfor %}
+                                    </div>
+                                    <button id="slideLeft" class="btn-scroll2 icon-left-open-big"
+                                            type="button"></button>
+                                </div>
 
-                                            <form method="post" id="resform">
-                                                {% csrf_token %}
-                                                <input type="hidden" name="date" id="form-date">
-                                                <input type="hidden" name="time" id="form-time">
+                                <!-- نمایش ساعت‌ها -->
+                                <div id="time-slot-container" class="mt-3" style="display: none;">
+                                    <ul class="legend">
+                                        <li><strong></strong>نوبت های خالی</li>
+                                        <li><strong></strong>نوبت های رزرو شده</li>
+                                    </ul>
+                                    <div id="time-slots" class="row"></div>
+                                </div>
 
-                                                <div class="row text-right mt-3">
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label>نام<span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control" id="name"
-                                                                   name="name"
-                                                                   value="
-                                                                           {% if request.user.is_authenticated %}{{ request.user.get_full_name }}{% endif %}"
-                                                                   required>
-                                                            <small class="text-danger font-weight-light"
-                                                                   id="name_alarm"></small>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label>شماره موبایل<span
-                                                                    class="text-danger">*</span></label>
-                                                            <input type="tel" class="form-control" id="phone"
-                                                                   name="phone"
-                                                                   value="
-                                                                           {% if request.user.is_authenticated %}{{ request.user.phone }}{% endif %}"
-                                                                   required>
-                                                            <small class="text-danger font-weight-light"
-                                                                   id="phone_alarm"></small>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="form-group">
-                                                            <label>کد ملی<span class="text-danger">*</span></label>
-                                                            <input type="text" class="form-control" id="meli_code"
-                                                                   name="meli_code">
-                                                            <small class="text-danger font-weight-light"
-                                                                   id="code_alarm"></small>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="custom-gender-toggle">
-                                                            <input type="radio" id="male-option" name="gender" value="M"
-                                                                   checked>
-                                                            <label for="male-option">آقا هستم</label>
-                                                            <input type="radio" id="female-option" name="gender"
-                                                                   value="F">
-                                                            <label for="female-option">خانم هستم</label>
-                                                            <div class="custom-slider"></div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-lg-12 centered">
-                                                        <button type="submit"
-                                                                class="btn btn-info dr_bg m-t-20 w-full rounded">
-                                                            ثبت نوبت
-                                                        </button>
-                                                    </div>
+                                <!-- فرم رزرو -->
+                                <div class="hidden" id="information">
+                                    <div id="formModal" class="modal text-right">
+                                        <div class="modal-content">
+                                            <span class="close" onclick="closeFormModal()">&times;</span>
+                                            <div id="booking-form" style="display: none;">
+                                                <div class="alert alert-info mt-3">
+                                                    شما در حال رزرو نوبت برای: <strong
+                                                        id="appointment-date-time"></strong><br>
+                                                    هزینه ویزیت: {{ doctor.consultation_fee }} تومان
                                                 </div>
-                                            </form>
+
+                                                <form method="post" id="resform">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="date" id="form-date">
+                                                    <input type="hidden" name="time" id="form-time">
+
+                                                    <div class="row text-right mt-3">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label>نام<span class="text-danger">*</span></label>
+                                                                <input type="text" class="form-control" id="name"
+                                                                       name="name"
+                                                                       value="
+
+                                                                               {% if request.user.is_authenticated %}{{ request.user.get_full_name }}{% endif %}"
+                                                                       required>
+                                                                <small class="text-danger font-weight-light"
+                                                                       id="name_alarm"></small>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label>شماره موبایل<span
+                                                                        class="text-danger">*</span></label>
+                                                                <input type="tel" class="form-control" id="phone"
+                                                                       name="phone"
+                                                                       value="
+
+                                                                               {% if request.user.is_authenticated %}{{ request.user.phone }}{% endif %}"
+                                                                       required>
+                                                                <small class="text-danger font-weight-light"
+                                                                       id="phone_alarm"></small>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label>کد ملی<span class="text-danger">*</span></label>
+                                                                <input type="text" class="form-control" id="meli_code"
+                                                                       name="meli_code">
+                                                                <small class="text-danger font-weight-light"
+                                                                       id="code_alarm"></small>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="custom-gender-toggle">
+                                                                <input type="radio" id="male-option" name="gender"
+                                                                       value="M"
+                                                                       checked>
+                                                                <label for="male-option">آقا هستم</label>
+                                                                <input type="radio" id="female-option" name="gender"
+                                                                       value="F">
+                                                                <label for="female-option">خانم هستم</label>
+                                                                <div class="custom-slider"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-12 centered">
+                                                            <button type="submit"
+                                                                    class="btn btn-info dr_bg m-t-20 w-full rounded">
+                                                                ثبت نوبت
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-                        </div>
-                    {% else %}
-                    <p class="box_general bg-light-yellow text-center icon-attention-alt-1">در حال حاضر نوبت فعالی برای این پزشک وجود ندارد</p>
-                    {% endif %}
+                            </div>
+                        {% else %}
+                            <p class="box_general bg-light-yellow text-center icon-attention-alt-1">در حال حاضر نوبت
+                                فعالی برای این پزشک وجود ندارد</p>
+                        {% endif %}
                     </div>
                 </div>
             </div>

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-
+{% load persian_date %}
 {% block title %}پرداخت - دکتر همدان{% endblock %}
 
 {% block extra_css %}
@@ -49,7 +49,7 @@
                     </div>
                     <div>
                         <dt class="text-gray-600">تاریخ:</dt>
-                        <dd class="font-medium text-gray-900">{{ reservation.day.date }}</dd>
+                        <dd class="font-medium text-gray-900">{{ reservation.day.date|persian_date_info }}</dd>
                     </div>
                     <div>
                         <dt class="text-gray-600">ساعت:</dt>

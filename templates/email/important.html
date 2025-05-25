@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load persian_date %}
 {% block title %}نامه‌های مهم - {{ block.super }}{% endblock %}
 
 {% block content %}
@@ -34,7 +34,7 @@
                                 {% endif %}
                             </a>
                         </td>
-                        <td>{{ message.sent_at|date:"Y/m/d H:i" }}</td>
+                        <td>{{ message.sent_at|persian_date_info }}</td>
                         <td>
                             <div class="btn-group btn-group-sm">
                                 <a href="{% url 'doctors:reply' message.pk %}" class="btn btn-outline-secondary" title="پاسخ">
