@@ -11,6 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from datetime import datetime, timedelta
 import jdatetime
+from khayyam import JalaliDate
 
 class City(models.Model):
     name = models.CharField(max_length=50, verbose_name=_('نام شهر'))
@@ -158,48 +159,62 @@ class Doctor(models.Model):
         return f"دکتر {self.user.name} - {self.specialization}"
     
     def get_available_slots(self, date):
-        """محاسبه زمان‌های خالی برای یک تاریخ مشخص"""
-        from reservations.models import Reservation, ReservationDay
+        """
+        دریافت لیست زمان‌های آزاد برای یک تاریخ مشخص
+        بر اساس زمان‌بندی دکتر و رزروهای موجود
+        """
+        from reservations.models import ReservationDay, Reservation
+        from datetime import datetime, timedelta
+        import jdatetime
         
-        # دریافت روز هفته (0=شنبه، 6=جمعه)
-        day_of_week = date.weekday()
+        # تبدیل تاریخ جلالی به میلادی در صورت نیاز
+        if hasattr(date, 'togregorian'):
+            # اگر تاریخ جلالی است
+            gregorian_date = date.togregorian()
+        else:
+            # اگر تاریخ میلادی است
+            gregorian_date = date
         
-        # دریافت تمام زمان‌بندی‌های این پزشک در این روز هفته
-        day_availabilities = self.availabilities.filter(day_of_week=day_of_week)
-        
-        if not day_availabilities.exists():
-            return []
-        
-        # بررسی اینکه آیا تاریخ منتشر شده است
         try:
-            res_day = ReservationDay.objects.get(date=date)
-            if not res_day.published:
-                return []
+            # پیدا کردن روز رزرو
+            reservation_day = ReservationDay.objects.get(date=gregorian_date, published=True)
         except ReservationDay.DoesNotExist:
             return []
         
-        # دریافت تمام نوبت‌های این پزشک در این تاریخ
-        reservations = Reservation.objects.filter(
-            doctor=self,
-            day__date=date,
-            status__in=['pending', 'confirmed']
+        # تبدیل تاریخ میلادی به روز هفته (0=شنبه، 6=جمعه)
+        day_of_week = gregorian_date.weekday()
+        # تعدیل برای سیستم شنبه‌مبنا
+        persian_day_of_week = (day_of_week + 2) % 7
+        
+        # پیدا کردن زمان‌بندی دکتر برای این روز
+        try:
+            availability = self.availabilities.get(day_of_week=persian_day_of_week)
+        except DoctorAvailability.DoesNotExist:
+            return []
+        
+        # تولید لیست زمان‌های ممکن
+        available_times = []
+        current_time = datetime.combine(gregorian_date, availability.start_time)
+        end_time = datetime.combine(gregorian_date, availability.end_time)
+        interval = timedelta(minutes=self.consultation_duration or 30)  # استفاده از مدت زمان مشاوره دکتر
+        
+        while current_time < end_time:
+            available_times.append(current_time.time())
+            current_time += interval
+        
+        # حذف زمان‌های رزرو شده
+        booked_times = set(
+            Reservation.objects.filter(
+                day=reservation_day,
+                doctor=self,
+                status__in=['pending', 'confirmed']
+            ).values_list('time', flat=True)
         )
         
-        # دریافت زمان‌های رزرو شده
-        reserved_times = [reservation.time for reservation in reservations]
+        # فیلتر زمان‌های آزاد
+        free_slots = [time for time in available_times if time not in booked_times]
         
-        # تولید تمام زمان‌های ممکن (با فرض جلسات 30 دقیقه‌ای)
-        slots = []
-        
-        for availability in day_availabilities:
-            current_time = availability.start_time
-            while current_time < availability.end_time:
-                if current_time not in reserved_times:
-                    slots.append(current_time)
-                current_time = datetime.combine(datetime.today(), current_time) + timedelta(minutes=30)
-                current_time = current_time.time()
-        
-        return sorted(slots)
+        return free_slots
     
     def calculate_earnings(self, start_date, end_date):
         """محاسبه درآمد پزشک در یک بازه زمانی"""

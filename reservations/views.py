@@ -11,6 +11,7 @@ from patients.models import PatientsFile
 import jdatetime
 from jdatetime import datetime
 from jdatetime import timedelta
+from .services import BookingService, AppointmentService
 
 
 @login_required
@@ -25,6 +26,8 @@ def book_appointment(request, doctor_id):
         name = request.POST.get('name')
         phone = request.POST.get('phone')
         national_id = request.POST.get('national_id', '')
+        email = request.POST.get('email', '')
+        notes = request.POST.get('notes', '')
 
         if date_str and time_str and name and phone:
             try:
@@ -33,73 +36,44 @@ def book_appointment(request, doctor_id):
                 booking_date = datetime(int(date_parts[0]), int(date_parts[1]), int(date_parts[2])).date()
 
                 # Parse time
-                time_parts = time_str.split(':')
                 booking_time = datetime.strptime(time_str, '%H:%M').time()
 
-                # Get or create ReservationDay
-                reservation_day, _ = ReservationDay.objects.get_or_create(date=booking_date)
+                # Prepare patient data
+                patient_data = {
+                    'name': name,
+                    'phone': phone,
+                    'national_id': national_id,
+                    'email': email,
+                    'notes': notes
+                }
 
-                # Check if time slot is still available
-                if booking_time in doctor.get_available_slots(booking_date):
-                    # Create or get patient file
-                    if request.user.is_authenticated:
-                        patient, created = PatientsFile.objects.get_or_create(
-                            user=request.user,
-                            defaults={
-                                'name': name,
-                                'phone': phone,
-                                'national_id': national_id
-                            }
-                        )
-                    else:
-                        # For guest booking
-                        patient = PatientsFile.objects.create(
-                            name=name,
-                            phone=phone,
-                            national_id=national_id
-                        )
+                # Use booking service to create reservation
+                reservation, error_message = BookingService.create_reservation(
+                    doctor=doctor,
+                    date=booking_date,
+                    time=booking_time,
+                    patient_data=patient_data,
+                    user=request.user if request.user.is_authenticated else None
+                )
 
-                    # Create reservation
-                    reservation = Reservation.objects.create(
-                        day=reservation_day,
-                        patient=patient,
-                        doctor=doctor,
-                        time=booking_time,
-                        phone=phone,
-                        amount=doctor.consultation_fee,
-                        status='pending',
-                        payment_status='pending'
-                    )
-
+                if reservation:
+                    messages.success(request, "رزرو با موفقیت ایجاد شد. لطفا پرداخت را تکمیل کنید.")
                     # Redirect to payment page
                     return redirect('wallet:process_payment', reservation_id=reservation.id)
                 else:
-                    messages.error(request, "This time slot is no longer available. Please select another time.")
+                    messages.error(request, error_message)
+                    
             except Exception as e:
-                messages.error(request, f"An error occurred: {str(e)}")
+                messages.error(request, f"خطا در پردازش درخواست: {str(e)}")
         else:
-            messages.error(request, "Please fill in all required fields.")
+            messages.error(request, "لطفا تمام فیلدهای الزامی را تکمیل کنید.")
 
-    # Get available dates and slots for this doctor
-    days = []
-    today = datetime.now().date()
+    # Get available dates and slots for this doctor using service
+    available_days = BookingService.get_available_days_for_doctor(doctor, days_ahead=7)
 
-    for i in range(7):
-        day = today + timedelta(days=i)
-        try:
-            reservation_day, _ = ReservationDay.objects.get_or_create(date=day)
-            if reservation_day.published:
-                available_slots = doctor.get_available_slots(day)
-                if available_slots:
-                    days.append({
-                        'date': day,
-                        'slots': available_slots
-                    })
-        except Exception as e:
-            print(f"Error processing day {day}: {e}")
     context = {
         'doctor': doctor,
-        'days': days,
+        'available_days': available_days,
     }
 
     return render(request, 'reservations/appointment_book.html', context)
@@ -119,15 +93,19 @@ def confirm_appointment(request, pk):
         is_authorized = True
     
     if not is_authorized:
-        messages.error(request, "You don't have permission to confirm this appointment.")
+        messages.error(request, "شما مجوز تایید این نوبت را ندارید.")
         return redirect('home')
     
-    # Confirm the appointment
-    if reservation.status == 'pending' and reservation.payment_status == 'paid':
-        reservation.confirm_appointment()
-        messages.success(request, "Appointment confirmed successfully.")
+    # Use appointment service to confirm
+    success, message = AppointmentService.confirm_appointment(
+        reservation, 
+        confirmed_by=request.user
+    )
+    
+    if success:
+        messages.success(request, message)
     else:
-        messages.error(request, "Can't confirm this appointment. Check payment status.")
+        messages.error(request, message)
     
     # Redirect back to appointments list
     if hasattr(request.user, 'doctor'):
@@ -152,16 +130,22 @@ def cancel_appointment(request, pk):
         is_authorized = True
     
     if not is_authorized:
-        messages.error(request, "You don't have permission to cancel this appointment.")
+        messages.error(request, "شما مجوز لغو این نوبت را ندارید.")
         return redirect('home')
     
     # Process cancellation with refund
     refund = request.GET.get('refund', 'true').lower() == 'true'
     
-    if reservation.cancel_appointment(refund=refund):
-        messages.success(request, "Appointment cancelled successfully.")
+    success, message = AppointmentService.cancel_appointment(
+        reservation,
+        cancelled_by=request.user,
+        refund=refund
+    )
+    
+    if success:
+        messages.success(request, message)
     else:
-        messages.error(request, "Failed to cancel appointment.")
+        messages.error(request, message)
     
     # Redirect based on user type
     if hasattr(request.user, 'doctor'):
@@ -186,14 +170,19 @@ def complete_appointment(request, pk):
         is_authorized = True
     
     if not is_authorized:
-        messages.error(request, "You don't have permission to complete this appointment.")
+        messages.error(request, "شما مجوز تکمیل این نوبت را ندارید.")
         return redirect('home')
     
-    # Mark as completed
-    if reservation.complete_appointment():
-        messages.success(request, "Appointment marked as completed.")
+    # Use appointment service to complete
+    success, message = AppointmentService.complete_appointment(
+        reservation,
+        completed_by=request.user
+    )
+    
+    if success:
+        messages.success(request, message)
     else:
-        messages.error(request, "Can't complete this appointment. Check status.")
+        messages.error(request, message)
     
     # Redirect based on user type
     if hasattr(request.user, 'doctor'):
