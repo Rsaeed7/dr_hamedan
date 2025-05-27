@@ -6,6 +6,7 @@ from django.urls import reverse
 from .models import Reservation, ReservationDay
 from doctors.models import Doctor
 from patients.models import PatientsFile
+from wallet.models import Wallet
 # from datetime import datetime
 # from datetime import timedelta
 import jdatetime
@@ -97,6 +98,9 @@ def book_appointment(request, doctor_id):
                 return redirect('reservations:view_appointment', pk=reservation.id)
             else:
                 messages.error(request, message)
+                if "موجودی کیف پول کافی نیست" in message:
+                    deposit_url = reverse('wallet:deposit')
+                    messages.warning(request, f'برای شارژ کیف پول <a href="{deposit_url}" class="text-blue-600 underline">اینجا کلیک کنید</a>')
                 return redirect('reservations:book_appointment', doctor_id=doctor_id)
             
         except Exception as e:
@@ -120,11 +124,33 @@ def book_appointment(request, doctor_id):
                     initial_year = int(date_parts[0])
                     initial_month = int(date_parts[1])
         
+        # Get user's wallet balance and patient info
+        wallet_balance = 0
+        patient_info = {
+            'national_id': '',
+            'email': request.user.email or '',
+        }
+        
+        if request.user.is_authenticated:
+            wallet, created = Wallet.objects.get_or_create(user=request.user)
+            wallet_balance = wallet.balance
+            
+            # Get patient file info if exists
+            try:
+                patient_file = PatientsFile.objects.get(user=request.user)
+                patient_info['national_id'] = patient_file.national_id or ''
+                if patient_file.email:
+                    patient_info['email'] = patient_file.email
+            except PatientsFile.DoesNotExist:
+                pass
+        
         context = {
             'doctor': doctor,
             'days': available_days,
             'initial_year': initial_year,
             'initial_month': initial_month,
+            'balance': wallet_balance,
+            'patient_info': patient_info,
         }
         
         return render(request, 'reservations/book_appointment.html', context)
