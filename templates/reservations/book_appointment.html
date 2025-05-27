@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load jformat %}
 
 {% block title %}رزرو نوبت با {{ doctor }} - دکتر همدان{% endblock %}
 
@@ -92,7 +92,7 @@
                         <select id="date" name="date" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
                             <option value="">-- انتخاب تاریخ --</option>
                             {% for day in days %}
-                                <option value="{{ day.date|date:'Y-m-d' }}">{{ day.date|jformat:"l j F Y" }}</option>
+                                <option value="{{ day.jalali_date|jformat:'Y/m/d' }}">{{ day.jalali_date|jformat:"l j F Y" }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -110,8 +110,8 @@
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">نام و نام خانوادگی</label>
-                                <input type="text" id="name" name="name" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                                <label for="patient_name" class="block text-sm font-medium text-gray-700 mb-1">نام و نام خانوادگی</label>
+                                <input type="text" id="patient_name" name="patient_name" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
                             </div>
                             
                             <div>
@@ -120,8 +120,13 @@
                             </div>
                             
                             <div>
-                                <label for="national_id" class="block text-sm font-medium text-gray-700 mb-1">کد ملی (اختیاری)</label>
-                                <input type="text" id="national_id" name="national_id" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                <label for="patient_national_id" class="block text-sm font-medium text-gray-700 mb-1">کد ملی (اختیاری)</label>
+                                <input type="text" id="patient_national_id" name="patient_national_id" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            
+                            <div>
+                                <label for="patient_email" class="block text-sm font-medium text-gray-700 mb-1">ایمیل (اختیاری)</label>
+                                <input type="email" id="patient_email" name="patient_email" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                             </div>
                         </div>
                     </div>
@@ -144,7 +149,7 @@
                         const availableSlots = {};
                         
                         {% for day in days %}
-                        availableSlots["{{ day.date|date:'Y-m-d' }}"] = [
+                        availableSlots["{{ day.jalali_date|jformat:'Y/m/d' }}"] = [
                             {% for slot in day.slots %}
                             "{{ slot|time:'H:i' }}"{% if not forloop.last %},{% endif %}
                             {% endfor %}
