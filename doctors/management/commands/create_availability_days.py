@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 from datetime import time
 from doctors.models import Doctor, DoctorAvailability
-from doctors.turn_maker import create_availability_days_for_day_of_week
+from reservations.turn_maker import create_availability_days_for_day_of_week
 
 
 class Command(BaseCommand):

@@ -15,17 +15,22 @@ class BookingService:
     """سرویس مدیریت رزرو نوبت"""
     
     @staticmethod
-    def get_available_days_for_doctor(doctor, days_ahead=7):
+    def get_available_days_for_doctor(doctor_id, days_ahead=90):
         """
         دریافت روزهای آزاد یک پزشک برای تعداد روزهای آینده
         
         Args:
-            doctor: نمونه پزشک
-            days_ahead: تعداد روزهای آینده (پیش‌فرض ۷ روز)
+            doctor_id: شناسه پزشک
+            days_ahead: تعداد روزهای آینده (پیش‌فرض ۹۰ روز)
         
         Returns:
             لیست روزهایی با اسلات‌های آزاد
         """
+        try:
+            doctor = Doctor.objects.get(id=doctor_id, is_available=True)
+        except Doctor.DoesNotExist:
+            return []
+            
         available_days = []
         today = datetime.now().date()
         
@@ -44,11 +49,12 @@ class BookingService:
                 ).order_by('time').values_list('time', flat=True)
                 
                 if available_slots:
+                    jalali_date = jdatetime.date.fromgregorian(date=date)
                     available_days.append({
-                        'date': date,
-                        'jalali_date': jdatetime.date.fromgregorian(date=date),
-                        'slots': list(available_slots),
-                        'reservation_day': reservation_day
+                        'date_str': date.strftime('%Y-%m-%d'),
+                        'jalali_date_str': jalali_date.strftime('%Y/%m/%d'),
+                        'slots': [slot.strftime('%H:%M') for slot in available_slots],
+                        'slots_count': len(available_slots)
                     })
                     
             except ReservationDay.DoesNotExist:
@@ -56,6 +62,112 @@ class BookingService:
                 continue
                 
         return available_days
+
+    @staticmethod
+    def get_available_days_for_month(doctor_id, jalali_year, jalali_month):
+        """
+        دریافت روزهای موجود برای یک ماه مشخص از تقویم جلالی
+        
+        Args:
+            doctor_id: شناسه پزشک
+            jalali_year: سال جلالی
+            jalali_month: ماه جلالی
+        
+        Returns:
+            دیکشنری روزهای موجود با اسلات‌هایشان
+        """
+        try:
+            doctor = Doctor.objects.get(id=doctor_id, is_available=True)
+        except Doctor.DoesNotExist:
+            return {}
+        
+        # محاسبه روزهای ماه
+        if jalali_month <= 6:
+            days_in_month = 31
+        elif jalali_month <= 11:
+            days_in_month = 30
+        else:
+            # بررسی سال کبیسه برای اسفند
+            if jdatetime.date(jalali_year, 12, 1).isleap():
+                days_in_month = 30
+            else:
+                days_in_month = 29
+        
+        available_days = {}
+        
+        for day in range(1, days_in_month + 1):
+            try:
+                jalali_date = jdatetime.date(jalali_year, jalali_month, day)
+                gregorian_date = jalali_date.togregorian()
+                
+                # فقط روزهای آینده را بررسی کن
+                if gregorian_date < datetime.now().date():
+                    continue
+                
+                # بررسی وجود روز منتشر شده
+                reservation_day = ReservationDay.objects.get(
+                    date=gregorian_date, 
+                    published=True
+                )
+                
+                # دریافت نوبت‌های آزاد
+                available_slots = Reservation.objects.filter(
+                    day=reservation_day,
+                    doctor=doctor,
+                    status='available'
+                ).order_by('time').values_list('time', flat=True)
+                
+                if available_slots:
+                    date_key = jalali_date.strftime('%Y/%m/%d')
+                    available_days[date_key] = {
+                        'date_str': gregorian_date.strftime('%Y-%m-%d'),
+                        'jalali_date_str': date_key,
+                        'slots': [slot.strftime('%H:%M') for slot in available_slots],
+                        'slots_count': len(available_slots)
+                    }
+                    
+            except (ValueError, ReservationDay.DoesNotExist):
+                continue
+        
+        return available_days
+    
+    @staticmethod
+    def get_day_slots(doctor_id, jalali_date_str):
+        """
+        دریافت اسلات‌های موجود برای یک روز مشخص
+        
+        Args:
+            doctor_id: شناسه پزشک
+            jalali_date_str: تاریخ جلالی به فرمت 'Y/m/d'
+        
+        Returns:
+            لیست اسلات‌های موجود
+        """
+        try:
+            doctor = Doctor.objects.get(id=doctor_id, is_available=True)
+            
+            # تبدیل تاریخ جلالی به میلادی
+            year, month, day = map(int, jalali_date_str.split('/'))
+            jalali_date = jdatetime.date(year, month, day)
+            gregorian_date = jalali_date.togregorian()
+            
+            # بررسی روز منتشر شده
+            reservation_day = ReservationDay.objects.get(
+                date=gregorian_date, 
+                published=True
+            )
+            
+            # دریافت نوبت‌های آزاد
+            slots = Reservation.objects.filter(
+                day=reservation_day,
+                doctor=doctor,
+                status='available'
+            ).order_by('time').values_list('time', flat=True)
+            
+            return [slot.strftime('%H:%M') for slot in slots]
+            
+        except (Doctor.DoesNotExist, ReservationDay.DoesNotExist, ValueError):
+            return []
     
     @staticmethod
     def validate_booking_request(doctor, date, time, patient_data):

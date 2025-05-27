@@ -7,7 +7,7 @@ from convertdate import persian
 from datetime import datetime
 from django.conf import settings
 
-# Use absolute path for cache file in doctors directory
+# Use absolute path for cache file in reservations directory
 CACHE_FILE = os.path.join(os.path.dirname(__file__), "holidays_cache.json")
 
 def load_cache():

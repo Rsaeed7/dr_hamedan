@@ -1,5 +1,6 @@
 {% extends  'base/base.html' %}
 {% load static %}
+{% load jformat %}
 
 {% block body %}
     <section class="bg-light">
@@ -46,9 +47,15 @@
                         <h5 class="border-bottom">اطلاعات پزشک</h5>
                         <div class="row p-b-15">
                             <div class="col-2">
-                                <img src="{{ appointment.doctor.profile_image.url }}"
-                                     alt="دکتر {{ appointment.doctor.user.last_name }}" width="80" height="80"
-                                     class="rounded50">
+                                {% if appointment.doctor.profile_image %}
+                                    <img src="{{ appointment.doctor.profile_image.url }}"
+                                         alt="دکتر {{ appointment.doctor.user.last_name }}" width="80" height="80"
+                                         class="rounded50">
+                                {% else %}
+                                    <div class="w-20 h-20 rounded-full bg-blue-200 flex items-center justify-center">
+                                        <span class="text-blue-600 text-xl font-bold">{{ appointment.doctor.user.first_name|first }}{{ appointment.doctor.user.last_name|first }}</span>
+                                    </div>
+                                {% endif %}
                             </div>
                             <div class="col-10">
                                 <h6>

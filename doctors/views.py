@@ -21,7 +21,7 @@ from .forms import EmailForm
 from homecare.models import Service
 import time as time_module
 from datetime import time
-from .turn_maker import create_availability_days_for_day_of_week
+from reservations.turn_maker import create_availability_days_for_day_of_week
 from reservations.services import BookingService, AppointmentService
 
 
@@ -192,7 +192,7 @@ def doctor_detail(request, pk):
             return redirect('doctors:doctor_detail', pk=doctor.pk)
 
     # استفاده از سرویس برای دریافت روزهای آزاد
-    available_days = BookingService.get_available_days_for_doctor(doctor, days_ahead=7)
+    available_days = BookingService.get_available_days_for_doctor(doctor.id, days_ahead=7)
 
     context = {
         'doctor': doctor,
