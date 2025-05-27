@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load jformat %}
 
 {% block title %}{{ post.title }} - دکتر {{ post.doctor.user.last_name }}{% endblock %}
 {% load persian_date %}
@@ -55,6 +56,63 @@
         margin-top: 1.5rem;
         margin-bottom: 0;
     }
+    
+    .like-button {
+        transition: all 0.3s ease;
+        border: 2px solid #e5e7eb;
+        background: white;
+    }
+    
+    .like-button:hover {
+        border-color: #ef4444;
+        background: #fef2f2;
+    }
+    
+    .like-button.liked {
+        border-color: #ef4444;
+        background: #ef4444;
+        color: white;
+    }
+    
+    .like-button.liked:hover {
+        background: #dc2626;
+        border-color: #dc2626;
+    }
+    
+    .medical-lens-tag {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: white;
+        margin: 0.25rem;
+        text-decoration: none;
+    }
+    
+    .medical-lens-tag:hover {
+        opacity: 0.8;
+        color: white;
+        text-decoration: none;
+    }
+    
+    .video-container {
+        position: relative;
+        width: 100%;
+        height: 0;
+        padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        overflow: hidden;
+        border-radius: 0.5rem;
+    }
+    
+    .video-container video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
 </style>
 {% endblock %}
 
@@ -67,13 +125,22 @@
     </div>
     
     <article class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
-        {% if post.image %}
+        <!-- Media Section -->
+        {% if post.media_type == 'image' and post.image %}
             <div class="w-full h-96 overflow-hidden">
                 <img src="{{ post.image.url }}" alt="{{ post.title }}" class="w-full h-full object-cover">
+            </div>
+        {% elif post.media_type == 'video' and post.video %}
+            <div class="video-container">
+                <video controls preload="metadata" class="w-full">
+                    <source src="{{ post.video.url }}" type="video/mp4">
+                    مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
+                </video>
             </div>
         {% endif %}
         
         <div class="p-6">
+            <!-- Doctor Info -->
             <div class="flex items-center mb-4">
                 {% if post.doctor.profile_image %}
                     <img src="{{ post.doctor.profile_image.url }}" alt="{{ post.doctor }}" class="w-10 h-10 rounded-full object-cover mr-3">
@@ -89,99 +156,176 @@
                 </div>
             </div>
             
+            <!-- Post Title -->
             <h1 class="text-2xl font-bold text-gray-800 mb-4">{{ post.title }}</h1>
             
-            <div class="prose max-w-none">
+            <!-- Medical Lenses Tags -->
+            {% if post.medical_lenses.exists %}
+                <div class="mb-4">
+                    <h5 class="text-sm font-medium text-gray-700 mb-2">موضوعات:</h5>
+                    {% for lens in post.medical_lenses.all %}
+                        <a href="{% url 'docpages:doctor_page' post.doctor.id %}?lens={{ lens.id }}" 
+                           class="medical-lens-tag" 
+                           style="background-color: {{ lens.color }};">
+                            {{ lens.name }}
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <!-- Post Content -->
+            <div class="prose max-w-none mb-6">
                 {{ post.content|linebreaks }}
             </div>
             
-            <div class="mt-6 flex items-center text-gray-500">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-                <span>{{ post.likes }} لایک</span>
+            <!-- Like Section -->
+            <div class="flex items-center justify-between border-t pt-4">
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    {% if user.is_authenticated %}
+                        <button id="like-btn" 
+                                class="like-button {% if user_liked %}liked{% endif %} px-4 py-2 rounded-lg flex items-center space-x-2 space-x-reverse"
+                                data-post-id="{{ post.id }}"
+                                data-liked="{{ user_liked|yesno:'true,false' }}">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                            </svg>
+                            <span id="like-text">{% if user_liked %}لایک شده{% else %}لایک{% endif %}</span>
+                        </button>
+                    {% else %}
+                        <div class="flex items-center space-x-2 space-x-reverse text-gray-500">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>لایک</span>
+                        </div>
+                    {% endif %}
+                    
+                    <span id="like-count" class="text-gray-600">{{ like_count }} لایک</span>
+                </div>
                 
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-                </svg>
-                <span>{{ comments.count }} نظر</span>
+                <div class="text-sm text-gray-500">
+                    {{ comments.count }} نظر
+                </div>
             </div>
         </div>
     </article>
     
     <!-- Comments Section -->
-    <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
-        <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-            <h2 class="text-lg font-medium text-gray-800">نظرات</h2>
-        </div>
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-xl font-bold text-gray-800 mb-6">نظرات</h3>
         
-        <div class="p-6">
-            {% if comments %}
-                <div class="space-y-6">
-                    {% for comment in comments %}
-                        <div class="flex space-x-4 pb-4 {% if not forloop.last %}border-b border-gray-200{% endif %}">
-                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                <span class="text-gray-600 font-bold">{{ comment.name|first|upper }}</span>
-                            </div>
-                            
-                            <div class="flex-1">
-                                <div class="flex items-center mb-1">
-                                    <h3 class="text-sm font-medium text-gray-900">{{ comment.name }}</h3>
-                                    <span class="ml-2 text-xs text-gray-500">{{ comment.created_at|persian_date_info }}</span>
-                                </div>
-                                <div class="text-sm text-gray-700">
-                                    {{ comment.body|linebreaks }}
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
+        <!-- Comment Form -->
+        {% if user.is_authenticated %}
+            <form method="post" class="mb-8">
+                {% csrf_token %}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-2">نام</label>
+                        <input type="text" id="name" name="name" required 
+                               value="{% if user.first_name and user.last_name %}{{ user.first_name }} {{ user.last_name }}{% endif %}"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">ایمیل</label>
+                        <input type="email" id="email" name="email" required 
+                               value="{{ user.email }}"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
                 </div>
-            {% else %}
-                <p class="text-gray-600">هنوز نظری ثبت نشده است.</p>
-            {% endif %}
-            
-            <!-- Comment Form -->
-            <div class="mt-8">
-                <h3 class="text-lg font-medium text-gray-800 mb-4">ثبت نظر</h3>
-                
-                {% if messages %}
-                    <div class="mb-4">
-                        {% for message in messages %}
-                            <div class="{% if message.tags == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %} px-4 py-3 rounded-md">
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-                
-                <form method="post" action="{% url 'docpages:post_detail' post.id %}" class="space-y-4">
-                    {% csrf_token %}
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">نام</label>
-                            <input type="text" id="name" name="name" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-                        
-                        <div>
-                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">ایمیل</label>
-                            <input type="email" id="email" name="email" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <label for="body" class="block text-sm font-medium text-gray-700 mb-1">نظر</label>
-                        <textarea id="body" name="body" rows="4" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
-                    </div>
-                    
-                    <div>
-                        <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            ثبت نظر
-                        </button>
-                    </div>
-                </form>
+                <div class="mb-4">
+                    <label for="body" class="block text-sm font-medium text-gray-700 mb-2">نظر شما</label>
+                    <textarea id="body" name="body" rows="4" required
+                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              placeholder="نظر خود را بنویسید..."></textarea>
+                </div>
+                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-300">
+                    ارسال نظر
+                </button>
+            </form>
+        {% else %}
+            <div class="mb-8 p-4 bg-gray-50 rounded-lg text-center">
+                <p class="text-gray-600">برای ارسال نظر، لطفاً <a href="{% url 'user:login' %}" class="text-blue-600 hover:text-blue-800">وارد شوید</a>.</p>
             </div>
-        </div>
+        {% endif %}
+        
+        <!-- Comments List -->
+        {% if comments %}
+            <div class="space-y-6">
+                {% for comment in comments %}
+                    <div class="border-b border-gray-200 pb-6 last:border-b-0">
+                        <div class="flex items-start space-x-3 space-x-reverse">
+                            <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                <span class="text-gray-600 text-sm font-bold">{{ comment.name|first }}</span>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 space-x-reverse mb-2">
+                                    <h4 class="font-medium text-gray-900">{{ comment.name }}</h4>
+                                    <span class="text-sm text-gray-500">{{ comment.created_at|jformat:"%Y/%m/%d" }}</span>
+                                </div>
+                                <p class="text-gray-700">{{ comment.body|linebreaks }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-500 text-center py-8">هنوز نظری ثبت نشده است.</p>
+        {% endif %}
     </div>
 </div>
+
+{% if user.is_authenticated %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const likeBtn = document.getElementById('like-btn');
+    const likeText = document.getElementById('like-text');
+    const likeCount = document.getElementById('like-count');
+    
+    if (likeBtn) {
+        likeBtn.addEventListener('click', function() {
+            const postId = this.dataset.postId;
+            const isLiked = this.dataset.liked === 'true';
+            
+            // Disable button during request
+            this.disabled = true;
+            
+            fetch(`/docpages/ajax/toggle-like/${postId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update button state
+                    if (data.liked) {
+                        this.classList.add('liked');
+                        this.dataset.liked = 'true';
+                        likeText.textContent = 'لایک شده';
+                    } else {
+                        this.classList.remove('liked');
+                        this.dataset.liked = 'false';
+                        likeText.textContent = 'لایک';
+                    }
+                    
+                    // Update like count
+                    likeCount.textContent = `${data.like_count} لایک`;
+                } else {
+                    alert('خطا در ثبت لایک');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('خطا در ارتباط با سرور');
+            })
+            .finally(() => {
+                this.disabled = false;
+            });
+        });
+    }
+});
+</script>
+{% endif %}
 {% endblock %} 
