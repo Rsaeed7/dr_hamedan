@@ -18,10 +18,32 @@ class SpecializationAdmin(admin.ModelAdmin):
 
 @admin.register(Doctor)
 class DoctorAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'specialization', 'consultation_fee', 'is_available')
-    list_filter = ('is_available', 'is_independent', 'specialization')
-    search_fields = ('user__username', 'user__first_name', 'user__last_name', 'specialization')
+    list_display = ('__str__', 'specialization', 'city', 'consultation_fee', 'is_available', 'has_location')
+    list_filter = ('is_available', 'is_independent', 'specialization', 'city')
+    search_fields = ('user__username', 'user__first_name', 'user__last_name', 'specialization__name')
     inlines = [DoctorServicesInline, ]
+    
+    fieldsets = (
+        ('اطلاعات کاربری', {
+            'fields': ('user', 'specialization', 'license_number', 'gender')
+        }),
+        ('اطلاعات تماس و مکان', {
+            'fields': ('city', 'address', 'phone', 'latitude', 'longitude'),
+            'description': 'برای تعین موقعیت جغرافیایی، عرض و طول جغرافیایی را وارد کنید'
+        }),
+        ('اطلاعات پروفایل', {
+            'fields': ('profile_image', 'bio', 'clinic', 'Insurance')
+        }),
+        ('تنظیمات ویزیت', {
+            'fields': ('consultation_fee', 'consultation_duration', 'is_available', 'is_independent')
+        }),
+    )
+    
+    def has_location(self, obj):
+        """Check if doctor has location coordinates"""
+        return bool(obj.latitude and obj.longitude)
+    has_location.boolean = True
+    has_location.short_description = 'موقعیت جغرافیایی'
 
 @admin.register(DoctorAvailability)
 class DoctorAvailabilityAdmin(admin.ModelAdmin):

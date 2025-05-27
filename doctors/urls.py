@@ -32,4 +32,5 @@ urlpatterns = [
     path('reply/<uuid:pk>/', views.ReplyMessageView.as_view(), name='reply'),
     path('delete/<uuid:pk>/', views.DeleteMessageView.as_view(), name='delete'),
     path('important/', views.ImportantMessagesView.as_view(), name='important'),
+    path('update-location/', views.update_doctor_location, name='update_location'),
 ] 
