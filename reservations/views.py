@@ -12,71 +12,114 @@ import jdatetime
 from jdatetime import datetime
 from jdatetime import timedelta
 from .services import BookingService, AppointmentService
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 @login_required
 def book_appointment(request, doctor_id):
-    """Handle booking a new appointment"""
-    doctor = get_object_or_404(Doctor, id=doctor_id, is_available=True)
-
+    """نمایش فرم رزرو نوبت و پردازش درخواست رزرو"""
+    if not request.user.is_authenticated:
+        messages.error(request, 'برای رزرو نوبت باید وارد شوید')
+        return redirect('user:login')
+    
+    try:
+        doctor = Doctor.objects.get(id=doctor_id, is_available=True)
+    except Doctor.DoesNotExist:
+        messages.error(request, 'پزشک مورد نظر یافت نشد یا غیرفعال است')
+        return redirect('doctors:doctor_list')
+    
+    booking_service = BookingService()
+    
     if request.method == 'POST':
-        # Process form data
-        date_str = request.POST.get('date')
-        time_str = request.POST.get('time')
-        name = request.POST.get('name')
-        phone = request.POST.get('phone')
-        national_id = request.POST.get('national_id', '')
-        email = request.POST.get('email', '')
-        notes = request.POST.get('notes', '')
-
-        if date_str and time_str and name and phone:
+        try:
+            date_str = request.POST.get('date')
+            time_str = request.POST.get('time')
+            patient_name = request.POST.get('patient_name', '').strip()
+            patient_national_id = request.POST.get('patient_national_id', '').strip()
+            patient_email = request.POST.get('patient_email', '').strip()
+            
+            if not all([date_str, time_str]):
+                messages.error(request, 'لطفاً تاریخ و ساعت را انتخاب کنید')
+                return redirect('reservations:book_appointment', doctor_id=doctor_id)
+            
+            # تبدیل تاریخ جلالی به میلادی
             try:
-                # Parse date
-                date_parts = date_str.split('-')
-                booking_date = datetime(int(date_parts[0]), int(date_parts[1]), int(date_parts[2])).date()
-
-                # Parse time
-                booking_time = datetime.strptime(time_str, '%H:%M').time()
-
-                # Prepare patient data
-                patient_data = {
-                    'name': name,
-                    'phone': phone,
-                    'national_id': national_id,
-                    'email': email,
-                    'notes': notes
-                }
-
-                # Use booking service to create reservation
-                reservation, error_message = BookingService.create_reservation(
-                    doctor=doctor,
-                    date=booking_date,
-                    time=booking_time,
-                    patient_data=patient_data,
-                    user=request.user if request.user.is_authenticated else None
+                jalali_date = jdatetime.date(*map(int, date_str.split('/')))
+                gregorian_date = jalali_date.togregorian()
+            except (ValueError, TypeError):
+                messages.error(request, 'فرمت تاریخ نامعتبر است')
+                return redirect('reservations:book_appointment', doctor_id=doctor_id)
+            
+            # تبدیل ساعت
+            try:
+                appointment_time = datetime.strptime(time_str, '%H:%M').time()
+            except ValueError:
+                messages.error(request, 'فرمت ساعت نامعتبر است')
+                return redirect('reservations:book_appointment', doctor_id=doctor_id)
+            
+            # یافتن رزرو موجود
+            try:
+                reservation_day = ReservationDay.objects.get(
+                    date=gregorian_date,
+                    published=True
                 )
-
-                if reservation:
-                    messages.success(request, "رزرو با موفقیت ایجاد شد. لطفا پرداخت را تکمیل کنید.")
-                    # Redirect to payment page
-                    return redirect('wallet:process_payment', reservation_id=reservation.id)
-                else:
-                    messages.error(request, error_message)
-                    
-            except Exception as e:
-                messages.error(request, f"خطا در پردازش درخواست: {str(e)}")
-        else:
-            messages.error(request, "لطفا تمام فیلدهای الزامی را تکمیل کنید.")
-
-    # Get available dates and slots for this doctor using service
-    available_days = BookingService.get_available_days_for_doctor(doctor, days_ahead=7)
-
-    context = {
-        'doctor': doctor,
-        'available_days': available_days,
-    }
-
-    return render(request, 'reservations/appointment_book.html', context)
+                
+                reservation = Reservation.objects.get(
+                    doctor=doctor,
+                    day=reservation_day,
+                    time=appointment_time,
+                    status='available'
+                )
+            except ReservationDay.DoesNotExist:
+                messages.error(request, 'تاریخ انتخابی برای رزرو در دسترس نیست')
+                return redirect('reservations:book_appointment', doctor_id=doctor_id)
+            except Reservation.DoesNotExist:
+                messages.error(request, 'ساعت انتخابی برای رزرو در دسترس نیست')
+                return redirect('reservations:book_appointment', doctor_id=doctor_id)
+            
+            # رزرو نوبت
+            patient_data = {
+                'name': patient_name,
+                'phone': request.POST.get('phone', request.user.phone if hasattr(request.user, 'phone') else ''),
+                'national_id': patient_national_id,
+                'email': patient_email
+            }
+            
+            success, message = reservation.book_appointment(
+                patient_data=patient_data,
+                user=request.user
+            )
+            
+            if success:
+                messages.success(request, message)
+                return redirect('reservations:view_appointment', pk=reservation.id)
+            else:
+                messages.error(request, message)
+                return redirect('reservations:book_appointment', doctor_id=doctor_id)
+            
+        except Exception as e:
+            logger.error(f"خطا در رزرو نوبت: {str(e)}")
+            messages.error(request, 'خطایی در رزرو نوبت رخ داد. لطفاً دوباره تلاش کنید')
+            return redirect('reservations:book_appointment', doctor_id=doctor_id)
+    
+    # GET request - نمایش فرم
+    try:
+        # دریافت روزهای موجود (30 روز آینده)
+        available_days = booking_service.get_available_days_for_doctor(doctor_id, days_ahead=30)
+        
+        context = {
+            'doctor': doctor,
+            'days': available_days,
+        }
+        
+        return render(request, 'reservations/book_appointment.html', context)
+        
+    except Exception as e:
+        logger.error(f"خطا در دریافت روزهای موجود: {str(e)}")
+        messages.error(request, 'خطایی در بارگذاری اطلاعات رخ داد')
+        return redirect('doctors:doctor_detail', pk=doctor_id)
 
 @login_required
 def confirm_appointment(request, pk):

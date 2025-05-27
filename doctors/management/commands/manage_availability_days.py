@@ -9,7 +9,7 @@ import jdatetime
 
 from doctors.models import Doctor, DoctorAvailability
 from reservations.models import ReservationDay
-from doctors.turn_maker import create_availability_days_for_day_of_week
+from doctors.turn_maker import create_availability_days_and_slots_for_day_of_week
 from doctors.holidays import get_holidays
 
 
@@ -19,7 +19,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
             'action',
-            choices=['create-days', 'create-range', 'publish-range', 'unpublish-dates', 'cleanup'],
+            choices=['create-days', 'create-range', 'generate-doctor-slots', 'publish-range', 'unpublish-dates', 'cleanup'],
             help='عمل مورد نظر'
         )
         
@@ -62,89 +62,146 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        """اجرای دستور"""
         action = options['action']
-        dry_run = options['dry_run']
-        
-        if dry_run:
-            self.stdout.write(
-                self.style.WARNING('حالت آزمایشی - هیچ تغییری اعمال نخواهد شد')
-            )
         
         try:
             if action == 'create-days':
-                self.create_availability_days(options, dry_run)
+                return self.handle_create_days(options)
             elif action == 'create-range':
-                self.create_date_range(options, dry_run)
+                return self.handle_create_range(options)
+            elif action == 'generate-doctor-slots':
+                return self.handle_generate_doctor_slots(options)
             elif action == 'publish-range':
-                self.publish_date_range(options, dry_run)
+                return self.handle_publish_range(options)
             elif action == 'unpublish-dates':
-                self.unpublish_dates(options, dry_run)
+                return self.handle_unpublish_dates(options)
             elif action == 'cleanup':
-                self.cleanup_old_days(options, dry_run)
+                return self.handle_cleanup(options)
+            else:
+                raise CommandError(f"عمل نامعتبر: {action}")
                 
         except Exception as e:
-            raise CommandError(f'خطا در اجرای دستور: {str(e)}')
+            raise CommandError(f"خطا در اجرای دستور: {str(e)}")
 
-    def create_availability_days(self, options, dry_run):
-        """ایجاد روزهای حضور برای روز مشخص هفته"""
+    def handle_create_days(self, options):
+        """ایجاد روزهای حضور برای یک روز مشخص از هفته"""
+        from doctors.turn_maker import create_availability_days_and_slots_for_day_of_week
+        
         doctor_id = options.get('doctor_id')
         day_of_week = options.get('day_of_week')
+        dry_run = options['dry_run']
         
-        if day_of_week is None:
-            raise CommandError('روز هفته باید مشخص شود (--day-of-week)')
+        if doctor_id is not None and day_of_week is not None:
+            raise CommandError("نمی‌توان هم‌زمان --doctor-id و --day-of-week را مشخص کرد. از action generate-doctor-slots استفاده کنید.")
         
-        # دریافت پزشکان
-        if doctor_id:
-            try:
-                doctors = [Doctor.objects.get(id=doctor_id)]
-            except Doctor.DoesNotExist:
-                raise CommandError(f'پزشک با شناسه {doctor_id} یافت نشد')
-        else:
-            doctors = Doctor.objects.filter(is_available=True)
-        
-        total_days_created = 0
-        total_days_updated = 0
+        doctors = self.get_doctors(doctor_id)
+        total_stats = {
+            'days_created': 0,
+            'days_updated': 0,
+            'days_skipped_holiday': 0,
+            'reservations_created': 0,
+            'reservations_updated': 0,
+        }
         
         for doctor in doctors:
-            self.stdout.write(f'پردازش پزشک: {doctor.user.get_full_name()}')
-            
-            # دریافت تنظیمات حضور پزشک
-            availabilities = doctor.availabilities.filter(day_of_week=day_of_week)
-            
-            if not availabilities.exists():
+            if not doctor.is_available:
                 self.stdout.write(
-                    self.style.WARNING(f'  هیچ تنظیم حضوری برای روز {day_of_week} یافت نشد')
+                    self.style.WARNING(f"رد شد: دکتر {doctor} غیرفعال است")
                 )
                 continue
             
-            for availability in availabilities:
-                if not dry_run:
-                    result = create_availability_days_for_day_of_week(
-                        doctor, availability.day_of_week, availability.start_time, availability.end_time
-                    )
-                    total_days_created += result['days_created']
-                    total_days_updated += result['days_updated']
-                    
-                    self.stdout.write(
-                        self.style.SUCCESS(
-                            f'  ایجاد شد: {result["days_created"]} روز، بروزرسانی شد: {result["days_updated"]} روز، '
-                            f'تعطیل رد شد: {result["days_skipped_holiday"]} روز'
-                        )
-                    )
-                else:
-                    self.stdout.write(
-                        f'  خواهد شد: ایجاد روزهای حضور برای {availability.get_day_of_week_display()} '
-                        f'از {availability.start_time} تا {availability.end_time}'
-                    )
-        
-        if not dry_run:
-            self.stdout.write(
-                self.style.SUCCESS(
-                    f'مجموع: {total_days_created} روز ایجاد شد، {total_days_updated} روز بروزرسانی شد'
+            doctor_availabilities = doctor.availabilities.all()
+            if day_of_week is not None:
+                doctor_availabilities = doctor_availabilities.filter(day_of_week=day_of_week)
+            
+            if not doctor_availabilities.exists():
+                self.stdout.write(
+                    self.style.WARNING(f"رد شد: دکتر {doctor} زمان‌بندی ندارد")
                 )
+                continue
+            
+            if dry_run:
+                self.stdout.write(f"[DRY RUN] پردازش دکتر {doctor}")
+                for avail in doctor_availabilities:
+                    self.stdout.write(f"  - {avail.get_day_of_week_display()}: {avail.start_time} - {avail.end_time}")
+                continue
+            
+            for availability in doctor_availabilities:
+                self.stdout.write(f"پردازش دکتر {doctor} - {availability.get_day_of_week_display()}")
+                
+                stats = create_availability_days_and_slots_for_day_of_week(
+                    doctor=doctor,
+                    day_of_week=availability.day_of_week,
+                    start_time=availability.start_time,
+                    end_time=availability.end_time
+                )
+                
+                # جمع آوری آمار
+                for key in total_stats:
+                    total_stats[key] += stats.get(key, 0)
+                
+                self.stdout.write(
+                    self.style.SUCCESS(
+                        f"  ✓ {stats['days_created']} روز ایجاد، "
+                        f"{stats['reservations_created']} نوبت ایجاد شد"
+                    )
+                )
+        
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"\nخلاصه کلی:\n"
+                f"- روزهای ایجاد شده: {total_stats['days_created']}\n"
+                f"- روزهای بروزرسانی شده: {total_stats['days_updated']}\n"
+                f"- روزهای تعطیل رد شده: {total_stats['days_skipped_holiday']}\n"
+                f"- نوبت‌های ایجاد شده: {total_stats['reservations_created']}\n"
+                f"- نوبت‌های بروزرسانی شده: {total_stats['reservations_updated']}"
             )
+        )
 
-    def create_date_range(self, options, dry_run):
+    def handle_generate_doctor_slots(self, options):
+        """تولید نوبت‌ها برای یک پزشک مشخص"""
+        from doctors.turn_maker import regenerate_doctor_reservations
+        
+        doctor_id = options.get('doctor_id')
+        dry_run = options['dry_run']
+        
+        if doctor_id is None:
+            raise CommandError("برای این عمل باید --doctor-id مشخص شود")
+        
+        try:
+            doctor = Doctor.objects.get(id=doctor_id)
+        except Doctor.DoesNotExist:
+            raise CommandError(f"پزشک با شناسه {doctor_id} یافت نشد")
+        
+        if not doctor.is_available:
+            raise CommandError(f"دکتر {doctor} غیرفعال است")
+        
+        if not doctor.availabilities.exists():
+            raise CommandError(f"دکتر {doctor} زمان‌بندی ندارد")
+        
+        if dry_run:
+            self.stdout.write(f"[DRY RUN] بازتولید نوبت‌ها برای دکتر {doctor}")
+            for avail in doctor.availabilities.all():
+                self.stdout.write(f"  - {avail.get_day_of_week_display()}: {avail.start_time} - {avail.end_time}")
+            return
+        
+        self.stdout.write(f"بازتولید نوبت‌ها برای دکتر {doctor}...")
+        
+        stats = regenerate_doctor_reservations(doctor)
+        
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"✓ تکمیل شد:\n"
+                f"- زمان‌بندی‌های پردازش شده: {stats['availabilities_processed']}\n"
+                f"- روزهای ایجاد شده: {stats['days_created']}\n"
+                f"- روزهای بروزرسانی شده: {stats['days_updated']}\n"
+                f"- نوبت‌های ایجاد شده: {stats['reservations_created']}\n"
+                f"- نوبت‌های بروزرسانی شده: {stats['reservations_updated']}"
+            )
+        )
+
+    def handle_create_range(self, options):
         """ایجاد روزهای رزرو برای بازه تاریخی"""
         start_date = options.get('start_date')
         end_date = options.get('end_date')
@@ -177,21 +234,17 @@ class Command(BaseCommand):
                     self.style.WARNING(f'رد شد (تعطیل): {current_date}')
                 )
             else:
-                if not dry_run:
-                    day, created = ReservationDay.objects.get_or_create(
-                        date=current_date,
-                        defaults={'published': False}
-                    )
-                    if created:
-                        days_created += 1
-                        self.stdout.write(
-                            self.style.SUCCESS(f'ایجاد شد: {current_date}')
-                        )
-                    else:
-                        self.stdout.write(f'موجود: {current_date}')
-                else:
-                    self.stdout.write(f'خواهد شد: ایجاد {current_date}')
+                day, created = ReservationDay.objects.get_or_create(
+                    date=current_date,
+                    defaults={'published': False}
+                )
+                if created:
                     days_created += 1
+                    self.stdout.write(
+                        self.style.SUCCESS(f'ایجاد شد: {current_date}')
+                    )
+                else:
+                    self.stdout.write(f'موجود: {current_date}')
             
             current_date += timedelta(days=1)
         
@@ -201,7 +254,7 @@ class Command(BaseCommand):
             )
         )
 
-    def publish_date_range(self, options, dry_run):
+    def handle_publish_range(self, options):
         """انتشار روزهای رزرو در بازه تاریخی"""
         start_date = options.get('start_date')
         end_date = options.get('end_date')
@@ -223,15 +276,12 @@ class Command(BaseCommand):
         
         count = days.count()
         
-        if not dry_run:
-            days.update(published=True)
-            self.stdout.write(
-                self.style.SUCCESS(f'{count} روز منتشر شد')
-            )
-        else:
-            self.stdout.write(f'خواهد شد: انتشار {count} روز')
+        days.update(published=True)
+        self.stdout.write(
+            self.style.SUCCESS(f'{count} روز منتشر شد')
+        )
 
-    def unpublish_dates(self, options, dry_run):
+    def handle_unpublish_dates(self, options):
         """لغو انتشار تاریخ‌های مشخص"""
         dates = options.get('dates')
         
@@ -252,15 +302,12 @@ class Command(BaseCommand):
         
         count = days.count()
         
-        if not dry_run:
-            days.update(published=False)
-            self.stdout.write(
-                self.style.SUCCESS(f'{count} روز لغو انتشار شد')
-            )
-        else:
-            self.stdout.write(f'خواهد شد: لغو انتشار {count} روز')
+        days.update(published=False)
+        self.stdout.write(
+            self.style.SUCCESS(f'{count} روز لغو انتشار شد')
+        )
 
-    def cleanup_old_days(self, options, dry_run):
+    def handle_cleanup(self, options):
         """پاک‌سازی روزهای قدیمی"""
         cutoff_date = timezone.now().date() - timedelta(days=30)
         
@@ -271,10 +318,7 @@ class Command(BaseCommand):
         
         count = old_days.count()
         
-        if not dry_run:
-            old_days.delete()
-            self.stdout.write(
-                self.style.SUCCESS(f'{count} روز قدیمی پاک شد')
-            )
-        else:
-            self.stdout.write(f'خواهد شد: پاک‌سازی {count} روز قدیمی') 
+        old_days.delete()
+        self.stdout.write(
+            self.style.SUCCESS(f'{count} روز قدیمی پاک شد')
+        ) 

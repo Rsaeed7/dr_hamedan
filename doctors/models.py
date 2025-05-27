@@ -161,11 +161,9 @@ class Doctor(models.Model):
     def get_available_slots(self, date):
         """
         دریافت لیست زمان‌های آزاد برای یک تاریخ مشخص
-        بر اساس زمان‌بندی دکتر و رزروهای موجود
+        بر اساس نوبت‌های از پیش ایجاد شده
         """
         from reservations.models import ReservationDay, Reservation
-        from datetime import datetime, timedelta
-        import jdatetime
         
         # تبدیل تاریخ جلالی به میلادی در صورت نیاز
         if hasattr(date, 'togregorian'):
@@ -181,40 +179,15 @@ class Doctor(models.Model):
         except ReservationDay.DoesNotExist:
             return []
         
-        # تبدیل تاریخ میلادی به روز هفته (0=شنبه، 6=جمعه)
-        day_of_week = gregorian_date.weekday()
-        # تعدیل برای سیستم شنبه‌مبنا
-        persian_day_of_week = (day_of_week + 2) % 7
+        # دریافت نوبت‌های آزاد برای این پزشک در این روز
+        available_reservations = Reservation.objects.filter(
+            day=reservation_day,
+            doctor=self,
+            status='available'
+        ).order_by('time')
         
-        # پیدا کردن زمان‌بندی دکتر برای این روز
-        try:
-            availability = self.availabilities.get(day_of_week=persian_day_of_week)
-        except DoctorAvailability.DoesNotExist:
-            return []
-        
-        # تولید لیست زمان‌های ممکن
-        available_times = []
-        current_time = datetime.combine(gregorian_date, availability.start_time)
-        end_time = datetime.combine(gregorian_date, availability.end_time)
-        interval = timedelta(minutes=self.consultation_duration or 30)  # استفاده از مدت زمان مشاوره دکتر
-        
-        while current_time < end_time:
-            available_times.append(current_time.time())
-            current_time += interval
-        
-        # حذف زمان‌های رزرو شده
-        booked_times = set(
-            Reservation.objects.filter(
-                day=reservation_day,
-                doctor=self,
-                status__in=['pending', 'confirmed']
-            ).values_list('time', flat=True)
-        )
-        
-        # فیلتر زمان‌های آزاد
-        free_slots = [time for time in available_times if time not in booked_times]
-        
-        return free_slots
+        # برگرداندن لیست زمان‌های آزاد
+        return [reservation.time for reservation in available_reservations]
     
     def calculate_earnings(self, start_date, end_date):
         """محاسبه درآمد پزشک در یک بازه زمانی"""

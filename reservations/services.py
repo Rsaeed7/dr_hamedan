@@ -36,14 +36,18 @@ class BookingService:
                 # بررسی اینکه روز منتشر شده باشد
                 reservation_day = ReservationDay.objects.get(date=date, published=True)
                 
-                # دریافت اسلات‌های آزاد
-                available_slots = doctor.get_available_slots(date)
+                # دریافت نوبت‌های آزاد
+                available_slots = Reservation.objects.filter(
+                    day=reservation_day,
+                    doctor=doctor,
+                    status='available'
+                ).order_by('time').values_list('time', flat=True)
                 
                 if available_slots:
                     available_days.append({
                         'date': date,
                         'jalali_date': jdatetime.date.fromgregorian(date=date),
-                        'slots': available_slots,
+                        'slots': list(available_slots),
                         'reservation_day': reservation_day
                     })
                     
@@ -65,36 +69,42 @@ class BookingService:
             patient_data: اطلاعات بیمار
         
         Returns:
-            tuple: (is_valid, error_message)
+            tuple: (is_valid, error_message, reservation_slot)
         """
         # بررسی دسترسی پزشک
         if not doctor.is_available:
-            return False, "پزشک در حال حاضر پذیرش بیمار ندارد"
+            return False, "پزشک در حال حاضر پذیرش بیمار ندارد", None
         
         # بررسی وجود روز رزرو
         try:
             reservation_day = ReservationDay.objects.get(date=date, published=True)
         except ReservationDay.DoesNotExist:
-            return False, "این تاریخ برای رزرو فعال نیست"
+            return False, "این تاریخ برای رزرو فعال نیست", None
         
-        # بررسی آزاد بودن زمان
-        available_slots = doctor.get_available_slots(date)
-        if time not in available_slots:
-            return False, "این زمان دیگر آزاد نیست"
+        # پیدا کردن نوبت آزاد
+        try:
+            reservation_slot = Reservation.objects.get(
+                day=reservation_day,
+                doctor=doctor,
+                time=time,
+                status='available'
+            )
+        except Reservation.DoesNotExist:
+            return False, "این زمان دیگر آزاد نیست", None
         
         # اعتبارسنجی اطلاعات بیمار
         required_fields = ['name', 'phone']
         for field in required_fields:
             if not patient_data.get(field):
-                return False, f"فیلد {field} الزامی است"
+                return False, f"فیلد {field} الزامی است", None
         
-        return True, None
+        return True, None, reservation_slot
     
     @staticmethod
     @transaction.atomic
     def create_reservation(doctor, date, time, patient_data, user=None):
         """
-        ایجاد رزرو جدید
+        رزرو نوبت آزاد
         
         Args:
             doctor: نمونه پزشک
@@ -104,10 +114,10 @@ class BookingService:
             user: کاربر (اختیاری)
         
         Returns:
-            tuple: (reservation, created) یا (None, error_message)
+            tuple: (reservation, error_message)
         """
         # اعتبارسنجی
-        is_valid, error_message = BookingService.validate_booking_request(
+        is_valid, error_message, reservation_slot = BookingService.validate_booking_request(
             doctor, date, time, patient_data
         )
         
@@ -115,51 +125,44 @@ class BookingService:
             return None, error_message
         
         try:
-            # دریافت یا ایجاد روز رزرو
-            reservation_day = ReservationDay.objects.get(date=date)
+            # رزرو نوبت آزاد
+            success, message = reservation_slot.book_appointment(patient_data, user)
             
-            # ایجاد یا پیدا کردن فایل بیمار
-            patient = None
-            if user and user.is_authenticated:
-                patient, created = PatientsFile.objects.get_or_create(
-                    user=user,
-                    defaults={
-                        'name': f"{user.first_name} {user.last_name}".strip(),
-                        'phone': patient_data.get('phone', ''),
-                        'email': user.email,
-                        'national_id': patient_data.get('national_id', '')
-                    }
-                )
-                # بروزرسانی اطلاعات در صورت نیاز
-                if not patient.phone:
-                    patient.phone = patient_data.get('phone', '')
-                    patient.save()
+            if success:
+                # بروزرسانی مبلغ (اگر تغییر کرده باشد)
+                reservation_slot.amount = doctor.consultation_fee
+                reservation_slot.save()
+                
+                return reservation_slot, None
             else:
-                # مهمان - ایجاد فایل بیمار جدید
-                patient = PatientsFile.objects.create(
-                    name=patient_data['name'],
-                    phone=patient_data['phone'],
-                    national_id=patient_data.get('national_id', ''),
-                    email=patient_data.get('email', '')
-                )
-            
-            # ایجاد رزرو
-            reservation = Reservation.objects.create(
-                day=reservation_day,
-                patient=patient,
-                doctor=doctor,
-                time=time,
-                phone=patient_data['phone'],
-                amount=doctor.consultation_fee,
-                status='pending',
-                payment_status='pending',
-                notes=patient_data.get('notes', '')
-            )
-            
-            return reservation, None
-            
+                return None, message
+                
         except Exception as e:
             return None, f"خطا در ایجاد رزرو: {str(e)}"
+    
+    @staticmethod
+    def get_available_slot(doctor, date, time):
+        """
+        دریافت نوبت آزاد مشخص
+        
+        Args:
+            doctor: نمونه پزشک
+            date: تاریخ
+            time: زمان
+        
+        Returns:
+            Reservation object یا None
+        """
+        try:
+            reservation_day = ReservationDay.objects.get(date=date, published=True)
+            return Reservation.objects.get(
+                day=reservation_day,
+                doctor=doctor,
+                time=time,
+                status='available'
+            )
+        except (ReservationDay.DoesNotExist, Reservation.DoesNotExist):
+            return None
     
     @staticmethod
     def get_patient_appointments(patient, status_filter=None):
@@ -173,7 +176,7 @@ class BookingService:
         Returns:
             QuerySet رزروها
         """
-        appointments = Reservation.objects.filter(patient=patient)
+        appointments = Reservation.objects.filter(patient=patient).exclude(status='available')
         
         if status_filter and status_filter != 'all':
             appointments = appointments.filter(status=status_filter)
@@ -194,7 +197,7 @@ class BookingService:
         Returns:
             QuerySet رزروها
         """
-        appointments = Reservation.objects.filter(doctor=doctor)
+        appointments = Reservation.objects.filter(doctor=doctor).exclude(status='available')
         
         if date_from:
             appointments = appointments.filter(day__date__gte=date_from)
@@ -205,83 +208,115 @@ class BookingService:
         if status_filter and status_filter != 'all':
             appointments = appointments.filter(status=status_filter)
         
-        return appointments.select_related('patient', 'day').order_by('day__date', 'time')
+        return appointments.select_related('patient', 'day').order_by('-day__date', '-time')
+    
+    @staticmethod
+    def get_upcoming_appointments(doctor, days_ahead=7):
+        """
+        دریافت نوبت‌های آینده یک پزشک
+        
+        Args:
+            doctor: نمونه پزشک
+            days_ahead: تعداد روزهای آینده
+        
+        Returns:
+            QuerySet رزروها
+        """
+        today = datetime.now().date()
+        future_date = today + timedelta(days=days_ahead)
+        
+        return BookingService.get_doctor_appointments(
+            doctor=doctor,
+            date_from=today,
+            date_to=future_date,
+            status_filter='confirmed'
+        )
 
 
 class AppointmentService:
-    """سرویس مدیریت نوبت‌ها"""
+    """سرویس مدیریت وضعیت نوبت‌ها"""
     
     @staticmethod
     @transaction.atomic
     def confirm_appointment(reservation, confirmed_by=None):
-        """تایید نوبت"""
+        """
+        تایید نوبت
+        
+        Args:
+            reservation: نمونه رزرو
+            confirmed_by: کاربر تایید کننده
+        
+        Returns:
+            tuple: (success, message)
+        """
         if reservation.status != 'pending':
             return False, "فقط نوبت‌های در انتظار قابل تایید هستند"
         
         if reservation.payment_status != 'paid':
-            return False, "ابتدا پرداخت باید انجام شود"
+            return False, "ابتدا پرداخت باید تکمیل شود"
         
-        reservation.status = 'confirmed'
-        reservation.save()
-        
-        # TODO: ارسال اعلان به بیمار
-        
-        return True, "نوبت با موفقیت تایید شد"
+        success = reservation.confirm_appointment()
+        if success:
+            return True, "نوبت با موفقیت تایید شد"
+        else:
+            return False, "خطا در تایید نوبت"
     
     @staticmethod
     @transaction.atomic
     def cancel_appointment(reservation, cancelled_by=None, refund=True):
-        """لغو نوبت"""
-        if reservation.status == 'completed':
-            return False, "نوبت تکمیل شده قابل لغو نیست"
+        """
+        لغو نوبت
         
-        old_status = reservation.status
-        reservation.status = 'cancelled'
+        Args:
+            reservation: نمونه رزرو
+            cancelled_by: کاربر لغو کننده
+            refund: آیا بازپرداخت انجام شود؟
         
-        # مدیریت بازپرداخت
-        if refund and reservation.payment_status == 'paid':
-            try:
-                refund_result = AppointmentService._process_refund(reservation)
-                if refund_result:
-                    reservation.payment_status = 'refunded'
-            except Exception as e:
-                # در صورت خطا در بازپرداخت، نوبت را لغو نکن
-                return False, f"خطا در بازپرداخت: {str(e)}"
+        Returns:
+            tuple: (success, message)
+        """
+        if reservation.status not in ['pending', 'confirmed']:
+            return False, "این نوبت قابل لغو نیست"
         
-        reservation.save()
-        
-        # TODO: ارسال اعلان به بیمار و پزشک
-        
-        return True, "نوبت با موفقیت لغو شد"
+        success = reservation.cancel_appointment(refund=refund)
+        if success:
+            if refund and reservation.payment_status == 'paid':
+                AppointmentService._process_refund(reservation)
+            return True, "نوبت با موفقیت لغو شد و به حالت آزاد برگشت"
+        else:
+            return False, "خطا در لغو نوبت"
     
     @staticmethod
     @transaction.atomic
     def complete_appointment(reservation, completed_by=None):
-        """تکمیل نوبت"""
+        """
+        تکمیل نوبت
+        
+        Args:
+            reservation: نمونه رزرو
+            completed_by: کاربر تکمیل کننده
+        
+        Returns:
+            tuple: (success, message)
+        """
         if reservation.status != 'confirmed':
             return False, "فقط نوبت‌های تایید شده قابل تکمیل هستند"
         
-        reservation.status = 'completed'
-        reservation.save()
-        
-        # TODO: ارسال اعلان تکمیل
-        
-        return True, "نوبت به عنوان تکمیل شده علامت‌گذاری شد"
+        success = reservation.complete_appointment()
+        if success:
+            return True, "نوبت با موفقیت تکمیل شد"
+        else:
+            return False, "خطا در تکمیل نوبت"
     
     @staticmethod
     def _process_refund(reservation):
-        """پردازش بازپرداخت"""
-        if not reservation.transaction:
-            return False
-        
-        # ایجاد تراکنش بازپرداخت
-        refund_transaction = Transaction.objects.create(
-            user=reservation.transaction.user,
-            amount=reservation.amount,
-            transaction_type='refund',
-            related_transaction=reservation.transaction,
-            status='completed',
-            description=f"بازپرداخت نوبت لغو شده - {reservation}"
-        )
-        
-        return True 
+        """پردازش بازپرداخت وجه"""
+        if reservation.transaction and reservation.payment_status == 'paid':
+            Transaction.objects.create(
+                user=reservation.transaction.user,
+                amount=reservation.amount,
+                transaction_type='refund',
+                related_transaction=reservation.transaction,
+                status='completed',
+                description=f"بازپرداخت نوبت لغو شده - {reservation}"
+            ) 

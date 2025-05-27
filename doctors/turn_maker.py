@@ -1,31 +1,50 @@
 """
-ابزار ایجاد روزهای حضور پزشک بر اساس زمان‌بندی هفتگی
+ابزار ایجاد روزهای حضور پزشک و نوبت‌های رزرو بر اساس زمان‌بندی هفتگی
 """
 import jdatetime
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from django.utils import timezone
-from reservations.models import ReservationDay
+from django.db import transaction
+from reservations.models import ReservationDay, Reservation
 from reservations.utils import ReservationDayManager
 from .holidays import get_holidays
 
 
-def get_turn_times(start_hour, end_hour, interval_minutes):
+def get_turn_times(start_time, end_time, interval_minutes):
     """تولید لیست زمان‌های نوبت با فاصله مشخص"""
     times = []
-    current_time = datetime.time(start_hour, 0)
-    end_time = datetime.time(end_hour, 0)
-
-    while current_time < end_time:
+    current_time = start_time
+    
+    # تبدیل زمان پایان به دقیقه
+    end_minutes = end_time.hour * 60 + end_time.minute
+    
+    while True:
+        # تبدیل زمان جاری به دقیقه
+        current_minutes = current_time.hour * 60 + current_time.minute
+        
+        if current_minutes >= end_minutes:
+            break
+            
         times.append(current_time)
-        current_time = (datetime.datetime.combine(datetime.date.today(), current_time) +
-                        datetime.timedelta(minutes=interval_minutes)).time()
-
+        
+        # اضافه کردن فاصله زمانی
+        new_minutes = current_minutes + interval_minutes
+        new_hour = new_minutes // 60
+        new_minute = new_minutes % 60
+        
+        # جلوگیری از overflow
+        if new_hour >= 24:
+            break
+            
+        current_time = time(new_hour, new_minute)
+    
     return times
 
 
-def create_availability_days_for_day_of_week(doctor, day_of_week, start_time, end_time):
+@transaction.atomic
+def create_availability_days_and_slots_for_day_of_week(doctor, day_of_week, start_time, end_time):
     """
-    ایجاد روزهای حضور برای یک روز مشخص از هفته در طول سال
+    ایجاد روزهای حضور و نوبت‌های رزرو برای یک روز مشخص از هفته در طول سال
     
     Args:
         doctor: نمونه پزشک
@@ -65,22 +84,27 @@ def create_availability_days_for_day_of_week(doctor, day_of_week, start_time, en
     except Exception:
         holidays = set()
     
+    # تولید زمان‌های نوبت
+    slot_times = get_turn_times(start_time, end_time, doctor.consultation_duration)
+    
     # آمارگیری
     days_created = 0
     days_updated = 0
     days_skipped_holiday = 0
+    reservations_created = 0
+    reservations_updated = 0
     
-    # ایجاد یا بروزرسانی روزهای حضور
+    # ایجاد یا بروزرسانی روزهای حضور و نوبت‌ها
     for date in target_dates:
         is_holiday = date in holidays
         
         # ایجاد یا بروزرسانی روز رزرو
-        reservation_day, created = ReservationDay.objects.get_or_create(
+        reservation_day, day_created = ReservationDay.objects.get_or_create(
             date=date,
             defaults={'published': not is_holiday}
         )
         
-        if created:
+        if day_created:
             if is_holiday:
                 days_skipped_holiday += 1
             else:
@@ -97,13 +121,171 @@ def create_availability_days_for_day_of_week(doctor, day_of_week, start_time, en
                 
                 if is_holiday:
                     days_skipped_holiday += 1
+        
+        # ایجاد نوبت‌های رزرو فقط اگر روز منتشر شده باشد
+        if reservation_day.published:
+            for slot_time in slot_times:
+                # بررسی وجود نوبت قبلی
+                reservation, res_created = Reservation.objects.get_or_create(
+                    day=reservation_day,
+                    doctor=doctor,
+                    time=slot_time,
+                    defaults={
+                        'phone': '',  # خالی - پر می‌شود هنگام رزرو
+                        'amount': doctor.consultation_fee,
+                        'status': 'available',  # وضعیت جدید برای نوبت‌های آزاد
+                        'payment_status': 'pending'
+                    }
+                )
+                
+                if res_created:
+                    reservations_created += 1
+                else:
+                    # بروزرسانی مبلغ در صورت تغییر تعرفه پزشک
+                    if reservation.amount != doctor.consultation_fee and reservation.status == 'available':
+                        reservation.amount = doctor.consultation_fee
+                        reservation.save()
+                        reservations_updated += 1
     
     return {
         'days_created': days_created,
         'days_updated': days_updated,
         'days_skipped_holiday': days_skipped_holiday,
+        'reservations_created': reservations_created,
+        'reservations_updated': reservations_updated,
         'total_dates_processed': len(target_dates),
+        'total_slot_times': len(slot_times),
         'date_range': f"{start_date} تا {end_date}"
+    }
+
+
+def create_availability_days_for_day_of_week(doctor, day_of_week, start_time, end_time):
+    """
+    نسخه سازگار با قبل - فقط ایجاد روزهای حضور (بدون نوبت‌ها)
+    """
+    return create_availability_days_and_slots_for_day_of_week(doctor, day_of_week, start_time, end_time)
+
+
+@transaction.atomic
+def regenerate_doctor_reservations(doctor):
+    """
+    بازتولید کامل نوبت‌های یک پزشک بر اساس زمان‌بندی‌های فعلی
+    
+    Args:
+        doctor: نمونه پزشک
+    
+    Returns:
+        dict: آمار عملیات
+    """
+    total_stats = {
+        'days_created': 0,
+        'days_updated': 0,
+        'days_skipped_holiday': 0,
+        'reservations_created': 0,
+        'reservations_updated': 0,
+        'availabilities_processed': 0
+    }
+    
+    # پردازش تمام زمان‌بندی‌های پزشک
+    availabilities = doctor.availabilities.all()
+    
+    for availability in availabilities:
+        stats = create_availability_days_and_slots_for_day_of_week(
+            doctor=doctor,
+            day_of_week=availability.day_of_week,
+            start_time=availability.start_time,
+            end_time=availability.end_time
+        )
+        
+        # جمع آوری آمار
+        for key in ['days_created', 'days_updated', 'days_skipped_holiday', 
+                   'reservations_created', 'reservations_updated']:
+            total_stats[key] += stats.get(key, 0)
+        
+        total_stats['availabilities_processed'] += 1
+    
+    return total_stats
+
+
+@transaction.atomic
+def update_doctor_availability_slots(doctor, day_of_week, old_start_time, old_end_time, new_start_time, new_end_time):
+    """
+    بروزرسانی نوبت‌های موجود هنگام تغییر زمان‌بندی پزشک
+    
+    Args:
+        doctor: نمونه پزشک
+        day_of_week: روز هفته
+        old_start_time: زمان شروع قبلی
+        old_end_time: زمان پایان قبلی
+        new_start_time: زمان شروع جدید
+        new_end_time: زمان پایان جدید
+    
+    Returns:
+        dict: آمار تغییرات
+    """
+    # تولید زمان‌های قدیمی و جدید
+    old_slots = get_turn_times(old_start_time, old_end_time, doctor.consultation_duration)
+    new_slots = get_turn_times(new_start_time, new_end_time, doctor.consultation_duration)
+    
+    old_slots_set = set(old_slots)
+    new_slots_set = set(new_slots)
+    
+    # پیدا کردن تغییرات
+    slots_to_remove = old_slots_set - new_slots_set
+    slots_to_add = new_slots_set - old_slots_set
+    
+    removed_count = 0
+    added_count = 0
+    
+    # پیدا کردن تمام روزهای مطابق با day_of_week
+    today = datetime.now().date()
+    future_date = today + timedelta(days=365)  # یک سال آینده
+    
+    current_date = today
+    while current_date <= future_date:
+        gregorian_day_of_week = current_date.weekday()
+        persian_day_of_week = (gregorian_day_of_week + 2) % 7
+        
+        if persian_day_of_week == day_of_week:
+            try:
+                reservation_day = ReservationDay.objects.get(date=current_date, published=True)
+                
+                # حذف نوبت‌های غیرضروری (فقط اگر رزرو نشده‌اند)
+                for slot_time in slots_to_remove:
+                    deleted = Reservation.objects.filter(
+                        day=reservation_day,
+                        doctor=doctor,
+                        time=slot_time,
+                        status='available'
+                    ).delete()
+                    removed_count += deleted[0]
+                
+                # اضافه کردن نوبت‌های جدید
+                for slot_time in slots_to_add:
+                    reservation, created = Reservation.objects.get_or_create(
+                        day=reservation_day,
+                        doctor=doctor,
+                        time=slot_time,
+                        defaults={
+                            'phone': '',
+                            'amount': doctor.consultation_fee,
+                            'status': 'available',
+                            'payment_status': 'pending'
+                        }
+                    )
+                    if created:
+                        added_count += 1
+                        
+            except ReservationDay.DoesNotExist:
+                continue
+        
+        current_date += timedelta(days=1)
+    
+    return {
+        'slots_removed': removed_count,
+        'slots_added': added_count,
+        'old_slots_count': len(old_slots),
+        'new_slots_count': len(new_slots)
     }
 
 
