@@ -5,11 +5,7 @@ from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
 from django.db import transaction
 from .models import DoctorAvailability
-from .turn_maker import (
-    create_availability_days_and_slots_for_day_of_week,
-    update_doctor_availability_slots,
-    regenerate_doctor_reservations
-)
+from reservations.turn_maker import create_availability_days_and_slots_for_day_of_week, update_doctor_availability_slots
 import logging
 
 logger = logging.getLogger(__name__)

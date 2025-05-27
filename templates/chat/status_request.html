@@ -26,8 +26,14 @@
                         {% endif %}
                         <div class="strip_list wow fadeIn border-0 bg-light-blue p-4 ">
                             <figure>
-                                <img class="rounded" src="{{ request.doctor.profile_image.url }}"
-                                     alt="{{ request.doctor.doctor }}">
+                                {% if request.doctor.profile_image.name %}
+                                    <img class="rounded" src="{{ request.doctor.profile_image.url }}"
+                                         alt="{{ request.doctor.doctor }}">
+                                {% else %}
+                                    <div class="rounded" style="width: 100%; height: 100px; background-color: #e5e7eb; display: flex; align-items: center; justify-content: center;">
+                                        <i class="icon-user" style="font-size: 36px; color: #9ca3af;"></i>
+                                    </div>
+                                {% endif %}
                             </figure>
                             <small>
                                 <span class="bg-light rounded fs-10">{{ request.doctor.specialization }}</span>

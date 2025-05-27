@@ -25,7 +25,7 @@ for avail in availabilities:
     print(f"  Day {avail.day_of_week} ({avail.get_day_of_week_display()}): {avail.start_time} - {avail.end_time}")
 
 # Test BookingService.get_available_days_for_doctor
-available_days = BookingService.get_available_days_for_doctor(doctor, days_ahead=30)
+available_days = BookingService.get_available_days_for_doctor(doctor.id, days_ahead=30)
 print(f"\nFound {len(available_days)} available days for booking:")
 
 for day in available_days:

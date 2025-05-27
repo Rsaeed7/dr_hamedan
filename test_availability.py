@@ -46,7 +46,7 @@ def test_complete_workflow():
     # 5. Use the BookingService to find available days
     from reservations.services import BookingService
     
-    available_days = BookingService.get_available_days_for_doctor(doctor, days_ahead=30)
+    available_days = BookingService.get_available_days_for_doctor(doctor.id, days_ahead=30)
     print(f"\nFound {len(available_days)} available days in the next 30 days:")
     
     for day_info in available_days:

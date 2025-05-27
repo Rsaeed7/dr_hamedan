@@ -1,9 +1,9 @@
 """
-ابزارهای کمکی برای مدیریت رزرو نوبت
+Utilities for managing reservation days and schedules
 """
 from datetime import datetime, timedelta
 from .models import ReservationDay
-from doctors.holidays import get_holidays
+from .holidays import get_holidays
 
 
 class ReservationDayManager:

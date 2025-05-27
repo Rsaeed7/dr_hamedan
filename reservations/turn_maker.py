@@ -5,8 +5,8 @@ import jdatetime
 from datetime import datetime, timedelta, time
 from django.utils import timezone
 from django.db import transaction
-from reservations.models import ReservationDay, Reservation
-from reservations.utils import ReservationDayManager
+from .models import ReservationDay, Reservation
+from .utils import ReservationDayManager
 from .holidays import get_holidays
 
 

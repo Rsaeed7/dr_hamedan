@@ -9,8 +9,8 @@ import jdatetime
 
 from doctors.models import Doctor, DoctorAvailability
 from reservations.models import ReservationDay
-from doctors.turn_maker import create_availability_days_and_slots_for_day_of_week
-from doctors.holidays import get_holidays
+from reservations.turn_maker import create_availability_days_and_slots_for_day_of_week
+from reservations.holidays import get_holidays
 
 
 class Command(BaseCommand):
@@ -86,7 +86,7 @@ class Command(BaseCommand):
 
     def handle_create_days(self, options):
         """ایجاد روزهای حضور برای یک روز مشخص از هفته"""
-        from doctors.turn_maker import create_availability_days_and_slots_for_day_of_week
+        from reservations.turn_maker import create_availability_days_and_slots_for_day_of_week
         
         doctor_id = options.get('doctor_id')
         day_of_week = options.get('day_of_week')
@@ -161,7 +161,7 @@ class Command(BaseCommand):
 
     def handle_generate_doctor_slots(self, options):
         """تولید نوبت‌ها برای یک پزشک مشخص"""
-        from doctors.turn_maker import regenerate_doctor_reservations
+        from reservations.turn_maker import regenerate_doctor_reservations
         
         doctor_id = options.get('doctor_id')
         dry_run = options['dry_run']

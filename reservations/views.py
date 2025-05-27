@@ -109,9 +109,22 @@ def book_appointment(request, doctor_id):
         # دریافت روزهای موجود (30 روز آینده)
         available_days = booking_service.get_available_days_for_doctor(doctor_id, days_ahead=30)
         
+        # Extract year and month from first available day for JavaScript initialization
+        initial_year = None
+        initial_month = None
+        if available_days:
+            first_day = available_days[0]
+            if 'jalali_date_str' in first_day:
+                date_parts = first_day['jalali_date_str'].split('/')
+                if len(date_parts) == 3:
+                    initial_year = int(date_parts[0])
+                    initial_month = int(date_parts[1])
+        
         context = {
             'doctor': doctor,
             'days': available_days,
+            'initial_year': initial_year,
+            'initial_month': initial_month,
         }
         
         return render(request, 'reservations/book_appointment.html', context)
@@ -309,3 +322,59 @@ def view_appointment(request, pk):
     }
     
     return render(request, 'reservations/appointment_view.html', context)
+
+@login_required
+def ajax_get_month_availability(request, doctor_id):
+    """AJAX endpoint for getting availability for a specific month"""
+    if request.method != 'GET':
+        return JsonResponse({'error': 'فقط درخواست GET مجاز است'}, status=405)
+    
+    try:
+        jalali_year = int(request.GET.get('year'))
+        jalali_month = int(request.GET.get('month'))
+        
+        if not (1 <= jalali_month <= 12):
+            return JsonResponse({'error': 'ماه نامعتبر است'}, status=400)
+        
+        booking_service = BookingService()
+        available_days = booking_service.get_available_days_for_month(
+            doctor_id, jalali_year, jalali_month
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'available_days': available_days,
+            'year': jalali_year,
+            'month': jalali_month
+        })
+        
+    except (ValueError, TypeError):
+        return JsonResponse({'error': 'پارامترهای نامعتبر'}, status=400)
+    except Exception as e:
+        logger.error(f"خطا در دریافت اطلاعات ماه: {str(e)}")
+        return JsonResponse({'error': 'خطای سرور'}, status=500)
+
+@login_required
+def ajax_get_day_slots(request, doctor_id):
+    """AJAX endpoint for getting slots for a specific day"""
+    if request.method != 'GET':
+        return JsonResponse({'error': 'فقط درخواست GET مجاز است'}, status=405)
+    
+    try:
+        jalali_date_str = request.GET.get('date')
+        
+        if not jalali_date_str:
+            return JsonResponse({'error': 'تاریخ مشخص نشده'}, status=400)
+        
+        booking_service = BookingService()
+        slots = booking_service.get_day_slots(doctor_id, jalali_date_str)
+        
+        return JsonResponse({
+            'success': True,
+            'slots': slots,
+            'date': jalali_date_str
+        })
+        
+    except Exception as e:
+        logger.error(f"خطا در دریافت اسلات‌های روز: {str(e)}")
+        return JsonResponse({'error': 'خطای سرور'}, status=500)

@@ -15,8 +15,9 @@ django.setup()
 from django.contrib.auth import get_user_model
 from doctors.models import Doctor, DoctorAvailability, Specialization, City
 from reservations.models import ReservationDay, Reservation
-from doctors.turn_maker import (
+from reservations.turn_maker import (
     create_availability_days_and_slots_for_day_of_week,
+    get_turn_times,
     regenerate_doctor_reservations
 )
 from reservations.services import BookingService

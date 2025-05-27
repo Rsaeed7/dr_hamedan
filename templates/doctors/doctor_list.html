@@ -48,7 +48,7 @@
             <div class="p-6">
                 <div class="flex items-center space-x-4">
                     <div class="flex-shrink-0">
-                        {% if doctor.profile_image %}
+                        {% if doctor.profile_image.name %}
                             <img src="{{ doctor.profile_image.url }}" alt="{{ doctor.user.get_full_name }}" 
                                  class="h-16 w-16 rounded-full object-cover">
                         {% else %}
