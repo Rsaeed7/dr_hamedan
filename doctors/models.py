@@ -66,6 +66,9 @@ class Doctor(models.Model):
     updated_at = jmodels.jDateTimeField(auto_now=True, verbose_name=_('تاریخ بروزرسانی'))
     gender = models.CharField(choices=GENDER_CHOICES, max_length=10, verbose_name=_('جنسیت'), null=True, blank=True)
     view_count = models.PositiveIntegerField(default=93, verbose_name='تعداد بازدید')
+    # Geographic location fields
+    latitude = models.DecimalField(max_digits=10, decimal_places=8, null=True, blank=True, verbose_name=_('عرض جغرافیایی'))
+    longitude = models.DecimalField(max_digits=11, decimal_places=8, null=True, blank=True, verbose_name=_('طول جغرافیایی'))
 
     def get_first_available_day(self, max_days=30):
         """
@@ -202,6 +205,23 @@ class Doctor(models.Model):
         )
         
         return sum(res.amount for res in completed_reservations)
+    
+    def has_location(self):
+        """Check if doctor has valid location coordinates"""
+        return self.latitude is not None and self.longitude is not None
+    
+    def get_location_data(self):
+        """Get location data for map display"""
+        if self.has_location():
+            return {
+                'lat': float(self.latitude),
+                'lng': float(self.longitude),
+                'name': f"دکتر {self.user.get_full_name()}",
+                'address': self.address or '',
+                'specialization': self.specialization.name if self.specialization else '',
+                'phone': self.phone or ''
+            }
+        return None
 
 class DrServices(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='service', verbose_name='پزشک')

@@ -969,3 +969,44 @@ class DeleteMessageView(DoctorMessageMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success(request, 'نامه با موفقیت حذف شد.')
         return super().delete(request, *args, **kwargs)
+
+
+@login_required
+def update_doctor_location(request):
+    """AJAX view to update doctor's geographic location"""
+    if request.method == 'POST':
+        try:
+            doctor = request.user.doctor
+            latitude = request.POST.get('latitude')
+            longitude = request.POST.get('longitude')
+            
+            if latitude and longitude:
+                doctor.latitude = float(latitude)
+                doctor.longitude = float(longitude)
+                doctor.save(update_fields=['latitude', 'longitude'])
+                
+                return JsonResponse({
+                    'success': True,
+                    'message': 'موقعیت جغرافیایی با موفقیت بروزرسانی شد'
+                })
+            else:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'مختصات جغرافیایی نامعتبر است'
+                })
+                
+        except Doctor.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'message': 'پروفایل پزشک یافت نشد'
+            })
+        except ValueError:
+            return JsonResponse({
+                'success': False,
+                'message': 'مقادیر عرض و طول جغرافیایی نامعتبر است'
+            })
+    
+    return JsonResponse({
+        'success': False,
+        'message': 'درخواست نامعتبر'
+    })
