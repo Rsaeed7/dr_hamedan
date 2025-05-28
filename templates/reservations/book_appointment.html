@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load jformat %}
 
-{% block title %}رزرو نوبت با {{ doctor }} - دکتر همدان{% endblock %}
+{% block title %}رزرو نوبت با {{ doctor.user.get_full_name }} - دکتر همدان{% endblock %}
 
 {% block extra_css %}
 <style>
