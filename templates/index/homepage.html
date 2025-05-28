@@ -106,9 +106,11 @@
                     <div class="scroll-wrapper">
                         {% for doctor in doctors %}
                             <a href="{% url 'doctors:doctor_detail' doctor.pk %}" class="box_cat_home dr_box">
-                                <img src="{{ doctor.profile_image.url }}" alt="{{ doctor.user.get_full_name }}"
-                                     class="round50" width="80" height="80"
-                                >
+                                {% if doctor.profile_image.name %}
+                                    <img src="{{ doctor.profile_image.url }}" alt="{{ doctor.user.get_full_name }}"
+                                         class="round50" width="80" height="80"
+                                    >
+                                {% endif %}
                                 <h3>دکتر {{ doctor.user.get_full_name }}</h3>
                                 <p>{{ doctor.specialization.name }}</p>
                                 <div class="text-right text-secondary">

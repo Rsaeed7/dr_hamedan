@@ -19,7 +19,10 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 from .forms import EmailForm
 from homecare.models import Service
-import time
+import time as time_module
+from datetime import time
+from reservations.turn_maker import create_availability_days_for_day_of_week
+from reservations.services import BookingService, AppointmentService
 
 
 def index(request):
@@ -155,9 +158,7 @@ def doctor_detail(request, pk):
     """نمایش اطلاعات کامل یک پزشک"""
     doctor = get_object_or_404(Doctor, pk=pk)
 
-    # دریافت 7 روز آینده برای رزرو نوبت
-    days = []
-    today = datetime.now().date()
+    # دریافت آمار و اطلاعات پزشک
     comments = DrComment.objects.filter(doctor=doctor, status='confirmed')
     tips = CommentTips.objects.all()
     doctor.increment_view_count()
@@ -190,21 +191,12 @@ def doctor_detail(request, pk):
             messages.success(request, 'نظر شما با موفقیت ثبت شد')
             return redirect('doctors:doctor_detail', pk=doctor.pk)
 
-    for i in range(7):
-        day = today + timedelta(days=i)
-        reservation_day, _ = ReservationDay.objects.get_or_create(date=day)
-
-        if reservation_day.published:
-            available_slots = doctor.get_available_slots(day)
-            if available_slots:
-                days.append({
-                    'date': day,
-                    'slots': available_slots
-                })
+    # استفاده از سرویس برای دریافت روزهای آزاد
+    available_days = BookingService.get_available_days_for_doctor(doctor.id, days_ahead=7)
 
     context = {
         'doctor': doctor,
-        'days': days,
+        'available_days': available_days,
         'comments': comments,
         'stars_range':  range(5, 0, -1) ,
         'tips': tips,
@@ -384,30 +376,31 @@ def doctor_appointments(request):
     date_from = request.GET.get('date_from', '')
     date_to = request.GET.get('date_to', '')
 
-    # پرس و جوی پایه
-    appointments = Reservation.objects.filter(doctor=doctor)
-
-    # اعمال فیلترها
-    if status != 'all':
-        appointments = appointments.filter(status=status)
-
+    # تبدیل تاریخ‌ها
+    date_from_obj = None
+    date_to_obj = None
+    
     if date_from:
         try:
-            date_from = datetime.strptime(date_from, '%Y-%m-%d').date()
-            appointments = appointments.filter(day__date__gte=date_from)
+            date_from_obj = datetime.strptime(date_from, '%Y-%m-%d').date()
         except ValueError:
             pass
 
     if date_to:
         try:
-            date_to = datetime.strptime(date_to, '%Y-%m-%d').date()
-            appointments = appointments.filter(day__date__lte=date_to)
+            date_to_obj = datetime.strptime(date_to, '%Y-%m-%d').date()
         except ValueError:
             pass
 
-    # مرتب‌سازی بر اساس تاریخ و زمان
-    appointments = appointments.order_by('day__date', 'time')
-    # اضافه کن بعد از مرتب‌سازی
+    # استفاده از سرویس برای دریافت نوبت‌ها
+    appointments = BookingService.get_doctor_appointments(
+        doctor=doctor,
+        date_from=date_from_obj,
+        date_to=date_to_obj,
+        status_filter=status
+    )
+    
+    # اضافه کردن پرونده پزشکی به هر نوبت
     for appointment in appointments:
         record = MedicalRecord.objects.filter(patient=appointment.patient, doctor=doctor).first()
         appointment.medical_record = record
@@ -598,18 +591,59 @@ def add_availability_day(request):
         if day_of_week and start_time and end_time:
             try:
                 day_of_week = int(day_of_week)
+                
+                # تبدیل رشته‌های زمان به اشیاء time
+                start_time_obj = datetime.strptime(start_time, '%H:%M').time()
+                end_time_obj = datetime.strptime(end_time, '%H:%M').time()
+                
+                # بررسی اینکه زمان پایان بعد از زمان شروع باشد
+                if start_time_obj >= end_time_obj:
+                    messages.error(request, "زمان پایان باید بعد از زمان شروع باشد.")
+                    return redirect('doctors:add_availability_day')
 
                 # ایجاد روز جدید در زمان‌بندی
-                availability = DoctorAvailability.objects.create(
+                availability, created = DoctorAvailability.objects.get_or_create(
                     doctor=doctor,
                     day_of_week=day_of_week,
-                    start_time=start_time,
-                    end_time=end_time
+                    defaults={
+                        'start_time': start_time_obj,
+                        'end_time': end_time_obj
+                    }
                 )
-                messages.success(request, "زمان‌بندی جدید با موفقیت افزوده شد.")
+                
+                if not created:
+                    # اگر روز از قبل وجود داشت، زمان‌ها را بروزرسانی کن
+                    availability.start_time = start_time_obj
+                    availability.end_time = end_time_obj
+                    availability.save()
+                    messages.info(request, "زمان‌بندی موجود بروزرسانی شد.")
+                else:
+                    messages.success(request, "زمان‌بندی جدید با موفقیت افزوده شد.")
+                
+                # استفاده از turn_maker برای ایجاد روزهای حضور در طول سال
+                try:
+                    result = create_availability_days_for_day_of_week(
+                        doctor,
+                        day_of_week,
+                        start_time_obj,
+                        end_time_obj
+                    )
+                    
+                    success_message = f"""روزهای حضور جدید با موفقیت ایجاد شد:
+                    - {result['days_created']} روز جدید افزوده شد
+                    - {result['days_updated']} روز موجود بروزرسانی شد
+                    - روزهای تعطیل رسمی به‌طور خودکار غیرفعال شدند
+                    - بیماران می‌توانند در این روزها نوبت رزرو کنند"""
+                    
+                    messages.success(request, success_message)
+                    
+                except Exception as e:
+                    messages.warning(request, f"زمان‌بندی ایجاد شد اما خطا در ایجاد روزهای حضور: {str(e)}")
+                
                 return redirect('doctors:doctor_availability')
+                
             except ValueError:
-                messages.error(request, "فرمت روز نامعتبر است.")
+                messages.error(request, "فرمت روز یا زمان نامعتبر است.")
         else:
             messages.error(request, "تمام فیلدها الزامی هستند.")
 
@@ -935,3 +969,44 @@ class DeleteMessageView(DoctorMessageMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success(request, 'نامه با موفقیت حذف شد.')
         return super().delete(request, *args, **kwargs)
+
+
+@login_required
+def update_doctor_location(request):
+    """AJAX view to update doctor's geographic location"""
+    if request.method == 'POST':
+        try:
+            doctor = request.user.doctor
+            latitude = request.POST.get('latitude')
+            longitude = request.POST.get('longitude')
+            
+            if latitude and longitude:
+                doctor.latitude = float(latitude)
+                doctor.longitude = float(longitude)
+                doctor.save(update_fields=['latitude', 'longitude'])
+                
+                return JsonResponse({
+                    'success': True,
+                    'message': 'موقعیت جغرافیایی با موفقیت بروزرسانی شد'
+                })
+            else:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'مختصات جغرافیایی نامعتبر است'
+                })
+                
+        except Doctor.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'message': 'پروفایل پزشک یافت نشد'
+            })
+        except ValueError:
+            return JsonResponse({
+                'success': False,
+                'message': 'مقادیر عرض و طول جغرافیایی نامعتبر است'
+            })
+    
+    return JsonResponse({
+        'success': False,
+        'message': 'درخواست نامعتبر'
+    })

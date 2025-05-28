@@ -16,6 +16,8 @@ from .models import PatientsFile  # مدل خودت
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 import jdatetime
+from reservations.services import BookingService
+from datetime import datetime
 # Create your views here.
 @login_required()
 def comments_view(request):
@@ -111,16 +113,19 @@ def patient_appointments(request):
     try:
         patient = PatientsFile.objects.get(user=request.user)
     except PatientsFile.DoesNotExist:
-        messages.error(request, "Please complete your profile first.")
+        messages.error(request, "لطفا ابتدا پروفایل خود را تکمیل کنید.")
         return redirect('patients:patient_profile')
     
     # Get filter parameters
     status = request.GET.get('status', 'all')
 
-    # Get appointments
-    future_appointments = patient.get_upcoming_appointments()
-    past_appointments = patient.get_past_appointments()
-    appointments = patient.get_reservations().order_by('-day__date', '-time')
+    # استفاده از سرویس برای دریافت نوبت‌ها
+    appointments = BookingService.get_patient_appointments(patient, status_filter=status)
+    
+    # تفکیک نوبت‌های آینده و گذشته
+    today = datetime.now().date()
+    future_appointments = appointments.filter(day__date__gte=today)
+    past_appointments = appointments.filter(day__date__lt=today)
 
     context = {
         'patient': patient,
@@ -140,10 +145,13 @@ def patient_dashboard(request):
     try:
         patient = PatientsFile.objects.get(user=request.user)
     except PatientsFile.DoesNotExist:
-        messages.error(request, "Please complete your profile first.")
+        messages.error(request, "لطفا ابتدا پروفایل خود را تکمیل کنید.")
         return redirect('patients:patient_profile')
 
-    upcoming_appointments = patient.get_upcoming_appointments()[:3]
+    # استفاده از سرویس برای دریافت نوبت‌های آینده
+    today = datetime.now().date()
+    all_appointments = BookingService.get_patient_appointments(patient)
+    upcoming_appointments = all_appointments.filter(day__date__gte=today)[:3]
 
     homecare_requests = HomeCareRequest.objects.filter(patient=patient).order_by('-created_at')[:4]
 

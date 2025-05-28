@@ -2,13 +2,62 @@
 
 {% block title %}پروفایل دکتر {{ doctor.user.get_full_name }} - دکتر {% endblock %}
 
+{% block extra_css %}
+<style>
+    #doctor-map {
+        height: 300px;
+        width: 100%;
+        border-radius: 0.5rem;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .map-container {
+        position: relative;
+        overflow: hidden;
+        border-radius: 0.5rem;
+    }
+    
+    .map-placeholder {
+        height: 300px;
+        width: 100%;
+        background: linear-gradient(45deg, #f3f4f6, #e5e7eb);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.5rem;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .map-placeholder-icon {
+        width: 4rem;
+        height: 4rem;
+        color: #9ca3af;
+        margin-bottom: 1rem;
+    }
+    
+    .map-loading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(255, 255, 255, 0.9);
+        padding: 1rem;
+        border-radius: 0.5rem;
+        z-index: 1000;
+    }
+</style>
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+{% endblock %}
+
 {% block content %}
 <div class="max-w-7xl mx-auto">
     <!-- Doctor Profile Header -->
     <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
         <div class="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6">
             <div class="flex-shrink-0">
-                {% if doctor.profile_image %}
+                {% if doctor.profile_image.name %}
                     <img src="{{ doctor.profile_image.url }}" alt="{{ doctor.user.get_full_name }}" 
                          class="h-32 w-32 rounded-full object-cover">
                 {% else %}
@@ -69,20 +118,41 @@
 
         <!-- Sidebar -->
         <div class="space-y-6">
-            <!-- Contact Information -->
+            <!-- Location Map -->
             <div class="bg-white rounded-lg shadow-sm p-6">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">اطلاعات تماس</h2>
-                <div class="space-y-4">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">موقعیت مطب</h2>
+                
+                {% if doctor.latitude and doctor.longitude %}
+                    <!-- Map Container -->
+                    <div id="doctor-map" class="w-full h-48 rounded-lg mb-4 bg-gray-100 relative">
+                        <div id="map-loading" class="absolute inset-0 flex items-center justify-center">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="w-full h-48 rounded-lg mb-4 bg-gray-100 flex items-center justify-center">
+                        <p class="text-gray-500">موقعیت جغرافیایی ثبت نشده است</p>
+                    </div>
+                {% endif %}
+                
+                <!-- Contact Details -->
+                <div class="space-y-3">
                     {% if doctor.address %}
-                        <div class="flex items-start space-x-3">
+                        <div class="flex items-start space-x-3 space-x-reverse">
                             <heroicon-outline-location-marker class="h-5 w-5 text-gray-400 flex-shrink-0 mt-1" />
-                            <p class="text-gray-600">{{ doctor.address }}</p>
+                            <p class="text-gray-600 text-sm">{{ doctor.address }}</p>
                         </div>
                     {% endif %}
                     {% if doctor.phone %}
-                        <div class="flex items-center space-x-3">
+                        <div class="flex items-center space-x-3 space-x-reverse">
                             <heroicon-outline-phone class="h-5 w-5 text-gray-400" />
-                            <p class="text-gray-600">{{ doctor.phone }}</p>
+                            <p class="text-gray-600 text-sm">{{ doctor.phone }}</p>
+                        </div>
+                    {% endif %}
+                    {% if doctor.city %}
+                        <div class="flex items-center space-x-3 space-x-reverse">
+                            <heroicon-outline-globe class="h-5 w-5 text-gray-400" />
+                            <p class="text-gray-600 text-sm">{{ doctor.city }}</p>
                         </div>
                     {% endif %}
                 </div>
@@ -100,4 +170,60 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    {% if doctor.latitude and doctor.longitude %}
+        // Initialize map
+        const mapContainer = document.getElementById('doctor-map');
+        const loadingIndicator = document.getElementById('map-loading');
+        
+        if (mapContainer) {
+            try {
+                // Create map
+                const map = L.map('doctor-map').setView([{{ doctor.latitude }}, {{ doctor.longitude }}], 15);
+                
+                // Add tile layer
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+                
+                // Add marker
+                const marker = L.marker([{{ doctor.latitude }}, {{ doctor.longitude }}]).addTo(map);
+                
+                // Add popup with doctor info
+                marker.bindPopup(`
+                    <div class="text-center">
+                        <h3 class="font-semibold">{{ doctor.get_full_name }}</h3>
+                        {% if doctor.address %}
+                            <p class="text-sm text-gray-600 mt-1">{{ doctor.address }}</p>
+                        {% endif %}
+                    </div>
+                `);
+                
+                // Hide loading indicator
+                if (loadingIndicator) {
+                    loadingIndicator.style.display = 'none';
+                }
+                
+                // Invalidate size after a short delay to ensure proper rendering
+                setTimeout(() => {
+                    map.invalidateSize();
+                }, 100);
+                
+            } catch (error) {
+                console.error('Error initializing map:', error);
+                if (loadingIndicator) {
+                    loadingIndicator.innerHTML = '<p class="text-red-500 text-sm">خطا در بارگذاری نقشه</p>';
+                }
+            }
+        }
+    {% endif %}
+});
+</script>
 {% endblock %} 
