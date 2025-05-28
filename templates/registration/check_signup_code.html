@@ -74,58 +74,35 @@
 
 <script>
 // Timer variables
-let timerInterval;
-const initialTime = 180; // 3 minutes in seconds
-const phoneNumber = "{{ phone}}"; // شماره تلفن از context
-
-// کلید ذخیره سازی در localStorage
-const storageKey = `otpTimer_${phoneNumber}`;
-
-// مقدار اولیه remainingTime
-let remainingTime = localStorage.getItem(storageKey) ? 
-                    parseInt(localStorage.getItem(storageKey)) : 
-                    initialTime;
+const initialTime = 180; // 3 minutes
+const phoneNumber = "{{ phone }}"; // شماره تلفن از context
+const storageKey = `otpStartTime_${phoneNumber}`;
 
 // Start timer when page loads
 window.onload = function() {
-    // اگر زمان به پایان رسیده بود و شماره تلفن همان است، تایمر را ریست کنیم
-    if (remainingTime <= 0) {
-        remainingTime = initialTime;
-        localStorage.setItem(storageKey, remainingTime);
+    const startTime = localStorage.getItem(storageKey);
+
+    if (!startTime) {
+        localStorage.setItem(storageKey, Date.now()); // ذخیره زمان شروع به صورت میلی‌ثانیه
     }
-    
-    startTimer();
-    updateTimerDisplay();
-    
-    // Validate code input on keyup
-    document.getElementById('id_code').addEventListener('input', function() {
-        validateCode();
-    });
+
+    updateTimer();
 };
 
-function startTimer() {
-    clearInterval(timerInterval);
-    
-    // اگر زمان به پایان رسیده بود، فقط نمایش بده و برگرد
+function updateTimer() {
+    const startTime = parseInt(localStorage.getItem(storageKey));
+    const elapsedTime = Math.floor((Date.now() - startTime) / 1000); // محاسبه زمان سپری شده
+    const remainingTime = Math.max(initialTime - elapsedTime, 0);
+
     if (remainingTime <= 0) {
-        document.getElementById('minutes').style.color = "red";
-        document.getElementById('seconds').style.color = "red";
-        return;
+        clearInterval(timerInterval);
+        document.getElementById('minutes').value = "00";
+        document.getElementById('seconds').value = "00";
+    } else {
+        document.getElementById('minutes').value = Math.floor(remainingTime / 60);
+        document.getElementById('seconds').value = remainingTime % 60 < 10 ? "0" + (remainingTime % 60) : remainingTime % 60;
+        setTimeout(updateTimer, 1000);
     }
-    
-    timerInterval = setInterval(function() {
-        remainingTime--;
-        localStorage.setItem(storageKey, remainingTime);
-        
-        updateTimerDisplay();
-        
-        if (remainingTime <= 0) {
-            clearInterval(timerInterval);
-            localStorage.removeItem(storageKey);
-            document.getElementById('minutes').style.color = "red";
-            document.getElementById('seconds').style.color = "red";
-        }
-    }, 1000);
 }
 
 function updateTimerDisplay() {

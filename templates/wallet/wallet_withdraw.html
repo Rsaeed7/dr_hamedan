@@ -1,0 +1,160 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block body %}
+    <div class="bg-light">
+        <div class="container margin_120_95">
+            <div class="row">
+                {% include 'patients/dashbord_sidebar.html' %}
+                <div class="col-lg-8 ml-auto">
+                    <div class="box_general_3 border-0">
+                        <div class="row">
+                            <div class="col-md-12 p-t-10">
+                                <div>
+                                    <h4 class="mb-4">برداشت وجه</h4>
+                                    <p class="text-muted mb-4">انتقال وجه از کیف پول شما به حساب بانکی</p>
+
+                                    {% if messages %}
+                                        {% for message in messages %}
+                                            <div class="alert alert-{% if message.tags == 'success' %}success{% elif message.tags == 'error' %}danger{% else %}info{% endif %} mb-4">
+                                                {{ message }}
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+
+                                    <!-- Balance Card -->
+                                    <div class="card mb-4">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-light-blue bg-opacity-10 p-3 rounded-circle me-3">
+                                                    <i class="icon-wallet"></i>
+                                                </div>
+                                                <div>
+                                                    <p class="text-muted mb-1">موجودی قابل برداشت</p>
+                                                    <h4 class="mb-0">{{ wallet.balance|floatformat:2 }} تومان</h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <form method="post" action="{% url 'wallet:withdraw' %}" id="withdraw-form">
+                                        {% csrf_token %}
+
+                                        <div class="mb-4">
+                                            <label for="id_amount" class="form-label">مبلغ برداشت</label>
+                                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                                <button type="button" class="btn btn-scroll2 p-1 m-l-5 amount-btn" data-amount="50000">50,000 تومان</button>
+                                                <button type="button" class="btn btn-scroll2 p-1 m-l-5 amount-btn" data-amount="100000">100,000 تومان</button>
+                                                <button type="button" class="btn btn-scroll2 p-1 m-l-5 amount-btn" data-amount="500000">500,000 تومان</button>
+                                                <button type="button" class="btn btn-scroll2 p-1 m-l-5 amount-btn" data-amount="1000000">1000,000 تومان</button>
+                                            </div>
+                                            <div class="input-group">
+                                                <input type="number" name="amount" id="id_amount"
+                                                       value="{{ form.amount.value|default_if_none:'' }}"
+                                                       class="form-control"
+                                                       placeholder="مبلغ دلخواه خود را وارد کنید"
+                                                       min="10000" step="1000" required>
+                                                <span class="input-group-text">تومان</span>
+                                            </div>
+                                            {% if form.amount.errors %}
+                                                <small class="text-danger">{{ form.amount.errors }}</small>
+                                            {% else %}
+                                                <small class="text-muted">حداقل مبلغ برداشت: 10,000 تومان</small>
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- Bank Transfer Details -->
+                                        <div class="mb-4">
+                                            <h5 class="mb-3">مشخصات حساب بانکی</h5>
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <label for="account_holder_name" class="form-label">نام صاحب حساب</label>
+                                                    <input type="text" name="account_holder_name" id="account_holder_name"
+                                                           class="form-control" required>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="bank_name" class="form-label">نام بانک</label>
+                                                    <input type="text" name="bank_name" id="bank_name"
+                                                           class="form-control" required>
+                                                </div>
+                                                <div class="col-md-6 m-t-10">
+                                                    <label for="account_number" class="form-label">شماره حساب</label>
+                                                    <input type="text" name="account_number" id="account_number"
+                                                           class="form-control" required>
+                                                </div>
+                                                <div class="col-md-6 m-t-10">
+                                                    <label for="routing_number" class="form-label">شماره شبا</label>
+                                                    <input type="text" name="routing_number" id="routing_number"
+                                                           class="form-control" required>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-4">
+                                            <div class="form-check">
+                                                <input class="custom-checkbox auto-submit" type="checkbox" id="terms" required>
+                                                <label for="terms">
+                                                    اطلاعات حساب ارائه شده صحیح بوده و این برداشت را تأیید می‌کنم.
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="text-left">
+                                            <button type="submit" class="btn btn-danger col-lg-12">
+                                                درخواست برداشت
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="{% url 'wallet:wallet_dashboard' %}" class="text_dr_3">&larr; برگشت به کیف پول</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set amount when buttons are clicked
+        document.querySelectorAll('.amount-btn').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const amount = this.getAttribute('data-amount');
+                document.getElementById('id_amount').value = amount;
+
+                document.querySelectorAll('.amount-btn').forEach(b => {
+                    b.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+
+        // Form validation
+        document.getElementById('withdraw-form').addEventListener('submit', function(e) {
+            const amount = parseFloat(document.getElementById('id_amount').value);
+            const balance = parseFloat({{ wallet.balance|default:0 }});
+
+            if (amount < 10000) {
+                e.preventDefault();
+                alert('حداقل مبلغ برداشت 10,000 تومان می‌باشد');
+                document.getElementById('id_amount').focus();
+            } else if (amount > balance) {
+                e.preventDefault();
+                alert('مبلغ درخواستی بیشتر از موجودی کیف پول شماست');
+                document.getElementById('id_amount').focus();
+            }
+        });
+
+        // Format account number
+        document.getElementById('account_number').addEventListener('input', function() {
+            this.value = this.value.replace(/\D/g, '');
+        });
+
+        // Format Sheba number
+        document.getElementById('routing_number').addEventListener('input', function() {
+            this.value = this.value.toUpperCase().replace(/[^IR0-9]/g, '');
+        });
+    });
+</script>
+{% endblock %}
+

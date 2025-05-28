@@ -461,7 +461,8 @@ $(document).ready(function() {
             {% if user.is_authenticated %}
                 document.getElementById("formModal").classList.remove("hidden");
             {% else %}
-                window.location.href = "{% url 'account:register' %}?message=برای+ثبت+نظر+وارد+شوید";
+               const nextUrl = window.location.pathname;
+                window.location.href = "{% url 'account:register' %}?next=" + encodeURIComponent(nextUrl);
             {% endif %}
         }
 

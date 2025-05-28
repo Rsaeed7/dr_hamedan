@@ -21,14 +21,8 @@
                             <li class="online-status">
                                 <div title="دکتر {{ doctor.user.get_full_name}} | {{ doctor.specialization }}">
                                     <a href="{% url 'doctors:doctor_detail' doctor.pk %}">
-                                        {% if doctor.profile_image.name %}
-                                            <img class="rounded50 border border-info" width="50" height="50"
-                                                 src="{{ doctor.profile_image.url }}">
-                                        {% else %}
-                                            <div class="rounded50 border border-info" style="width: 50px; height: 50px; background-color: #e5e7eb; display: flex; align-items: center; justify-content: center;">
-                                                <i class="icon-user" style="font-size: 24px; color: #9ca3af;"></i>
-                                            </div>
-                                        {% endif %}
+                                        <img class="rounded50 border border-info" width="50" height="50"
+                                             src="{{ doctor.profile_image.url }}">
                                         <span class="status-indicator"></span>
                                     </a>
                                 </div>
@@ -121,14 +115,10 @@
                                 <i href="#0" class="rate icon-star-5"><span
                                         class="text-dark">{{ doctor.comment_rate }}</span></i>
                                 <figure>
-                                    <a href="{% url 'doctors:doctor_detail' doctor.pk %}">
-                                    {% if doctor.profile_image.name %}
-                                        <img src="{{ doctor.profile_image.url }}" class="img-fluid" alt="{{ doctor.user.get_full_name }}">
-                                    {% else %}
-                                        <div style="width: 100%; height: 220px; background-color: #e5e7eb; display: flex; align-items: center; justify-content: center;">
-                                            <i class="icon-user" style="font-size: 64px; color: #9ca3af;"></i>
-                                        </div>
-                                    {% endif %}
+                                    <a href="{% url 'doctors:doctor_detail' doctor.pk %}"><img
+                                            src="{{ doctor.profile_image.url }}"
+                                            class="img-fluid"
+                                            alt="{{ doctor.user.get_full_name }}">
                                     </a>
                                 </figure>
                                 <div class="wrapper text-center">

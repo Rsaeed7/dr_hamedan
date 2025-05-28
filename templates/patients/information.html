@@ -18,7 +18,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>نام</label>
+                                        <label>نام<span class="text-danger">*</span></label>
                                         <input type="text" id="f_name" name="f_name"
                                                value="{{ request.user.first_name }}" required
                                                class="form-control" placeholder="نام خود را بنویسید">
@@ -26,7 +26,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>نام خانوادگی</label>
+                                        <label>نام خانوادگی<span class="text-danger">*</span></label>
                                         <input type="text" id="l_name" name="l_name"
                                                value="{{ request.user.last_name }}" required
                                                class="form-control" placeholder="نام خانوادگی را بنویسید">
@@ -34,9 +34,9 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>کد ملی</label>
-                                        <input type="text" id="national_id" name="national_id"
-                                               value="{{ patient.national_id|default:'' }}" class="form-control"
+                                        <label>کد ملی<span class="text-danger">*</span></label>
+                                        <input type="text" id="national_id" name="national_id" required
+                                               value="{{ patient.national_id|default:'' }}" class="form-control required"
                                                placeholder="کد ملی خود را وارد کنید">
                                     </div>
                                 </div>
@@ -44,9 +44,10 @@
                                     <div class="form-group">
                                         <label>ایمیل (اختیاری)</label>
                                         <input name="email" id="email" type="email" class="form-control"
-                                               value="{{ patient.email }}"
+                                               value="{{ user.email|default:'' }}"
                                                placeholder="ایمیل خود را وارد کنید">
                                     </div>
+
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
