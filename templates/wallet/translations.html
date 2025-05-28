@@ -1,0 +1,253 @@
+{% extends  'base/base.html' %}
+{% load static %}
+{% load persian_date %}
+{% block body %}
+    <div class="filters_listing d-lg-none">
+        <div class="container">
+            <a href="{% url 'patients:patient_dashboard' %}" class="text-dr"><i class="icon-right-open"></i>داشبورد</a>
+        </div>
+    </div>
+    <div class="bg-light">
+        <div class="container margin_120_95">
+            <div class="row">
+                <div class="col-12 ml-auto">
+
+                    <div class="box_general_2">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div>
+                                    <h4 class="text-white"> موجودی فعلی: <br><br><span
+                                            class="font-weight-bold p-r-40 text_dr_2">
+                            {{ balance|floatformat:2 }} تومان </span></h4>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div>
+                                    <p class="btn btn-light col-5  m-t-10 m-l-14">تکمیل شده <br> {{ completed_count }}
+                                    </p>
+                                    <p class="btn btn-light col-5 m-t-10">در انتظار <br> {{ pending_count }}</p>
+                                </div>
+                                <a class="text-white icon-right font-weight-light" href="{% url 'wallet:wallet_dashboard' %}">بازگشت به کیف پول</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if messages %}
+                        <div class="mb-4">
+                            {% for message in messages %}
+                                <div class="p-3 mb-2 rounded-10 {% if message.tags == 'success' %}alert-success
+                                {% elif message.tags == 'error' %} alert-danger{% else %} alert-info{% endif %}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <div class="container mt-4 box_general">
+                        <div class="border-0">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="">
+                                        <h5 class="mb-3">فیلتر تراکنش‌ها</h5>
+
+                                        <form class="row" method="get" action="{% url 'wallet:transaction_list' %}"
+                                              id="filterForm">
+                                            <div class="mb-3 col-6 col-lg-3">
+                                                <select id="transaction_type" name="transaction_type"
+                                                        class="form-control border-0 auto-submit">
+                                                    <option value="">همه انواع</option>
+                                                    <option value="payment"
+                                                            {% if request.GET.transaction_type == 'payment' %}selected{% endif %}>
+                                                        پرداخت
+                                                    </option>
+                                                    <option value="refund"
+                                                            {% if request.GET.transaction_type == 'refund' %}selected{% endif %}>
+                                                        بازپرداخت
+                                                    </option>
+                                                    <option value="deposit"
+                                                            {% if request.GET.transaction_type == 'deposit' %}selected{% endif %}>
+                                                        واریز
+                                                    </option>
+                                                    <option value="withdrawal"
+                                                            {% if request.GET.transaction_type == 'withdrawal' %}selected{% endif %}>
+                                                        برداشت
+                                                    </option>
+                                                </select>
+                                            </div>
+
+                                            <div class="mb-3 col-6 col-lg-3">
+                                                <select id="status" name="status"
+                                                        class="form-control border-0 auto-submit">
+                                                    <option value="">همه وضعیت‌ها</option>
+                                                    <option value="pending"
+                                                            {% if request.GET.status == 'pending' %}selected{% endif %}>
+                                                        در انتظار
+                                                    </option>
+                                                    <option value="completed"
+                                                            {% if request.GET.status == 'completed' %}selected{% endif %}>
+                                                        تکمیل شده
+                                                    </option>
+                                                    <option value="failed"
+                                                            {% if request.GET.status == 'failed' %}selected{% endif %}>
+                                                        ناموفق
+                                                    </option>
+                                                    <option value="cancelled"
+                                                            {% if request.GET.status == 'cancelled' %}selected{% endif %}>
+                                                        لغو شده
+                                                    </option>
+                                                </select>
+                                            </div>
+
+                                            <div class="mb-3 col-6 col-lg-3">
+                                                <input type="text" id="from_display" class="form-control"
+                                                       placeholder="فیلتر تراکنش ها از تاریخ"
+                                                       value="{{ request.GET.from|default_if_none:'' }}">
+
+                                                <input type="hidden" id="from" name="from"
+                                                       value="{{ request.GET.from|default_if_none:'' }}">
+
+                                            </div>
+
+                                            <div class="mb-4 col-6 col-lg-3">
+                                                <input type="text" id="to_display" class="form-control"
+                                                       placeholder="فیلتر تراکنش ها تا تاریخ"
+                                                       value="{{ request.GET.to|default_if_none:'' }}">
+
+                                                <input type="hidden" id="to" name="to"
+                                                       value="{{ request.GET.to|default_if_none:'' }}">
+
+                                            </div>
+                                        </form>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div>
+                                    <h5 class="icon-retweet">
+                                        {% if request.GET.transaction_type or request.GET.status %}
+                                            تراکنش‌های فیلتر شده
+                                        {% else %}
+                                            همه تراکنش‌ها
+                                        {% endif %}
+                                    </h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 p-t-10">
+                                <div class="shadow rounded-lg p-6">
+                                    {% if transactions %}
+                                        <div class="overflow-x-auto">
+                                            <table class="min-w-full">
+                                                <thead class="border">
+                                                <tr class="table text-center">
+                                                    <th class="table-active ">نوع تراکنش</th>
+                                                    <th class="table-active text-right">توضیحات</th>
+                                                    <th class="table-active ">مقدار</th>
+                                                    <th class="table-active ">تاریخ</th>
+                                                    <th class="table-active ">وضعیت</th>
+                                                </tr>
+                                                </thead>
+
+                                                <tbody class="table-light">
+                                                {% for transaction in transactions %}
+                                                    <tr class="border">
+                                                        <td class="text-center">
+                                                            {{ transaction.get_transaction_type_display }}
+                                                        </td>
+                                                        <td class="text-right">
+                                                            {{ transaction.description|default:"" }}
+                                                        </td>
+                                                        <td class="text-center">
+                                                            {% if transaction.transaction_type in 'deposit,refund' %}
+                                                                <span class="text-success">{{ transaction.amount }} +  تومان </span>
+                                                            {% else %}
+                                                                <span class="text-danger ">{{ transaction.amount }} - تومان </span>
+                                                            {% endif %}
+                                                        </td>
+
+                                                        <td class="px-6 py-4 text-center">
+                                                            {{ transaction.created_at|persian_date_info }}
+                                                        </td>
+                                                        <td class="px-6 py-4 text-center fs-10">
+                                                            <button class="border-0 rounded-10 px-2 text-white
+                                                {% if transaction.status == 'completed' %}bg-success
+                                                {% elif transaction.status == 'pending' %}bg-warning
+                                                {% elif transaction.status == 'failed' %}bg-danger
+                                                {% elif transaction.status == 'cancelled' %}bg-dark
+                                                {% endif %}" onclick="alert('{{ transaction.description|default:"" }}')"
+                                                                    title="{{ transaction.description|default:"" }}">
+                                                                {{ transaction.get_status_display }}
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+
+                                        </div>
+                                    {% else %}
+                                        <p class="text-capitalize icon-info font-weight-light">هنوز تراکنشی انجام نداده
+                                            اید</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const autoInputs = document.querySelectorAll('.auto-submit');
+            autoInputs.forEach(input => {
+                input.addEventListener('change', function () {
+                    document.getElementById('filterForm').submit();
+                });
+            });
+        });
+    </script>
+    <link rel="stylesheet" href="https://unpkg.com/persian-datepicker@latest/dist/css/persian-datepicker.min.css"/>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/persian-date@latest/dist/persian-date.min.js"></script>
+    <script src="https://unpkg.com/persian-datepicker@latest/dist/js/persian-datepicker.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // فیلتر از تاریخ
+            $('#from_display').persianDatepicker({
+                format: 'YYYY/MM/DD',
+                altField: '#from',
+                altFormat: 'YYYY-MM-DD',
+                observer: true,
+                initialValue: !!'{{ from }}',
+                initialValueType: 'persian',
+                autoClose: true,
+                onSelect: function () {
+                    $('#filterForm').submit();
+                }
+            });
+
+            // فیلتر تا تاریخ
+            $('#to_display').persianDatepicker({
+                format: 'YYYY/MM/DD',
+                altField: '#to',
+                altFormat: 'YYYY-MM-DD',
+                observer: true,
+                initialValue: !!'{{ to }}',
+                initialValueType: 'persian',
+                autoClose: true,
+                onSelect: function () {
+                    $('#filterForm').submit();
+                }
+            });
+        });
+    </script>
+
+{% endblock %}

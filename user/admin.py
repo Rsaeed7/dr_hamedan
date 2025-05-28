@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User,Otp,UserAddress
+from .models import User,Otp
 from .forms import UserChangeForm,UserCreationForm
 
 
@@ -20,7 +20,7 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = [
         (None, {"fields": ["phone", "password"]}),
         ("اطلاعات شخصی", {"fields": ['first_name','last_name','email']}),
-        ("دسترسی ها", {"fields": ["is_admin" , 'is_staff' , 'is_superuser'] }),
+        ("دسترسی ها", {"fields": ["is_admin" , 'is_staff' , 'is_superuser','is_admin_chat'] }),
     ]
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.
@@ -37,11 +37,7 @@ class UserAdmin(BaseUserAdmin):
     ordering = ["phone"]
     filter_horizontal = []
 
-admin.site.register(UserAddress)
-# admin.site.register(UserWishList)
-# Now register the new UserAdmin...
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Otp)
-# ... and, since we're not using Django's built-in permissions,
-# unregister the Group model from admin.
 admin.site.unregister(Group)

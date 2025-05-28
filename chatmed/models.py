@@ -77,6 +77,18 @@ class ChatRoom(models.Model):
 
 
 class Message(models.Model):
+    TEXT = 'text'
+    IMAGE = 'image'
+    FILE = 'file'
+    AUDIO = 'audio'
+
+    MESSAGE_TYPE_CHOICES = [
+        (TEXT, 'متن'),
+        (IMAGE, 'تصویر'),
+        (FILE, 'فایل'),
+        (AUDIO, 'صوت'),
+    ]
+
     chat_room = models.ForeignKey(
         ChatRoom,
         on_delete=models.CASCADE,
@@ -90,8 +102,29 @@ class Message(models.Model):
         blank=True,
         verbose_name='فرستنده'
     )
-    content = models.TextField(verbose_name='محتوا')
-
+    content = models.TextField(
+        verbose_name='محتوا',
+        blank=True,
+        null=True
+    )
+    file = models.FileField(
+        upload_to='chat/files/',
+        blank=True,
+        null=True,
+        verbose_name='فایل'
+    )
+    audio = models.FileField(
+        upload_to='chat/audio/',
+        blank=True,
+        null=True,
+        verbose_name='صوت'
+    )
+    message_type = models.CharField(
+        max_length=10,
+        choices=MESSAGE_TYPE_CHOICES,
+        default=TEXT,
+        verbose_name='نوع پیام'
+    )
     created_at = jmodels.jDateTimeField(
         default=timezone.now,
         verbose_name='تاریخ ارسال'
@@ -106,10 +139,9 @@ class Message(models.Model):
         verbose_name = 'پیام'
         verbose_name_plural = 'پیام‌ها'
 
-
-
     def __str__(self):
-        return f"پیام {self.id} - {self.sender.name if self.sender else 'ناشناس'}"
+        return f"پیام {self.id} - {self.sender.name if self.sender else 'ناشناس'} - نوع: {self.message_type}"
+
 
 
 class DoctorAvailability(models.Model):

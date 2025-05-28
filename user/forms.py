@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
 from django.core import validators
-from .models import User,UserAddress
+from .models import User
 
 
 
@@ -74,19 +74,3 @@ class Check_CodeForm(forms.Form):
                             validators=[validators.MinLengthValidator(4)],required=True)
 
 
-# class AddressForm(forms.ModelForm):
-#     user = forms.IntegerField(required=False)
-#     class Meta:
-#         model = UserAddress
-#         fields = '__all__'
-#         widgets = {
-#             'name' : forms.TextInput(attrs={"class": "form-control unicase-form-control text-input"}),
-#             'email' : forms.EmailInput(attrs={"class": "form-control unicase-form-control text-input"}),
-#             'plaque' : forms.TextInput(attrs={"class": "form-control unicase-form-control text-input"}),
-#             'unit' : forms.TextInput(attrs={"class": "form-control unicase-form-control text-input"}),
-#             'phone' : forms.TextInput(attrs={"class": "form-control unicase-form-control text-input"}),
-#             'postal_code' : forms.TextInput(attrs={"class": "form-control unicase-form-control text-input"}),
-#             'address' : forms.TextInput(attrs={"class": "form-control unicase-form-control"})
-#         }
-#
-#
