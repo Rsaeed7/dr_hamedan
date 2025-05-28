@@ -1,3 +1,4 @@
+import jdatetime
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -28,7 +29,7 @@ def wallet_dashboard(request):
     # دریافت تراکنش‌های اخیر
     recent_transactions = Transaction.objects.filter(
         user=request.user
-    ).select_related('gateway', 'related_transaction').order_by('-created_at')[:10]
+    ).select_related('gateway', 'related_transaction').order_by('-created_at')[:5]
     
     # محاسبه آمار
     completed_transactions = Transaction.objects.filter(
@@ -56,40 +57,54 @@ def wallet_dashboard(request):
         'balance': wallet.balance,
     }
     
-    return render(request, 'wallet/wallet_dashboard.html', context)
+    return render(request, 'wallet/wallet.html', context)
 
 
 @login_required
 def transaction_list(request):
-    """لیست تمام تراکنش‌های کاربر"""
-    # دریافت پارامترهای فیلتر
-    transaction_type = request.GET.get('type', 'all')
-    status = request.GET.get('status', 'all')
-    
-    # دریافت تراکنش‌های کاربر
-    transactions = Transaction.objects.filter(
-        user=request.user
-    ).select_related('gateway', 'related_transaction').order_by('-created_at')
-    
-    # اعمال فیلترها
-    if transaction_type != 'all':
+    transaction_type = request.GET.get('transaction_type')
+    status = request.GET.get('status')
+
+    from_date_str = request.GET.get('from')
+    to_date_str = request.GET.get('to')
+
+    transactions = Transaction.objects.filter(user=request.user).select_related('gateway', 'related_transaction').order_by('-created_at')
+
+    # فیلتر نوع تراکنش
+    if transaction_type:
         transactions = transactions.filter(transaction_type=transaction_type)
-    
-    if status != 'all':
+
+    # فیلتر وضعیت
+    if status:
         transactions = transactions.filter(status=status)
-    
-    # صفحه‌بندی
+
+    # فیلتر تاریخ از (from)
+    if from_date_str:
+        try:
+            from_jdate = jdatetime.datetime.strptime(from_date_str, "%Y-%m-%d").togregorian()
+            transactions = transactions.filter(created_at__date__gte=from_jdate.date())
+        except Exception as e:
+            print("خطای تبدیل تاریخ from:", e)
+
+    # فیلتر تاریخ تا (to)
+    if to_date_str:
+        try:
+            to_jdate = jdatetime.datetime.strptime(to_date_str, "%Y-%m-%d").togregorian()
+            transactions = transactions.filter(created_at__date__lte=to_jdate.date())
+        except Exception as e:
+            print("خطای تبدیل تاریخ to:", e)
+
+    # آمارها
+    completed_count = transactions.filter(status='completed').count()
+    pending_count = transactions.filter(status__in=['pending', 'processing']).count()
+
+    # کیف پول
+    wallet = get_object_or_404(Wallet, user=request.user)
+
     paginator = Paginator(transactions, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
-    # محاسبه آمار
-    completed_count = transactions.filter(status='completed').count()
-    pending_count = transactions.filter(status__in=['pending', 'processing']).count()
-    
-    # دریافت کیف پول
-    wallet = get_object_or_404(Wallet, user=request.user)
-    
+
     context = {
         'transactions': page_obj,
         'transaction_type': transaction_type,
@@ -97,11 +112,9 @@ def transaction_list(request):
         'completed_count': completed_count,
         'pending_count': pending_count,
         'balance': wallet.balance,
-        'transaction_types': Transaction.TRANSACTION_TYPES,
-        'status_choices': Transaction.STATUS_CHOICES,
     }
-    
-    return render(request, 'wallet/transaction_list.html', context)
+
+    return render(request, 'wallet/translations.html', context)
 
 
 @login_required
@@ -128,7 +141,7 @@ def deposit(request):
             gateway = PaymentGateway.objects.filter(is_active=True).first()
             if not gateway and payment_method == 'gateway':
                 messages.error(request, 'درگاه پرداخت فعالی یافت نشد.')
-                return render(request, 'wallet/deposit.html', {'wallet': wallet})
+                return render(request, 'wallet/wallet_deposit.html', {'wallet': wallet})
             
             # ایجاد تراکنش
             with db_transaction.atomic():
@@ -163,7 +176,7 @@ def deposit(request):
         'max_amount': 50000000,
     }
     
-    return render(request, 'wallet/deposit.html', context)
+    return render(request, 'wallet/wallet_deposit.html', context)
 
 
 @login_required
@@ -180,15 +193,15 @@ def withdraw(request):
             # اعتبارسنجی
             if amount < Decimal('10000'):
                 messages.error(request, 'حداقل مبلغ برداشت ۱۰ هزار تومان است.')
-                return render(request, 'wallet/withdraw.html', {'wallet': wallet})
+                return render(request, 'wallet/wallet_withdraw.html', {'wallet': wallet})
             
             if not wallet.can_withdraw(amount):
                 messages.error(request, 'موجودی کافی در کیف پول شما وجود ندارد.')
-                return render(request, 'wallet/withdraw.html', {'wallet': wallet})
+                return render(request, 'wallet/wallet_withdraw.html', {'wallet': wallet})
             
             if not bank_account:
                 messages.error(request, 'شماره حساب بانکی را وارد کنید.')
-                return render(request, 'wallet/withdraw.html', {'wallet': wallet})
+                return render(request, 'wallet/wallet_withdraw.html', {'wallet': wallet})
             
             # ایجاد تراکنش برداشت
             with db_transaction.atomic():
@@ -224,7 +237,7 @@ def withdraw(request):
         'min_amount': 10000,
     }
     
-    return render(request, 'wallet/withdraw.html', context)
+    return render(request, 'wallet/wallet_withdraw.html', context)
 
 
 def process_payment(request, reservation_id):

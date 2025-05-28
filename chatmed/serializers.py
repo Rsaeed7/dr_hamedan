@@ -7,6 +7,8 @@ from patients.models import PatientsFile as Patient
 class MessageSerializer(serializers.ModelSerializer):
     sender_name = serializers.SerializerMethodField()
     sender_type = serializers.SerializerMethodField()
+    file_url = serializers.SerializerMethodField()
+    audio_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Message
@@ -15,10 +17,12 @@ class MessageSerializer(serializers.ModelSerializer):
             'sender_name',
             'sender_type',
             'content',
+            'file_url',
+            'audio_url',
+            'message_type',
             'created_at',
             'is_read'
         ]
-        read_only_fields = ['created_at', 'is_read']
 
     def get_sender_name(self, obj):
         if obj.sender:
@@ -34,6 +38,13 @@ class MessageSerializer(serializers.ModelSerializer):
             elif hasattr(obj.sender, 'patient'):
                 return 'patient'
         return 'system'
+
+    def get_file_url(self, obj):
+        return obj.file.url if obj.file else None
+
+    def get_audio_url(self, obj):
+        return obj.audio.url if obj.audio else None
+
 
 
 class ChatRequestSerializer(serializers.ModelSerializer):

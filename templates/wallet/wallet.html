@@ -23,11 +23,14 @@
                             {{ balance|floatformat:2 }} تومان </span></p>
                                 </div>
                             </div>
+{#                            <p class="font-weight-light icon-lock text-danger"> موجودی مسدود : <br><br><span#}
+{#                                    class="font-weight-bold p-r-40">#}
+{#                            {{ balance|floatformat:2 }} تومان </span></p>#}
                             <div class="col-md-6 p-t-10">
                                 <div>
-                                    <a href="#deposit-modal" class="btn btn-primary m-t-20 m-l-14">+ افزایش
+                                    <a href="{% url 'wallet:deposit' %}" class="btn btn-primary m-t-20 m-l-14">+ افزایش
                                         اعتبار</a>
-                                    <a href="#withdraw-modal" class="btn btn-danger m-t-20"> برداشت وجه</a>
+                                    <a href="{% url 'wallet:withdraw' %}" class="btn btn-danger m-t-20"> برداشت وجه</a>
                                 </div>
                             </div>
                         </div>
@@ -47,10 +50,10 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div>
-                                    <h5 class="icon-retweet">سوابق تراکنش</h5>
+                                    <h5 class="icon-retweet">آخرین تراکن ها</h5>
                                     <div class="text-left">
                                         <a href="{% url 'wallet:transaction_list' %}">همه تراکنش ها
-                                            </a>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -88,14 +91,15 @@
                                                             {{ transaction.created_at|persian_date_info }}
                                                         </td>
                                                         <td class="px-6 py-4 text-center fs-10">
-                                                                       <button class="border-0 rounded-10 px-2 text-white 
+                                                            <button class="border-0 rounded-10 px-2 text-white
                                                 {% if transaction.status == 'completed' %}bg-success
                                                 {% elif transaction.status == 'pending' %}bg-warning
                                                 {% elif transaction.status == 'failed' %}bg-danger
                                                 {% elif transaction.status == 'cancelled' %}bg-dark
-                                                {% endif %}" onclick="alert('{{ transaction.description|default:"" }}')" title="{{ transaction.description|default:"" }}">
-                                                {{ transaction.get_status_display }}
-                                            </button>
+                                                {% endif %}" onclick="alert('{{ transaction.description|default:"" }}')"
+                                                                    title="{{ transaction.description|default:"" }}">
+                                                                {{ transaction.get_status_display }}
+                                                            </button>
                                                         </td>
                                                     </tr>
                                                 {% endfor %}
