@@ -26,8 +26,14 @@
                                 <a href="{% url 'chat:chat_room' room.id %}">
                                     <div class="strip_list wow fadeIn border-0 bg-bluelight">
                                         <figure>
-                                            <img class="rounded" src="{{ room.request.doctor.profile_image.url }}"
-                                                 alt="{{ room.request.doctor.doctor }}">
+                                            {% if room.request.doctor.profile_image.name %}
+                                                <img class="rounded" src="{{ room.request.doctor.profile_image.url }}"
+                                                     alt="{{ room.request.doctor.doctor }}">
+                                            {% else %}
+                                                <div class="rounded" style="width: 100%; height: 100px; background-color: #e5e7eb; display: flex; align-items: center; justify-content: center;">
+                                                    <i class="icon-user" style="font-size: 36px; color: #9ca3af;"></i>
+                                                </div>
+                                            {% endif %}
                                         </figure>
                                         <small>
                                             <span class="bg-light rounded fs-10">{{ room.request.doctor.specialization }}</span>

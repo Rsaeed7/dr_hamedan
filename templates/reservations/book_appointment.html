@@ -1,213 +1,1091 @@
 {% extends 'base.html' %}
-
+{% load jformat %}
 
 {% block title %}رزرو نوبت با {{ doctor }} - دکتر همدان{% endblock %}
 
 {% block extra_css %}
 <style>
-    /* RTL specific styles */
-    .rtl .md:mr-6 {
-        margin-right: 0;
-        margin-left: 1.5rem;
+    /* Main container styles */
+    .booking-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1rem;
     }
-    
-    .rtl .ml-3 {
-        margin-left: 0;
-        margin-right: 0.75rem;
+
+    /* Calendar container - large and prominent */
+    .calendar-main-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        margin-bottom: 2rem;
     }
-    
-    .rtl .text-right {
-        text-align: left;
+
+    .calendar-container {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
-    
-    .rtl .justify-between {
+
+    /* Calendar header */
+    .calendar-header {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        color: white;
+        padding: 1.5rem;
+        text-align: center;
+        position: relative;
+        display: flex;
+        align-items: center;
         justify-content: space-between;
     }
     
-    .rtl .items-center {
+    .calendar-nav {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        cursor: pointer;
+        display: flex;
         align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
     }
-    
-    .rtl .flex-row {
-        flex-direction: row-reverse;
+
+    .calendar-nav:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.05);
     }
-    
-    .rtl .flex-col {
+
+    .calendar-nav:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .calendar-month-year {
+        font-size: 1.5rem;
+        font-weight: 700;
+        flex: 1;
+    }
+
+    /* Calendar grid */
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+    }
+
+    .calendar-day-header {
+        padding: 1rem 0.5rem;
+        text-align: center;
+        font-weight: 700;
+        background: #f8fafc;
+        color: #64748b;
+        font-size: 0.875rem;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .calendar-day {
+        padding: 1rem 0.5rem;
+        text-align: center;
+        cursor: pointer;
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+        position: relative;
+        min-height: 80px;
+        display: flex;
         flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        background: white;
     }
-    
-    .rtl .gap-4 {
+
+    .calendar-day:hover {
+        background: #f1f5f9;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .calendar-day.other-month {
+        color: #cbd5e1;
+        background: #f8fafc;
+        cursor: not-allowed;
+    }
+
+    .calendar-day.available {
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        color: #1e40af;
+        font-weight: 700;
+        border: 2px solid #3b82f6;
+        position: relative;
+    }
+
+    .calendar-day.available::after {
+        content: '●';
+        position: absolute;
+        bottom: 8px;
+        font-size: 12px;
+        color: #10b981;
+    }
+
+    .calendar-day.available:hover {
+        background: linear-gradient(135deg, #bfdbfe, #93c5fd);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+    }
+
+    .calendar-day.selected {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        color: white;
+        font-weight: 700;
+        transform: scale(1.05);
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        z-index: 10;
+    }
+
+    .calendar-day.today {
+        border: 3px solid #f59e0b;
+        font-weight: 700;
+    }
+
+    .calendar-day.disabled {
+        color: #e2e8f0;
+        cursor: not-allowed;
+        background: #f8fafc;
+    }
+
+    .calendar-day .slots-indicator {
+        font-size: 0.75rem;
+        color: #10b981;
+        margin-top: 4px;
+    }
+
+    /* Time slots section */
+    .time-slots-main {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    .time-slots-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .time-slots-header h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+    }
+
+    .selected-date-display {
+        background: linear-gradient(135deg, #eff6ff, #dbeafe);
+        border: 2px solid #3b82f6;
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .selected-date-text {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1e40af;
+    }
+
+    .available-slots-count {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-top: 0.25rem;
+    }
+
+    .time-slots-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
         gap: 1rem;
     }
     
-    .rtl .md:pr-4 {
-        padding-right: 0;
-        padding-left: 1rem;
+    .time-slot {
+        padding: 1rem;
+        text-align: center;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+        font-weight: 600;
+        position: relative;
+        overflow: hidden;
     }
-    
-    .rtl .md:pl-4 {
-        padding-left: 0;
-        padding-right: 1rem;
+
+    .time-slot::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+        transition: left 0.5s;
     }
-    
-    .rtl .border-l-4 {
-        border-left: 0;
-        border-right: 4px solid;
+
+    .time-slot:hover::before {
+        left: 100%;
+    }
+
+    .time-slot:hover {
+        border-color: #3b82f6;
+        background: #eff6ff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+    }
+
+    .time-slot.selected {
+        border-color: #3b82f6;
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        color: white;
+        transform: scale(1.05);
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+    }
+
+    /* Patient form */
+    .patient-form {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    /* Submit button */
+    .submit-button {
+        width: 100%;
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.125rem;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .submit-button.enabled {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        cursor: pointer;
+    }
+
+    .submit-button.enabled:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+    }
+
+    .submit-button.disabled {
+        background: #d1d5db;
+        color: #9ca3af;
+        cursor: not-allowed;
+    }
+
+    /* Loading states */
+    .loading {
+        opacity: 0.7;
+        pointer-events: none;
+    }
+
+    .loading::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 20px;
+        height: 20px;
+        margin: -10px 0 0 -10px;
+        border: 2px solid #3b82f6;
+        border-top: 2px solid transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Error message */
+    .error-message {
+        background: #fee2e2;
+        border: 1px solid #fecaca;
+        color: #b91c1c;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+        text-align: center;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .booking-container {
+            padding: 0.5rem;
+        }
+        
+        .calendar-main-container {
+            padding: 1rem;
+        }
+        
+        .calendar-day {
+            min-height: 60px;
+            font-size: 0.875rem;
+        }
+        
+        .time-slots-grid {
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 0.75rem;
+        }
+        
+        .time-slot {
+            padding: 0.75rem 0.5rem;
+            font-size: 0.875rem;
+        }
+    }
+
+    /* No slots message */
+    .no-slots-message {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: #6b7280;
+        font-size: 1.125rem;
+    }
+
+    .no-slots-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    /* Doctor info enhancement */
+    .doctor-info-card {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    .doctor-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #3b82f6;
+    }
+
+    .doctor-avatar-placeholder {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 700;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto rtl">
-    <div class="bg-white rounded-lg shadow-md overflow-hidden">
-        <div class="p-6 md:p-8 border-b border-gray-200">
-            <h1 class="text-2xl font-bold text-gray-800 mb-4">رزرو نوبت</h1>
-            
-            <div class="flex flex-col md:flex-row md:items-center">
-                <div class="mb-4 md:mb-0 md:ml-6">
-                    {% if doctor.profile_image %}
-                        <img src="{{ doctor.profile_image.url }}" alt="{{ doctor }}" class="w-20 h-20 rounded-full object-cover">
+<div class="booking-container">
+    <!-- Doctor Information Card -->
+    <div class="doctor-info-card">
+        <div class="flex items-center">
+            <div class="ml-6">
+                {% if doctor.profile_image.name %}
+                    <img src="{{ doctor.profile_image.url }}" alt="{{ doctor }}" class="doctor-avatar">
+                {% endif %}
+            </div>
+                
+            <div class="flex-1">
+                <h1 class="text-2xl font-bold text-gray-800 mb-2">رزرو نوبت با {{ doctor }}</h1>
+                <p class="text-blue-600 font-semibold">{{ doctor.specialization }}</p>
+                <p class="text-gray-600">{{ doctor.consultation_fee|floatformat:0 }} تومان برای هر ویزیت</p>
+                
+                <!-- Wallet Balance Information -->
+                {% if user.is_authenticated %}
+                <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-blue-800 font-medium">موجودی کیف پول شما:</p>
+                            <p class="text-lg font-bold text-blue-900">{{ balance|floatformat:0 }} تومان</p>
+                        </div>
+                        <div class="text-blue-600">
+                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    {% if balance < doctor.consultation_fee %}
+                    <div class="mt-2 p-3 bg-red-50 border border-red-200 rounded-md">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="mr-3">
+                                <p class="text-sm text-red-800">
+                                    موجودی کافی نیست. برای شارژ کیف پول 
+                                    <a href="{% url 'wallet:deposit' %}" class="font-medium underline">اینجا کلیک کنید</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                     {% else %}
-                        <div class="w-20 h-20 rounded-full bg-blue-200 flex items-center justify-center">
-                            <span class="text-blue-600 text-xl font-bold">{{ doctor.user.first_name|first }}{{ doctor.user.last_name|first }}</span>
+                    <div class="mt-2 p-3 bg-green-50 border border-green-200 rounded-md">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="mr-3">
+                                <p class="text-sm text-green-800">موجودی کافی برای رزرو نوبت</p>
+                            </div>
+                        </div>
                         </div>
                     {% endif %}
                 </div>
+                {% endif %}
+            </div>
+        </div>
+                </div>
                 
-                <div>
-                    <h2 class="text-xl text-gray-800">{{ doctor }}</h2>
-                    <p class="text-blue-600">{{ doctor.specialization }}</p>
-                    <p class="text-gray-600">{{ doctor.consultation_fee }} تومان برای هر ویزیت</p>
+    {% if days %}
+        <!-- Calendar Section -->
+        <div class="calendar-main-container">
+            <div class="calendar-container" id="jalali-calendar">
+                <div class="calendar-header">
+                    <button type="button" class="calendar-nav" id="prev-month">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+                        </svg>
+                    </button>
+                    <div class="calendar-month-year" id="month-year">بارگذاری...</div>
+                    <button type="button" class="calendar-nav" id="next-month">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="calendar-grid" id="calendar-grid">
+                    <!-- Calendar will be generated by JavaScript -->
                 </div>
             </div>
         </div>
 
-        <div class="p-6 md:p-8">
-            {% if days %}
-                <form method="post" class="space-y-6">
-                    {% csrf_token %}
-                    
-                    <div>
-                        <label for="date" class="block text-sm font-medium text-gray-700 mb-1">انتخاب تاریخ</label>
-                        <select id="date" name="date" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                            <option value="">-- انتخاب تاریخ --</option>
-                            {% for day in days %}
-                                <option value="{{ day.date|date:'Y-m-d' }}">{{ day.date|jformat:"l j F Y" }}</option>
-                            {% endfor %}
-                        </select>
+        <!-- Time Slots Section -->
+        <div class="time-slots-main" id="time-slots-main" style="display: none;">
+            <div class="time-slots-header">
+                <h3>انتخاب زمان ویزیت</h3>
+                <div class="selected-date-display" id="selected-date-display">
+                    <div class="selected-date-text" id="selected-date-text"></div>
+                    <div class="available-slots-count" id="available-slots-count"></div>
+                </div>
                     </div>
-                    
-                    <div id="time-slots-container" class="hidden">
-                        <label for="time" class="block text-sm font-medium text-gray-700 mb-1">انتخاب زمان</label>
-                        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2" id="time-slots">
-                            <!-- Time slots will be populated dynamically -->
-                        </div>
-                        <input type="hidden" name="time" id="selected_time" required>
-                    </div>
-                    
-                    <div class="pt-4 border-t border-gray-200">
-                        <h3 class="text-lg font-medium text-gray-800 mb-3">اطلاعات شما</h3>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">نام و نام خانوادگی</label>
-                                <input type="text" id="name" name="name" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                            </div>
-                            
-                            <div>
-                                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">شماره تماس</label>
-                                <input type="tel" id="phone" name="phone" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                            </div>
-                            
-                            <div>
-                                <label for="national_id" class="block text-sm font-medium text-gray-700 mb-1">کد ملی (اختیاری)</label>
-                                <input type="text" id="national_id" name="national_id" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                            </div>
+            <div class="time-slots-grid" id="time-slots-grid">
+                <!-- Time slots will be loaded here -->
                         </div>
                     </div>
                     
-                    <div>
-                        <button type="submit" class="w-full py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            ادامه به پرداخت - {{ doctor.consultation_fee }} تومان
+        <!-- Patient Information Form -->
+        <form method="post" class="patient-form" id="booking-form">
+            {% csrf_token %}
+            <h3 class="text-xl font-bold text-gray-800 mb-6">اطلاعات بیمار</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="form-group">
+                    <label for="patient_name" class="form-label">نام و نام خانوادگی *</label>
+                    <input type="text" id="patient_name" name="patient_name" class="form-input" required
+                           value="{% if user.first_name and user.last_name %}{{ user.first_name }} {{ user.last_name }}{% endif %}">
+                </div>
+                            
+                <div class="form-group">
+                    <label for="phone" class="form-label">شماره تماس *</label>
+                    <input type="tel" id="phone" name="phone" class="form-input" required 
+                           value="{% if user.phone %}{{ user.phone }}{% endif %}">
+                            </div>
+                            
+                <div class="form-group">
+                    <label for="patient_national_id" class="form-label">کد ملی (اختیاری)</label>
+                    <input type="text" id="patient_national_id" name="patient_national_id" class="form-input"
+                           value="{{ patient_info.national_id }}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="patient_email" class="form-label">ایمیل (اختیاری)</label>
+                    <input type="email" id="patient_email" name="patient_email" class="form-input"
+                           value="{{ patient_info.email }}">
+                </div>
+            </div>
+            
+            <input type="hidden" name="date" id="selected_date" required>
+            <input type="hidden" name="time" id="selected_time" required>
+            
+            <div class="mt-8">
+                <button type="submit" id="submit-btn" class="submit-button disabled" disabled>
+                    لطفاً تاریخ و زمان را انتخاب کنید
                         </button>
                     </div>
                 </form>
+        
+        <!-- Pass Django data to JavaScript safely -->
+        {{ days|json_script:"days-data" }}
+        {{ doctor.id|json_script:"doctor-id" }}
+        {{ doctor.consultation_fee|json_script:"consultation-fee" }}
+        {{ balance|json_script:"wallet-balance" }}
                 
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
-                        const dateSelect = document.getElementById('date');
-                        const timeSlotsContainer = document.getElementById('time-slots-container');
-                        const timeSlotsDiv = document.getElementById('time-slots');
-                        const selectedTimeInput = document.getElementById('selected_time');
+                // Get Django data safely
+                const daysData = JSON.parse(document.getElementById('days-data').textContent);
+                const doctorId = JSON.parse(document.getElementById('doctor-id').textContent);
+                const consultationFee = parseFloat(JSON.parse(document.getElementById('consultation-fee').textContent));
+                const walletBalance = parseFloat(JSON.parse(document.getElementById('wallet-balance').textContent));
+                
+                // Debug wallet balance values
+                console.log('Wallet Balance:', walletBalance, 'Type:', typeof walletBalance);
+                console.log('Consultation Fee:', consultationFee, 'Type:', typeof consultationFee);
+                console.log('Has Insufficient Balance:', walletBalance < consultationFee);
+                
+                // Persian calendar configuration
+                const persianMonths = [
+                    'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
+                    'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'
+                ];
+                
+                const persianDays = ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'];
+                
+                // State management with performance optimizations
+                const monthDataCache = new Map(); // Cache for loaded months
+                let pendingRequests = new Set(); // Track pending AJAX requests
+                let currentAvailableData = {};
+                let currentYear = 1403;
+                let currentMonth = 1;
+                let selectedDate = null;
+                let selectedTime = null;
+                let isLoading = false;
+                
+                // DOM elements (cached for performance)
+                const elements = {
+                    calendarGrid: document.getElementById('calendar-grid'),
+                    monthYearElement: document.getElementById('month-year'),
+                    prevMonthBtn: document.getElementById('prev-month'),
+                    nextMonthBtn: document.getElementById('next-month'),
+                    timeSlotsMain: document.getElementById('time-slots-main'),
+                    timeSlotsGrid: document.getElementById('time-slots-grid'),
+                    selectedDateText: document.getElementById('selected-date-text'),
+                    availableSlotsCount: document.getElementById('available-slots-count'),
+                    selectedDateInput: document.getElementById('selected_date'),
+                    selectedTimeInput: document.getElementById('selected_time'),
+                    submitBtn: document.getElementById('submit-btn')
+                };
+                
+                // Initialize with provided data and cache first month
+                const initData = {};
+                if (daysData && Array.isArray(daysData)) {
+                    daysData.forEach(day => {
+                        if (day.jalali_date_str && day.slots && Array.isArray(day.slots)) {
+                            initData[day.jalali_date_str] = {
+                                slots: day.slots.map(slot => {
+                                    // Convert time objects to strings if needed
+                                    if (typeof slot === 'object' && slot.hour !== undefined) {
+                                        return String(slot.hour).padStart(2, '0') + ':' + String(slot.minute).padStart(2, '0');
+                                    }
+                                    return slot;
+                                }),
+                                slots_count: day.slots_count || day.slots.length
+                            };
+                        }
+                    });
+                }
+                
+                currentAvailableData = initData;
+                const currentMonthKey = `${currentYear}-${currentMonth}`;
+                monthDataCache.set(currentMonthKey, initData);
+                
+                // Set current year and month from available data if present
+                if (daysData && daysData.length > 0) {
+                    const firstDate = daysData[0].jalali_date_str;
+                    if (firstDate) {
+                        const [year, month] = firstDate.split('/').map(Number);
+                        currentYear = year;
+                        currentMonth = month;
+                    }
+                }
+                
+                // Utility functions (optimized)
+                const utils = {
+                    isLeapYear(year) {
+                        // Optimized Jalali leap year calculation
+                        const breaks = [-61, 9, 38, 199, 426, 686, 756, 818, 1111, 1181, 1210, 1635, 2060, 2097, 2192, 2262, 2324, 2394, 2456, 3178];
+                        const gy = year + 1029;
+                        let jump = 0;
                         
-                        // Store the available slots for each date
-                        const availableSlots = {};
+                        for (let j = 1; j < breaks.length; j++) {
+                            const jm = breaks[j];
+                            jump = jm - breaks[j - 1];
+                            if (year < jm) break;
+                        }
                         
-                        {% for day in days %}
-                        availableSlots["{{ day.date|date:'Y-m-d' }}"] = [
-                            {% for slot in day.slots %}
-                            "{{ slot|time:'H:i' }}"{% if not forloop.last %},{% endif %}
-                            {% endfor %}
-                        ];
-                        {% endfor %}
+                        const n = year - breaks[breaks.length - 1];
+                        if (n < jump) {
+                            return (jump - n) < 6 ? 1 : 0;
+                        } else {
+                            return ((n - jump) % 33) * 4 + 1 > 128 ? 1 : 0;
+                        }
+                    },
+                    
+                    getDaysInMonth(year, month) {
+                        if (month <= 6) return 31;
+                        if (month <= 11) return 30;
+                        return this.isLeapYear(year) ? 30 : 29;
+                    },
+                    
+                    getFirstDayOfMonth(year, month) {
+                        // Improved first day calculation
+                        const approxGregorian = new Date(year + 621, month - 1, 1);
+                        return (approxGregorian.getDay() + 1) % 7;
+                    },
+                    
+                    formatDateKey(year, month, day) {
+                        return `${year}/${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}`;
+                    },
+                    
+                    debounce(func, wait) {
+                        let timeout;
+                        return function executedFunction(...args) {
+                            const later = () => {
+                                clearTimeout(timeout);
+                                func(...args);
+                            };
+                            clearTimeout(timeout);
+                            timeout = setTimeout(later, wait);
+                        };
+                    }
+                };
+                
+                // Performance optimized DOM manipulation
+                const dom = {
+                    setLoading(loading) {
+                        isLoading = loading;
+                        elements.prevMonthBtn.disabled = loading;
+                        elements.nextMonthBtn.disabled = loading;
+                        elements.calendarGrid.classList.toggle('loading', loading);
+                    },
+                    
+                    showError(message) {
+                        const existingError = document.querySelector('.error-message');
+                        if (existingError) existingError.remove();
                         
-                        dateSelect.addEventListener('change', function() {
-                            const selectedDate = this.value;
-                            timeSlotsDiv.innerHTML = '';
-                            selectedTimeInput.value = '';
-                            
-                            if (selectedDate) {
-                                const slots = availableSlots[selectedDate];
-                                if (slots && slots.length) {
-                                    slots.forEach(slot => {
-                                        const button = document.createElement('button');
-                                        button.type = 'button';
-                                        button.className = 'py-2 px-4 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-100 focus:outline-none';
-                                        button.textContent = slot;
-                                        button.dataset.time = slot;
-                                        
-                                        button.addEventListener('click', function() {
-                                            document.querySelectorAll('#time-slots button').forEach(btn => {
-                                                btn.classList.remove('bg-blue-600', 'text-white', 'hover:bg-blue-700');
-                                                btn.classList.add('border-gray-300', 'text-gray-700', 'hover:bg-gray-100');
-                                            });
-                                            
-                                            this.classList.remove('border-gray-300', 'text-gray-700', 'hover:bg-gray-100');
-                                            this.classList.add('bg-blue-600', 'text-white', 'hover:bg-blue-700');
-                                            
-                                            selectedTimeInput.value = this.dataset.time;
-                                        });
-                                        
-                                        timeSlotsDiv.appendChild(button);
-                                    });
-                                    
-                                    timeSlotsContainer.classList.remove('hidden');
-                                } else {
-                                    timeSlotsContainer.classList.add('hidden');
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'error-message';
+                        errorDiv.textContent = message;
+                        elements.calendarGrid.parentNode.insertBefore(errorDiv, elements.calendarGrid);
+                        
+                        // Auto remove after 5 seconds
+                        setTimeout(() => errorDiv.remove(), 5000);
+                    },
+                    
+                    clearErrors() {
+                        const errors = document.querySelectorAll('.error-message');
+                        errors.forEach(error => error.remove());
+                    }
+                };
+                
+                // Optimized API functions with caching and error handling
+                const api = {
+                    async loadMonthData(year, month) {
+                        if (isLoading) return;
+                        
+                        const monthKey = `${year}-${month}`;
+                        
+                        // Check cache first
+                        if (monthDataCache.has(monthKey)) {
+                            Object.assign(currentAvailableData, monthDataCache.get(monthKey));
+                            calendar.generate();
+                            return;
+                        }
+                        
+                        // Check if request is already pending
+                        if (pendingRequests.has(monthKey)) return;
+                        
+                        pendingRequests.add(monthKey);
+                        dom.setLoading(true);
+                        dom.clearErrors();
+                        
+                        try {
+                            const response = await fetch(`/reservations/ajax/month-availability/${doctorId}/?year=${year}&month=${month}`, {
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest',
                                 }
-                            } else {
-                                timeSlotsContainer.classList.add('hidden');
+                            });
+                            
+                            if (!response.ok) {
+                                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                             }
+                            
+                            const data = await response.json();
+                            
+                            if (data.success) {
+                                // Cache the data
+                                monthDataCache.set(monthKey, data.available_days);
+                                Object.assign(currentAvailableData, data.available_days);
+                                calendar.generate();
+                                } else {
+                                dom.showError(data.error || 'خطا در بارگذاری اطلاعات ماه');
+                            }
+                        } catch (error) {
+                            console.error('Network error:', error);
+                            dom.showError('خطا در ارتباط با سرور. لطفاً دوباره تلاش کنید.');
+                        } finally {
+                            pendingRequests.delete(monthKey);
+                            dom.setLoading(false);
+                        }
+                    },
+                    
+                    async loadDaySlots(dateKey) {
+                        try {
+                            const response = await fetch(`/reservations/ajax/day-slots/${doctorId}/?date=${dateKey}`, {
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                }
+                            });
+                            
+                            if (!response.ok) {
+                                throw new Error(`HTTP ${response.status}`);
+                            }
+                            
+                            const data = await response.json();
+                            
+                            if (data.success) {
+                                return data.slots;
+                            } else {
+                                console.error('Error loading day slots:', data.error);
+                                return [];
+                            }
+                        } catch (error) {
+                            console.error('Network error:', error);
+                            return [];
+                        }
+                    }
+                };
+                
+                // Optimized calendar generation with virtual DOM concepts
+                const calendar = {
+                    generate() {
+                        const firstDay = utils.getFirstDayOfMonth(currentYear, currentMonth);
+                        const daysInMonth = utils.getDaysInMonth(currentYear, currentMonth);
+                        const daysInPrevMonth = currentMonth > 1 ? 
+                            utils.getDaysInMonth(currentYear, currentMonth - 1) : 
+                            utils.getDaysInMonth(currentYear - 1, 12);
+                        
+                        elements.monthYearElement.textContent = `${persianMonths[currentMonth - 1]} ${currentYear}`;
+                        
+                        // Use DocumentFragment for better performance
+                        const fragment = document.createDocumentFragment();
+                        
+                        // Day headers
+                        persianDays.forEach(day => {
+                            const header = document.createElement('div');
+                            header.className = 'calendar-day-header';
+                            header.textContent = day;
+                            fragment.appendChild(header);
                         });
+                        
+                        // Previous month days
+                        for (let i = firstDay - 1; i >= 0; i--) {
+                            const day = daysInPrevMonth - i;
+                            const dayElement = this.createDayElement(day, 'calendar-day other-month');
+                            fragment.appendChild(dayElement);
+                        }
+                        
+                        // Current month days
+                        for (let day = 1; day <= daysInMonth; day++) {
+                            const dateKey = utils.formatDateKey(currentYear, currentMonth, day);
+                            const dayData = currentAvailableData[dateKey];
+                            const isAvailable = dayData && dayData.slots_count > 0;
+                            
+                            let classes = 'calendar-day';
+                            if (isAvailable) classes += ' available';
+                            if (selectedDate === dateKey) classes += ' selected';
+                            if (!isAvailable) classes += ' disabled';
+                            
+                            const dayElement = this.createDayElement(day, classes, dateKey, dayData);
+                            fragment.appendChild(dayElement);
+                        }
+                        
+                        // Next month days
+                        const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
+                        const remainingCells = totalCells - (firstDay + daysInMonth);
+                        for (let day = 1; day <= remainingCells; day++) {
+                            const dayElement = this.createDayElement(day, 'calendar-day other-month');
+                            fragment.appendChild(dayElement);
+                        }
+                        
+                        // Replace all at once for better performance
+                        elements.calendarGrid.innerHTML = '';
+                        elements.calendarGrid.appendChild(fragment);
+                    },
+                    
+                    createDayElement(day, classes, dateKey = null, dayData = null) {
+                        const dayElement = document.createElement('div');
+                        dayElement.className = classes;
+                        dayElement.textContent = day;
+                        
+                        if (dateKey) {
+                            dayElement.setAttribute('data-date', dateKey);
+                            dayElement.addEventListener('click', () => this.selectDate(dateKey));
+                            
+                            if (dayData && dayData.slots_count > 0) {
+                                const indicator = document.createElement('div');
+                                indicator.className = 'slots-indicator';
+                                indicator.textContent = `${dayData.slots_count} نوبت`;
+                                dayElement.appendChild(indicator);
+                            }
+                        }
+                        
+                        return dayElement;
+                    },
+                    
+                    async selectDate(dateKey) {
+                        const dayData = currentAvailableData[dateKey];
+                        if (!dayData || dayData.slots_count === 0) return;
+                        
+                        // Update visual selection efficiently
+                        const previousSelected = elements.calendarGrid.querySelector('.calendar-day.selected');
+                        if (previousSelected) {
+                            previousSelected.classList.remove('selected');
+                        }
+                        
+                        const newSelected = elements.calendarGrid.querySelector(`[data-date="${dateKey}"]`);
+                        if (newSelected) {
+                            newSelected.classList.add('selected');
+                        }
+                        
+                        selectedDate = dateKey;
+                        selectedTime = null;
+                        elements.selectedDateInput.value = dateKey;
+                        elements.selectedTimeInput.value = '';
+                        
+                        // Update date display
+                        const [year, month, day] = dateKey.split('/').map(Number);
+                        const monthName = persianMonths[month - 1];
+                        elements.selectedDateText.textContent = `${day} ${monthName} ${year}`;
+                        elements.availableSlotsCount.textContent = `${dayData.slots_count} زمان موجود`;
+                        
+                        // Load and display time slots
+                        const slots = dayData.slots || await api.loadDaySlots(dateKey);
+                        timeSlots.display(slots);
+                        
+                        // Show time slots section with smooth animation
+                        elements.timeSlotsMain.style.display = 'block';
+                        elements.timeSlotsMain.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'start' 
+                        });
+                        
+                        form.updateSubmitButton();
+                    }
+                };
+                
+                // Optimized time slots management
+                const timeSlots = {
+                    display(slots) {
+                        if (slots.length === 0) {
+                            elements.timeSlotsGrid.innerHTML = `
+                                <div class="no-slots-message" style="grid-column: 1 / -1;">
+                                    <div class="no-slots-icon">⏰</div>
+                                    <div>متأسفانه در این تاریخ نوبتی موجود نیست</div>
+                                </div>
+                            `;
+                            return;
+                        }
+                        
+                        // Use DocumentFragment for performance
+                        const fragment = document.createDocumentFragment();
+                        
+                        slots.forEach(slot => {
+                            const slotElement = document.createElement('div');
+                            slotElement.className = 'time-slot';
+                            slotElement.textContent = slot;
+                            slotElement.addEventListener('click', () => this.select(slot, slotElement));
+                            fragment.appendChild(slotElement);
+                        });
+                        
+                        elements.timeSlotsGrid.innerHTML = '';
+                        elements.timeSlotsGrid.appendChild(fragment);
+                    },
+                    
+                    select(time, element) {
+                        // Remove previous selection
+                        const previousSelected = elements.timeSlotsGrid.querySelector('.time-slot.selected');
+                        if (previousSelected) {
+                            previousSelected.classList.remove('selected');
+                        }
+                        
+                        element.classList.add('selected');
+                        selectedTime = time;
+                        elements.selectedTimeInput.value = time;
+                        form.updateSubmitButton();
+                    }
+                };
+                
+                // Form management
+                const form = {
+                    updateSubmitButton() {
+                        const hasInsufficientBalance = walletBalance < consultationFee;
+                        console.log('UpdateSubmitButton called:', {
+                            selectedDate,
+                            selectedTime,
+                            walletBalance,
+                            consultationFee,
+                            hasInsufficientBalance
+                        });
+                        
+                        if (selectedDate && selectedTime) {
+                            if (hasInsufficientBalance) {
+                                elements.submitBtn.disabled = true;
+                                elements.submitBtn.className = 'submit-button disabled';
+                                elements.submitBtn.textContent = 'موجودی کافی نیست - لطفاً کیف پول را شارژ کنید';
+                                console.log('Button disabled: insufficient balance');
+                            } else {
+                                elements.submitBtn.disabled = false;
+                                elements.submitBtn.className = 'submit-button enabled';
+                                elements.submitBtn.textContent = `رزرو و پرداخت خودکار - ${consultationFee.toLocaleString()} تومان`;
+                                console.log('Button enabled: sufficient balance');
+                            }
+                        } else {
+                            elements.submitBtn.disabled = true;
+                            elements.submitBtn.className = 'submit-button disabled';
+                            elements.submitBtn.textContent = 'لطفاً تاریخ و زمان را انتخاب کنید';
+                            console.log('Button disabled: no date/time selected');
+                        }
+                    }
+                };
+                
+                // Navigation events with debouncing
+                const debouncedLoadMonth = utils.debounce(api.loadMonthData, 300);
+                
+                elements.prevMonthBtn.addEventListener('click', async () => {
+                    if (currentMonth === 1) {
+                        currentMonth = 12;
+                        currentYear--;
+                    } else {
+                        currentMonth--;
+                    }
+                    await debouncedLoadMonth(currentYear, currentMonth);
+                });
+                
+                elements.nextMonthBtn.addEventListener('click', async () => {
+                    if (currentMonth === 12) {
+                        currentMonth = 1;
+                        currentYear++;
+                    } else {
+                        currentMonth++;
+                    }
+                    await debouncedLoadMonth(currentYear, currentMonth);
+                });
+                
+                // Form submission with loading state
+                document.getElementById('booking-form').addEventListener('submit', function(e) {
+                    if (!selectedDate || !selectedTime) {
+                        e.preventDefault();
+                        alert('لطفاً ابتدا تاریخ و زمان را انتخاب کنید');
+                        return;
+                    }
+                    
+                    // Check wallet balance
+                    const hasInsufficientBalance = walletBalance < consultationFee;
+                    if (hasInsufficientBalance) {
+                        e.preventDefault();
+                        alert('موجودی کیف پول کافی نیست. لطفاً ابتدا کیف پول خود را شارژ کنید.');
+                        return;
+                    }
+                    
+                    // Confirm payment
+                    const confirmMessage = `آیا از رزرو این نوبت اطمینان دارید؟\n\nتاریخ: ${selectedDate}\nزمان: ${selectedTime}\nهزینه: ${consultationFee.toLocaleString()} تومان\n\nمبلغ به صورت خودکار از کیف پول شما کسر خواهد شد.`;
+                    if (!confirm(confirmMessage)) {
+                        e.preventDefault();
+                        return;
+                    }
+                    
+                    // Add loading state to submit button
+                    elements.submitBtn.classList.add('loading');
+                    elements.submitBtn.textContent = 'در حال پردازش پرداخت...';
+                });
+                
+                // Initialize calendar
+                calendar.generate();
+                
+                // Preload next month for better UX
+                setTimeout(() => {
+                    const nextMonth = currentMonth === 12 ? 1 : currentMonth + 1;
+                    const nextYear = currentMonth === 12 ? currentYear + 1 : currentYear;
+                    api.loadMonthData(nextYear, nextMonth);
+                }, 1000);
                     });
                 </script>
             {% else %}
-                <div class="bg-yellow-50 border-r-4 border-yellow-400 p-4">
+        <div class="doctor-info-card">
+            <div class="bg-yellow-50 border-r-4 border-yellow-400 p-6 rounded-lg">
                     <div class="flex">
                         <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <svg class="h-6 w-6 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
                             </svg>
                         </div>
                         <div class="mr-3">
-                            <p class="text-sm text-yellow-700">
-                                در ۷ روز آینده نوبت خالی وجود ندارد. لطفاً بعداً تلاش کنید یا مستقیماً با پزشک تماس بگیرید.
+                        <h3 class="text-lg font-medium text-yellow-800">نوبت موجود نیست</h3>
+                        <p class="text-sm text-yellow-700 mt-2">
+                            در حال حاضر این پزشک نوبت خالی ندارد. لطفاً بعداً مراجعه کنید یا مستقیماً با پزشک تماس بگیرید.
                             </p>
-                        </div>
                     </div>
                 </div>
-            {% endif %}
+            </div>
         </div>
-    </div>
+    {% endif %}
 </div>
 {% endblock %} 

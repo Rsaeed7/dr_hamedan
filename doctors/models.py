@@ -11,6 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from datetime import datetime, timedelta
 import jdatetime
+from khayyam import JalaliDate
 
 class City(models.Model):
     name = models.CharField(max_length=50, verbose_name=_('نام شهر'))
@@ -65,6 +66,9 @@ class Doctor(models.Model):
     updated_at = jmodels.jDateTimeField(auto_now=True, verbose_name=_('تاریخ بروزرسانی'))
     gender = models.CharField(choices=GENDER_CHOICES, max_length=10, verbose_name=_('جنسیت'), null=True, blank=True)
     view_count = models.PositiveIntegerField(default=93, verbose_name='تعداد بازدید')
+    # Geographic location fields
+    latitude = models.DecimalField(max_digits=10, decimal_places=8, null=True, blank=True, verbose_name=_('عرض جغرافیایی'))
+    longitude = models.DecimalField(max_digits=11, decimal_places=8, null=True, blank=True, verbose_name=_('طول جغرافیایی'))
 
     def get_first_available_day(self, max_days=30):
         """
@@ -158,48 +162,35 @@ class Doctor(models.Model):
         return f"دکتر {self.user.name} - {self.specialization}"
     
     def get_available_slots(self, date):
-        """محاسبه زمان‌های خالی برای یک تاریخ مشخص"""
-        from reservations.models import Reservation, ReservationDay
+        """
+        دریافت لیست زمان‌های آزاد برای یک تاریخ مشخص
+        بر اساس نوبت‌های از پیش ایجاد شده
+        """
+        from reservations.models import ReservationDay, Reservation
         
-        # دریافت روز هفته (0=شنبه، 6=جمعه)
-        day_of_week = date.weekday()
+        # تبدیل تاریخ جلالی به میلادی در صورت نیاز
+        if hasattr(date, 'togregorian'):
+            # اگر تاریخ جلالی است
+            gregorian_date = date.togregorian()
+        else:
+            # اگر تاریخ میلادی است
+            gregorian_date = date
         
-        # دریافت تمام زمان‌بندی‌های این پزشک در این روز هفته
-        day_availabilities = self.availabilities.filter(day_of_week=day_of_week)
-        
-        if not day_availabilities.exists():
-            return []
-        
-        # بررسی اینکه آیا تاریخ منتشر شده است
         try:
-            res_day = ReservationDay.objects.get(date=date)
-            if not res_day.published:
-                return []
+            # پیدا کردن روز رزرو
+            reservation_day = ReservationDay.objects.get(date=gregorian_date, published=True)
         except ReservationDay.DoesNotExist:
             return []
         
-        # دریافت تمام نوبت‌های این پزشک در این تاریخ
-        reservations = Reservation.objects.filter(
+        # دریافت نوبت‌های آزاد برای این پزشک در این روز
+        available_reservations = Reservation.objects.filter(
+            day=reservation_day,
             doctor=self,
-            day__date=date,
-            status__in=['pending', 'confirmed']
-        )
+            status='available'
+        ).order_by('time')
         
-        # دریافت زمان‌های رزرو شده
-        reserved_times = [reservation.time for reservation in reservations]
-        
-        # تولید تمام زمان‌های ممکن (با فرض جلسات 30 دقیقه‌ای)
-        slots = []
-        
-        for availability in day_availabilities:
-            current_time = availability.start_time
-            while current_time < availability.end_time:
-                if current_time not in reserved_times:
-                    slots.append(current_time)
-                current_time = datetime.combine(datetime.today(), current_time) + timedelta(minutes=30)
-                current_time = current_time.time()
-        
-        return sorted(slots)
+        # برگرداندن لیست زمان‌های آزاد
+        return [reservation.time for reservation in available_reservations]
     
     def calculate_earnings(self, start_date, end_date):
         """محاسبه درآمد پزشک در یک بازه زمانی"""
@@ -214,6 +205,23 @@ class Doctor(models.Model):
         )
         
         return sum(res.amount for res in completed_reservations)
+    
+    def has_location(self):
+        """Check if doctor has valid location coordinates"""
+        return self.latitude is not None and self.longitude is not None
+    
+    def get_location_data(self):
+        """Get location data for map display"""
+        if self.has_location():
+            return {
+                'lat': float(self.latitude),
+                'lng': float(self.longitude),
+                'name': f"دکتر {self.user.get_full_name()}",
+                'address': self.address or '',
+                'specialization': self.specialization.name if self.specialization else '',
+                'phone': self.phone or ''
+            }
+        return None
 
 class DrServices(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='service', verbose_name='پزشک')

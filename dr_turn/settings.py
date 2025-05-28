@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-mgzuw-1o1@qa2!rt0xz2k9*gn$_4ozw2i$+lat#gfgc@1ridgw
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
 REDIS_DB = 1

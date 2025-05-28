@@ -1,0 +1,199 @@
+<!-- Location Management -->
+<div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-lg font-medium text-gray-800 mb-4">مدیریت موقعیت جغرافیایی</h2>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Location Form -->
+        <div>
+            <form id="location-form">
+                {% csrf_token %}
+                <div class="space-y-4">
+                    <div>
+                        <label for="address" class="block text-sm font-medium text-gray-700 mb-1">آدرس مطب</label>
+                        <textarea id="address" name="address" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ doctor.address }}</textarea>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="latitude" class="block text-sm font-medium text-gray-700 mb-1">عرض جغرافیایی</label>
+                            <input type="number" id="latitude" name="latitude" step="0.00000001" value="{{ doctor.latitude|default:'' }}" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label for="longitude" class="block text-sm font-medium text-gray-700 mb-1">طول جغرافیایی</label>
+                            <input type="number" id="longitude" name="longitude" step="0.00000001" value="{{ doctor.longitude|default:'' }}" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-3 space-x-reverse">
+                        <button type="button" id="get-location-btn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150">
+                            دریافت موقعیت فعلی
+                        </button>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150">
+                            ذخیره موقعیت
+                        </button>
+                    </div>
+                </div>
+            </form>
+            
+            <div id="location-status" class="mt-4 hidden">
+                <div class="p-3 rounded-md">
+                    <p class="text-sm"></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Location Preview Map -->
+        <div>
+            <h3 class="text-sm font-medium text-gray-700 mb-2">پیش‌نمایش موقعیت</h3>
+            <div id="location-preview-map" class="w-full h-64 rounded-lg bg-gray-100 border border-gray-300">
+                <div class="flex items-center justify-center h-full text-gray-500">
+                    <p>برای نمایش نقشه، موقعیت جغرافیایی را وارد کنید</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Leaflet CSS and JS for location management -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let previewMap = null;
+    
+    // Initialize preview map if coordinates exist
+    const latInput = document.getElementById('latitude');
+    const lngInput = document.getElementById('longitude');
+    
+    function initPreviewMap(lat, lng) {
+        const mapContainer = document.getElementById('location-preview-map');
+        mapContainer.innerHTML = '';
+        
+        previewMap = L.map('location-preview-map').setView([lat, lng], 15);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(previewMap);
+        
+        L.marker([lat, lng]).addTo(previewMap);
+        
+        setTimeout(() => {
+            previewMap.invalidateSize();
+        }, 100);
+    }
+    
+    // Update preview map when coordinates change
+    function updatePreviewMap() {
+        const lat = parseFloat(latInput.value);
+        const lng = parseFloat(lngInput.value);
+        
+        if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
+            initPreviewMap(lat, lng);
+        }
+    }
+    
+    // Initialize map if coordinates exist
+    if (latInput.value && lngInput.value) {
+        updatePreviewMap();
+    }
+    
+    // Update map when coordinates change
+    latInput.addEventListener('input', updatePreviewMap);
+    lngInput.addEventListener('input', updatePreviewMap);
+    
+    // Get current location
+    document.getElementById('get-location-btn').addEventListener('click', function() {
+        if (navigator.geolocation) {
+            this.disabled = true;
+            this.textContent = 'در حال دریافت...';
+            
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    
+                    latInput.value = lat;
+                    lngInput.value = lng;
+                    
+                    updatePreviewMap();
+                    
+                    document.getElementById('get-location-btn').disabled = false;
+                    document.getElementById('get-location-btn').textContent = 'دریافت موقعیت فعلی';
+                    
+                    showLocationStatus('موقعیت فعلی با موفقیت دریافت شد', 'success');
+                },
+                function(error) {
+                    document.getElementById('get-location-btn').disabled = false;
+                    document.getElementById('get-location-btn').textContent = 'دریافت موقعیت فعلی';
+                    
+                    let message = 'خطا در دریافت موقعیت';
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            message = 'دسترسی به موقعیت مکانی رد شد';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            message = 'اطلاعات موقعیت در دسترس نیست';
+                            break;
+                        case error.TIMEOUT:
+                            message = 'زمان درخواست موقعیت به پایان رسید';
+                            break;
+                    }
+                    showLocationStatus(message, 'error');
+                }
+            );
+        } else {
+            showLocationStatus('مرورگر شما از دریافت موقعیت پشتیبانی نمی‌کند', 'error');
+        }
+    });
+    
+    // Handle location form submission
+    document.getElementById('location-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        
+        fetch('{% url "doctors:update_location" %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showLocationStatus(data.message, 'success');
+            } else {
+                showLocationStatus(data.message, 'error');
+            }
+        })
+        .catch(error => {
+            showLocationStatus('خطا در ارسال اطلاعات', 'error');
+        });
+    });
+    
+    function showLocationStatus(message, type) {
+        const statusDiv = document.getElementById('location-status');
+        const messageP = statusDiv.querySelector('p');
+        const containerDiv = statusDiv.querySelector('div');
+        
+        messageP.textContent = message;
+        
+        if (type === 'success') {
+            containerDiv.className = 'p-3 rounded-md bg-green-100 border border-green-300';
+            messageP.className = 'text-sm text-green-700';
+        } else {
+            containerDiv.className = 'p-3 rounded-md bg-red-100 border border-red-300';
+            messageP.className = 'text-sm text-red-700';
+        }
+        
+        statusDiv.classList.remove('hidden');
+        
+        setTimeout(() => {
+            statusDiv.classList.add('hidden');
+        }, 5000);
+    }
+});
+</script> 
