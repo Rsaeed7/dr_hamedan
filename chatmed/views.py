@@ -1,91 +1,65 @@
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseForbidden
 from django.views.decorators.http import require_POST
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from .models import ChatRequest, ChatRoom, Message, DoctorAvailability
-from doctors.models import Doctor
+from doctors.models import Doctor, Specialization
 from patients.models import PatientsFile as Patient
-
+from django.views.decorators.csrf import csrf_exempt
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from django.views.generic import ListView
+from django.db.models import Q, Avg
 
 
 @login_required
 def request_chat(request, doctor_id):
-    """
-    بیمار درخواست چت با پزشک را ارسال می‌کند
-    و به صفحه وضعیت هدایت می‌شود
-    """
     doctor = get_object_or_404(Doctor, id=doctor_id)
-
     if not hasattr(request.user, 'patient'):
         messages.error(request, 'فقط بیماران می‌توانند درخواست چت ارسال کنند')
-        return redirect('home')
+        return redirect('doctors:index')
 
     patient = request.user.patient
 
-    # بررسی وجود درخواست قبلی
-    existing_request = ChatRequest.objects.filter(
-        patient=patient,
-        doctor=doctor
-    ).first()
-
+    existing_request = ChatRequest.objects.filter(patient=patient, doctor=doctor).first()
     if existing_request:
         messages.info(request, 'شما قبلاً برای این پزشک درخواست ارسال کرده‌اید')
         return redirect('chat:request_status', request_id=existing_request.id)
 
-    # ایجاد درخواست جدید
-    new_request = ChatRequest.objects.create(
-        patient=patient,
-        doctor=doctor
-    )
-
+    new_request = ChatRequest.objects.create(patient=patient, doctor=doctor)
     messages.success(request, 'درخواست چت با موفقیت ثبت شد')
     return redirect('chat:request_status', request_id=new_request.id)
 
 
 @login_required
 def request_status(request, request_id):
-    """نمایش وضعیت درخواست چت"""
     chat_request = get_object_or_404(ChatRequest, id=request_id)
 
-    # بررسی مالکیت درخواست
-    if hasattr(request.user, 'patient'):
-        if chat_request.patient != request.user.patient:
-            raise PermissionDenied
-    elif hasattr(request.user, 'doctor'):
-        if chat_request.doctor != request.user.doctor:
-            raise PermissionDenied
-    else:
+    if hasattr(request.user, 'patient') and chat_request.patient != request.user.patient:
+        raise PermissionDenied
+    elif hasattr(request.user, 'doctor') and chat_request.doctor != request.user.doctor:
         raise PermissionDenied
 
-    return render(request, 'chat/status_request.html', {
-        'request': chat_request
-    })
+    return render(request, 'chat/status_request.html', {'request': chat_request})
 
 
 @login_required
 def manage_chat_request(request, request_id, action):
-    """
-    پزشک درخواست چت را مدیریت می‌کند (تایید/رد)
-    """
     chat_request = get_object_or_404(ChatRequest, id=request_id, doctor__user=request.user)
 
     if action == 'approve':
         chat_request.status = ChatRequest.APPROVED
         chat_request.save()
 
-        # ایجاد اتاق چت
         chat_room, created = ChatRoom.objects.get_or_create(
             request=chat_request,
             defaults={'is_active': True}
         )
 
-        return JsonResponse({
-            'status': 'approved',
-            'room_id': chat_room.id
-        })
+        return JsonResponse({'status': 'approved', 'room_id': chat_room.id})
 
     elif action == 'reject':
         chat_request.status = ChatRequest.REJECTED
@@ -97,17 +71,12 @@ def manage_chat_request(request, request_id, action):
 
 @login_required
 def chat_room_list(request):
-    """
-    نمایش لیست چت‌های فعال برای کاربر جاری
-    """
     if hasattr(request.user, 'doctor'):
-        # برای پزشکان: نمایش چت‌های تایید شده
         chat_rooms = ChatRoom.objects.filter(
             request__doctor=request.user.doctor,
             is_active=True
         ).select_related('request__patient').order_by('-last_activity')
 
-        # نمایش درخواست‌های در انتظار
         pending_requests = ChatRequest.objects.filter(
             doctor=request.user.doctor,
             status=ChatRequest.PENDING
@@ -119,7 +88,6 @@ def chat_room_list(request):
         })
 
     elif hasattr(request.user, 'patient'):
-        # برای بیماران: نمایش چت‌های تایید شده
         chat_rooms = ChatRoom.objects.filter(
             request__patient=request.user.patient,
             is_active=True
@@ -132,88 +100,79 @@ def chat_room_list(request):
     return redirect('chat:chat_home')
 
 
+
 @login_required
 def chat_room(request, room_id):
-    """
-    نمایش اتاق چت و پیام‌ها
-    """
     chat_room = get_object_or_404(ChatRoom, id=room_id)
 
-    # بررسی دسترسی کاربر
+    # چک دسترسی بر اساس نوع کاربر و شناسه‌ها
     if hasattr(request.user, 'doctor'):
-        if chat_room.request.doctor != request.user.doctor:
-            return JsonResponse({'status': 'error', 'message': 'دسترسی غیرمجاز'}, status=403)
+        if chat_room.request.doctor.id != request.user.doctor.id:
+            return HttpResponseForbidden("دسترسی غیرمجاز")
     elif hasattr(request.user, 'patient'):
-        if chat_room.request.patient != request.user.patient:
-            return JsonResponse({'status': 'error', 'message': 'دسترسی غیرمجاز'}, status=403)
+        if chat_room.request.patient.id != request.user.patient.id:
+            return HttpResponseForbidden("دسترسی غیرمجاز")
     else:
-        return JsonResponse({'status': 'error', 'message': 'دسترسی غیرمجاز'}, status=403)
+        # اگر کاربر نه دکتر است نه بیمار، دسترسی ندارد
+        return HttpResponseForbidden("دسترسی غیرمجاز")
 
-    # علامت گذاری پیام‌ها به عنوان خوانده شده
+    # اگر دکتر است، پیام‌های خوانده نشده توسط خودش را به عنوان خوانده شده علامت بزن
     if hasattr(request.user, 'doctor'):
         chat_room.messages.filter(is_read=False).exclude(sender=request.user).update(is_read=True)
 
-    messages = chat_room.messages.all().select_related('sender').order_by('created_at')
+    messages_qs = chat_room.messages.all().select_related('sender').order_by('created_at')
 
     return render(request, 'chat/chat_room.html', {
         'chat_room': chat_room,
-        'messages': messages,
+        'messages': messages_qs,
         'is_doctor': hasattr(request.user, 'doctor')
     })
-
-
 @require_POST
 @login_required
 def send_message(request, room_id):
-    """
-    ارسال پیام جدید در چت
-    """
     chat_room = get_object_or_404(ChatRoom, id=room_id)
 
-    # بررسی دسترسی کاربر
-    if hasattr(request.user, 'doctor'):
-        if chat_room.request.doctor != request.user.doctor:
-            return JsonResponse({'status': 'error', 'message': 'دسترسی غیرمجاز'}, status=403)
-    elif hasattr(request.user, 'patient'):
-        if chat_room.request.patient != request.user.patient:
-            return JsonResponse({'status': 'error', 'message': 'دسترسی غیرمجاز'}, status=403)
-    else:
+    if hasattr(request.user, 'doctor') and chat_room.request.doctor != request.user.doctor:
+        return JsonResponse({'status': 'error', 'message': 'دسترسی غیرمجاز'}, status=403)
+    elif hasattr(request.user, 'patient') and chat_room.request.patient != request.user.patient:
         return JsonResponse({'status': 'error', 'message': 'دسترسی غیرمجاز'}, status=403)
 
     content = request.POST.get('content', '').strip()
+    message_type = request.POST.get('message_type', 'text')
+    file = request.FILES.get('file')
+    audio = request.FILES.get('audio')
 
-    if not content:
+    if message_type == 'text' and not content:
         return JsonResponse({'status': 'error', 'message': 'متن پیام نمی‌تواند خالی باشد'}, status=400)
 
-    # ایجاد پیام جدید
     message = Message.objects.create(
         chat_room=chat_room,
         sender=request.user,
-        content=content
+        content=content if message_type == 'text' else '',
+        file=file if message_type == 'file' else None,
+        audio=audio if message_type == 'audio' else None,
+        message_type=message_type
     )
 
-    # به‌روزرسانی زمان آخرین فعالیت
     chat_room.last_activity = timezone.now()
     chat_room.save()
 
     return JsonResponse({
         'status': 'success',
         'message_id': message.id,
-        'created_at': message.created_at.strftime('%Y-%m-%d %H:%M')
+        'created_at': message.created_at.strftime('%Y-%m-%d %H:%M'),
+        'message_type': message_type,
+        'file_url': message.file.url if message.file else None,
+        'audio_url': message.audio.url if message.audio else None
     })
 
 
 @login_required
 def toggle_availability(request):
-    """
-    تغییر وضعیت دسترسی پزشک برای چت
-    """
     if not hasattr(request.user, 'doctor'):
         return JsonResponse({'status': 'error', 'message': 'فقط پزشکان می‌توانند وضعیت را تغییر دهند'}, status=403)
 
-    availability, created = DoctorAvailability.objects.get_or_create(
-        doctor=request.user.doctor
-    )
+    availability, _ = DoctorAvailability.objects.get_or_create(doctor=request.user.doctor)
     availability.is_available = not availability.is_available
     availability.save()
 
@@ -224,54 +183,75 @@ def toggle_availability(request):
 
 
 
-def home(request):
-    # اگر کاربر لاگین کرده باشد
-    if request.user.is_authenticated:
-        # اگر پزشک است
-        if getattr(request.user, 'doctor', None):
-            return redirect('chat:chat_room_list')
-        # اگر بیمار است
-        elif getattr(request.user, 'patient', None):
-            return redirect('chat:chat_room_list')
-
-    # اگر کاربر لاگین نکرده باشد
-    return render(request, 'chat/home.html', {
-        'doctors': Doctor.objects.filter(availability__is_available=True)
-    })
 
 
-# from django.contrib.auth.decorators import login_required
-# from django.shortcuts import redirect, render
-# from doctors.models import Doctor
+class OnDoctorListView(ListView):
+    model = Doctor
+    template_name = 'chat/online_doctors.html'
+    context_object_name = 'doctors'
 
-@login_required
-def list_doctors(request):
-    """List available doctors for patients with filters"""
-    if not getattr(request.user, 'patient', None):
-        return redirect('home')
 
-    available_doctors = Doctor.objects.filter(
-        availability__is_available=True
-    ).select_related('user')
+    def get_queryset(self):
+        queryset = super().get_queryset().filter(is_available=True)
+        params = self.get_filter_params()
 
-    params = request.GET
+        # اعمال فیلترها
+        if params['query']:
+            queryset = queryset.filter(
+                Q(user__first_name__icontains=params['query']) |
+                Q(user__last_name__icontains=params['query']) |
+                Q(specialization__name__icontains=params['query'])
+            )
 
-    # **فیلتر بر اساس تخصص (specialty)**
-    if 'specialty' in params and params['specialty']:
-        available_doctors = available_doctors.filter(specialization__name__in=params.getlist('specialty'))
+            # فیلتر تخصص - فقط اگر مقدار انتخاب شده باشد
+        if params['specialty'] and params['specialty'][0]:
+            queryset = queryset.filter(specialization__name__in=params['specialty'])
 
-    # **مرتب‌سازی بر اساس معیار انتخاب شده (sort)**
-    sort_options = {
-        'پر بازدیدترین': '-view_count',
-        'بالاترین امتیاز': '-avg_comment_rating',
-        'نزدیک‌ترین نوبت خالی': 'next_available'
-    }
-    if 'sort' in params and params['sort'] in sort_options:
-        available_doctors = available_doctors.order_by(sort_options[params['sort']])
 
-    return render(request, 'chat/online_doctors.html', {
-        'doctors': available_doctors
-    })
+        if params['supplementary'] and params['supplementary'][0]:
+                queryset = queryset.filter(Insurance__name__in=params['supplementary'])
+
+        queryset = queryset.annotate(
+            avg_comment_rating=Avg(
+                'comments__rate',
+                filter=Q(comments__status='confirmed')
+            )
+        )
+
+        # مرتب‌سازی
+        if params['sort'] == 'پر بازدیدترین':
+            queryset = queryset.order_by('-view_count')
+        elif params['sort'] == 'بالاترین امتیاز':
+            queryset = queryset.order_by('-avg_comment_rating')
+        elif params['sort'] == 'پزشکان آنلاین':
+            queryset = queryset.order_by('-availability__is_available')
+
+        return queryset
+
+    def get_filter_params(self):
+        return {
+            'query': self.request.GET.get('query', ''),
+            'specialty': self.request.GET.getlist('specialty'),
+            'sort': self.request.GET.get('sort', ''),
+            'supplementary': self.request.GET.getlist('supplementary')
+        }
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        params = self.get_filter_params()
+
+        context.update({
+            'specializations': Specialization.objects.all().order_by('name'),
+            'supplementary_list': params['supplementary'],
+            'current_filters': params,
+            'specialty': params['specialty'],
+            'available_doctors': Doctor.objects.filter(availability__is_available=True).select_related('user'),
+
+        })
+        return context
+
+
+
 
 
 @require_POST
@@ -279,7 +259,6 @@ def list_doctors(request):
 def close_chat(request, room_id):
     chat_room = get_object_or_404(ChatRoom, id=room_id)
 
-    # بررسی اینکه کاربر پزشک است
     if not hasattr(request.user, 'doctor') or chat_room.request.doctor != request.user.doctor:
         return JsonResponse({'status': 'error', 'message': 'شما مجاز به پایان دادن این چت نیستید'}, status=403)
 
@@ -290,3 +269,24 @@ def close_chat(request, room_id):
         return JsonResponse({'status': 'success', 'message': 'چت با موفقیت پایان یافت'})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+
+def manage_chat(request):
+    if request.user.is_authenticated:
+        if getattr(request.user, 'doctor', None) or getattr(request.user, 'patient', None):
+            return redirect('chat:chat_room_list')
+
+    else:
+        return redirect('chat:list_doctors')
+
+
+
+
+@csrf_exempt
+def upload_file(request):
+    if request.method == 'POST' and request.FILES.get('file'):
+        uploaded_file = request.FILES['file']
+        file_path = default_storage.save(f'uploads/{uploaded_file.name}', ContentFile(uploaded_file.read()))
+        file_url = default_storage.url(file_path)
+        return JsonResponse({'file_url': file_url})
+    return JsonResponse({'error': 'Invalid request'}, status=400)

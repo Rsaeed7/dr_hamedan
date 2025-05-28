@@ -2,43 +2,45 @@
 {% load static %}
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>سیستم چت پزشکی</title>
 
-    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'css/extra.css' %}" rel="stylesheet">
-    <link href="{% static 'css/util.css' %}" rel="stylesheet">
-    <link href="{% static 'css/icon_fonts/css/all_icons_min.css' %}" rel="stylesheet">
-
-
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'css/extra.css' %}" rel="stylesheet"/>
+    <link href="{% static 'css/util.css' %}" rel="stylesheet"/>
+    <link href="{% static 'css/icon_fonts/css/all_icons_min.css' %}" rel="stylesheet"/>
 
     <style>
         body {
             font-family: Vazirmatn, sans-serif;
             background-color: #f8f9fa;
         }
+
         .chat-container {
             max-width: 800px;
             height: 100vh;
             margin: 0 auto;
             background-color: white;
-            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
             display: flex;
             flex-direction: column;
         }
+
         .chat-header {
             background-color: rgb(36, 67, 132);
             color: white;
             padding: 15px 20px;
             border-bottom: 1px solid #eee;
         }
+
         .messages-container {
             flex: 1;
             overflow-y: auto;
             padding: 20px;
             background-color: #f5f7f9;
         }
+
         .message {
             max-width: 75%;
             margin-bottom: 15px;
@@ -46,116 +48,171 @@
             border-radius: 8px;
             line-height: 1.5;
             position: relative;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            word-wrap: break-word;
         }
+
         .received {
             background-color: white;
             margin-right: auto;
             border-top-right-radius: 0;
         }
+
         .sent {
             background-color: #e3f2fd;
             margin-left: auto;
             border-top-left-radius: 0;
         }
+
         .message-time {
             font-size: 11px;
             color: #7f8c8d;
             margin-top: 5px;
             text-align: left;
         }
+
         .chat-input {
             padding: 15px;
             background-color: white;
             border-top: 1px solid #e0e0e0;
         }
-        .typing-indicator {
-            font-size: 13px;
-            color: #7f8c8d;
-            padding: 5px 20px;
-            display: none;
-        }
-        .status-badge {
-            font-size: 12px;
-            padding: 3px 8px;
-        }
+
         .attachment-btn {
             color: #7f8c8d;
             transition: all 0.2s;
         }
+
         .attachment-btn:hover {
             color: #2c3e50;
+        }
+
+        .file-link {
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+            color: #2c3e50;
+            border: 1px solid #ccc;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 14px;
+            gap: 6px;
+        }
+
+        .file-link:hover {
+            background-color: #e3f2fd;
+            border-color: #1976d2;
+            color: #1976d2;
+        }
+
+        img.message-image {
+            max-width: 100%;
+            border-radius: 6px;
+            margin-top: 5px;
+        }
+
+        audio {
+            margin-top: 5px;
+            width: 100%;
+            outline: none;
         }
     </style>
 </head>
 <body>
-    <div class="chat-container">
-        <!-- هدر چت -->
-        <div class="chat-header d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center">
-                <a href="{% url 'chat:chat_room_list' %}" class="text-white me-3">
-                    <i class="fas fa-arrow-right"></i>
-                </a>
-                <div>
-                    <h6 class="mb-1 fw-bold text-white">
-                        {% if is_doctor %}
+<div class="chat-container">
+    <!-- هدر چت -->
+    <div class="chat-header d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <a href="{% url 'chat:chat_room_list' %}" class="text-white me-3">
+                <i class="fas fa-arrow-right"></i>
+            </a>
+            <div>
+                <h6 class="mb-1 fw-bold text-white">
+                    {% if is_doctor %}
                         {{ chat_room.request.patient.user.get_full_name }}
-                        {% else %}
+                    {% else %}
                         دکتر {{ chat_room.request.doctor.user.get_full_name }}
-                        {% endif %}
-                    </h6>
-                    <div class="d-flex align-items-center">
+                    {% endif %}
+                </h6>
+                <div class="d-flex align-items-center">
                         <span class="status-badge badge {% if chat_room.request.doctor.availability.is_available %}bg-success{% else %}bg-secondary{% endif %} me-2">
                             {% if chat_room.request.doctor.availability.is_available %}آنلاین{% else %}آفلاین{% endif %}
                         </span>
-                        <small class="text-light">{{ chat_room.request.doctor.specialty }}</small>
-                    </div>
+                    <small class="text-light">{{ chat_room.request.doctor.specialty }}</small>
                 </div>
             </div>
-            <div class="d-flex">
-                <button class="btn btn-sm btn-link text-white me-2">
-                    <i class="fas fa-bitcoin-alt"></i>
-                </button>
-            </div>
         </div>
+        <div class="d-flex">
+            <button class="btn btn-sm btn-link text-white me-2">
+                <i class="fas fa-bitcoin-alt"></i>
+            </button>
+        </div>
+    </div>
 
-        <!-- محتوای پیام‌ها -->
-        <div class="messages-container" id="chat-messages">
-            {% for message in messages %}
+    <!-- محتوای پیام‌ها -->
+    <div class="messages-container" id="chat-messages">
+        {% for message in messages %}
             <div class="message {% if message.sender == request.user %}sent{% else %}received{% endif %}">
                 <div class="message-content">
-                    {{ message.content }}
+                    {% if message.message_type == 'text' %}
+                        {{ message.content|linebreaksbr }}
+                    {% elif message.message_type == 'image' and message.file %}
+                        <a href="{{ message.file.url }}" target="_blank" rel="noopener noreferrer">
+                            <img src="{{ message.file.url }}" alt="تصویر ارسالی" class="message-image"/>
+                        </a>
+
+                    {% elif message.message_type == 'audio' and message.audio %}
+                        <audio controls>
+                            <source src="{{ message.audio.url }}" type="audio/mpeg"/>
+                            مرورگر شما از پخش صوت پشتیبانی نمی‌کند.
+                        </audio>
+                    {% elif message.message_type == 'file' and message.file %}
+                        <a href="{{ message.file.url }}" target="_blank" class="file-link">
+                            دانلود فایل
+                            <i class="fas fa-file-download"></i>
+                        </a>
+                    {% else %}
+                        <em>پیام نامشخص</em>
+                    {% endif %}
                 </div>
                 <div class="message-time">
                     {{ message.created_at|date:"H:i" }}
                     {% if message.sender == request.user %}
-                   <i class="icon-ok text-success ms-2" style="font-size: 8px;"></i>
+                        <i class="icon-ok text-success ms-2" style="font-size: 8px;"></i>
                     {% endif %}
                 </div>
             </div>
-            {% endfor %}
-        </div>
-
-        <!-- ورودی پیام -->
-        <div class="chat-input">
-            <form id="message-form" class="d-flex align-items-center">
-                {% csrf_token %}
-                <button type="button" class="btn btn-link attachment-btn me-2">
-                    <i class="fas fa-paperclip"></i>
-                </button>
-                <input type="text" name="content" class="form-control rounded_pill border-light-2 m-l-3" placeholder="پیام خود را بنویسید...">
-                <button type="submit" class="btn btn-primary rounded-circle ms-2" style="width: 40px; height: 40px;">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
-            </form>
-        </div>
+        {% empty %}
+            <p class="text-center text-muted mt-4">هیچ پیامی وجود ندارد.</p>
+        {% endfor %}
     </div>
 
-    <!-- آیکون‌ها -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <!-- ورودی پیام -->
+    <div class="chat-input">
+        <form id="message-form" class="d-flex align-items-center" enctype="multipart/form-data">
+            {% csrf_token %}
+            <button type="button" class="btn btn-link attachment-btn me-2" id="attachment-button" title="ارسال فایل">
+                <i class="fas fa-paperclip"></i>
+            </button>
+            <input type="file" id="file-input" style="display:none"/>
+            <input type="text" name="content" class="form-control rounded_pill border-light-2 m-l-3"
+                   placeholder="پیام خود را بنویسید..." autocomplete="off"/>
+            <button type="submit" class="btn btn-primary rounded-circle ms-2" style="width: 40px; height: 40px;">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </form>
+    </div>
+</div>
 
-    <!-- WebSocket Script -->
-    <script>
+<!-- آیکون‌ها -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
+<!-- تعریف متغیر آدرس آپلود فایل -->
+<script>
+    const uploadFileUrl = "{% url 'chat:upload_file' %}";
+</script>
+
+<!-- WebSocket Script -->
+<script>
     const roomId = "{{ chat_room.id }}";
     const currentUserId = {{ request.user.id }};
 
@@ -168,7 +225,7 @@
         container.scrollTop = container.scrollHeight;
     }
 
-    chatSocket.onmessage = function(e) {
+    chatSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
         const messagesContainer = document.getElementById('chat-messages');
         const isSentByMe = data.sender_id === currentUserId;
@@ -176,36 +233,103 @@
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${isSentByMe ? 'sent' : 'received'}`;
 
+        let messageContentHtml = '';
+        if (data.message_type === 'text') {
+            messageContentHtml = data.message.replace(/\n/g, '<br />');
+        } else if (data.message_type === 'image' && data.file_url) {
+            messageContentHtml = `<img src="${data.file_url}" alt="تصویر ارسالی" class="message-image" />`;
+        } else if (data.message_type === 'audio' && data.file_url) {
+            messageContentHtml = `
+                    <audio controls>
+                        <source src="${data.file_url}" type="audio/mpeg" />
+                        مرورگر شما از پخش صوت پشتیبانی نمی‌کند.
+                    </audio>
+                `;
+        } else if (data.message_type === 'file' && data.file_url) {
+            messageContentHtml = `
+                    <a href="${data.file_url}" target="_blank" class="file-link">
+                        دانلود فایل
+                        <i class="fas fa-file-download"></i>
+                    </a>
+                `;
+        } else {
+            messageContentHtml = '<em>پیام نامشخص</em>';
+        }
+
         messageDiv.innerHTML = `
-            <div class="message-content">
-                ${data.message}
-            </div>
-            <div class="message-time">
-                ${new Date(data.timestamp).toLocaleTimeString('fa-IR', {hour: '2-digit', minute:'2-digit'})}
-                ${isSentByMe ? '<i class="icon-ok text-success ms-2" style="font-size: 8px;"></i>' : ''}
-            </div>
-        `;
+                <div class="message-content">${messageContentHtml}</div>
+                <div class="message-time">
+                    ${new Date(data.timestamp).toLocaleTimeString('fa-IR', {hour: '2-digit', minute: '2-digit'})}
+                    ${isSentByMe ? '<i class="icon-ok text-success ms-2" style="font-size: 8px;"></i>' : ''}
+                </div>
+            `;
 
         messagesContainer.appendChild(messageDiv);
         scrollToBottom();
     };
 
-    document.getElementById('message-form').addEventListener('submit', function(e) {
+    document.getElementById('message-form').addEventListener('submit', function (e) {
         e.preventDefault();
         const messageInput = this.querySelector('input[name="content"]');
         const message = messageInput.value.trim();
 
         if (message) {
-            chatSocket.send(JSON.stringify({ 'message': message }));
+            chatSocket.send(JSON.stringify({'message_type': 'text', 'message': message}));
             messageInput.value = '';
         }
     });
 
-    chatSocket.onclose = function(e) {
+    // مدیریت آپلود فایل با کلیک روی دکمه گیره کاغذ
+    const attachmentButton = document.getElementById('attachment-button');
+    const fileInput = document.getElementById('file-input');
+
+    attachmentButton.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change', () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        fetch(uploadFileUrl, {
+            method: 'POST',
+            // حذف هدر csrf چون @csrf_exempt هست
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.file_url) {
+                    chatSocket.send(JSON.stringify({
+                        message_type: getMessageTypeFromFile(file),
+                        file_url: data.file_url,
+                        message: ''
+                    }));
+                } else {
+                    alert('خطا در آپلود فایل');
+                }
+                fileInput.value = '';
+            })
+            .catch(() => {
+                alert('خطا در آپلود فایل');
+                fileInput.value = '';
+            });
+    });
+
+    function getMessageTypeFromFile(file) {
+        const type = file.type;
+        if (type.startsWith('image/')) return 'image';
+        if (type.startsWith('audio/')) return 'audio';
+        return 'file';
+    }
+
+    chatSocket.onclose = function (e) {
         console.error('اتصال چت بسته شد');
     };
 
     window.addEventListener('load', scrollToBottom);
-    </script>
+</script>
 </body>
 </html>

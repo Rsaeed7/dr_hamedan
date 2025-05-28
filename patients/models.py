@@ -10,9 +10,7 @@ import jdatetime
 class PatientsFile(models.Model):
     GENDER_CHOICES = (('male', 'مرد'), ('female', 'زن'))
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, verbose_name='کاربر', related_name='patient')
-    # name = models.CharField(max_length=255, verbose_name='نام')
     phone = models.CharField(max_length=20, verbose_name='شماره تلفن')
-    email = models.EmailField(verbose_name='ایمیل', null=True, blank=True, unique=True)
     national_id = models.CharField(max_length=20, blank=True, null=True, verbose_name='کد ملی')
     medical_history = models.TextField(blank=True, null=True, verbose_name='سابقه پزشکی')
     birthdate = jmodels.jDateField(blank=True, null=True, verbose_name='تاریخ تولد')
@@ -57,7 +55,7 @@ class PatientsFile(models.Model):
     def age(self):
         """ محاسبه سن بیمار بر اساس تاریخ تولد """
         if not self.birthdate:
-            return None  # اگر تاریخ تولد وارد نشده باشد، مقدار None برمی‌گردد
+            return '-'
         today = jdatetime.date.today()
         age = today.year - self.birthdate.year - (
                 (today.month, today.day) < (self.birthdate.month, self.birthdate.day)

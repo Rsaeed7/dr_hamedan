@@ -1,3 +1,4 @@
+import jdatetime
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -115,7 +116,7 @@ class DoctorListView(ListView):
         elif params['sort'] == 'بالاترین امتیاز':
             queryset = queryset.order_by('-avg_comment_rating')
         elif params['sort'] == 'نزدیک‌ترین نوبت خالی':
-            queryset = queryset.order_by('next_available')
+            queryset = sorted(queryset, key=lambda doctor: doctor.get_first_available_day() or jdatetime.date(1450, 10, 10))
 
         return queryset
 

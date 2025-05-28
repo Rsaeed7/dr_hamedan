@@ -8,7 +8,7 @@ from django.views import View
 from django.views.generic import TemplateView
 
 from patients.models import PatientsFile
-from .forms import LoginForm, RegisterForm, Check_CodeForm, UserAddress
+from .forms import LoginForm, RegisterForm, Check_CodeForm
 from django.contrib.auth import authenticate, login ,logout
 from django.contrib import messages
 # import ghasedakpack
@@ -39,11 +39,16 @@ class RegisterView(View):
 
     def post(self, request):
         form = RegisterForm(request.POST)
+
         if form.is_valid():
             cd = form.cleaned_data
             random = randint(1000,9999)
             # sender.verification({'receptor': cd["phone"], 'type': '1', 'template': 'Randomcode', 'param1': random})
             token = str(uuid4())
+
+            next_url = request.GET.get('next')
+            if next_url:
+                request.session['next_after_login'] = next_url
             if User.objects.filter(phone=cd['phone']):
                 Otp.objects.create(phone=cd["phone"],code=random,token=token)
                 print(random)
@@ -84,7 +89,11 @@ class CheckCodeView_Login(View):
                 login(request, user, backend='django.contrib.auth.backends.ModelBackend')
                 messages.success(request, 'شما با موفقیت وارد حساب کاربری خود شدید')
                 otp.delete()
-                return redirect('doctors:index')
+                next_url = request.session.pop('next_after_login', None)
+                if next_url:
+                    return redirect(next_url)
+                else:
+                    return redirect('doctors:index')
             else:
                 messages.error(request, 'کد تایید صحیح نیست')
         else:
@@ -121,10 +130,13 @@ class CheckCodeView_Signup(View):
                     user=user,
                     defaults={
                         'phone': user.phone,
-                        'email': user.email
                     }
                 )
-                return redirect('doctors:index')
+                next_url = request.session.pop('next_after_login', None)
+                if next_url:
+                    return redirect(next_url)
+                else:
+                    return redirect('doctors:index')
             else:
                 messages.error(request, 'کد تایید صحیح نیست')
         else:

@@ -12,7 +12,7 @@ from django.urls import reverse, reverse_lazy
 from .models import MedicalRecord, VisitEntry,MedicalReport,DrReportSettings
 from .forms import VisitEntryForm, MedicalRecordForm, ReportForm,DrReportSettingsForm,EditReportForm
 from django.views.generic.edit import CreateView
-from .models import PatientsFile  # مدل خودت
+from .models import PatientsFile
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 import jdatetime
@@ -51,7 +51,6 @@ def patient_profile(request):
         user=user,
         defaults={
             'phone': user.phone,
-            'email': user.email
         }
     )
 
@@ -66,15 +65,13 @@ def patient_profile(request):
             # آپدیت User
             user.first_name = request.POST.get('f_name', user.first_name)
             user.last_name = request.POST.get('l_name', user.last_name)
-            user.email = request.POST.get('email', user.email)
-            new_phone = request.POST.get('phone')
-            if new_phone and new_phone != user.phone:
-                user.phone = new_phone
+            if  request.POST.get('email'):
+                user.email = request.POST.get('email', user.email)
             user.save()
 
             # آپدیت PatientFile
             patient.phone = user.phone
-            patient.email = user.email
+            # patient.email = user.email
             patient.national_id = request.POST.get('national_id', patient.national_id)
             patient.medical_history = request.POST.get('medical_history', patient.medical_history)
             patient.gender = request.POST.get('gender', patient.gender)

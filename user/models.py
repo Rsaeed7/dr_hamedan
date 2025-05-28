@@ -73,6 +73,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True, verbose_name="کاربر فعال")
     is_admin = models.BooleanField(default=False, verbose_name="ادمین")
     is_staff = models.BooleanField(default=False, verbose_name="کارمند")
+    is_admin_chat = models.BooleanField(default=False, verbose_name="اوپراتور پشتیبانی چت")
 
     date_joined = jmodels.jDateTimeField(auto_now_add=True, verbose_name="تاریخ عضویت")
     last_login = jmodels.jDateTimeField(auto_now=True, verbose_name="آخرین ورود")
@@ -115,31 +116,3 @@ class Otp(models.Model):
         verbose_name_plural = "رمز های یک بار مصرف"
 
 
-class UserAddress(models.Model):
-    user = models.ForeignKey(User,on_delete=models.CASCADE,related_name="addresses",verbose_name="کاربر")
-    name = models.CharField(max_length=50,verbose_name="نام و نام خانوادگی")
-    address = models.TextField( verbose_name="آدرس")
-    email = models.EmailField(verbose_name="ایمیل",blank=True,null=True)
-    phone = models.CharField(max_length=11, verbose_name="تلفن")
-    plaque = models.SmallIntegerField(verbose_name="پلاک",blank=True , null=True , default= 0)
-    unit = models.SmallIntegerField(verbose_name="واحد",blank=True , null=True , default= 0)
-    postal_code = models.CharField(max_length=11, verbose_name="کد پستی")
-
-    def __str__(self):
-        return f"{self.name} - {self.address} - {self.user}"
-
-    class Meta:
-        verbose_name = "آدرس"
-        verbose_name_plural = "آدرس ها"
-
-# class UserWishList(models.Model):
-#     user = models.ForeignKey(User,on_delete=models.CASCADE,related_name="user_wishlist",verbose_name='کاربر')
-#     product = models.ForeignKey(Product,on_delete=models.CASCADE,related_name="user_wish_product",verbose_name='محصول مورد علاقه')
-#
-#     def __str__(self):
-#         return f"{self.user.phone} - {self.product.title}"
-#
-#     class Meta:
-#         verbose_name = "علاقه مندی"
-#         verbose_name_plural = "علاقه مندی ها"
-#

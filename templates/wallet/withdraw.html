@@ -50,14 +50,14 @@
                 </nav>
             </div>
         </div>
-        
+
         <!-- Main Content -->
         <div class="flex-1">
             <div class="mb-6">
                 <h1 class="text-2xl font-bold text-gray-900">برداشت وجه</h1>
                 <p class="text-gray-600">انتقال وجه از کیف پول شما به حساب بانکی</p>
             </div>
-            
+
             {% if messages %}
             <div class="mb-6">
                 {% for message in messages %}
@@ -67,7 +67,7 @@
                 {% endfor %}
             </div>
             {% endif %}
-            
+
             <!-- Balance Card -->
             <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200 mb-6">
                 <div class="flex items-center">
@@ -82,18 +82,18 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Withdraw Form -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-8">
                 <div class="p-6 border-b border-gray-200">
                     <h2 class="text-lg font-medium text-gray-900">فرم برداشت وجه</h2>
                     <p class="mt-1 text-sm text-gray-500">حداقل مبلغ برداشت 10,000 تومان می‌باشد.</p>
                 </div>
-                
+
                 <div class="p-6">
                     <form method="post" action="{% url 'wallet:withdraw' %}">
                         {% csrf_token %}
-                        
+
                         <div class="space-y-6">
                             <!-- Amount -->
                             <div>
@@ -110,7 +110,7 @@
                                 <p class="mt-1 text-xs text-gray-500">حداقل برداشت: 10,000 تومان | حداکثر: {{ wallet.balance|floatformat:0 }} تومان</p>
                                 <input type="hidden" id="max-amount-value" value="{{ wallet.balance|default:0 }}">
                             </div>
-                            
+
                             <!-- Withdrawal Method -->
                             <div>
                                 <label for="withdrawal_method" class="block text-sm font-medium text-gray-700">روش برداشت</label>
@@ -119,44 +119,44 @@
                                     <option value="paypal">پی پال</option>
                                 </select>
                             </div>
-                            
+
                             <!-- Bank Details (visible only when bank_transfer is selected) -->
                             <div id="bank_details" class="space-y-4 border border-gray-200 rounded-md p-4 bg-gray-50">
                                 <h3 class="text-sm font-medium text-gray-700">مشخصات حساب بانکی</h3>
-                                
+
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label for="account_holder_name" class="block text-sm font-medium text-gray-700">نام صاحب حساب</label>
                                         <input type="text" name="account_holder_name" id="account_holder_name" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                     </div>
-                                    
+
                                     <div>
                                         <label for="bank_name" class="block text-sm font-medium text-gray-700">نام بانک</label>
                                         <input type="text" name="bank_name" id="bank_name" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                     </div>
                                 </div>
-                                
+
                                 <div>
                                     <label for="account_number" class="block text-sm font-medium text-gray-700">شماره حساب</label>
                                     <input type="text" name="account_number" id="account_number" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                 </div>
-                                
+
                                 <div>
                                     <label for="routing_number" class="block text-sm font-medium text-gray-700">شماره شبا</label>
                                     <input type="text" name="routing_number" id="routing_number" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                 </div>
                             </div>
-                            
+
                             <!-- PayPal Details (hidden by default) -->
                             <div id="paypal_details" class="space-y-4 border border-gray-200 rounded-md p-4 bg-gray-50 hidden">
                                 <h3 class="text-sm font-medium text-gray-700">مشخصات پی پال</h3>
-                                
+
                                 <div>
                                     <label for="paypal_email" class="block text-sm font-medium text-gray-700">آدرس ایمیل پی پال</label>
                                     <input type="email" name="paypal_email" id="paypal_email" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                 </div>
                             </div>
-                            
+
                             <!-- Terms and Conditions -->
                             <div class="relative flex items-start">
                                 <div class="flex items-center h-5">
@@ -167,7 +167,7 @@
                                     <p class="text-gray-500">اطلاعات حساب ارائه شده صحیح بوده و این برداشت را تأیید می‌کنم.</p>
                                 </div>
                             </div>
-                            
+
                             <!-- Submit Button -->
                             <div>
                                 <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
@@ -178,13 +178,13 @@
                     </form>
                 </div>
             </div>
-            
+
             <!-- Withdrawal Information -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 <div class="p-6 border-b border-gray-200">
                     <h2 class="text-lg font-medium text-gray-900">اطلاعات برداشت</h2>
                 </div>
-                
+
                 <div class="p-6 space-y-4">
                     <div class="flex items-start">
                         <div class="flex-shrink-0">
@@ -197,7 +197,7 @@
                             <p class="mt-1 text-sm text-gray-500">برداشت‌ها معمولاً طی 1 تا 3 روز کاری پردازش می‌شوند.</p>
                         </div>
                     </div>
-                    
+
                     <div class="flex items-start">
                         <div class="flex-shrink-0">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -209,7 +209,7 @@
                             <p class="mt-1 text-sm text-gray-500">اطلاعات مالی شما رمزگذاری شده و ایمن است. ما جزئیات کامل بانکی شما را ذخیره نمی‌کنیم.</p>
                         </div>
                     </div>
-                    
+
                     <div class="flex items-start">
                         <div class="flex-shrink-0">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -232,7 +232,7 @@
         const withdrawalMethod = document.getElementById('withdrawal_method');
         const bankDetails = document.getElementById('bank_details');
         const paypalDetails = document.getElementById('paypal_details');
-        
+
         withdrawalMethod.addEventListener('change', function() {
             if (this.value === 'bank_transfer') {
                 bankDetails.classList.remove('hidden');
@@ -242,15 +242,15 @@
                 paypalDetails.classList.remove('hidden');
             }
         });
-        
+
         // Validate amount input
         const amountInput = document.getElementById('amount');
         const maxAmountElement = document.getElementById('max-amount-value');
         const maxAmount = maxAmountElement ? parseFloat(maxAmountElement.value) : 0;
-        
+
         amountInput.addEventListener('input', function() {
             const inputValue = parseFloat(this.value || '0');
-            
+
             if (isNaN(inputValue) || inputValue < 10000) {
                 this.setCustomValidity('حداقل مبلغ برداشت 10,000 تومان می‌باشد');
             } else if (inputValue > maxAmount) {
