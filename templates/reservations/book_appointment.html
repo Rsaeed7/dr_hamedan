@@ -39,7 +39,7 @@
         align-items: center;
         justify-content: space-between;
     }
-    
+
     .calendar-nav {
         background: rgba(255, 255, 255, 0.2);
         border: none;
@@ -211,7 +211,7 @@
         grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
         gap: 1rem;
     }
-    
+
     .time-slot {
         padding: 1rem;
         text-align: center;
@@ -360,21 +360,21 @@
         .booking-container {
             padding: 0.5rem;
         }
-        
+
         .calendar-main-container {
             padding: 1rem;
         }
-        
+
         .calendar-day {
             min-height: 60px;
             font-size: 0.875rem;
         }
-        
+
         .time-slots-grid {
             grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
             gap: 0.75rem;
         }
-        
+
         .time-slot {
             padding: 0.75rem 0.5rem;
             font-size: 0.875rem;
@@ -437,12 +437,12 @@
                     <img src="{{ doctor.profile_image.url }}" alt="{{ doctor }}" class="doctor-avatar">
                 {% endif %}
             </div>
-                
+
             <div class="flex-1">
                 <h1 class="text-2xl font-bold text-gray-800 mb-2">رزرو نوبت با {{ doctor }}</h1>
                 <p class="text-blue-600 font-semibold">{{ doctor.specialization }}</p>
                 <p class="text-gray-600">{{ doctor.consultation_fee|floatformat:0 }} تومان برای هر ویزیت</p>
-                
+
                 <!-- Wallet Balance Information -->
                 {% if user.is_authenticated %}
                 <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
@@ -467,7 +467,7 @@
                             </div>
                             <div class="mr-3">
                                 <p class="text-sm text-red-800">
-                                    موجودی کافی نیست. برای شارژ کیف پول 
+                                    موجودی کافی نیست. برای شارژ کیف پول
                                     <a href="{% url 'wallet:deposit' %}" class="font-medium underline">اینجا کلیک کنید</a>
                                 </p>
                             </div>
@@ -492,7 +492,7 @@
             </div>
         </div>
                 </div>
-                
+
     {% if days %}
         <!-- Calendar Section -->
         <div class="calendar-main-container">
@@ -529,54 +529,54 @@
                 <!-- Time slots will be loaded here -->
                         </div>
                     </div>
-                    
+
         <!-- Patient Information Form -->
         <form method="post" class="patient-form" id="booking-form">
             {% csrf_token %}
             <h3 class="text-xl font-bold text-gray-800 mb-6">اطلاعات بیمار</h3>
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="form-group">
                     <label for="patient_name" class="form-label">نام و نام خانوادگی *</label>
                     <input type="text" id="patient_name" name="patient_name" class="form-input" required
                            value="{% if user.first_name and user.last_name %}{{ user.first_name }} {{ user.last_name }}{% endif %}">
                 </div>
-                            
+
                 <div class="form-group">
                     <label for="phone" class="form-label">شماره تماس *</label>
-                    <input type="tel" id="phone" name="phone" class="form-input" required 
+                    <input type="tel" id="phone" name="phone" class="form-input" required
                            value="{% if user.phone %}{{ user.phone }}{% endif %}">
                             </div>
-                            
+
                 <div class="form-group">
                     <label for="patient_national_id" class="form-label">کد ملی (اختیاری)</label>
                     <input type="text" id="patient_national_id" name="patient_national_id" class="form-input"
                            value="{{ patient_info.national_id }}">
                 </div>
-                
+
                 <div class="form-group">
                     <label for="patient_email" class="form-label">ایمیل (اختیاری)</label>
                     <input type="email" id="patient_email" name="patient_email" class="form-input"
                            value="{{ patient_info.email }}">
                 </div>
             </div>
-            
+
             <input type="hidden" name="date" id="selected_date" required>
             <input type="hidden" name="time" id="selected_time" required>
-            
+
             <div class="mt-8">
                 <button type="submit" id="submit-btn" class="submit-button disabled" disabled>
                     لطفاً تاریخ و زمان را انتخاب کنید
                         </button>
                     </div>
                 </form>
-        
+
         <!-- Pass Django data to JavaScript safely -->
         {{ days|json_script:"days-data" }}
         {{ doctor.id|json_script:"doctor-id" }}
         {{ doctor.consultation_fee|json_script:"consultation-fee" }}
         {{ balance|json_script:"wallet-balance" }}
-                
+
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
                 // Get Django data safely
@@ -584,20 +584,20 @@
                 const doctorId = JSON.parse(document.getElementById('doctor-id').textContent);
                 const consultationFee = parseFloat(JSON.parse(document.getElementById('consultation-fee').textContent));
                 const walletBalance = parseFloat(JSON.parse(document.getElementById('wallet-balance').textContent));
-                
+
                 // Debug wallet balance values
                 console.log('Wallet Balance:', walletBalance, 'Type:', typeof walletBalance);
                 console.log('Consultation Fee:', consultationFee, 'Type:', typeof consultationFee);
                 console.log('Has Insufficient Balance:', walletBalance < consultationFee);
-                
+
                 // Persian calendar configuration
                 const persianMonths = [
                     'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
                     'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'
                 ];
-                
+
                 const persianDays = ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'];
-                
+
                 // State management with performance optimizations
                 const monthDataCache = new Map(); // Cache for loaded months
                 let pendingRequests = new Set(); // Track pending AJAX requests
@@ -607,7 +607,7 @@
                 let selectedDate = null;
                 let selectedTime = null;
                 let isLoading = false;
-                
+
                 // DOM elements (cached for performance)
                 const elements = {
                     calendarGrid: document.getElementById('calendar-grid'),
@@ -622,7 +622,7 @@
                     selectedTimeInput: document.getElementById('selected_time'),
                     submitBtn: document.getElementById('submit-btn')
                 };
-                
+
                 // Initialize with provided data and cache first month
                 const initData = {};
                 if (daysData && Array.isArray(daysData)) {
@@ -641,11 +641,11 @@
                         }
                     });
                 }
-                
+
                 currentAvailableData = initData;
                 const currentMonthKey = `${currentYear}-${currentMonth}`;
                 monthDataCache.set(currentMonthKey, initData);
-                
+
                 // Set current year and month from available data if present
                 if (daysData && daysData.length > 0) {
                     const firstDate = daysData[0].jalali_date_str;
@@ -655,7 +655,7 @@
                         currentMonth = month;
                     }
                 }
-                
+
                 // Utility functions (optimized)
                 const utils = {
                     isLeapYear(year) {
@@ -663,13 +663,13 @@
                         const breaks = [-61, 9, 38, 199, 426, 686, 756, 818, 1111, 1181, 1210, 1635, 2060, 2097, 2192, 2262, 2324, 2394, 2456, 3178];
                         const gy = year + 1029;
                         let jump = 0;
-                        
+
                         for (let j = 1; j < breaks.length; j++) {
                             const jm = breaks[j];
                             jump = jm - breaks[j - 1];
                             if (year < jm) break;
                         }
-                        
+
                         const n = year - breaks[breaks.length - 1];
                         if (n < jump) {
                             return (jump - n) < 6 ? 1 : 0;
@@ -677,23 +677,23 @@
                             return ((n - jump) % 33) * 4 + 1 > 128 ? 1 : 0;
                         }
                     },
-                    
+
                     getDaysInMonth(year, month) {
                         if (month <= 6) return 31;
                         if (month <= 11) return 30;
                         return this.isLeapYear(year) ? 30 : 29;
                     },
-                    
+
                     getFirstDayOfMonth(year, month) {
                         // Improved first day calculation
                         const approxGregorian = new Date(year + 621, month - 1, 1);
                         return (approxGregorian.getDay() + 1) % 7;
                     },
-                    
+
                     formatDateKey(year, month, day) {
                         return `${year}/${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}`;
                     },
-                    
+
                     debounce(func, wait) {
                         let timeout;
                         return function executedFunction(...args) {
@@ -706,7 +706,7 @@
                         };
                     }
                 };
-                
+
                 // Performance optimized DOM manipulation
                 const dom = {
                     setLoading(loading) {
@@ -715,60 +715,60 @@
                         elements.nextMonthBtn.disabled = loading;
                         elements.calendarGrid.classList.toggle('loading', loading);
                     },
-                    
+
                     showError(message) {
                         const existingError = document.querySelector('.error-message');
                         if (existingError) existingError.remove();
-                        
+
                         const errorDiv = document.createElement('div');
                         errorDiv.className = 'error-message';
                         errorDiv.textContent = message;
                         elements.calendarGrid.parentNode.insertBefore(errorDiv, elements.calendarGrid);
-                        
+
                         // Auto remove after 5 seconds
                         setTimeout(() => errorDiv.remove(), 5000);
                     },
-                    
+
                     clearErrors() {
                         const errors = document.querySelectorAll('.error-message');
                         errors.forEach(error => error.remove());
                     }
                 };
-                
+
                 // Optimized API functions with caching and error handling
                 const api = {
                     async loadMonthData(year, month) {
                         if (isLoading) return;
-                        
+
                         const monthKey = `${year}-${month}`;
-                        
+
                         // Check cache first
                         if (monthDataCache.has(monthKey)) {
                             Object.assign(currentAvailableData, monthDataCache.get(monthKey));
                             calendar.generate();
                             return;
                         }
-                        
+
                         // Check if request is already pending
                         if (pendingRequests.has(monthKey)) return;
-                        
+
                         pendingRequests.add(monthKey);
                         dom.setLoading(true);
                         dom.clearErrors();
-                        
+
                         try {
                             const response = await fetch(`/reservations/ajax/month-availability/${doctorId}/?year=${year}&month=${month}`, {
                                 headers: {
                                     'X-Requested-With': 'XMLHttpRequest',
                                 }
                             });
-                            
+
                             if (!response.ok) {
                                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                             }
-                            
+
                             const data = await response.json();
-                            
+
                             if (data.success) {
                                 // Cache the data
                                 monthDataCache.set(monthKey, data.available_days);
@@ -785,7 +785,7 @@
                             dom.setLoading(false);
                         }
                     },
-                    
+
                     async loadDaySlots(dateKey) {
                         try {
                             const response = await fetch(`/reservations/ajax/day-slots/${doctorId}/?date=${dateKey}`, {
@@ -793,13 +793,13 @@
                                     'X-Requested-With': 'XMLHttpRequest',
                                 }
                             });
-                            
+
                             if (!response.ok) {
                                 throw new Error(`HTTP ${response.status}`);
                             }
-                            
+
                             const data = await response.json();
-                            
+
                             if (data.success) {
                                 return data.slots;
                             } else {
@@ -812,21 +812,21 @@
                         }
                     }
                 };
-                
+
                 // Optimized calendar generation with virtual DOM concepts
                 const calendar = {
                     generate() {
                         const firstDay = utils.getFirstDayOfMonth(currentYear, currentMonth);
                         const daysInMonth = utils.getDaysInMonth(currentYear, currentMonth);
-                        const daysInPrevMonth = currentMonth > 1 ? 
-                            utils.getDaysInMonth(currentYear, currentMonth - 1) : 
+                        const daysInPrevMonth = currentMonth > 1 ?
+                            utils.getDaysInMonth(currentYear, currentMonth - 1) :
                             utils.getDaysInMonth(currentYear - 1, 12);
-                        
+
                         elements.monthYearElement.textContent = `${persianMonths[currentMonth - 1]} ${currentYear}`;
-                        
+
                         // Use DocumentFragment for better performance
                         const fragment = document.createDocumentFragment();
-                        
+
                         // Day headers
                         persianDays.forEach(day => {
                             const header = document.createElement('div');
@@ -834,29 +834,29 @@
                             header.textContent = day;
                             fragment.appendChild(header);
                         });
-                        
+
                         // Previous month days
                         for (let i = firstDay - 1; i >= 0; i--) {
                             const day = daysInPrevMonth - i;
                             const dayElement = this.createDayElement(day, 'calendar-day other-month');
                             fragment.appendChild(dayElement);
                         }
-                        
+
                         // Current month days
                         for (let day = 1; day <= daysInMonth; day++) {
                             const dateKey = utils.formatDateKey(currentYear, currentMonth, day);
                             const dayData = currentAvailableData[dateKey];
                             const isAvailable = dayData && dayData.slots_count > 0;
-                            
+
                             let classes = 'calendar-day';
                             if (isAvailable) classes += ' available';
                             if (selectedDate === dateKey) classes += ' selected';
                             if (!isAvailable) classes += ' disabled';
-                            
+
                             const dayElement = this.createDayElement(day, classes, dateKey, dayData);
                             fragment.appendChild(dayElement);
                         }
-                        
+
                         // Next month days
                         const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
                         const remainingCells = totalCells - (firstDay + daysInMonth);
@@ -864,21 +864,21 @@
                             const dayElement = this.createDayElement(day, 'calendar-day other-month');
                             fragment.appendChild(dayElement);
                         }
-                        
+
                         // Replace all at once for better performance
                         elements.calendarGrid.innerHTML = '';
                         elements.calendarGrid.appendChild(fragment);
                     },
-                    
+
                     createDayElement(day, classes, dateKey = null, dayData = null) {
                         const dayElement = document.createElement('div');
                         dayElement.className = classes;
                         dayElement.textContent = day;
-                        
+
                         if (dateKey) {
                             dayElement.setAttribute('data-date', dateKey);
                             dayElement.addEventListener('click', () => this.selectDate(dateKey));
-                            
+
                             if (dayData && dayData.slots_count > 0) {
                                 const indicator = document.createElement('div');
                                 indicator.className = 'slots-indicator';
@@ -886,51 +886,51 @@
                                 dayElement.appendChild(indicator);
                             }
                         }
-                        
+
                         return dayElement;
                     },
-                    
+
                     async selectDate(dateKey) {
                         const dayData = currentAvailableData[dateKey];
                         if (!dayData || dayData.slots_count === 0) return;
-                        
+
                         // Update visual selection efficiently
                         const previousSelected = elements.calendarGrid.querySelector('.calendar-day.selected');
                         if (previousSelected) {
                             previousSelected.classList.remove('selected');
                         }
-                        
+
                         const newSelected = elements.calendarGrid.querySelector(`[data-date="${dateKey}"]`);
                         if (newSelected) {
                             newSelected.classList.add('selected');
                         }
-                        
+
                         selectedDate = dateKey;
                         selectedTime = null;
                         elements.selectedDateInput.value = dateKey;
                         elements.selectedTimeInput.value = '';
-                        
+
                         // Update date display
                         const [year, month, day] = dateKey.split('/').map(Number);
                         const monthName = persianMonths[month - 1];
                         elements.selectedDateText.textContent = `${day} ${monthName} ${year}`;
                         elements.availableSlotsCount.textContent = `${dayData.slots_count} زمان موجود`;
-                        
+
                         // Load and display time slots
                         const slots = dayData.slots || await api.loadDaySlots(dateKey);
                         timeSlots.display(slots);
-                        
+
                         // Show time slots section with smooth animation
                         elements.timeSlotsMain.style.display = 'block';
-                        elements.timeSlotsMain.scrollIntoView({ 
-                            behavior: 'smooth', 
-                            block: 'start' 
+                        elements.timeSlotsMain.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
                         });
-                        
+
                         form.updateSubmitButton();
                     }
                 };
-                
+
                 // Optimized time slots management
                 const timeSlots = {
                     display(slots) {
@@ -943,10 +943,10 @@
                             `;
                             return;
                         }
-                        
+
                         // Use DocumentFragment for performance
                         const fragment = document.createDocumentFragment();
-                        
+
                         slots.forEach(slot => {
                             const slotElement = document.createElement('div');
                             slotElement.className = 'time-slot';
@@ -954,25 +954,25 @@
                             slotElement.addEventListener('click', () => this.select(slot, slotElement));
                             fragment.appendChild(slotElement);
                         });
-                        
+
                         elements.timeSlotsGrid.innerHTML = '';
                         elements.timeSlotsGrid.appendChild(fragment);
                     },
-                    
+
                     select(time, element) {
                         // Remove previous selection
                         const previousSelected = elements.timeSlotsGrid.querySelector('.time-slot.selected');
                         if (previousSelected) {
                             previousSelected.classList.remove('selected');
                         }
-                        
+
                         element.classList.add('selected');
                         selectedTime = time;
                         elements.selectedTimeInput.value = time;
                         form.updateSubmitButton();
                     }
                 };
-                
+
                 // Form management
                 const form = {
                     updateSubmitButton() {
@@ -984,7 +984,7 @@
                             consultationFee,
                             hasInsufficientBalance
                         });
-                        
+
                         if (selectedDate && selectedTime) {
                             if (hasInsufficientBalance) {
                                 elements.submitBtn.disabled = true;
@@ -1005,10 +1005,10 @@
                         }
                     }
                 };
-                
+
                 // Navigation events with debouncing
                 const debouncedLoadMonth = utils.debounce(api.loadMonthData, 300);
-                
+
                 elements.prevMonthBtn.addEventListener('click', async () => {
                     if (currentMonth === 1) {
                         currentMonth = 12;
@@ -1018,7 +1018,7 @@
                     }
                     await debouncedLoadMonth(currentYear, currentMonth);
                 });
-                
+
                 elements.nextMonthBtn.addEventListener('click', async () => {
                     if (currentMonth === 12) {
                         currentMonth = 1;
@@ -1028,7 +1028,7 @@
                     }
                     await debouncedLoadMonth(currentYear, currentMonth);
                 });
-                
+
                 // Form submission with loading state
                 document.getElementById('booking-form').addEventListener('submit', function(e) {
                     if (!selectedDate || !selectedTime) {
@@ -1036,7 +1036,7 @@
                         alert('لطفاً ابتدا تاریخ و زمان را انتخاب کنید');
                         return;
                     }
-                    
+
                     // Check wallet balance
                     const hasInsufficientBalance = walletBalance < consultationFee;
                     if (hasInsufficientBalance) {
@@ -1044,22 +1044,22 @@
                         alert('موجودی کیف پول کافی نیست. لطفاً ابتدا کیف پول خود را شارژ کنید.');
                         return;
                     }
-                    
+
                     // Confirm payment
                     const confirmMessage = `آیا از رزرو این نوبت اطمینان دارید؟\n\nتاریخ: ${selectedDate}\nزمان: ${selectedTime}\nهزینه: ${consultationFee.toLocaleString()} تومان\n\nمبلغ به صورت خودکار از کیف پول شما کسر خواهد شد.`;
                     if (!confirm(confirmMessage)) {
                         e.preventDefault();
                         return;
                     }
-                    
+
                     // Add loading state to submit button
                     elements.submitBtn.classList.add('loading');
                     elements.submitBtn.textContent = 'در حال پردازش پرداخت...';
                 });
-                
+
                 // Initialize calendar
                 calendar.generate();
-                
+
                 // Preload next month for better UX
                 setTimeout(() => {
                     const nextMonth = currentMonth === 12 ? 1 : currentMonth + 1;
@@ -1088,4 +1088,4 @@
         </div>
     {% endif %}
 </div>
-{% endblock %} 
+{% endblock %}

@@ -116,3 +116,107 @@ class ChatConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             logger.error(f"❌ Error saving message: {e}")
             raise  # Re-raise the exception to handle it in the caller
+
+
+class SupportWidgetConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.user = self.scope["user"]
+        session = self.scope["session"]
+
+        # جلوگیری از اتصال ادمین
+        if self.user.is_staff:
+            await self.close()
+            return
+
+        chat_room_id = session.get("chat_room_id")
+        chat_room = None
+
+        if self.user.is_authenticated:
+            # کاربر لاگین شده: گرفتن یا ساختن چت‌روم
+            chat_room = await database_sync_to_async(self.get_or_create_chat_room_for_user)(self.user)
+        else:
+            # کاربر مهمان
+            if chat_room_id:
+                chat_room = await database_sync_to_async(self.get_chat_room_by_id)(chat_room_id)
+
+            if not chat_room:
+                chat_room = await database_sync_to_async(self.create_guest_chat_room)()
+                session["chat_room_id"] = chat_room.id
+                await database_sync_to_async(session.save)()
+
+        self.chat_room = chat_room
+        self.room_group_name = f"chat_{self.chat_room.id}"
+
+        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+        await self.accept()
+
+        # پیام خوشامدگویی
+        await self.send(text_data=json.dumps({
+            'message': "به پشتیبانی آنلاین خوش آمدید. چگونه می‌توانیم کمک کنیم؟",
+            'sender': 'سیستم',
+            'sender_is_admin': True,
+            'timestamp': str(timezone.now()),
+        }))
+
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+
+    async def receive(self, text_data):
+        try:
+            text_data_json = json.loads(text_data)
+            message_content = text_data_json.get('message', '').strip()
+
+            if not message_content or len(message_content) > 1000:
+                await self.send(json.dumps({"error": "Invalid message content"}))
+                return
+
+            # ذخیره پیام در دیتابیس
+            await self.save_message(message_content)
+
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'chat_message',
+                    'message': message_content,
+                    'sender': self.user.get_full_name() if self.user.is_authenticated else "مهمان",
+                    'sender_is_admin': getattr(self.user, 'is_admin', False) if self.user.is_authenticated else False,
+                    'timestamp': str(timezone.now()),
+                }
+            )
+        except Exception:
+            await self.send(json.dumps({"error": "Internal server error"}))
+
+    async def chat_message(self, event):
+        await self.send(text_data=json.dumps({
+            'message': event['message'],
+            'sender': event['sender'],
+            'sender_is_admin': event['sender_is_admin'],
+            'timestamp': event['timestamp'],
+        }))
+
+    @staticmethod
+    def get_or_create_chat_room_for_user(user):
+        room, _ = SupportChatRoom.objects.get_or_create(
+            customer=user,
+            defaults={'title': 'پشتیبانی آنلاین', 'admin_id': 1}
+        )
+        return room
+
+    @staticmethod
+    def get_chat_room_by_id(room_id):
+        try:
+            return SupportChatRoom.objects.get(id=room_id)
+        except SupportChatRoom.DoesNotExist:
+            return None
+
+    @staticmethod
+    def create_guest_chat_room():
+        return SupportChatRoom.objects.create(title="مهمان", admin_id=1)
+
+    @database_sync_to_async
+    def save_message(self, content):
+        SupportMessage.objects.create(
+            chat_room=self.chat_room,
+            sender=self.user if self.user.is_authenticated else None,
+            content=content
+        )

@@ -62,7 +62,7 @@ INSTALLED_APPS = [
     'wallet',
     'docpages',
     'medimag.apps.MedimagConfig',
-    'about_us.apps.AboutUsConfig',
+    'support.apps.AboutUsConfig',
     'homecare.apps.HomecareConfig',
     'discounts.apps.DiscountsConfig',
     'sms_reminders',

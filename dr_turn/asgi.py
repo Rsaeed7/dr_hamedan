@@ -4,7 +4,7 @@ from channels.auth import AuthMiddlewareStack
 import chatmed.routing
 
 from chatmed.routing import websocket_urlpatterns as chat_ws
-from about_us.routing import websocket_urlpatterns as about_ws
+from support.routing import websocket_urlpatterns as about_ws
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),

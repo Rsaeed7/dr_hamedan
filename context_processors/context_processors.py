@@ -1,4 +1,4 @@
-from about_us.models import Contact
+from support.models import Contact
 from doctors.models import Specialization,City
 from wallet.models import Transaction
 

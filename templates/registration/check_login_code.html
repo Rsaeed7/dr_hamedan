@@ -56,9 +56,9 @@
 								</div>
 
                                 <div class="text-danger" dir="ltr" style="display: flex; width:100%; justify-content:center;">
-                                    <input id="minutes" type="text" style="width: 3.5%; border: none; font-size: 14px; font-weight: bold; color: black;" readonly>
+                                    <input id="minutes" type="text" style="width: 4.2%; border: none; font-size: 14px; font-weight: bold; color: black;" readonly>
                                     <font size="4">:</font>
-                                    <input id="seconds" type="text" style="width: 5.5%; border: none; font-size: 14px; font-weight: bold; color: black;" readonly>
+                                    <input id="seconds" type="text" style="width: 5.7%; border: none; font-size: 14px; font-weight: bold; color: black;" readonly>
                                 </div>
 								<div class="form-group">
                                     <button id="submit_btn" class="btn btn-success col-lg-12" type="submit">ثبت کد تایید</button>
@@ -80,9 +80,12 @@ const storageKey = `otpStartTime_${phoneNumber}`;
 // Start timer when page loads
 window.onload = function() {
     const startTime = localStorage.getItem(storageKey);
+    const currentTime = Date.now();
 
-    if (!startTime) {
-        localStorage.setItem(storageKey, Date.now()); // ذخیره زمان شروع به صورت میلی‌ثانیه
+    // اگر زمان ذخیره شده وجود ندارد یا زمان سپری شده بیشتر از initialTime است
+    // زمان جدید را ذخیره کنید
+    if (!startTime || (currentTime - parseInt(startTime)) / 1000 > initialTime) {
+        localStorage.setItem(storageKey, currentTime);
     }
 
     updateTimer();
@@ -93,31 +96,37 @@ function updateTimer() {
     const elapsedTime = Math.floor((Date.now() - startTime) / 1000); // محاسبه زمان سپری شده
     const remainingTime = Math.max(initialTime - elapsedTime, 0);
 
-    if (remainingTime <= 0) {
-        clearInterval(timerInterval);
-        document.getElementById('minutes').value = "00";
-        document.getElementById('seconds').value = "00";
-    } else {
-        document.getElementById('minutes').value = Math.floor(remainingTime / 60);
-        document.getElementById('seconds').value = remainingTime % 60 < 10 ? "0" + (remainingTime % 60) : remainingTime % 60;
-        setTimeout(updateTimer, 1000);
-    }
-}
-
-function updateTimerDisplay() {
-    const minutes = Math.floor(remainingTime / 60);
-    const seconds = remainingTime % 60;
-
-    document.getElementById('minutes').value = minutes;
-    document.getElementById('seconds').value = seconds < 10 ? '0' + seconds : seconds;
+    // نمایش زمان
+    document.getElementById('minutes').value = Math.floor(remainingTime / 60).toString().padStart(2, '0');
+    document.getElementById('seconds').value = (remainingTime % 60).toString().padStart(2, '0');
 
     // تغییر رنگ وقتی کمتر از 1 دقیقه باقی مانده
     if (remainingTime < 60) {
         document.getElementById('minutes').style.color = "red";
         document.getElementById('seconds').style.color = "red";
     }
+
+    // اگر زمان تمام نشده باشد، تایمر را ادامه دهید
+    if (remainingTime > 0) {
+        setTimeout(updateTimer, 1000);
+    } else {
+        // زمان تمام شده است
+        document.getElementById('minutes').value = "00";
+        document.getElementById('seconds').value = "00";
+    }
 }
 
+// وقتی کاربر فرم را ارسال می‌کند
+document.getElementById('code_form').addEventListener('submit', function(e) {
+    // اگر کد معتبر است، زمان را پاک کنید تا در بازدید بعدی از اول شروع شود
+    if (validateCode()) {
+        localStorage.removeItem(storageKey);
+    } else {
+        e.preventDefault(); // از ارسال فرم جلوگیری کنید
+    }
+});
+
+// بقیه توابع بدون تغییر...
 function validateCode() {
     const codeInput = document.getElementById('id_code');
     const codeError = document.getElementById('code_error');
@@ -136,14 +145,6 @@ function validateCode() {
         codeError.textContent = '';
         submitBtn.disabled = false;
         return true;
-    }
-}
-
-function submitForm() {
-    if (validateCode()) {
-        // قبل از ارسال فرم، تایمر را برای این شماره پاک کنید
-        localStorage.removeItem(storageKey);
-        document.getElementById('code_form').submit();
     }
 }
 </script>

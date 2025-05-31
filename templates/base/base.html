@@ -27,6 +27,7 @@
 
 </head>
 
+
 <body>
 
 <div class="layer"></div>
@@ -49,6 +50,9 @@
 
 
     {% endblock %}
+    {% if not request.user.is_admin_chat %}
+    {% include  'support/chat_widget.html' %}
+    {% endif %}
 </main>
 <!-- /main -->
 
@@ -57,9 +61,8 @@
 <!--/footer-->
 
 
-
 <div id="toTop"></div>
-<a  href="{% url 'chat:list_doctors' %}">
+<a href="{% url 'chat:list_doctors' %}">
     <div id="online_visit">دریافت مشاوره آنلاین پزشکی</div>
 </a>
 <!-- /to top button -->
@@ -159,8 +162,6 @@
         });
     });
 </script>
-
-
 
 
 <script>

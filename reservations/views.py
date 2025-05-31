@@ -151,6 +151,7 @@ def book_appointment(request, doctor_id):
             'initial_month': initial_month,
             'balance': wallet_balance,
             'patient_info': patient_info,
+
         }
         
         return render(request, 'reservations/book_appointment.html', context)
