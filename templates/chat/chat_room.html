@@ -18,7 +18,7 @@
         }
 
         .chat-container {
-            max-width: 800px;
+            max-width: 100%;
             height: 100vh;
             margin: 0 auto;
             background-color: white;
@@ -115,9 +115,117 @@
             width: 100%;
             outline: none;
         }
+
+        /* استایل‌های سایدبار */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 280px;
+            height: 100vh;
+            background-color: #fdfdfd;
+            color: #020000;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-header {
+            padding: 19px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(30, 68, 96, 0.07);
+        }
+
+        .sidebar-content {
+            padding: 15px;
+        }
+
+        .nav-link {
+            color: rgba(0, 0, 0, 0.8);
+            padding: 10px 0;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: #1e4460;
+            background-color: rgba(4, 4, 4, 0.02);
+        }
+
+        .nav-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* دکمه باز کردن سایدبار در موبایل */
+        .sidebar-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 999;
+            display: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+
+        /* تنظیمات ریسپانسیو */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .sidebar-toggle {
+                display: block;
+            }
+
+            .chat-container {
+                margin-right: 0;
+            }
+        }
+
+        @media (min-width: 993px) {
+            .chat-container {
+                margin-right: 280px;
+            }
+        }
     </style>
+
 </head>
 <body>
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header"  id="logo_home">
+        <img height="28" src="{% static 'img/logo_2x.png' %}">
+        <button class="btn btn-scroll icon-cancel" id="close-sidebar"></button>
+    </div>
+    <div class="sidebar-content">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="">
+                    <i class="fas fa-comments me-2"></i> گفتگوها
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="">
+                    <i class="fas fa-calendar-alt me-2"></i> نوبت‌ها
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="">
+                    <i class="fas fa-user me-2"></i> پروفایل
+                </a>
+            </li>
+
+        </ul>
+    </div>
+</div>
+
 <div class="chat-container">
     <!-- هدر چت -->
     <div class="chat-header d-flex justify-content-between align-items-center">
@@ -142,8 +250,8 @@
             </div>
         </div>
         <div class="d-flex">
-            <button class="btn btn-sm btn-link text-white me-2">
-                <i class="fas fa-bitcoin-alt"></i>
+            <button class="btn btn-sm btn-link text-white me-2" id="sidebar-toggle">
+                <i class="fas fa-bars"></i>
             </button>
         </div>
     </div>
@@ -330,6 +438,29 @@
     };
 
     window.addEventListener('load', scrollToBottom);
+
+
+</script>
+<script>
+    // مدیریت سایدبار
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const closeSidebar = document.getElementById('close-sidebar');
+
+    sidebarToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('active');
+    });
+
+    closeSidebar.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+    });
+
+    // بستن سایدبار هنگام کلیک خارج از آن
+    document.addEventListener('click', (e) => {
+        if (!sidebar.contains(e.target) && e.target !== sidebarToggle) {
+            sidebar.classList.remove('active');
+        }
+    });
 </script>
 </body>
 </html>

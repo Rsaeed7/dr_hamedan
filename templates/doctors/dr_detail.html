@@ -1,6 +1,8 @@
 {% extends  'base/base.html' %}
 {% load static %}
 {% block body %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     {% load persian_date %}
     <style>
         .masonry-container-gallery {
@@ -201,7 +203,8 @@
                                                 <i class="icon-star-5 text-primary"><small>{{ doctor.comment_rate }}</small></i></a>
                                         {% else %}
                                             <a class="dr_box2">
-                                                <div class="dr_img d-flex align-items-center justify-content-center bg-light text-muted" style="width: 100%; height: 200px; font-size: 48px;">
+                                                <div class="dr_img d-flex align-items-center justify-content-center bg-light text-muted"
+                                                     style="width: 100%; height: 200px; font-size: 48px;">
                                                     <i class="fas fa-user-md"></i>
                                                 </div>
                                                 <i class="icon-star-5 text-primary"><small>{{ doctor.comment_rate }}</small></i>
@@ -226,7 +229,7 @@
                         <div>
                             <!--/nav-tabs -->
                             <div class="tab-content box_general_3 border-0-m p-3">
-                                <div class="indent_title_in" style="margin: 0;padding: 0">
+                                <div class="indent_title_in" style="margin: 0;padding: 0!important;">
                                     <i class="pe-7s-id"></i>
                                 </div>
                                 <ul class="nav center-content margin-10" role="tablist">
@@ -277,19 +280,41 @@
                                     </div>
                                 </div>
                                 <!-- /tab_1 -->
-                                <div class="tab-pane fade" id="address" role="tabpanel"
-                                     aria-labelledby="address-tab">
+                                <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address-tab">
                                     <div>
                                         <h4>مطب دکتر {{ doctor.user.get_full_name }}</h4>
-                                        <div class="indent_title_in m-t-15 border-0">
+                                        <div class="indent_title_in m-t-15 border-0" style="padding-left: 0!important;">
                                             <i class="pe-7s-map-2"></i>
-                                            <img class="banner-blog" src="{% static 'img/pic/map.jpg' %}">
-                                            <p class="text-center text_dr_3">مسیریابی روی نقشه</p>
+                                            {% if doctor.latitude and doctor.longitude %}
+                                                <div style="position: relative; height: 125px; border-radius: 8px; overflow: hidden; ">
+                                                    <iframe
+                                                            width="100%"
+                                                            style="border:0; max-height: 120px"
+                                                            loading="lazy"
+                                                            allowfullscreen
+                                                            referrerpolicy="no-referrer-when-downgrade"
+                                                            src="https://maps.google.com/maps?q={{ doctor.latitude }},{{ doctor.longitude }}&z=15&output=embed&hl=fa">
+                                                    </iframe>
+                                                    <div style="position: absolute; bottom: 10px; right: 10px;">
+                                                        <a href="https://www.google.com/maps/dir/?api=1&destination={{ doctor.latitude }},{{ doctor.longitude }}"
+                                                           target="_blank"
+                                                           class="btn btn-sm btn-primary"
+                                                           style="padding: 5px 10px;">
+                                                            مسیریابی
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <p class="text-center text_dr_3">موقعیت مطب روی نقشه گوگل</p>
+                                            {% else %}
+                                                <p class="text-center text_dr_3">آدرس روش نقشه گوگل ثبت نشده است</p>
+                                            {% endif %}
                                         </div>
                                         <p><i class="icon-location-outline"></i>{{ doctor.address }}</p>
                                         <p><i class="icon-phone-outline"></i>{{ doctor.phone }}</p>
                                     </div>
                                 </div>
+
+
                                 <!-- /tab_2 -->
                                 <div class="tab-pane fade" id="reviews" role="tabpanel"
                                      aria-labelledby="reviews-tab">
@@ -360,10 +385,17 @@
                                         {% for post in posts %}
                                             <div class="masonry-item-gallery">
                                                 <a href="{% url 'docpages:post_detail' post.id %}" class="m-b-5">
-                                                    <img src="{{ post.image.url }}"
-                                                         alt="{{ post.title|default:'تصویر ' }}"
-                                                         class="img-fluid rounded w-100"
-                                                         style="max-height: 150px;min-height: 150px">
+                                                    {% if post.image %}
+                                                        <img src="{{ post.image.url }}"
+                                                             alt="{{ post.title|default:'تصویر ' }}"
+                                                             class="img-fluid rounded w-100"
+                                                             style="max-height: 150px;min-height: 150px">
+                                                    {% endif %}
+                                                    {% if post.video %}
+                                                        <video src="{{ post.video.url }}"
+                                                               class="img-fluid rounded w-100 bg-dark"
+                                                               style="max-height: 150px;min-height: 150px"></video>
+                                                    {% endif %}
                                                 </a>
                                             </div>
                                         {% empty %}

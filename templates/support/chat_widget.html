@@ -1,0 +1,189 @@
+<style>
+    #chat-widget {
+        position: fixed;
+        bottom: 1px;
+        left: 0px;
+        z-index: 1050;
+    }
+
+    #chat-icon {
+        width: 50px;
+        height: 45px;
+        background: none;
+        background-color: rgba(30, 68, 96, 0.82);
+        color: #fdfdfd;
+        border-bottom-right-radius: 20px;
+        border-top-right-radius: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        font-size: 24px;
+        transition: all 0.3s ease;
+    }
+
+    #chat-content {
+        display: none;
+        margin-top: 10px;
+        transform: translateY(100%);
+        opacity: 0;
+        transition: transform 0.3s ease, opacity 0.2s ease;
+    }
+
+    #chat-content.show {
+        display: block;
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .card {
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    #chat-container {
+        transition: all 0.3s ease;
+    }
+
+    @media (max-width: 767px) {
+        #chat-widget {
+            bottom: 73px;
+        }
+    }
+
+    /* استایل‌های قبلی پیام‌ها */
+    .bg-light-green {
+        background-color: #e1f5e1;
+    }
+    .bg-light-blue {
+        background-color: #e1f0f5;
+    }
+    .rounded_pill {
+        border-radius: 50px !important;
+    }
+    .rounded50 {
+        border-radius: 50%;
+    }
+    .dr_bg {
+        background-color: #1e4460;
+    }
+</style>
+
+<div id="chat-widget">
+    <!-- آیکون چت -->
+    <div id="chat-icon"><span class="status-indicator"></span>
+       <i class="pe-7s-headphones fs-30" id="chat-toggle"></i>
+    </div>
+
+    <!-- محتوای چت -->
+    <div id="chat-content">
+        <div class="card">
+            <div id="chat-header" class="dr_bg d-flex text-white rounded-top" style="height: 50px; cursor:pointer;">
+                <i class="icon-cancel"></i>
+                <p id="chat-toggle-icon"><i class="m-t-15 pe-7s-headphones"></i> پشتیبانی دکترهمدان </p>
+
+            </div>
+            <div id="chat-container" class="card-body p-0" style="height: 400px;width: 300px">
+                <div id="chat-messages" class="p-3" style="height: calc(100% - 62px); background-color: #f8f9fa;overflow: auto!important;"></div>
+                <div class="border-top p-2">
+                    <form id="chat-form" class="d-flex">
+                        <input type="text" id="chat-input" placeholder="پیام شما..." class="form-control rounded_pill" autocomplete="off" required>
+                        <button type="submit" class="btn btn-scroll rounded50 icon-left-big text-secondary border justify-content-center"></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const chatMessages = document.getElementById('chat-messages');
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = document.getElementById('chat-input');
+    const chatToggle = document.getElementById('chat-toggle');
+    const chatContent = document.getElementById('chat-content');
+    const chatIcon = document.getElementById('chat-icon');
+    const chatHeader = document.getElementById('chat-header');
+
+    let chatSocket = null;
+
+    // ابتدا چت مخفی است
+    chatContent.style.display = 'none';
+
+    // تابع اضافه کردن پیام به چت
+    function appendMessage(data) {
+        const messageEl = document.createElement('div');
+        messageEl.classList.add('p-2', 'rounded', 'mb-2');
+        if (data.sender_is_admin) {
+            messageEl.classList.add('bg-light-green', 'text-end');
+            messageEl.innerHTML = `<strong>ادمین:</strong> ${data.message || data.content}`;
+        } else {
+            messageEl.classList.add('bg-light-blue', 'text-start');
+            messageEl.innerHTML = `<strong>شما:</strong> ${data.message || data.content}`;
+        }
+        chatMessages.appendChild(messageEl);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // باز کردن چت با کلیک روی آیکون
+    chatToggle.addEventListener('click', function () {
+        chatContent.style.display = 'block';
+        setTimeout(() => {
+            chatContent.classList.add('show');
+        }, 10);
+        chatIcon.style.display = 'none';
+
+        // اگر وب‌سوکت ساخته نشده، بساز و پیام‌ها رو بارگذاری کن
+        if (!chatSocket) {
+            fetch('/api/chat/messages/')
+                .then(response => response.json())
+                .then(data => {
+                    chatMessages.innerHTML = '';  // پاک کردن پیام‌های قبلی
+                    data.messages.forEach(msg => {
+                        appendMessage(msg);
+                    });
+                })
+                .catch(error => {
+                    console.error('خطا در دریافت پیام‌ها:', error);
+                });
+
+            const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+            chatSocket = new WebSocket(protocol + '://' + window.location.host + '/ws/chat/support/');
+
+            chatSocket.onmessage = function (e) {
+                const data = JSON.parse(e.data);
+                appendMessage(data);
+            };
+
+            chatSocket.onclose = function (e) {
+                console.error('WebSocket قطع شد:', e);
+            };
+
+            chatSocket.onerror = function (e) {
+                console.error('WebSocket خطا:', e);
+            };
+        }
+    });
+
+    // بستن چت با کلیک روی هدر
+    chatHeader.addEventListener('click', function () {
+        chatContent.classList.remove('show');
+        setTimeout(() => {
+            chatContent.style.display = 'none';
+            chatIcon.style.display = 'flex';
+        }, 300); // مطابق با مدت زمان transition
+    });
+
+    // ارسال پیام
+    chatForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const message = chatInput.value.trim();
+        if (!message || !chatSocket || chatSocket.readyState !== WebSocket.OPEN) return;
+
+        chatSocket.send(JSON.stringify({'message': message}));
+        chatInput.value = '';
+    });
+});
+</script>

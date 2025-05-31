@@ -168,6 +168,12 @@
                                             مدیریت خدمات در منزل
                                         </a>
                                     {% endif %}
+                                    {% if request.user.is_admin_chat %}
+                                        <a href="{% url 'support:chat_room_list' %}"
+                                           class="icon-chat-3">
+                                            پشتیبانی
+                                        </a>
+                                    {% endif %}
                                     {% if user.doctor %}
                                         <a class="icon-medkit" href="{% url 'doctors:doctor_dashboard' %}">داشبورد
                                             پزشک </a>

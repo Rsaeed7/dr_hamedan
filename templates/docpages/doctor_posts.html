@@ -206,6 +206,10 @@
                         <div class="relative">
                             {% if post.image %}
                                 <img src="{{ post.image.url }}" alt="{{ post.title }}" class="w-full h-48 object-cover">
+                            {% endif %}
+                            {% if post.video %}
+
+                                 <video src="{{ post.video.url }}"   class="img-fluid rounded w-100 bg-dark"  style="max-height: 150px;min-height: 150px"></video>
                             {% else %}
                                 <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
                                     <span class="text-gray-500">بدون تصویر</span>

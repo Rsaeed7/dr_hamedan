@@ -2,75 +2,118 @@
 
 {% block content %}
 <div class="container mx-auto p-4">
-    <h1 class="text-2xl font-bold mb-4">{{ chat_room.title }}</h1>
-    <div id="chat-messages" class="space-y-2 mb-4">
+    <h1 class="text-3xl font-bold mb-6 text-center text-blue-700">💬 چت پشتیبانی دکتر همدان</h1>
+
+    <div id="chat-messages"
+         class="space-y-4 mb-6 h-[28rem] overflow-y-auto p-4 bg-gray-50 rounded-lg shadow-inner border border-gray-200">
         {% for message in messages %}
-        <div class="p-2 rounded {% if message.sender.is_staff %}bg-green-100{% else %}bg-blue-100{% endif %}">
-            <strong>{{ message.sender.username }}:</strong> {{ message.content }}
-            <small class="text-gray-500">{{ message.created_at|date:"SHORT_DATE_FORMAT" }} {{ message.created_at|time:"H:i" }}</small>
+        <div class="flex {% if message.sender.is_staff %}justify-end{% else %}justify-start{% endif %}">
+            <div class="max-w-md rounded-xl p-3 shadow
+                        {% if message.sender.is_staff %}bg-green-100 text-right{% else %}bg-blue-100 text-left{% endif %}">
+                <div class="font-semibold text-sm
+                            {% if message.sender.is_staff %}text-green-800{% else %}text-blue-800{% endif %}">
+                    {{ message.sender.username }}
+                </div>
+                <p class="mt-1 text-gray-800 break-words">{{ message.content }}</p>
+                <div class="text-xs mt-1 text-gray-400">
+                    {{ message.created_at|date:"Y/m/d H:i" }}
+                </div>
+            </div>
         </div>
+        {% empty %}
+        <p class="text-center text-gray-400">هیچ پیامی وجود ندارد.</p>
         {% endfor %}
     </div>
-    <form id="message-form" method="post" action="{% url 'about:send_message' chat_room.id %}">
+
+    <form id="message-form"
+          method="post"
+          action="{% url 'support:send_message' chat_room.id %}"
+          class="mt-4">
         {% csrf_token %}
-        <div class="flex">
-            <input type="text" name="content" placeholder="Type your message..." class="flex-grow p-2 border rounded-l">
-            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-r">Send</button>
+        <div class="flex items-center gap-2">
+            <input
+                type="text"
+                name="content"
+                placeholder="پیام خود را بنویسید..."
+                class="flex-grow p-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                autocomplete="off"
+            />
+            <button type="submit"
+                    class="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full w-12 h-12 flex items-center justify-center transition-colors duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="h-5 w-5"
+                     viewBox="0 0 20 20"
+                     fill="currentColor">
+                    <path fill-rule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z"
+                          clip-rule="evenodd" />
+                </svg>
+            </button>
         </div>
     </form>
 </div>
 
 <script>
-  const roomId = "{{ chat_room.id }}";
+const roomId = "{{ chat_room.id }}";
 if (!roomId) {
     console.error("Room ID is missing!");
-    // Handle the error (e.g., show a message to the user)
 } else {
     const chatSocket = new WebSocket(
-        'ws://' + window.location.host + '/ws/chat/' + roomId + '/'
+        `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}/ws/chat/${roomId}/`
     );
 
-    chatSocket.onopen = function() {
+    chatSocket.onopen = () => {
         console.log("WebSocket connection established.");
     };
 
-    chatSocket.onclose = function(e) {
-        console.error("WebSocket connection closed:", e);
-        // Optionally, try to reconnect or notify the user
+    chatSocket.onclose = (e) => {
+        console.error("WebSocket closed:", e);
+        setTimeout(() => location.reload(), 5000);
     };
 
-    chatSocket.onerror = function(error) {
+    chatSocket.onerror = (error) => {
         console.error("WebSocket error:", error);
-        // Notify the user or try to reconnect
     };
 
-    chatSocket.onmessage = function(e) {
-    const data = JSON.parse(e.data);
-    const messageElement = document.createElement('div');
-    messageElement.classList.add('p-2', 'rounded');
-    if (data.sender_is_admin) {
-        messageElement.classList.add('bg-green-100');
-    } else {
-        messageElement.classList.add('bg-blue-100');
-    }
-    messageElement.innerHTML = `<strong>${data.sender}:</strong> ${data.message} <small class="text-gray-500">${data.timestamp}</small>`;
-    document.getElementById('chat-messages').appendChild(messageElement);
+    chatSocket.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        const chatMessages = document.getElementById('chat-messages');
 
-    // Scroll to the bottom
-    const chatMessages = document.getElementById('chat-messages');
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-};
+        const wrapper = document.createElement('div');
+        wrapper.className = `flex ${data.sender_is_admin ? 'justify-end' : 'justify-start'}`;
 
-    document.getElementById('message-form').addEventListener('submit', function(e) {
+        const bubble = document.createElement('div');
+        bubble.className = `max-w-md rounded-xl p-3 shadow ${data.sender_is_admin ? 'bg-green-100 text-right' : 'bg-blue-100 text-left'}`;
+
+        const name = document.createElement('div');
+        name.className = `font-semibold text-sm ${data.sender_is_admin ? 'text-green-800' : 'text-blue-800'}`;
+        name.textContent = data.sender;
+
+        const text = document.createElement('p');
+        text.className = 'mt-1 text-gray-800 break-words';
+        text.textContent = data.message;
+
+        const time = document.createElement('div');
+        time.className = 'text-xs mt-1 text-gray-400';
+        time.textContent = data.timestamp;
+
+        bubble.appendChild(name);
+        bubble.appendChild(text);
+        bubble.appendChild(time);
+        wrapper.appendChild(bubble);
+        chatMessages.appendChild(wrapper);
+
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    };
+
+    document.getElementById('message-form').addEventListener('submit', function (e) {
         e.preventDefault();
-        const content = this.querySelector('input[name="content"]').value.trim();
+        const input = this.querySelector('input[name="content"]');
+        const content = input.value.trim();
         if (content) {
-            chatSocket.send(JSON.stringify({
-                'message': content
-            }));
-            this.querySelector('input[name="content"]').value = '';
-        } else {
-            console.warn("Message content is empty!");
+            chatSocket.send(JSON.stringify({ message: content }));
+            input.value = '';
+            input.focus();
         }
     });
 }

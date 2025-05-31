@@ -18,6 +18,7 @@ class PatientsFile(models.Model):
     created_at = jmodels.jDateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
     updated_at = jmodels.jDateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
     city = models.ForeignKey(City, on_delete=models.CASCADE, null=True, blank=True, verbose_name='شهر')
+    email = models.EmailField(verbose_name='ایمیل', blank=True, null=True)
     
     class Meta:
         verbose_name = 'پرونده بیمار'

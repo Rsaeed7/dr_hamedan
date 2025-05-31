@@ -1,10 +1,13 @@
 from django.db import models
 from django.utils import timezone
-
 from user.models import User
-
+from django_jalali.db import models as jmodels
 
 class SupportChatRoom(models.Model):
+    """
+    Represents a 1:1 chat session between a customer and an admin.
+    Each customer gets a unique chat room with the admin (admin ID: 1).
+    """
     customer = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -12,26 +15,34 @@ class SupportChatRoom(models.Model):
         null=True, blank=True,
         help_text="The customer who initiated the chat (null for anonymous)"
     )
-    admins = models.ManyToManyField(
+    admin = models.ForeignKey(
         User,
+        on_delete=models.CASCADE,
         related_name='admin_chats',
-        blank=True,
-        help_text="Admins assigned to this chat room"
+        default=1,
+        help_text="Assigned admin (default: admin with ID 1)"
     )
+    # Optional: Retain title if needed for display
     title = models.CharField(max_length=200, default="Customer Support Chat")
-    is_active = models.BooleanField(default=True, help_text="Indicates if chat room is active")
-    created_at = models.DateTimeField(auto_now_add=True)
-    last_activity = models.DateTimeField(default=timezone.now, help_text="Timestamp of last message")
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Indicates if chat room is active"
+    )
+    created_at = jmodels.jDateTimeField(auto_now_add=True)
+    last_activity = jmodels.jDateTimeField(
+        default=timezone.now,
+        help_text="Timestamp of the last message sent in the chat"
+    )
 
     class Meta:
         ordering = ['-last_activity']
         indexes = [
             models.Index(fields=['customer', 'is_active']),
+            models.Index(fields=['admin', 'is_active']),
         ]
 
     def __str__(self):
-        return f"ChatRoom {self.id} - {self.title}"
-
+        return f"ChatRoom {self.id}- {self.title}"
 
 
 class SupportMessage(models.Model):
@@ -51,7 +62,7 @@ class SupportMessage(models.Model):
         help_text="Message sender; null for anonymous"
     )
     content = models.TextField()
-    created_at = models.DateTimeField(default=timezone.now)
+    created_at = jmodels.jDateTimeField(default=timezone.now)
 
     class Meta:
         ordering = ['created_at']
@@ -73,15 +84,14 @@ class AdminChatStatus(models.Model):
         related_name='chat_status'
     )
     is_available = models.BooleanField(default=False)
-    last_active = models.DateTimeField(auto_now=True)
+    last_active = jmodels.jDateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "Admin Chat Status"
         verbose_name_plural = "Admin Chat Statuses"
 
     def __str__(self):
-        return f"{self.admin.name} - {'Available' if self.is_available else 'Unavailable'}"
-
+        return f"{self.admin.user.get_full_name} - {'Available' if self.is_available else 'Unavailable'}"
 
 
 
@@ -117,6 +127,7 @@ class ContactUs(models.Model):
 class Announcement(models.Model):
     message = models.CharField(max_length=65,verbose_name='اعلامیه',blank=True,null=True)
     published = models.BooleanField(default=False,verbose_name='نمایش داده شود',blank=True,null=True)
+
 
     def __str__(self):
         return f'{self.message}'
