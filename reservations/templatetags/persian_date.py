@@ -22,13 +22,13 @@ months = {
 # Python weekday: 0=Monday, 1=Tuesday, ..., 6=Sunday
 # Persian: 0=Saturday, 1=Sunday, ..., 6=Friday
 persian_weekdays = {
-    0: 'دوشنبه',     # Monday -> Monday
-    1: 'سه‌شنبه',    # Tuesday -> Tuesday
-    2: 'چهارشنبه',   # Wednesday -> Wednesday
-    3: 'پنج‌شنبه',   # Thursday -> Thursday
-    4: 'جمعه',       # Friday -> Friday
-    5: 'شنبه',       # Saturday -> Saturday
-    6: 'یکشنبه',     # Sunday -> Sunday
+    0: 'شنبه',
+    1: ' یک شنبه',
+    2: 'دو شنبه',
+    3: 'سه شنبه',
+    4: 'چهار شنبه',
+    5: 'پنج شنبه',
+    6: 'جمعه',
 }
 
 @register.filter
