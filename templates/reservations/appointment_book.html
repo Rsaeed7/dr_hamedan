@@ -5,14 +5,14 @@
 {% load persian_date %}
     <!-- /search -->
     <style>
-        /* این استایل‌ها را به بخش style موجود اضافه کنید */
+
         .friday {
-            background-color: rgba(255, 209, 161, 0.3) !important; /* رنگ پس‌زمینه جمعه */
-            color: #1e4460 !important; /* رنگ متن جمعه */
+            background-color: rgba(255, 209, 161, 0.3) !important;
+            color: #1e4460 !important;
         }
 
         .completed {
-            background-color: #ff6b6b !important; /* رنگ پس‌زمینه تکمیل شده */
+            background-color: #ff6b6b !important;
             color: white !important;
         }
 
@@ -55,7 +55,7 @@
                 padding: 5px 0;
             }
 
-            /* بهبود نمایش زمان‌ها در موبایل */
+
             #time-slots-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -70,7 +70,7 @@
             }
         }
 
-        /* استایل‌های عمومی بهبود یافته */
+
         .calendar-container {
             max-width: 600px;
             margin: 0 auto;
@@ -125,7 +125,7 @@
             border-radius: 4px;
         }
 
-        /* بهبود نمایش مدال در موبایل */
+
         @media (max-width: 576px) {
             .modal-content {
                 width: 95%;
@@ -164,7 +164,7 @@
             align-items: center;
         }
 
-        /* دکمه‌های ماه قبل و بعد */
+
         .calendar-nav-btn {
             background: rgba(255, 255, 255, 0.2);
             border: none;
@@ -183,7 +183,7 @@
             background: rgba(255, 255, 255, 0.3);
         }
 
-        /* عنوان ماه و سال */
+
         .calendar-title {
             font-size: 1.2rem;
             font-weight: 500;
@@ -379,14 +379,14 @@
             console.log('Has Insufficient Balance:', walletBalance < consultationFee);
 
 
-            // تنظیمات تقویم فارسی
+
             const persianMonths = [
                 'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
                 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'
             ];
 
 
-            // تغییر ترتیب روزهای هفته به شروع از شنبه
+
             const persianDays = ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'];
 
             const monthDataCache = new Map();
