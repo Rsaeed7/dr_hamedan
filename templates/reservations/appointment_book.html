@@ -4,72 +4,269 @@
 {% include  'base/search.html' %}
 {% load persian_date %}
     <!-- /search -->
+    <style>
+        /* این استایل‌ها را به بخش style موجود اضافه کنید */
+        .friday {
+            background-color: rgba(255, 209, 161, 0.3) !important; /* رنگ پس‌زمینه جمعه */
+            color: #1e4460 !important; /* رنگ متن جمعه */
+        }
 
-    <div class="container margin_60">
+        .completed {
+            background-color: #ff6b6b !important; /* رنگ پس‌زمینه تکمیل شده */
+            color: white !important;
+        }
+
+        .completed-indicator {
+            color: white;
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+    </style>
+    <style>
+        @media (max-width: 768px) {
+            .calendar-container {
+                max-width: 100%;
+                margin: 0;
+                border-radius: 0;
+            }
+
+            .calendar-header {
+                padding: 10px 15px;
+            }
+
+            .calendar-nav-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 0.8rem;
+            }
+
+            .calendar-title {
+                font-size: 1rem;
+            }
+
+            .calendar-body {
+                grid-template-columns: repeat(7, minmax(30px, 1fr));
+                gap: 5px;
+                padding: 10px;
+            }
+
+            .calendar-body > div {
+                font-size: 0.8rem;
+                padding: 5px 0;
+            }
+
+            /* بهبود نمایش زمان‌ها در موبایل */
+            #time-slots-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            #time-slots-grid .col-6 {
+                padding: 0 5px;
+            }
+
+            #time-slots-grid button {
+                font-size: 0.8rem;
+                padding: 5px;
+            }
+        }
+
+        /* استایل‌های عمومی بهبود یافته */
+        .calendar-container {
+            max-width: 600px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        }
+
+        .calendar-header {
+            background-color: #1e4460;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calendar-nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .calendar-nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .calendar-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .calendar-body {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            padding: 15px;
+            background-color: white;
+        }
+
+        .calendar-body > div {
+            text-align: center;
+            padding: 8px 0;
+            border-radius: 4px;
+        }
+
+        /* بهبود نمایش مدال در موبایل */
+        @media (max-width: 576px) {
+            .modal-content {
+                width: 95%;
+                margin: 10px auto;
+            }
+
+            #booking-form .row > div {
+                margin-bottom: 10px;
+            }
+
+            #submit-btn {
+                font-size: 0.9rem;
+            }
+        }
+
+        .bg {
+            background: #00c072;
+        }
+
+        /* استایل اصلی کارت تقویم */
+        .calendar-container {
+            max-width: 600px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        }
+
+        /* هدر تقویم */
+        .calendar-header {
+            background-color: #1e4460;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* دکمه‌های ماه قبل و بعد */
+        .calendar-nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .calendar-nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* عنوان ماه و سال */
+        .calendar-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+
+        /* بدنه تقویم */
+        .calendar-body {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            padding: 15px;
+            background-color: white;
+        }
+
+    </style>
+    <div class="container margin_60 bg-gradiant">
         <div class="row">
             <div class="col-xl-8 col-lg-8 order-2 order-lg-1">
                 <div id="section_1">
-                    <div class="tab-content box_general_3 shadow-0-m p-m-1">
+                    <div class="tab-content box_general_3 border-0 shadow-0-m p-m-1">
                         {% if days %}
+
                             <div class="tab-pane fade show active text-center" id="book" role="tabpanel">
 
-                                <!-- انتخاب روز -->
-                                <div class="flex bg-bluelight p-t-20 p-b-0 rounded" id="day-selection">
-                                    <button class="btn-scroll2 icon-right-open-big" id="slideRight"
-                                            type="button"></button>
-                                    <div id="contain" class="form-group add_bottom_45 flex scrollable">
-                                        {% for day in days %}
-                                            <div class="w-auto mx-2 my-2 day-card"
-                                                 data-date="{{ day.date|date:'Y-m-d' }}">
-                                                <button class="btn btn-outline-dark spacer day-btn fs-12"
-                                                        style="height: 70px;width: 80px">
-                                                    {{ day.date|persian_weekday }}<br>
-                                                    {{ day.date|date:'j' }} {{ day.date|persian_month_name }}
-                                                    <br>
-                                                    <small>{{ day.slots|length }} نوبت خالی </small><br>
-                                                </button>
-                                            </div>
-                                        {% endfor %}
+                                <div class="calendar-container">
+                                    <div class="calendar-header">
+                                        <button class="calendar-nav-btn" id="prev-month">
+                                            <i class="icon-right-1"></i>
+                                        </button>
+                                        <div class="calendar-title" id="month-year"></div>
+                                        <button class="calendar-nav-btn " id="next-month">
+                                            <i class="icon-left-1"></i>
+                                        </button>
                                     </div>
-                                    <button id="slideLeft" class="btn-scroll2 icon-left-open-big"
-                                            type="button"></button>
+
+
+                                    <div class="calendar-body" id="calendar-grid">
+                                        <!-- روزها به صورت دینامیک توسط جاوااسکریپت پر می‌شوند -->
+                                    </div>
                                 </div>
 
-                                <!-- نمایش ساعت‌ها -->
-                                <div id="time-slot-container" class="mt-3" style="display: none;">
-                                    <ul class="legend">
-                                        <li><strong></strong>نوبت های خالی</li>
-                                        <li><strong></strong>نوبت های رزرو شده</li>
-                                    </ul>
-                                    <div id="time-slots" class="row"></div>
+
+                                <!-- Time Slots Section -->
+                                <div class="mt-3" id="time-slots-main" style="display: none;">
+                                    <div class="mb-3 text-center" id="selected-date-display">
+
+                                        <span id="selected-date-text" class="h5 text_dr_3"></span>
+                                        <div id="available-slots-count" class="small"></div>
+
+
+                                        <div class="row m-t-10" id="time-slots-grid" onclick="showFormModal()">
+
+                                            <!-- زمان‌های ویزیت در اینجا بارگذاری می‌شوند -->
+                                        </div>
+                                    </div>
                                 </div>
+
+                                <!-- Patient Information Form -->
+
 
                                 <!-- فرم رزرو -->
                                 <div class="hidden" id="information">
                                     <div id="formModal" class="modal text-right">
                                         <div class="modal-content">
                                             <span class="close" onclick="closeFormModal()">&times;</span>
-                                            <div id="booking-form" style="display: none;">
+                                            <div id="booking-form">
                                                 <div class="alert alert-info mt-3">
                                                     شما در حال رزرو نوبت برای: <strong
                                                         id="appointment-date-time"></strong><br>
                                                     هزینه ویزیت: {{ doctor.consultation_fee }} تومان
                                                 </div>
 
-                                                <form method="post" id="resform">
-                                                    {% csrf_token %}
-                                                    <input type="hidden" name="date" id="form-date">
-                                                    <input type="hidden" name="time" id="form-time">
 
-                                                    <div class="row text-right mt-3">
+                                                <form method="post" id="booking-form">
+                                                    {% csrf_token %}
+                                                    <div class="row">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
-                                                                <label>نام<span class="text-danger">*</span></label>
-                                                                <input type="text" class="form-control" id="name"
-                                                                       name="name"
-                                                                       value="
-
-                                                                               {% if request.user.is_authenticated %}{{ request.user.get_full_name }}{% endif %}"
+                                                                <label for="patient_name" class="form-label">نام و نام
+                                                                    خانوادگی<span class="text-red">*</span></label>
+                                                                <input type="text" id="patient_name" name="patient_name"
+                                                                       class="form-control" value=" {% if user.first_name %}{{ user.get_full_name }}{% endif %}"
                                                                        required>
                                                                 <small class="text-danger font-weight-light"
                                                                        id="name_alarm"></small>
@@ -77,23 +274,23 @@
                                                         </div>
                                                         <div class="col-md-6">
                                                             <div class="form-group">
-                                                                <label>شماره موبایل<span
-                                                                        class="text-danger">*</span></label>
-                                                                <input type="tel" class="form-control" id="phone"
-                                                                       name="phone"
-                                                                       value="
-
-                                                                               {% if request.user.is_authenticated %}{{ request.user.phone }}{% endif %}"
-                                                                       required>
+                                                                <label for="phone" class="form-label">شماره تماس<span
+                                                                        class="text-red">*</span></label>
+                                                                <input type="tel" id="phone" name="phone"
+                                                                       class="form-control" required value="{% if user.phone %}{{ user.phone }}{% endif %}">
                                                                 <small class="text-danger font-weight-light"
                                                                        id="phone_alarm"></small>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-6">
                                                             <div class="form-group">
-                                                                <label>کد ملی<span class="text-danger">*</span></label>
-                                                                <input type="text" class="form-control" id="meli_code"
-                                                                       name="meli_code">
+                                                                <label for="patient_national_id" class="form-label">کد
+                                                                    ملی <span
+                                                                            class="text-red">*</span></label>
+                                                                <input type="text" id="patient_national_id"
+                                                                       name="patient_national_id"
+                                                                       class="form-control"
+                                                                       value="{{ patient_info.national_id }}">
                                                                 <small class="text-danger font-weight-light"
                                                                        id="code_alarm"></small>
                                                             </div>
@@ -110,13 +307,15 @@
                                                                 <div class="custom-slider"></div>
                                                             </div>
                                                         </div>
-                                                        <div class="col-lg-12 centered">
-                                                            <button type="submit"
-                                                                    class="btn btn-info dr_bg m-t-20 w-full rounded">
-                                                                ثبت نوبت
-                                                            </button>
-                                                        </div>
+
                                                     </div>
+                                                    <input type="hidden" name="date" id="selected_date" required>
+                                                    <input type="hidden" name="time" id="selected_time" required>
+                                                    <button type="submit" id="submit-btn"
+                                                            class="btn btn-secondary w-100"
+                                                            disabled>
+                                                        لطفاً تاریخ و زمان را انتخاب کنید
+                                                    </button>
                                                 </form>
                                             </div>
                                         </div>
@@ -134,7 +333,7 @@
 
             <!-- سایدبار پزشک -->
             <aside class="col-xl-4 col-lg-4 order-1 order-lg-2">
-                <div class="profile box_general_3 border-0-m">
+                <div class="profile box_general_3 border-0">
                     <div class="row parent-container">
                         <div class="col-lg-12 col-md-4">
                             <figure>
@@ -159,103 +358,473 @@
     </div>
 
     <!-- jQuery و اسکریپت -->
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- انتقال امن داده‌های Django به جاوااسکریپت -->
+    {{ days|json_script:"days-data" }}
+    {{ doctor.id|json_script:"doctor-id" }}
+    {{ doctor.consultation_fee|json_script:"consultation-fee" }}
+    {{ balance|json_script:"wallet-balance" }}
+
     <script>
-        $(document).ready(function () {
-            const slotsByDate = {
-                {% for day in days %}
-                    "{{ day.date|date:'Y-m-d' }}": [
-                        {% for slot in day.slots %}
-                            "{{ slot|time:'H:i' }}",
-                        {% endfor %}
-                    ],
-                {% endfor %}
+        document.addEventListener('DOMContentLoaded', function () {
+            // دریافت داده‌های امن از Django
+            const daysData = JSON.parse(document.getElementById('days-data').textContent);
+            const doctorId = JSON.parse(document.getElementById('doctor-id').textContent);
+            const consultationFee = parseFloat(JSON.parse(document.getElementById('consultation-fee').textContent));
+            const walletBalance = parseFloat(JSON.parse(document.getElementById('wallet-balance').textContent));
+
+            console.log('Wallet Balance:', walletBalance, 'Type:', typeof walletBalance);
+            console.log('Consultation Fee:', consultationFee, 'Type:', typeof consultationFee);
+            console.log('Has Insufficient Balance:', walletBalance < consultationFee);
+
+
+            // تنظیمات تقویم فارسی
+            const persianMonths = [
+                'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
+                'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'
+            ];
+
+
+            // تغییر ترتیب روزهای هفته به شروع از شنبه
+            const persianDays = ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'];
+
+            const monthDataCache = new Map();
+            let pendingRequests = new Set();
+            let currentAvailableData = {};
+            let currentYear = 1403;
+            let currentMonth = 3;
+            let selectedDate = null;
+            let selectedTime = null;
+            let isLoading = false;
+
+            const elements = {
+                calendarGrid: document.getElementById('calendar-grid'),
+                monthYearElement: document.getElementById('month-year'),
+                prevMonthBtn: document.getElementById('prev-month'),
+                nextMonthBtn: document.getElementById('next-month'),
+                timeSlotsMain: document.getElementById('time-slots-main'),
+                timeSlotsGrid: document.getElementById('time-slots-grid'),
+                selectedDateText: document.getElementById('selected-date-text'),
+                availableSlotsCount: document.getElementById('available-slots-count'),
+                selectedDateInput: document.getElementById('selected_date'),
+                selectedTimeInput: document.getElementById('selected_time'),
+                submitBtn: document.getElementById('submit-btn')
+
+            };
+            if (daysData && daysData.length > 0) {
+                const firstDate = daysData[0].jalali_date_str;
+                if (firstDate) {
+                    const [year, month] = firstDate.split('/').map(Number);
+                    currentYear = year;
+                    currentMonth = month;
+                }
+            }
+
+
+            const utils = {
+                isLeapYear(year) {
+                    const mod = year % 33;
+                    return [1, 5, 9, 13, 17, 22, 26, 30].includes(mod);
+                },
+                getDaysInMonth(year, month) {
+                    if (month <= 6) return 31;
+                    if (month <= 11) return 30;
+                    return this.isLeapYear(year) ? 30 : 29;
+                },
+                toGregorian(jy, jm, jd) {
+                    const g_d_m = [0, 31, (jy % 4 === 3 ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                    let gy = jy + 621;
+                    let days = (jm <= 7) ? ((jm - 1) * 31) + jd : (6 * 31) + ((jm - 7) * 30) + jd;
+                    const marchDayDiff = this.isLeapYear(jy) ? 79 : 80;
+                    const gd = new Date(gy, 2, 21 + days - marchDayDiff);
+                    return gd;
+                },
+                getFirstDayOfMonth(year, month) {
+                    const gregorianDate = this.toGregorian(year, month, 1);
+                    let dayOfWeek = gregorianDate.getDay();
+                    return (dayOfWeek + 3) % 7; //
+                },
+                formatDateKey(year, month, day) {
+                    return `${year}/${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}`;
+                },
+                debounce(func, wait) {
+                    let timeout;
+                    return function executedFunction(...args) {
+                        const later = () => {
+                            clearTimeout(timeout);
+                            func(...args);
+                        };
+                        clearTimeout(timeout);
+                        timeout = setTimeout(later, wait);
+                    };
+                }
             };
 
-            // انتخاب روز
-            $('.day-card').click(function () {
-                const date = $(this).data('date');
-                const slots = slotsByDate[date] || [];
 
-                $('#form-date').val(date);
-                $('#form-time').val('');
-                $('#time-slots').empty();
-                $('#booking-form').hide();
-
-                if (slots.length > 0) {
-                    $('#time-slot-container').show();
-                    slots.forEach(time => {
-                        const [hour, minute] = time.split(':');
-                        const timeDisplay = `${hour}:${minute}`;
-
-                        $('#time-slots').append(`
-                    <div class="col-md-3 col-6 mb-2">
-                        <button onclick="showFormModal()"   class="btn btn-outline-success time-slot-btn w-100"  data-time="${time}" data-date="${date}">
-                            ${timeDisplay}
-                        </button>
-                    </div>
-                `);
-                    });
-                } else {
-                    $('#time-slot-container').hide();
+            const dom = {
+                setLoading(loading) {
+                    isLoading = loading;
+                    elements.prevMonthBtn.disabled = loading;
+                    elements.nextMonthBtn.disabled = loading;
+                    elements.calendarGrid.classList.toggle('loading', loading);
+                },
+                showError(message) {
+                    const existingError = document.querySelector('.error-message');
+                    if (existingError) existingError.remove();
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'alert alert-danger';
+                    errorDiv.textContent = message;
+                    elements.calendarGrid.parentNode.insertBefore(errorDiv, elements.calendarGrid);
+                    setTimeout(() => errorDiv.remove(), 5000);
+                },
+                clearErrors() {
+                    const errors = document.querySelectorAll('.error-message');
+                    errors.forEach(error => error.remove());
                 }
-            });
+            };
 
-            // انتخاب ساعت
-            $(document).on('click', '.time-slot-btn', function () {
-                const time = $(this).data('time');
-                const date = $(this).data('date');
+            const api = {
+                async loadMonthData(year, month) {
+                    if (isLoading) return;
+                    const monthKey = `${year}-${month}`;
+                    if (monthDataCache.has(monthKey)) {
+                        Object.assign(currentAvailableData, monthDataCache.get(monthKey));
+                        calendar.generate();
+                        return;
+                    }
+                    if (pendingRequests.has(monthKey)) return;
+                    pendingRequests.add(monthKey);
+                    dom.setLoading(true);
+                    dom.clearErrors();
+                    try {
+                        const response = await fetch(`/reservations/ajax/month-availability/${doctorId}/?year=${year}&month=${month}`, {
+                            headers: {'X-Requested-With': 'XMLHttpRequest'}
+                        });
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        }
+                        const data = await response.json();
+                        if (data.success) {
+                            monthDataCache.set(monthKey, data.available_days);
+                            Object.assign(currentAvailableData, data.available_days);
+                            calendar.generate();
+                        } else {
+                            dom.showError(data.error || 'خطا در بارگذاری اطلاعات ماه');
+                        }
+                    } catch (error) {
+                        console.error('Network error:', error);
+                        dom.showError('خطا در ارتباط با سرور. لطفاً دوباره تلاش کنید.');
+                    } finally {
+                        pendingRequests.delete(monthKey);
+                        dom.setLoading(false);
+                    }
+                },
+                async loadDaySlots(dateKey) {
+                    try {
+                        const response = await fetch(`/reservations/ajax/day-slots/${doctorId}/?date=${dateKey}`, {
+                            headers: {'X-Requested-With': 'XMLHttpRequest'}
+                        });
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}`);
+                        }
+                        const data = await response.json();
+                        if (data.success) {
+                            return data.slots;
+                        } else {
+                            console.error('Error loading day slots:', data.error);
+                            return [];
+                        }
+                    } catch (error) {
+                        console.error('Network error:', error);
+                        return [];
+                    }
+                }
+            };
 
-                $('#form-time').val(time);
-                $('#appointment-date-time').text(date + ' ساعت ' + time);
-                $('#booking-form').slideDown();
-            });
+            const calendar = {
+                generate() {
+                    const firstDay = utils.getFirstDayOfMonth(currentYear, currentMonth);
+                    const daysInMonth = utils.getDaysInMonth(currentYear, currentMonth);
+                    const daysInPrevMonth = currentMonth > 1 ? utils.getDaysInMonth(currentYear, currentMonth - 1) : utils.getDaysInMonth(currentYear - 1, 12);
 
-            // اعتبارسنجی فرم
-            $('#resform').submit(function (e) {
-                const name = $('#name').val().trim();
+                    elements.monthYearElement.textContent = `${persianMonths[currentMonth - 1]} ${currentYear}`;
+                    const fragment = document.createDocumentFragment();
+
+                    // نمایش روزهای هفته
+                    persianDays.forEach(day => {
+                        const header = document.createElement('div');
+                        header.className = 'col text-center py-2 bg-dark text-white';
+                        header.textContent = day;
+                        fragment.appendChild(header);
+                    });
+
+                    // نمایش روزهای ماه قبل (اگر ماه از شنبه شروع نشود)
+                    for (let i = firstDay; i > 0; i--) {
+                        const day = daysInPrevMonth - i + 1;
+                        const dayElement = this.createDayElement(day, 'col text-center py-1 text-muted');
+                        fragment.appendChild(dayElement);
+                    }
+
+                    // نمایش روزهای ماه جاری
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        const dateKey = utils.formatDateKey(currentYear, currentMonth, day);
+                        const dayData = currentAvailableData[dateKey];
+                        const isAvailable = dayData && dayData.slots_count > 0;
+                        let classes = 'col text-center py-1 ';
+                        if (isAvailable) classes += ' bg text-white';
+                        if (selectedDate === dateKey) classes += ' border-warning';
+                        if (!isAvailable) classes += 'bg-light text-muted';
+                        const dayElement = this.createDayElement(day, classes, dateKey, dayData);
+                        fragment.appendChild(dayElement);
+                    }
+
+                    // محاسبه سلول‌های باقیمانده
+                    const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
+                    const remainingCells = totalCells - (firstDay + daysInMonth);
+                    for (let day = 1; day <= remainingCells; day++) {
+                        const dayElement = this.createDayElement(day, 'col text-center py-1 text-muted');
+                        fragment.appendChild(dayElement);
+                    }
+
+                    elements.calendarGrid.innerHTML = '';
+                    elements.calendarGrid.appendChild(fragment);
+                },
+                createDayElement(day, classes, dateKey = null, dayData = null) {
+                    const dayElement = document.createElement('div');
+                    dayElement.className = classes;
+                    dayElement.textContent = day;
+
+                    if (dateKey) {
+                        dayElement.setAttribute('data-date', dateKey);
+
+                        const [year, month, dayNum] = dateKey.split('/').map(Number);
+                        const gregorianDate = utils.toGregorian(year, month, dayNum);
+                        const dayOfWeek = gregorianDate.getDay();
+                        if (dayOfWeek === 3) {
+                            dayElement.classList.add('friday');
+                        }
+
+                        if (dayData) {
+                            dayElement.style.cursor = 'pointer';
+                            dayElement.addEventListener('click', () => this.selectDate(dateKey));
+
+                            const indicator = document.createElement('div');
+
+                            if (dayData.slots_count === 0) {
+                                dayElement.classList.add('completed');
+                                indicator.textContent = 'تکمیل شده';
+                                indicator.classList.add('completed-indicator');
+                            } else if (dayData.slots_count > 0) {
+                                indicator.textContent = `${dayData.slots_count} نوبت`;
+                                indicator.classList.add('small', 'text-dark');
+                            } else {
+                                indicator.textContent = 'ناموجود';
+                                indicator.classList.add('text-muted');
+                            }
+
+                            dayElement.appendChild(indicator);
+                        }
+                    }
+
+                    return dayElement;
+                }
+                ,
+
+                async selectDate(dateKey) {
+                    const dayData = currentAvailableData[dateKey];
+                    if (!dayData || dayData.slots_count === 0) return;
+                    const previousSelected = elements.calendarGrid.querySelector('.border-warning');
+                    if (previousSelected) {
+                        previousSelected.classList.remove('border-warning');
+                    }
+                    const newSelected = elements.calendarGrid.querySelector(`[data-date="${dateKey}"]`);
+                    if (newSelected) {
+                        newSelected.classList.add('border-warning');
+                    }
+                    selectedDate = dateKey;
+                    selectedTime = null;
+                    elements.selectedDateInput.value = dateKey;
+                    elements.selectedTimeInput.value = '';
+                    const [year, month, day] = dateKey.split('/').map(Number);
+                    const monthName = persianMonths[month - 1];
+                    elements.selectedDateText.textContent = `${day} ${monthName} ${year}`;
+                    elements.availableSlotsCount.textContent = `${dayData.slots_count} نوبت خالی `;
+                    const slots = dayData.slots || await api.loadDaySlots(dateKey);
+                    timeSlots.display(slots);
+                    elements.timeSlotsMain.style.display = 'block';
+                    elements.timeSlotsMain.scrollIntoView({behavior: 'smooth', block: 'center'});
+                    form.updateSubmitButton();
+                }
+            };
+
+            const timeSlots = {
+                display(slots) {
+                    if (slots.length === 0) {
+                        elements.timeSlotsGrid.innerHTML = `
+                        <div class="col-12 text-center py-4 text-muted">
+                            <div class="fs-1">⏰</div>
+                            <div>متأسفانه در این تاریخ نوبتی موجود نیست</div>
+                        </div>
+                    `;
+                        return;
+                    }
+                    const fragment = document.createDocumentFragment();
+                    slots.forEach(slot => {
+                        const slotElement = document.createElement('div');
+                        slotElement.className = 'col-6 col-md-3 mb-3';
+                        const btn = document.createElement('button');
+                        btn.className = 'btn btn-outline-success w-100';
+                        btn.textContent = slot;
+                        btn.addEventListener('click', () => this.select(slot, btn));
+                        slotElement.appendChild(btn);
+                        fragment.appendChild(slotElement);
+                    });
+                    elements.timeSlotsGrid.innerHTML = '';
+                    elements.timeSlotsGrid.appendChild(fragment);
+                },
+                select(time, element) {
+                    const previousSelected = elements.timeSlotsGrid.querySelector('.btn-success');
+                    if (previousSelected) {
+                        previousSelected.classList.remove('btn-success');
+                        previousSelected.classList.add('btn-outline-success');
+                    }
+                    element.classList.remove('btn-outline-success');
+                    element.classList.add('btn-success');
+                    selectedTime = time;
+                    elements.selectedTimeInput.value = time;
+                    form.updateSubmitButton();
+                }
+            };
+
+            const form = {
+                updateSubmitButton() {
+                    const hasInsufficientBalance = walletBalance < consultationFee;
+                    if (selectedDate && selectedTime) {
+                        if (hasInsufficientBalance) {
+                            elements.submitBtn.disabled = true;
+                            elements.submitBtn.className = 'btn btn-danger w-100 m-t-10';
+                            elements.submitBtn.textContent = ' موجودی کافی نیست - لطفاً کیف پول را شارژ کنید';
+                        } else {
+                            elements.submitBtn.disabled = false;
+                            elements.submitBtn.className = 'btn btn-info dr_bg w-full rounded border-0 m-t-10';
+                            elements.submitBtn.textContent = `رزرو و پرداخت خودکار - ${consultationFee.toLocaleString()} تومان`;
+                        }
+                    } else {
+                        elements.submitBtn.disabled = true;
+                        elements.submitBtn.className = 'btn btn-secondary w-100 m-t-10';
+                        elements.submitBtn.textContent = 'لطفاً تاریخ و زمان را انتخاب کنید';
+                    }
+                }
+            };
+
+            function validateForm() {
+                const name = $('#patient_name').val().trim();
                 const phone = $('#phone').val().trim();
-                const meli_code = $('#meli_code').val().trim();
+                const national_code = $('#patient_national_id').val().trim();
 
                 $('.text-danger').text('');
                 $('.form-control').removeClass('border-danger');
 
                 let isValid = true;
+                elements.submitBtn.disabled = false;
 
                 if (name.length < 3) {
-                    $('#name').addClass('border-danger');
+                    $('#patient_name').addClass('border-danger');
                     $('#name_alarm').text('نام باید حداقل ۳ حرف باشد.');
+                    elements.submitBtn.disabled = true;
                     isValid = false;
                 }
 
                 if (!/^0\d{10}$/.test(phone)) {
                     $('#phone').addClass('border-danger');
                     $('#phone_alarm').text('شماره تلفن باید با ۰ شروع شود و ۱۱ رقم باشد.');
+                    elements.submitBtn.disabled = true;
                     isValid = false;
                 }
 
-                if (!/^\d{10}$/.test(meli_code)) {
-                    $('#meli_code').addClass('border-danger');
+                if (!/^\d{10}$/.test(national_code)) {
+                    $('#patient_national_id').addClass('border-danger');
                     $('#code_alarm').text('کد ملی باید ۱۰ رقم باشد.');
+                    elements.submitBtn.disabled = true;
                     isValid = false;
                 }
 
-                if (!isValid) e.preventDefault();
+                return isValid;
+            }
+
+            // اضافه کردن رویدادهای real-time به فیلدها
+            $('#patient_name').on('input', validateForm);
+            $('#phone').on('input', validateForm);
+            $('#patient_national_id').on('input', validateForm);
+
+            // اعتبارسنجی هنگام ارسال فرم
+            $('#booking-form').submit(function (e) {
+                if (!validateForm()) {
+                    e.preventDefault();
+                }
             });
 
-            // اسکرول افقی
-            $('#slideRight').on("mousedown", function () {
-                $('#contain').animate({scrollLeft: '+=350'}, 300);
+            const debouncedLoadMonth = utils.debounce(api.loadMonthData, 300);
+
+            elements.prevMonthBtn.addEventListener('click', async () => {
+                if (currentMonth === 1) {
+                    currentMonth = 12;
+                    currentYear--;
+                } else {
+                    currentMonth--;
+                }
+                await debouncedLoadMonth(currentYear, currentMonth);
             });
 
-            $('#slideLeft').on("mousedown", function () {
-                $('#contain').animate({scrollLeft: '-=350'}, 300);
+            elements.nextMonthBtn.addEventListener('click', async () => {
+                if (currentMonth === 12) {
+                    currentMonth = 1;
+                    currentYear++;
+                } else {
+                    currentMonth++;
+                }
+                await debouncedLoadMonth(currentYear, currentMonth);
             });
+
+            document.getElementById('booking-form').addEventListener('submit', function (e) {
+                if (!selectedDate || !selectedTime) {
+                    e.preventDefault();
+                    alert('لطفاً ابتدا تاریخ و زمان را انتخاب کنید');
+                    return;
+                }
+                const hasInsufficientBalance = walletBalance < consultationFee;
+                if (hasInsufficientBalance) {
+                    e.preventDefault();
+                    alert('موجودی کیف پول کافی نیست. لطفاً ابتدا کیف پول خود را شارژ کنید.');
+                    return;
+                }
+                const confirmMessage = `آیا از رزرو این نوبت اطمینان دارید؟\n\nتاریخ: ${selectedDate}\nزمان: ${selectedTime}\nهزینه: ${consultationFee.toLocaleString()} تومان\n\nمبلغ به صورت خودکار از کیف پول شما کسر خواهد شد.`;
+                if (!confirm(confirmMessage)) {
+                    e.preventDefault();
+                    return;
+                }
+                elements.submitBtn.classList.add('loading');
+                elements.submitBtn.textContent = 'در حال پردازش پرداخت...';
+            });
+
+            // بارگذاری اولیه
+// بارگذاری اولیه
+            api.loadMonthData(currentYear, currentMonth); // بارگذاری ماه فعلی
+
+            setTimeout(() => {
+                const nextMonth = currentMonth === 12 ? 1 : currentMonth + 1;
+                const nextYear = currentMonth === 12 ? currentYear + 1 : currentYear;
+                api.loadMonthData(nextYear, nextMonth); // پیش‌بارگذاری ماه بعد
+            }, 1000);
+
         });
     </script>
+
     <script>
         function showFormModal() {
             document.getElementById("information").classList.remove("hidden");
+
         }
 
         function closeFormModal() {

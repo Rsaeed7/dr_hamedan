@@ -10,57 +10,62 @@ from patients.models import PatientsFile
 from wallet.models import Transaction
 import jdatetime
 
+from datetime import datetime, timedelta
+import jdatetime
+
 
 class BookingService:
     """سرویس مدیریت رزرو نوبت"""
-    
+
     @staticmethod
     def get_available_days_for_doctor(doctor_id, days_ahead=90):
         """
-        دریافت روزهای آزاد یک پزشک برای تعداد روزهای آینده
-        
+        دریافت روزهای آزاد یک پزشک برای تعداد روزهای آینده، شامل روزهایی که نوبت داشتند اما تمام شده‌اند
+
         Args:
             doctor_id: شناسه پزشک
             days_ahead: تعداد روزهای آینده (پیش‌فرض ۹۰ روز)
-        
+
         Returns:
-            لیست روزهایی با اسلات‌های آزاد
+            لیست روزهایی با نوبت‌های آزاد یا پر شده
         """
         try:
             doctor = Doctor.objects.get(id=doctor_id, is_available=True)
         except Doctor.DoesNotExist:
             return []
-            
+
         available_days = []
         today = datetime.now().date()
-        
+
         for i in range(days_ahead):
             date = today + timedelta(days=i)
-            
+
             try:
-                # بررسی اینکه روز منتشر شده باشد
+                # بررسی انتشار روز
                 reservation_day = ReservationDay.objects.get(date=date, published=True)
-                
-                # دریافت نوبت‌های آزاد
-                available_slots = Reservation.objects.filter(
+
+                # دریافت تمام نوبت‌های آن روز برای پزشک
+                all_slots = list(Reservation.objects.filter(
                     day=reservation_day,
-                    doctor=doctor,
-                    status='available'
-                ).order_by('time').values_list('time', flat=True)
-                
-                if available_slots:
+                    doctor=doctor
+                ).order_by('time').values_list('time', 'status'))
+
+                # تفکیک نوبت‌های آزاد
+                available_slots = [slot[0].strftime('%H:%M') for slot in all_slots if slot[1] == 'available']
+
+                # اضافه کردن روز حتی اگر نوبت‌ها پر شده باشند
+                if all_slots:  # این شرط بررسی می‌کند که آیا آن روز هیچ نوبتی داشته یا خیر
                     jalali_date = jdatetime.date.fromgregorian(date=date)
                     available_days.append({
                         'date_str': date.strftime('%Y-%m-%d'),
                         'jalali_date_str': jalali_date.strftime('%Y/%m/%d'),
-                        'slots': [slot.strftime('%H:%M') for slot in available_slots],
-                        'slots_count': len(available_slots)
+                        'slots': available_slots,  # لیست نوبت‌های آزاد، حتی اگر خالی باشد
+                        'slots_count': len(available_slots)  # اینجا صفر هم ثبت می‌شود
                     })
-                    
+
             except ReservationDay.DoesNotExist:
-                # اگر روز منتشر نشده، رد کن
                 continue
-                
+
         return available_days
 
     @staticmethod
