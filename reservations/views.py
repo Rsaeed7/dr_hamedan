@@ -154,7 +154,7 @@ def book_appointment(request, doctor_id):
 
         }
         
-        return render(request, 'reservations/book_appointment.html', context)
+        return render(request, 'reservations/appointment_book.html', context)
         
     except Exception as e:
         logger.error(f"خطا در دریافت روزهای موجود: {str(e)}")
