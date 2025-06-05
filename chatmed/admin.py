@@ -2,6 +2,7 @@ from django.contrib import admin
 from .models import ChatRoom, Message, ChatRequest, DoctorAvailability
 from django.utils.html import format_html
 
+
 @admin.register(ChatRequest)
 class ChatRequestAdmin(admin.ModelAdmin):
     list_display = ('id', 'patient_info', 'doctor_info', 'status', 'created_at', 'updated_at')

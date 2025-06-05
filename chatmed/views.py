@@ -6,7 +6,6 @@ from django.views.decorators.http import require_POST
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from txaio.aio import reject
-
 from .models import ChatRequest, ChatRoom, Message, DoctorAvailability
 from doctors.models import Doctor, Specialization
 from patients.models import PatientsFile as Patient
@@ -30,11 +29,10 @@ def request_chat(request, doctor_id):
         return redirect('doctors:index')
 
     patient = request.user.patient
-
-    existing_request = ChatRequest.objects.filter(patient=patient, doctor=doctor).first()
-    if existing_request:
-        messages.info(request, 'شما قبلاً برای این پزشک درخواست ارسال کرده‌اید')
-        return redirect('chat:request_status', request_id=existing_request.id)
+    existing_active_request = ChatRequest.objects.filter(Q(status='pending') | Q(status='approved'),patient=patient, doctor=doctor,).last()
+    if existing_active_request:
+        messages.info(request, 'شما یک درخواست فعال با پزشک مورد نظر دارید!')
+        return redirect('chat:request_status', request_id=existing_active_request.id)
 
     new_request = ChatRequest.objects.create(patient=patient, doctor=doctor)
     messages.success(request, 'درخواست چت با موفقیت ثبت شد')

@@ -16,9 +16,11 @@
                    class="block bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 p-4">
                     <div class="flex justify-between items-center mb-2">
                         <h5 class="text-lg font-semibold text-gray-800">{{ chat.title }}</h5>
+                        <small> آخرین پیام : {{ chat.messages.last.content }}</small>
                         <span class="text-xs text-gray-400">
                             {{ chat.last_activity|date:"Y/m/d H:i" }}
                         </span>
+
                     </div>
                     <p class="text-sm text-gray-600">
                         {% if is_admin %}
@@ -37,4 +39,10 @@
         </div>
     {% endif %}
 </div>
+    <script>
+    setTimeout(function() {
+        location.reload();
+    }, 10000); // رفرش هر 5 ثانیه
+</script>
+
 {% endblock %}
