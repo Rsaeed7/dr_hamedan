@@ -23,10 +23,6 @@ from homecare.models import Service
 from reservations.turn_maker import create_availability_days_for_day_of_week
 from reservations.services import BookingService, AppointmentService
 
-"""
-TO DO : Need for a doctor registration page (the doctor sends information and image and after approval becomes a member of the site as a doctor)
-"""
-
 
 def index(request):
     doctors = Doctor.objects.filter(is_available=True)
