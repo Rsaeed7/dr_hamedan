@@ -24,6 +24,8 @@
                     <span class="text-yellow-600">در انتظار تایید</span>
                 {% elif request.status == 'approved' %}
                     <span class="text-green-600">تایید شده</span>
+                {% elif request.status == 'finished' %}
+                    <span class="text-green-600">پایان یافته</span>
                 {% else %}
                     <span class="text-red-600">رد شده</span>
                 {% endif %}

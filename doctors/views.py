@@ -20,14 +20,13 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 from .forms import EmailForm
 from homecare.models import Service
-import time as time_module
-from datetime import time
 from reservations.turn_maker import create_availability_days_for_day_of_week
 from reservations.services import BookingService, AppointmentService
 
 
 def index(request):
     doctors = Doctor.objects.filter(is_available=True)
+    online_visit_doctors = Doctor.objects.filter(is_available=True, online_visit=True)
     clinics = Clinic.objects.all()
     specializations = Specialization.objects.all().order_by('name')
     articles = MagArticle.objects.all()
@@ -36,6 +35,7 @@ def index(request):
         'clinics': clinics,
         'specializations': specializations,
         'articles': articles,
+        'online_visit_doctors': online_visit_doctors,
     }
     return render(request, 'index/homepage.html', context)
 
@@ -156,6 +156,9 @@ class DoctorListView(ListView):
 
 
 def doctor_detail(request, pk):
+    """
+    The medical page detail should not be with the doctor's ID, it should be based on the name in English or ...
+    """
     """نمایش اطلاعات کامل یک پزشک"""
     doctor = get_object_or_404(Doctor, pk=pk)
 
@@ -662,24 +665,41 @@ def update_settings(request):
     try:
         doctor = request.user.doctor
     except Doctor.DoesNotExist:
+        messages.error(request, "پزشک مورد نظر یافت نشد.")
         return redirect('doctors:doctor_list')
 
-    if request.method == 'POST':
+    if request.method != 'POST':
+        return redirect('doctors:doctor_availability')
+
+    # تعیین مسیر ریدایرکت پیش‌فرض
+    redirect_url = 'doctors:doctor_availability'  # مسیر اول (پیش‌فرض)
+
+    try:
         consultation_fee = request.POST.get('consultation_fee')
         consultation_duration = request.POST.get('consultation_duration')
+        online_visit_fee = request.POST.get('online_visit_fee')
+        online_visit = request.POST.get('online_visit') == 'on'
+
+        if online_visit_fee:  # اگر شرط دوم برقرار بود
+            redirect_url = 'chat:chat_room_list'  # مسیر دوم
 
         if consultation_fee and consultation_duration:
-            try:
-                doctor.consultation_fee = float(consultation_fee)
-                doctor.consultation_duration = int(consultation_duration)
-                doctor.save()
-                messages.success(request, "تنظیمات با موفقیت بروزرسانی شد.")
-            except ValueError:
-                messages.error(request, "مقادیر وارد شده نامعتبر هستند.")
-        else:
-            messages.error(request, "تمام فیلدها الزامی هستند.")
+            doctor.consultation_fee = float(consultation_fee)
+            doctor.consultation_duration = int(consultation_duration)
 
-    return redirect('doctors:doctor_availability')
+        if online_visit_fee:
+            doctor.online_visit_fee = float(online_visit_fee)
+            doctor.online_visit = online_visit
+
+        doctor.save()
+        messages.success(request, "تنظیمات با موفقیت بروزرسانی شد.")
+
+    except ValueError:
+        messages.error(request, "مقادیر وارد شده نامعتبر هستند.")
+    except Exception as e:
+        messages.error(request, f"خطا در بروزرسانی تنظیمات: {str(e)}")
+
+    return redirect(redirect_url)
 
 
 @login_required

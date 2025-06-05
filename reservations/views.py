@@ -20,6 +20,13 @@ logger = logging.getLogger(__name__)
 
 @login_required
 def book_appointment(request, doctor_id):
+    """
+    TO DO:
+    In the absence of wallet balance, the user should be automatically directed to
+    recharge the wallet (for example, the recharge amount should be specified automatically).
+    """
+
+
     """نمایش فرم رزرو نوبت و پردازش درخواست رزرو"""
     if not request.user.is_authenticated:
         messages.error(request, 'برای رزرو نوبت باید وارد شوید')

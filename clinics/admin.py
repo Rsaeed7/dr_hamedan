@@ -1,7 +1,16 @@
 from django.contrib import admin
 from .models import Clinic, ClinicSpecialty, ClinicGallery,ClinicComment
 
-admin.site.register(ClinicComment)
+@admin.register(ClinicComment)
+class ClinicCommentAdmin(admin.ModelAdmin):
+    list_display = ('clinic', 'status', 'date','text')
+    list_filter = ('status', 'recommendation',)
+    list_editable = ('status',)
+    actions = ['confirm_comments']
+
+    @admin.action(description="تایید کامنت‌های انتخاب‌شده")
+    def confirm_comments(self, request, queryset):
+        queryset.update(status='confirmed')
 
 class ClinicSpecialtyInline(admin.TabularInline):
     model = ClinicSpecialty
