@@ -200,7 +200,7 @@
 </head>
 <body>
 <div class="sidebar" id="sidebar">
-    <div class="sidebar-header"  id="logo_home">
+    <div class="sidebar-header" id="logo_home">
         <img height="28" src="{% static 'img/logo_2x.png' %}">
         <button class="btn btn-scroll icon-cancel" id="close-sidebar"></button>
     </div>
@@ -295,20 +295,27 @@
     </div>
 
     <!-- ورودی پیام -->
-    <div class="chat-input">
-        <form id="message-form" class="d-flex align-items-center" enctype="multipart/form-data">
-            {% csrf_token %}
-            <button type="button" class="btn btn-link attachment-btn me-2" id="attachment-button" title="ارسال فایل">
-                <i class="fas fa-paperclip"></i>
-            </button>
-            <input type="file" id="file-input" style="display:none"/>
-            <input type="text" name="content" class="form-control rounded_pill border-light-2 m-l-3"
-                   placeholder="پیام خود را بنویسید..." autocomplete="off"/>
-            <button type="submit" class="btn btn-primary rounded-circle ms-2" style="width: 40px; height: 40px;">
-                <i class="fas fa-paper-plane"></i>
-            </button>
-        </form>
-    </div>
+    {% if chat_room.is_active %}
+        <div class="chat-input">
+
+            <form id="message-form" class="d-flex align-items-center" enctype="multipart/form-data">
+                {% csrf_token %}
+                <button type="button" class="btn btn-link attachment-btn me-2" id="attachment-button"
+                        title="ارسال فایل">
+                    <i class="fas fa-paperclip"></i>
+                </button>
+                <input type="file" id="file-input" style="display:none"/>
+                <input type="text" name="content" class="form-control rounded_pill border-light-2 m-l-3"
+                       placeholder="پیام خود را بنویسید..." autocomplete="off"/>
+                <button type="submit" class="btn btn-primary rounded-circle ms-2" style="width: 40px; height: 40px;">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+
+        </div>
+    {% else %}
+        <p class="text-center font-weight-light">ویزیت پایان یافته و قابلیت ارسال پیام وجود ندارد </p>
+    {% endif %}
 </div>
 
 <!-- آیکون‌ها -->

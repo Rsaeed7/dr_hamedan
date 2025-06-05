@@ -5,7 +5,19 @@ admin.site.register(Email)
 admin.site.register(City)
 admin.site.register(Supplementary_insurance)
 
-admin.site.register(DrComment)
+@admin.register(DrComment)
+class DrCommentAdmin(admin.ModelAdmin):
+    list_display = ('doctor', 'status', 'date','text')
+    list_filter = ('status', 'recommendation', 'waiting_time')
+    list_editable = ('status',)
+    search_fields = ('doctor__name', 'user__username', 'text')
+    actions = ['confirm_comments']
+
+    @admin.action(description="تایید کامنت‌های انتخاب‌شده")
+    def confirm_comments(self, request, queryset):
+        queryset.update(status='confirmed')
+
+
 admin.site.register(CommentTips)
 class DoctorServicesInline(admin.TabularInline):
     model = DrServices
@@ -18,7 +30,7 @@ class SpecializationAdmin(admin.ModelAdmin):
 
 @admin.register(Doctor)
 class DoctorAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'specialization', 'city', 'consultation_fee', 'is_available', 'has_location')
+    list_display = ('__str__', 'specialization', 'city', 'consultation_fee', 'is_available', 'has_location','online_visit')
     list_filter = ('is_available', 'is_independent', 'specialization', 'city')
     search_fields = ('user__username', 'user__first_name', 'user__last_name', 'specialization__name')
     inlines = [DoctorServicesInline, ]
@@ -36,6 +48,9 @@ class DoctorAdmin(admin.ModelAdmin):
         }),
         ('تنظیمات ویزیت', {
             'fields': ('consultation_fee', 'consultation_duration', 'is_available', 'is_independent')
+        }),
+        ('تنظیمات ویزیت آنلاین', {
+            'fields': ('online_visit', 'online_visit_fee')
         }),
     )
     

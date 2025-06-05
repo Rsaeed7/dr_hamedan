@@ -19,8 +19,8 @@ months = {
 }
 
 # Persian weekday names
-# Python weekday: 0=Monday, 1=Tuesday, ..., 6=Sunday
-# Persian: 0=Saturday, 1=Sunday, ..., 6=Friday
+
+
 persian_weekdays = {
     0: 'شنبه',
     1: ' یک شنبه',

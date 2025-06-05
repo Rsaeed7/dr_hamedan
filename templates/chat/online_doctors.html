@@ -11,13 +11,13 @@
     <div class="container margin_60_35">
 
         <div class="scroll-container">
-        {% if doctors %}
+        {% if available_doctors %}
             <div id="breadcrumb">
 
                 <div class="container">
                     <p>پزشکانی که هم اکنون آنلاین هستند</p>
                     <ul class="scroll-container scroll-wrapper">
-                        {% for doctor in doctors %}
+                        {% for doctor in available_doctors %}
                             <li class="online-status">
                                 <div title="دکتر {{ doctor.user.get_full_name}} | {{ doctor.specialization }}">
                                     <a href="{% url 'doctors:doctor_detail' doctor.pk %}">
@@ -78,8 +78,8 @@
                                 </li>
                                 <li>
                                     <input type="radio" name="sort" class="custom-radio auto-submit"
-                                           value="نزدیک‌ترین نوبت خالی"
-                                           {% if request.GET.sort == 'نزدیک‌ترین نوبت خالی' %}checked{% endif %}>
+                                           value="پزشکان آنلاین"
+                                           {% if request.GET.sort == 'پزشکان آنلاین' %}checked{% endif %}>
                                     <label>پزشکان آنلاین</label>
                                 </li>
                             </ul>
@@ -119,7 +119,7 @@
                                             src="{{ doctor.profile_image.url }}"
                                             class="img-fluid"
                                             alt="{{ doctor.user.get_full_name }}">
-                                    </a>
+                                    </a>{% if doctor.availability.is_available %}<span class="status-indicator"></span>{% endif %}
                                 </figure>
                                 <div class="wrapper text-center">
 

@@ -538,6 +538,7 @@
                             <small class="text-danger centered font-weight-bold">فعلا نوبت خالی وجود ندارد</small>
                         {% endif %}
                     </div>
+
                     <a href="{% url 'reservations:book_appointment' doctor.pk %}"
                        class="btn btn-success col-lg-12 m-b-10 m-t-15">دریافت نوبت</a>
                 </div>
@@ -551,10 +552,11 @@
                 {#                                class="text-info">15 دقیقه</span></small>#}
                 {#                        <a href="" class="btn btn-info col-lg-12 m-b-10 m-t-15">دریافت مشاوره تلفنی</a>#}
                 {#                </div>#}
+            {% if doctor.online_visit %}
                 <div class="box_general_3 booking border-0-m">
                     <div class="m-t-2 m-b-20">
                         <h6 class="text_dr_3"><i class="icon-user-add-outline"></i>دریافت مشاوره متنی آنلاین</h6>
-                        <small class="text_dr_3">هزینه مشاوره 150 هزار تومان</small>
+                        <small class="text_dr_3"> هزینه مشاوره {{ doctor.online_visit_fee }} هزار تومان </small>
                     </div>
                     <small class="rev-info text-sm-right">مشاوره متنی به مدت <span
                             class="text-info">30 دقیقه</span></small>
@@ -562,6 +564,7 @@
                         مشاوره متنی</a>
 
                 </div>
+            {% endif %}
 
             </aside>
             <!-- /asdide -->

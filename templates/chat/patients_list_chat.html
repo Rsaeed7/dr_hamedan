@@ -14,14 +14,13 @@
                 <div class="col-lg-8 ml-auto">
                     <div class="box_form border-0">
 
-                        {% if chat_rooms %}
+                        {% if chat_rooms or pending_chats %}
                             <a href="{% url 'chat:list_doctors' %}"
                                class="btn btn-success float-l ">
                                 درخواست مشاوره انلاین جدید
                             </a>
                             <br><br><br>
                             <h4 class=" m-b-20">گفت و گو های جاری</h4>
-
                             {% for room in chat_rooms %}
                                 <a href="{% url 'chat:chat_room' room.id %}">
                                     <div class="strip_list wow fadeIn border-0 bg-bluelight">
@@ -30,7 +29,8 @@
                                                 <img class="rounded" src="{{ room.request.doctor.profile_image.url }}"
                                                      alt="{{ room.request.doctor.doctor }}">
                                             {% else %}
-                                                <div class="rounded" style="width: 100%; height: 100px; background-color: #e5e7eb; display: flex; align-items: center; justify-content: center;">
+                                                <div class="rounded"
+                                                     style="width: 100%; height: 100px; background-color: #e5e7eb; display: flex; align-items: center; justify-content: center;">
                                                     <i class="icon-user" style="font-size: 36px; color: #9ca3af;"></i>
                                                 </div>
                                             {% endif %}
@@ -38,7 +38,9 @@
                                         <small>
                                             <span class="bg-light rounded fs-10">{{ room.request.doctor.specialization }}</span>
                                         </small>
-                                        <h3 class="fs-15"><span class="fs-10">دکتر</span> {{ room.request.doctor.user.get_full_name }}</h3>
+                                        <h3 class="fs-15"><span
+                                                class="fs-10">دکتر</span> {{ room.request.doctor.user.get_full_name }}
+                                        </h3>
                                         <p class="fs-8"> آخرین
                                             پیام: {{ room.messages.first.content|truncatechars:50 }}</p>
                                         <small class="text-sm-right"><i
@@ -58,10 +60,101 @@
                                     </div>
                                 </a>
                             {% endfor %}
+
+                            {% for request in pending_chats %}
+                                    <div class="strip_list wow fadeIn border-0">
+                                        <figure>
+                                            {% if request.doctor.profile_image.name %}
+                                                <img class="rounded" src="{{ request.doctor.profile_image.url }}"
+                                                     alt="{{ request.doctor.doctor }}">
+                                            {% else %}
+                                                <div class="rounded"
+                                                     style="width: 100%; height: 100px; background-color: #e5e7eb; display: flex; align-items: center; justify-content: center;">
+                                                    <i class="icon-user" style="font-size: 36px; color: #9ca3af;"></i>
+                                                </div>
+                                            {% endif %}
+                                        </figure>
+                                        <small>
+                                            <span class="bg-light rounded fs-10">{{ request.doctor.specialization }}</span>
+                                        </small>
+                                        <h3 class="fs-15"><span
+                                                class="fs-10">دکتر</span> {{ request.doctor.user.get_full_name }}
+                                        </h3>
+                                        <p class="fs-8"><span class="font-semibold">تاریخ درخواست:</span> {{ request.created_at|date:"Y/m/d H:i" }}</p>
+                                        <p><span
+                                                    class="p-l-10 p-r-10 small rounded-10 bg-light-yellow
+                                          ">در انتظار تایید</span></p>
+
+                                    </div>
+                            {% endfor %}
+
                         {% else %}
                             <p class="text-center">گفت و گوی فعالی ندارید!</p>
-                            <a href="{% url 'chat:doctor_list' %}" class="btn btn-outline-primary col-12">آغاز ویزیت آنلاین و متنی</a>
+                            <a href="{% url 'chat:list_doctors' %}" class="btn btn-outline-primary col-12">آغاز ویزیت
+                                آنلاین و متنی</a>
+                        {% endif %}
 
+                        {% if finished_chats or reject_chats %}
+                            <h6 class=" m-b-20 m-t-30">گفت و گو های پایان یافته </h6>
+                            {% for room in finished_chats %}
+                                <a href="{% url 'chat:chat_room' room.id %}">
+                                    <div class="strip_list wow fadeIn border-0 bg-gradiant2">
+                                        <figure>
+                                            {% if room.request.doctor.profile_image.name %}
+                                                <img class="rounded" src="{{ room.request.doctor.profile_image.url }}"
+                                                     alt="{{ room.request.doctor.doctor }}">
+                                            {% else %}
+                                                <div class="rounded"
+                                                     style="width: 100%; height: 100px; background-color: #e5e7eb; display: flex; align-items: center; justify-content: center;">
+                                                    <i class="icon-user" style="font-size: 36px; color: #9ca3af;"></i>
+                                                </div>
+                                            {% endif %}
+                                        </figure>
+                                        <small>
+                                            <span class="bg-light rounded fs-10">{{ room.request.doctor.specialization }}</span>
+                                        </small>
+                                        <h3 class="fs-15"><span
+                                                class="fs-10">دکتر</span> {{ room.request.doctor.user.get_full_name }}
+                                        </h3>
+                                        <p class="fs-8"> آخرین
+                                            پیام: {{ room.messages.first.content|truncatechars:50 }}</p>
+                                        <small class="text-sm-right"><i
+                                                class="icon-clock-alt"></i>آخرین
+                                            فعالیت {{ room.last_activity|date:"Y/m/d H:i" }}</small>
+
+                                        <ul>
+                                            <li><span class="p-l-10 p-r-10 small rounded-10 bg-secondary text-white">پایان یافته</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </a>
+                            {% endfor %}
+                            {% for request in reject_chats %}
+                                    <div class="strip_list wow fadeIn border-0 bg-light-red">
+                                        <figure>
+                                            {% if request.doctor.profile_image.name %}
+                                                <img class="rounded" src="{{ request.doctor.profile_image.url }}"
+                                                     alt="{{ request.doctor.doctor }}">
+                                            {% else %}
+                                                <div class="rounded"
+                                                     style="width: 100%; height: 100px; background-color: #e5e7eb; display: flex; align-items: center; justify-content: center;">
+                                                    <i class="icon-user" style="font-size: 36px; color: #9ca3af;"></i>
+                                                </div>
+                                            {% endif %}
+                                        </figure>
+                                        <small>
+                                            <span class="bg-light rounded fs-10">{{ request.doctor.specialization }}</span>
+                                        </small>
+                                        <h3 class="fs-15"><span
+                                                class="fs-10">دکتر</span> {{ request.doctor.user.get_full_name }}
+                                        </h3>
+                                        <p class="fs-8"><span class="font-semibold">تاریخ درخواست:</span> {{ request.created_at|date:"Y/m/d H:i" }}</p>
+                                        <p><span
+                                                    class="p-l-10 p-r-10 small rounded-10 bg-danger text-white
+                                          ">درخواست رد شده</span></p>
+
+                                    </div>
+                            {% endfor %}
                         {% endif %}
                     </div>
                 </div>

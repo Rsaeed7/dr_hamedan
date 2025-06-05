@@ -46,12 +46,13 @@
 
 
                             <p class="p-t-10 p-r-4"> وضعیت درخواست : <span
-                                    class="p-l-10 p-r-10  rounded-10 tex  m-b-10 m-t-20 {% if request.status == 'approved' %}bg-light-green
+                                    class="p-l-10 p-r-10  rounded-10 tex  m-b-10 m-t-20 {% if request.status == 'approved' %}bg-light-green{% elif request.status == 'finished' %}bg-light-violet
                                             {% elif request.status == 'pending' %}bg-light-yellow
                                             {% else %}bg-danger text-white
                                             {% endif %}">
                                             {% if request.status == 'approved' %}  فعال
                                             {% elif request.status == 'pending' %}در انتظار تایید
+                                            {% elif request.status == 'finished' %}پایان یافته
                                             {% else %}رد شده
                                             {% endif %}</span > {% if request.status == 'approved' %}<a href="{% url 'chat:chat_room' request.chat_room.id %}" class="p-l-10 p-r-10 rounded-10 text-white m-b-10 m-t-20 bg-primary m-r-10" >برو به گفت و گو</a> {% endif %}</p>
 
