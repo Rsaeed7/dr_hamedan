@@ -960,6 +960,16 @@ input#female-option:checked ~ .custom-slider {
     width: 700px;
     box-shadow: none;
     position: relative;
+
+}
+
+
+@media (max-width: 768px) {
+    .modal-content {
+        max-height: 80vh; /* حداکثر ارتفاع مودال 80% از ارتفاع صفحه */
+        overflow-y: auto; /* اجازه اسکرول در جهت عمودی */
+    }
+
 }
 
 .hidden {
