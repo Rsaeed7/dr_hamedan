@@ -22,14 +22,18 @@ from .forms import EmailForm
 from homecare.models import Service
 from reservations.turn_maker import create_availability_days_for_day_of_week
 from reservations.services import BookingService, AppointmentService
+import random
 """
 TO DO : Need for a doctor registration page (the doctor sends information and image and after approval becomes a member of the site as a doctor)
 """
 
 
 def index(request):
-    doctors = Doctor.objects.filter(is_available=True)
-    online_visit_doctors = Doctor.objects.filter(is_available=True, online_visit=True)
+    doctors_list = list(Doctor.objects.filter(is_available=True))
+    random.shuffle(doctors_list)
+    doctors = doctors_list[:10]
+
+    online_visit_doctors = Doctor.objects.filter(is_available=True, online_visit=True).order_by('-availability__is_available')
     clinics = Clinic.objects.all()
     specializations = Specialization.objects.all().order_by('name')
     articles = MagArticle.objects.all()
