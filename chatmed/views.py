@@ -5,6 +5,8 @@ from django.http import JsonResponse, HttpResponseForbidden
 from django.views.decorators.http import require_POST
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
+from txaio.aio import reject
+
 from .models import ChatRequest, ChatRoom, Message, DoctorAvailability
 from doctors.models import Doctor, Specialization
 from patients.models import PatientsFile as Patient
@@ -13,6 +15,11 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.views.generic import ListView
 from django.db.models import Q, Avg
+
+"""
+TO DO : Connecting the chat request to the wallet like an 
+appointment system (one step before submitting the request is also necessary).
+"""
 
 
 @login_required
@@ -66,6 +73,13 @@ def manage_chat_request(request, request_id, action):
         chat_request.save()
         return JsonResponse({'status': 'rejected'})
 
+    elif action == "finished":
+        chat_request.status = ChatRequest.FINISHED
+        chat_request.chat_room.is_active = False
+        chat_request.chat_room.save()
+        chat_request.save()
+        return JsonResponse({"status": "finished"})
+
     return JsonResponse({'status': 'error', 'message': 'عملیات نامعتبر'}, status=400)
 
 
@@ -75,7 +89,17 @@ def chat_room_list(request):
         chat_rooms = ChatRoom.objects.filter(
             request__doctor=request.user.doctor,
             is_active=True
-        ).select_related('request__patient').order_by('-last_activity')
+        ).select_related('request', 'request__patient').order_by('-last_activity')
+
+        finished_chats = ChatRoom.objects.filter(
+            request__doctor=request.user.doctor,
+            is_active=False
+        ).select_related('request', 'request__patient').order_by('-last_activity')
+
+        reject_requests = ChatRequest.objects.filter(
+            doctor=request.user.doctor,
+            status=ChatRequest.REJECTED
+        ).select_related('patient__user')
 
         pending_requests = ChatRequest.objects.filter(
             doctor=request.user.doctor,
@@ -84,20 +108,43 @@ def chat_room_list(request):
 
         return render(request, 'chat/doctor_chat_list.html', {
             'chat_rooms': chat_rooms,
-            'pending_requests': pending_requests
+            'pending_requests': pending_requests,
+            'reject_requests': reject_requests,
+            'finished_chats': finished_chats,
+            'doctor': request.user.doctor,
         })
 
     elif hasattr(request.user, 'patient'):
         chat_rooms = ChatRoom.objects.filter(
             request__patient=request.user.patient,
             is_active=True
-        ).select_related('request__doctor').order_by('-last_activity')
+        ).select_related('request', 'request__doctor').order_by('-last_activity')
+
+        finished_chats = ChatRoom.objects.filter(
+            request__patient=request.user.patient,
+            is_active=False
+        )
+
+        pending_chats = ChatRequest.objects.filter(
+            patient=request.user.patient,
+            status=ChatRequest.PENDING
+        )
+
+        reject_chats = ChatRequest.objects.filter(
+            patient=request.user.patient,
+            status=ChatRequest.REJECTED
+        )
 
         return render(request, 'chat/patients_list_chat.html', {
-            'chat_rooms': chat_rooms
+            'chat_rooms': chat_rooms,
+            'finished_chats': finished_chats,
+            'pending_chats': pending_chats,
+            'reject_chats': reject_chats,
         })
 
+    messages.error(request, "شما مجاز به مشاهده لیست چت‌ها نیستید.")
     return redirect('chat:chat_home')
+
 
 
 
@@ -192,7 +239,7 @@ class OnDoctorListView(ListView):
 
 
     def get_queryset(self):
-        queryset = super().get_queryset().filter(is_available=True)
+        queryset = super().get_queryset().filter(is_available=True,online_visit=True)
         params = self.get_filter_params()
 
         # اعمال فیلترها

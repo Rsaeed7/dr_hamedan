@@ -12,7 +12,6 @@
             <form method="get" action="{% url 'doctors:doctor_list' %}">
                 <div id="custom-search-input">
                     <div class="input-group">
-                        <!-- تغییرات اصلی اینجا اعمال شده -->
                         <div style="display: flex; align-items: center; width: 100%;">
                             <select class="search-query" name="specialty" id="specialty"
                                     style="border-radius: 0 50px 50px 0; border-left: none; width: 18%;font-size: 10px">
@@ -30,7 +29,7 @@
 
                             <input type="submit" class="btn_search" style="border-radius: 50px;" value="جستجو">
                         </div>
-                        <!-- پایان تغییرات -->
+
                     </div>
 
                     <ul class="text-success" style="text-shadow: none">
@@ -144,45 +143,13 @@
     </section>
     <!-- /Top doctors -->
 
-    <!-- Online consultation -->
-    <section hidden="hidden">
-        <div class="container">
-            <h3 class="text_dr">دریافت مشاوره آنلاین</h3>
-            <div class="flex rounded">
-                <button id="btnLeft2" class="left btn-scroll"><i class="icon-right-open-4"></i></button>
-                <div class="scroll-container p-15" id="scrollContainer">
-                    <div class="scroll-wrapper">
-                        <a href="" class="box_cat_home dr_box">
-                            <img src="{% static 'img/dr/dr5).jfif' %}" class="round50" width="80" height="80" alt="">
-                            <h3>دکتر نیما شاهرخی</h3>
-                            <p>فوق تخصص ستون فقرات</p>
-                            <div class="text-right text-info">
-                                <i class="icon-star-5"><small>4.3</small></i>
-                                <p class="text-dark small">مدت زمان مشاوره <span
-                                        class="text-info p-r-20">15 دقیقه</span>
-                                <p class="text-dark small">پاسخگویی : <span class="text-info p-r-20">روی خط</span>
-                                </p>
-                                <button class="btn btn-outline-info col-md-12">دریافت مشاوره</button>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                <button id="btnRight2" class="right btn-scroll"><i class="icon-left-open-4"></i></button>
-            </div>
-            <p class="text-center text_dr"><a href=""> مشاهده همه پزشک ها <i
-                    class="icon-left-4"></i> </a></p>
-        </div>
-    </section>
-    <!-- /Online consultation -->
-
-
 
     <!-- Doctors in every city -->
         <section>
             <div class="container margin_60_35 bg-gradiant text-center">
                 <h4 class="text-secondary">پزشک های شهر شما</h4>
                 <div class="flex rounded">
-                    <button id="btnLeft3" class="left btn-scroll2"><i class="icon-right-open-4"></i></button>
+                    <button id="btnLeft2" class="left btn-scroll2"><i class="icon-right-open-4"></i></button>
                     <div class="scroll-container p-15" id="scrollContainer">
                         <div class="scroll-wrapper">
                             {% for city in cities %}
@@ -196,7 +163,7 @@
                             {% endfor %}
                         </div>
                     </div>
-                    <button id="btnRight3" class="right btn-scroll2"><i class="icon-left-open-4"></i></button>
+                    <button id="btnRight2" class="right btn-scroll2"><i class="icon-left-open-4"></i></button>
                 </div>
             </div>
 
@@ -209,7 +176,7 @@
         <div class="container bg-gradiant2">
             <h3 class="text_dr">مراکز درمانی و کلینیک ها</h3>
             <div class="flex rounded">
-                <button id="btnLeft4" class="left btn-scroll"><i class="icon-right-open-4"></i></button>
+                <button id="btnLeft3" class="left btn-scroll"><i class="icon-right-open-4"></i></button>
                 <div class="scroll-container p-15" id="scrollContainer">
                     <div class="scroll-wrapper">
                         {% for clinic in clinics %}
@@ -233,13 +200,45 @@
                         {% endfor %}
                     </div>
                 </div>
-                <button id="btnRight4" class="right btn-scroll"><i class="icon-left-open-4"></i></button>
+                <button id="btnRight3" class="right btn-scroll"><i class="icon-left-open-4"></i></button>
             </div>
                         <p class="text-center text_dr"><a href="{% url 'clinics:clinic_list' %}"> مشاهده همه مراکز <i class="icon-left-4"></i> </a></p>
         </div>
 
     </section>
     <!-- /Clinics -->
+
+
+      <!-- Online consultation -->
+    <section>
+        <div class="container">
+            <h3 class="text_dr">دریافت مشاوره آنلاین</h3>
+            <div class="flex rounded">
+                 <button id="btnLeft4" class="left btn-scroll"><i class="icon-right-open-4"></i></button>
+                <div class="scroll-container p-15" id="scrollContainer">
+                    <div class="scroll-wrapper">
+                        {% for doctor in online_visit_doctors %}
+                        <a href="{% url 'doctors:doctor_detail' doctor.pk %}"  class="box_cat_home dr_box">
+                            <img src="{{ doctor.profile_image.url }}" class="round50" width="80" height="80" alt="">
+                            <h3>دکتر {{ doctor.user.get_full_name }}</h3>
+                            <p>{{ doctor.specialization.name }}</p>
+                            <div class="text-right text-info">
+                                <i class="icon-star-5"><small>{{ doctor.comment_rate }}</small></i>
+                                <p class="text-dark small">مدت زمان مشاوره <span class="text-info p-r-20">30 دقیقه</span>
+                                <p class="text-dark small">پاسخگویی : <span class="{% if doctor.availability.is_available %} text-success {% else %} text-info {% endif %} p-r-20">{% if doctor.availability.is_available %} روی خط {% else %}در اولین فرصت{% endif %}</span>
+                                </p>
+                                <button class="btn btn-outline-info col-md-12">دریافت مشاوره</button>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                 <button id="btnRight4" class="right btn-scroll"><i class="icon-left-open-4"></i></button>
+            </div>
+            <p class="text-center text_dr"><a href="{% url 'chat:list_doctors' %}"> مشاهده همه پزشک ها <i class="icon-left-4"></i> </a></p>
+        </div>
+    </section>
+     <!-- /Online consultation -->
 
     <!-- Mag -->
     <section>

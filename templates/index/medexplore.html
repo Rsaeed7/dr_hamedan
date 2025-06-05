@@ -30,6 +30,10 @@
 }
 
 </style>
+
+{#TO DO : Need a search bar#}
+{#Play video for posts with video#}
+
 <header class="bg-gradient-to-r from-blue-600 to-indigo-700 shadow-lg">
         <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
@@ -137,7 +141,11 @@
             <div class="group masonry-item" data-aos="fade-up">
                 <a href="{{ post.get_absolute_url }}" title="{{ post.title }}" data-gallery="recent-gallery-app" class="glightbox block overflow-hidden shadow-md">
                     <div class="overflow-hidden">
+                        {% if post.image %}
                         <img src="{{ post.image.url }}"  class="w-full h-full" alt="{{ post.title }}" />
+                        {% else %}
+                        <video src="{{ post.video.url }}"  class="w-full h-full" alt="{{ post.title }}" />
+                        {% endif %}
                     </div>
                 </a>
             </div>

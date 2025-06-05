@@ -54,7 +54,7 @@ class Doctor(models.Model):
     city = models.ForeignKey(City,on_delete=models.SET_NULL, null=True, verbose_name=_('شهر محل خدمت'))
     bio = models.TextField(blank=True, verbose_name=_('بیوگرافی'))
     profile_image = models.ImageField(upload_to='doctor_profiles/', blank=True, null=True, verbose_name=_('تصویر پروفایل'))
-    consultation_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name=_('هزینه مشاوره'))
+    consultation_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name=_('هزینه ویزیت'))
     consultation_duration = models.IntegerField(default=30, validators=[MinValueValidator(15), MaxValueValidator(120)], verbose_name=_('مدت زمان مشاوره (دقیقه)'))
     is_independent = models.BooleanField(default=False, verbose_name=_('مستقل'))  # اگر به هیچ کلینیکی وابسته نباشد
     is_available = models.BooleanField(default=True, verbose_name=_('در دسترس'))
@@ -66,6 +66,8 @@ class Doctor(models.Model):
     updated_at = jmodels.jDateTimeField(auto_now=True, verbose_name=_('تاریخ بروزرسانی'))
     gender = models.CharField(choices=GENDER_CHOICES, max_length=10, verbose_name=_('جنسیت'), null=True, blank=True)
     view_count = models.PositiveIntegerField(default=93, verbose_name='تعداد بازدید')
+    online_visit = models.BooleanField(verbose_name='ویزیت آنلاین', default=True)
+    online_visit_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name=_('هزینه ویزیت آنلاین'))
     # Geographic location fields
     latitude = models.DecimalField(max_digits=10, decimal_places=8, null=True, blank=True, verbose_name=_('عرض جغرافیایی'))
     longitude = models.DecimalField(max_digits=11, decimal_places=8, null=True, blank=True, verbose_name=_('طول جغرافیایی'))
@@ -257,7 +259,7 @@ class DrComment(models.Model):
     date = jmodels.jDateTimeField(verbose_name='تاریخ ثبت', auto_now_add=True)
     tips = models.ManyToManyField(CommentTips, related_name='comment_tips' , verbose_name='نکات مثبت و منفی', blank=True,null=True)
     status = models.CharField( max_length=10, choices=STATUS_CHOICES, default="checking", verbose_name="وضعیت")
-    waiting_time = models.CharField(max_length=30,choices=WAITING_CHOICES, verbose_name="زمان انتظار",default=WAITING_CHOICES[1])
+    waiting_time = models.CharField(max_length=30,choices=WAITING_CHOICES, verbose_name="زمان انتظار",default=WAITING_CHOICES[1],blank=True,null=True)
 
     class Meta:
         ordering = ("date",)
