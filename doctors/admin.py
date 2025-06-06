@@ -1,9 +1,57 @@
 from django.contrib import admin
-from .models import Doctor, DoctorAvailability, Specialization,City,DrServices,DrComment,CommentTips,Email,Supplementary_insurance
+from .models import Doctor, DoctorAvailability, Specialization,City,DrServices,DrComment,CommentTips,Email,Supplementary_insurance,DoctorRegistration
 
 admin.site.register(Email)
 admin.site.register(City)
 admin.site.register(Supplementary_insurance)
+
+@admin.register(DoctorRegistration)
+class DoctorRegistrationAdmin(admin.ModelAdmin):
+    list_display = ('get_full_name', 'email', 'specialization', 'city', 'status', 'created_at')
+    list_filter = ('status', 'specialization', 'city', 'gender', 'created_at')
+    search_fields = ('first_name', 'last_name', 'email', 'phone', 'national_id', 'license_number')
+    readonly_fields = ('created_at', 'updated_at')
+    list_editable = ('status',)
+    actions = ['approve_registration', 'reject_registration']
+    
+    fieldsets = (
+        ('اطلاعات شخصی', {
+            'fields': ('first_name', 'last_name', 'email', 'phone', 'national_id', 'gender')
+        }),
+        ('اطلاعات حرفه‌ای', {
+            'fields': ('specialization', 'license_number', 'city', 'bio', 'consultation_fee', 'consultation_duration')
+        }),
+        ('مدارک', {
+            'fields': ('profile_image', 'license_image', 'degree_image')
+        }),
+        ('وضعیت درخواست', {
+            'fields': ('status', 'rejection_reason')
+        }),
+        ('اطلاعات سیستم', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def get_full_name(self, obj):
+        return f"{obj.first_name} {obj.last_name}"
+    get_full_name.short_description = 'نام کامل'
+    
+    @admin.action(description="تایید درخواست‌های انتخاب‌شده")
+    def approve_registration(self, request, queryset):
+        approved_count = 0
+        for registration in queryset.filter(status='pending'):
+            registration.approve()
+            approved_count += 1
+        self.message_user(request, f"{approved_count} درخواست تایید شد.")
+    
+    @admin.action(description="رد درخواست‌های انتخاب‌شده")
+    def reject_registration(self, request, queryset):
+        rejected_count = 0
+        for registration in queryset.filter(status='pending'):
+            registration.reject("رد شده توسط مدیر")
+            rejected_count += 1
+        self.message_user(request, f"{rejected_count} درخواست رد شد.")
 
 @admin.register(DrComment)
 class DrCommentAdmin(admin.ModelAdmin):
