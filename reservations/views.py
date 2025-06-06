@@ -20,13 +20,6 @@ logger = logging.getLogger(__name__)
 
 @login_required
 def book_appointment(request, doctor_id):
-    """
-    TO DO:
-    In the absence of wallet balance, the user should be automatically directed to
-    recharge the wallet (for example, the recharge amount should be specified automatically).
-    """
-
-
     """نمایش فرم رزرو نوبت و پردازش درخواست رزرو"""
     if not request.user.is_authenticated:
         messages.error(request, 'برای رزرو نوبت باید وارد شوید')
@@ -106,8 +99,26 @@ def book_appointment(request, doctor_id):
             else:
                 messages.error(request, message)
                 if "موجودی کیف پول کافی نیست" in message:
-                    deposit_url = reverse('wallet:deposit')
-                    messages.warning(request, f'برای شارژ کیف پول <a href="{deposit_url}" class="text-blue-600 underline">اینجا کلیک کنید</a>')
+                    # محاسبه مقدار مورد نیاز برای شارژ
+                    required_amount = reservation.amount
+                    wallet, created = Wallet.objects.get_or_create(user=request.user)
+                    
+                    # محاسبه مقدار کمبود برای شارژ
+                    needed_amount = max(0, required_amount - wallet.balance)
+                    
+                    # اضافه کردن 10% بیشتر برای اطمینان
+                    suggested_amount = int(needed_amount * 1.1)
+                    
+                    # گرد کردن به نزدیکترین 10,000 تومان
+                    suggested_amount = ((suggested_amount + 9999) // 10000) * 10000
+                    
+                    # حداقل مقدار 10,000 تومان
+                    suggested_amount = max(10000, suggested_amount)
+                    
+                    # هدایت مستقیم به صفحه شارژ با پارامتر مقدار پیشنهادی
+                    deposit_url = f"{reverse('wallet:deposit')}?amount={suggested_amount}&redirect_to={request.path}"
+                    messages.warning(request, f'برای انجام رزرو نیاز به شارژ کیف پول دارید. به صفحه شارژ هدایت می‌شوید.')
+                    return redirect(deposit_url)
                 return redirect('reservations:book_appointment', doctor_id=doctor_id)
             
         except Exception as e:

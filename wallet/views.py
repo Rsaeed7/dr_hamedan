@@ -123,6 +123,10 @@ def deposit(request):
     """واریز به کیف پول"""
     wallet, created = Wallet.objects.get_or_create(user=request.user)
     
+    # دریافت پارامترهای اختیاری از URL
+    suggested_amount = request.GET.get('amount')
+    redirect_to = request.GET.get('redirect_to')
+    
     if request.method == 'POST':
         try:
             amount = Decimal(request.POST.get('amount', '0'))
@@ -131,17 +135,17 @@ def deposit(request):
             # اعتبارسنجی مبلغ
             if amount < Decimal('1000'):
                 messages.error(request, 'حداقل مبلغ واریز ۱۰۰۰ تومان است.')
-                return render(request, 'wallet/deposit.html', {'wallet': wallet})
+                return render(request, 'wallet/wallet_deposit.html', {'wallet': wallet, 'suggested_amount': suggested_amount, 'redirect_to': redirect_to})
             
             if amount > Decimal('50000000'):
                 messages.error(request, 'حداکثر مبلغ واریز ۵۰ میلیون تومان است.')
-                return render(request, 'wallet/deposit.html', {'wallet': wallet})
+                return render(request, 'wallet/wallet_deposit.html', {'wallet': wallet, 'suggested_amount': suggested_amount, 'redirect_to': redirect_to})
             
             # انتخاب درگاه پرداخت
             gateway = PaymentGateway.objects.filter(is_active=True).first()
             if not gateway and payment_method == 'gateway':
                 messages.error(request, 'درگاه پرداخت فعالی یافت نشد.')
-                return render(request, 'wallet/wallet_deposit.html', {'wallet': wallet})
+                return render(request, 'wallet/wallet_deposit.html', {'wallet': wallet, 'suggested_amount': suggested_amount, 'redirect_to': redirect_to})
             
             # ایجاد تراکنش
             with db_transaction.atomic():
@@ -156,6 +160,11 @@ def deposit(request):
                     tracking_code=str(uuid.uuid4())[:12].upper()
                 )
                 
+                # ذخیره آدرس بازگشت در تراکنش
+                if redirect_to:
+                    transaction.notes = f"redirect_to:{redirect_to}"
+                    transaction.save()
+                
                 if payment_method == 'gateway' and gateway:
                     # هدایت به درگاه پرداخت
                     return redirect('wallet:payment_gateway', transaction_id=transaction.id)
@@ -163,6 +172,10 @@ def deposit(request):
                     # پردازش مستقیم (برای تست)
                     transaction.mark_as_completed()
                     messages.success(request, f'مبلغ {amount} تومان با موفقیت به کیف پول شما اضافه شد.')
+                    
+                    # اگر آدرس بازگشت وجود داشت، به آن هدایت شود
+                    if redirect_to:
+                        return redirect(redirect_to)
                     return redirect('wallet:wallet_dashboard')
         
         except (ValueError, TypeError):
@@ -174,6 +187,8 @@ def deposit(request):
         'wallet': wallet,
         'min_amount': 1000,
         'max_amount': 50000000,
+        'suggested_amount': suggested_amount,
+        'redirect_to': redirect_to,
     }
     
     return render(request, 'wallet/wallet_deposit.html', context)
@@ -379,38 +394,40 @@ def payment_gateway(request, transaction_id):
         return redirect('wallet:wallet_dashboard')
 
 
+@csrf_exempt
 def payment_callback(request):
-    """پردازش callback درگاه پرداخت"""
-    authority = (request.GET.get('Authority') or request.GET.get('authority') or 
-                 request.POST.get('Authority') or request.POST.get('authority'))
-    status = (request.GET.get('Status') or request.GET.get('status') or 
-              request.POST.get('Status') or request.POST.get('status'))
-    
-    if not authority:
-        messages.error(request, 'کد پیگیری پرداخت یافت نشد')
-        return redirect('wallet:wallet_dashboard')
+    """پاسخ از درگاه پرداخت"""
+    # پارامترهای بازگشتی از درگاه
+    status = request.GET.get('status', '')
+    transaction_id = request.GET.get('transaction_id', '')
     
     try:
-        transaction = Transaction.objects.get(authority=authority)
+        transaction = Transaction.objects.get(id=transaction_id)
         
-        if status == 'OK':
-            # پرداخت موفق
-            if transaction.status == 'pending':
-                transaction.mark_as_completed()
-                messages.success(request, f'پرداخت با موفقیت انجام شد. مبلغ {transaction.amount:,} تومان پردازش شد.')
-            else:
-                messages.info(request, 'این تراکنش قبلاً پردازش شده است')
+        # بررسی وضعیت پرداخت
+        if status == 'success':
+            transaction.mark_as_completed()
+            messages.success(request, f'پرداخت با موفقیت انجام شد و مبلغ {transaction.amount:,} تومان به کیف پول شما اضافه شد.')
+            
+            # بررسی آدرس بازگشت
+            redirect_url = 'wallet:wallet_dashboard'
+            if transaction.notes and transaction.notes.startswith('redirect_to:'):
+                redirect_path = transaction.notes.replace('redirect_to:', '')
+                if redirect_path:
+                    return redirect(redirect_path)
         else:
-            # پرداخت ناموفق
             transaction.mark_as_failed()
-            messages.error(request, 'پرداخت ناموفق بود. لطفاً مجدداً تلاش کنید.')
+            messages.error(request, 'پرداخت ناموفق بود. لطفاً دوباره تلاش کنید.')
+            redirect_url = 'wallet:deposit'
     
     except Transaction.DoesNotExist:
-        messages.error(request, 'تراکنش مورد نظر یافت نشد')
+        messages.error(request, 'تراکنش یافت نشد.')
+        redirect_url = 'wallet:wallet_dashboard'
     except Exception as e:
-        messages.error(request, 'خطا در پردازش پرداخت')
+        messages.error(request, f'خطا در پردازش پاسخ پرداخت: {str(e)}')
+        redirect_url = 'wallet:wallet_dashboard'
     
-    return redirect('wallet:wallet_dashboard')
+    return redirect(redirect_url)
 
 
 @login_required

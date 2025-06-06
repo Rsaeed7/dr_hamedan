@@ -40,6 +40,7 @@
 
                                     <form method="post" action="{% url 'wallet:deposit' %}">
                                         {% csrf_token %}
+                                        <input type="hidden" name="redirect_to" value="{{ redirect_to|default:'' }}">
 
                                         <div class="mb-4">
                                             <label for="id_amount" class="form-label">مبلغ واریزی</label>
@@ -52,7 +53,7 @@
                                             </div>
                                             <div class="input-group">
                                                 <input type="number" name="amount" id="amount"
-                                                       value="{{ form.amount.value|default_if_none:'' }}"
+                                                       value="{{ suggested_amount|default:form.amount.value|default_if_none:'' }}"
                                                        class="form-control"
                                                        placeholder="مبلغ دلخواه خود را وارد کنید"
                                                        min="5" step="0.01" required>
@@ -240,6 +241,15 @@
                 }
             });
         });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const suggestedAmount = '{{ suggested_amount }}';
+        const amountInput = document.getElementById('amount');
+        
+        if (suggestedAmount && amountInput) {
+            amountInput.value = suggestedAmount;
+        }
+    });
     </script>
 {% endblock %}
 
