@@ -23,6 +23,7 @@ urlpatterns = [
     path('update-settings/', views.update_settings, name='update_settings'),
     path('update-payment-settings/', views.update_payment_settings, name='update_payment_settings'),
     path('medexplor/', views.explore, name='medexplor'),
+    path('register/', views.doctor_registration, name='doctor_registration'),
 
     path('inbox/', views.InboxView.as_view(), name='inbox'),
     path('doctor-search/', views.doctor_search, name='doctor-search'),
