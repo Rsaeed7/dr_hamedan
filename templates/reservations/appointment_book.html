@@ -238,6 +238,7 @@
                                         <div class="row m-t-10" id="time-slots-grid" onclick="showFormModal()">
 
                                             <!-- زمان‌های ویزیت در اینجا بارگذاری می‌شوند -->
+                                             
                                         </div>
                                     </div>
                                 </div>
@@ -702,9 +703,10 @@
                     const hasInsufficientBalance = walletBalance < consultationFee;
                     if (selectedDate && selectedTime) {
                         if (hasInsufficientBalance) {
-                            elements.submitBtn.disabled = true;
-                            elements.submitBtn.className = 'btn btn-danger w-100 m-t-10';
-                            elements.submitBtn.textContent = ' موجودی کافی نیست - لطفاً کیف پول را شارژ کنید';
+                            elements.submitBtn.disabled = false;
+                            elements.submitBtn.className = 'btn btn-warning w-100 m-t-10';
+                            const neededAmount = consultationFee - walletBalance;
+                            elements.submitBtn.textContent = `شارژ کیف پول (${neededAmount.toLocaleString()} تومان کمبود دارید)`;
                         } else {
                             elements.submitBtn.disabled = false;
                             elements.submitBtn.className = 'btn btn-info dr_bg w-full rounded border-0 m-t-10';
@@ -796,7 +798,23 @@
                 const hasInsufficientBalance = walletBalance < consultationFee;
                 if (hasInsufficientBalance) {
                     e.preventDefault();
-                    alert('موجودی کیف پول کافی نیست. لطفاً ابتدا کیف پول خود را شارژ کنید.');
+                    // محاسبه مقدار کمبود برای شارژ
+                    const neededAmount = consultationFee - walletBalance;
+                    
+                    // اضافه کردن 10% بیشتر برای اطمینان
+                    const suggestedAmount = Math.ceil(neededAmount * 1.1);
+                    
+                    // گرد کردن به نزدیکترین 10,000 تومان
+                    const roundedAmount = Math.ceil(suggestedAmount / 10000) * 10000;
+                    
+                    // حداقل مقدار 10,000 تومان
+                    const finalAmount = Math.max(10000, roundedAmount);
+                    
+                    // ساخت آدرس بازگشت (آدرس فعلی با پارامترهای انتخاب شده)
+                    const currentUrl = window.location.href;
+                    
+                    // هدایت به صفحه شارژ کیف پول با مقدار پیشنهادی
+                    window.location.href = `/wallet/deposit/?amount=${finalAmount}&redirect_to=${encodeURIComponent(currentUrl)}`;
                     return;
                 }
                 const confirmMessage = `آیا از رزرو این نوبت اطمینان دارید؟\n\nتاریخ: ${selectedDate}\nزمان: ${selectedTime}\nهزینه: ${consultationFee.toLocaleString()} تومان\n\nمبلغ به صورت خودکار از کیف پول شما کسر خواهد شد.`;
