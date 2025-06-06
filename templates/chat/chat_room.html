@@ -202,26 +202,43 @@
 <div class="sidebar" id="sidebar">
     <div class="sidebar-header" id="logo_home">
         <img height="28" src="{% static 'img/logo_2x.png' %}">
-        <button class="btn btn-scroll icon-cancel" id="close-sidebar"></button>
+        <button class="btn btn-scroll icon-cancel d-lg-none" id="close-sidebar"></button>
     </div>
     <div class="sidebar-content">
         <ul class="nav flex-column">
+                        <li class="nav-item">
+                <a class="nav-link" href="/">
+                    <i class="fas fa-home me-2"></i> صفحه اصلی
+                </a>
+            </li>
             <li class="nav-item">
-                <a class="nav-link" href="">
+                <a class="nav-link" href="{% url 'chat:chat_home' %}">
                     <i class="fas fa-comments me-2"></i> گفتگوها
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="">
-                    <i class="fas fa-calendar-alt me-2"></i> نوبت‌ها
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="">
-                    <i class="fas fa-user me-2"></i> پروفایل
-                </a>
-            </li>
-
+            {% if request.user.doctor %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'doctors:doctor_appointments' %}">
+                        <i class="fas fa-calendar-alt me-2"></i> نوبت‌ها
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'doctors:doctor_dashboard' %}">
+                        <i class="fas fa-dashboard me-2"></i> داشبورد
+                    </a>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'patients:patient_appointments' %}">
+                        <i class="fas fa-calendar-alt me-2"></i> نوبت‌ها
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'patients:patient_dashboard' %}">
+                        <i class="fas fa-user me-2"></i> پروفایل
+                    </a>
+                </li>
+            {% endif %}
         </ul>
     </div>
 </div>
@@ -231,7 +248,7 @@
     <div class="chat-header d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
             <a href="{% url 'chat:chat_room_list' %}" class="text-white me-3">
-                <i class="fas fa-arrow-right"></i>
+                <i class="fas fa-arrow-right p-1"></i>
             </a>
             <div>
                 <h6 class="mb-1 fw-bold text-white">
@@ -249,9 +266,8 @@
                 </div>
             </div>
         </div>
-        <div class="d-flex">
-            <button class="btn btn-sm btn-link text-white me-2" id="sidebar-toggle">
-                <i class="fas fa-bars"></i>
+        <div class="d-flex d-lg-none"> <i class="fas fa-bars"></i>
+            <button class="btn btn-sm btn-link text-white me-2 " id="sidebar-toggle">
             </button>
         </div>
     </div>
