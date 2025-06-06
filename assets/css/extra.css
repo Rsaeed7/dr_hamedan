@@ -1,4 +1,12 @@
+@media (min-width: 1550px) {
+    .header-d-container{
+        min-width: 1450px!important;
+    }
+    .p-r-150-lg{
+        padding-right: 150px!important;
+    }
 
+}
 @media (min-width: 768px) {
     .btn_search {
         background: none !important;
@@ -134,8 +142,12 @@
     color: rgba(0, 0, 0, 0.59);
 }
 .text-red {
-    color: rgb(255, 0, 0);
+    color: rgb(255, 0, 0)!important;
 }
+.text-turquoise {
+    color: rgb(100, 250, 255) !important;
+}
+
 
 
 @media (min-width: 768px) {

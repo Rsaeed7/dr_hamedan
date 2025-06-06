@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from patients.models import MedicalRecord
-from .models import Doctor, DoctorAvailability, Specialization, Clinic, City, DrComment, CommentTips ,Email,Supplementary_insurance
+from .models import Doctor, DoctorAvailability, Specialization, Clinic, City, DrComment, CommentTips ,Email,Supplementary_insurance, DoctorRegistration
 from reservations.models import Reservation, ReservationDay
 from datetime import datetime, timedelta
 from django.db.models import  Sum, Avg
@@ -18,7 +18,7 @@ from django.views.generic import ListView, DetailView, CreateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.urls import reverse_lazy
-from .forms import EmailForm
+from .forms import EmailForm, DoctorRegistrationForm
 from homecare.models import Service
 from reservations.turn_maker import create_availability_days_for_day_of_week
 from reservations.services import BookingService, AppointmentService
@@ -59,6 +59,22 @@ def explore(request):
     }
     return render(request, 'index/medexplore.html', context)
 
+
+def doctor_registration(request):
+    """Doctor registration view for new doctors to apply"""
+    if request.method == 'POST':
+        form = DoctorRegistrationForm(request.POST, request.FILES)
+        if form.is_valid():
+            registration = form.save()
+            messages.success(request, 'درخواست عضویت شما با موفقیت ثبت شد. پس از بررسی، نتیجه از طریق ایمیل اطلاع‌رسانی خواهد شد.')
+            return redirect('doctors:doctor_registration')
+    else:
+        form = DoctorRegistrationForm()
+    
+    context = {
+        'form': form,
+    }
+    return render(request, 'doctors/doctor_registration.html', context)
 
 
 class DoctorListView(ListView):

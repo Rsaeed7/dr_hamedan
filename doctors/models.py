@@ -71,6 +71,7 @@ class Doctor(models.Model):
     # Geographic location fields
     latitude = models.DecimalField(max_digits=10, decimal_places=8, null=True, blank=True, verbose_name=_('عرض جغرافیایی'))
     longitude = models.DecimalField(max_digits=11, decimal_places=8, null=True, blank=True, verbose_name=_('طول جغرافیایی'))
+    national_id = models.CharField(max_length=10, verbose_name=_('کد ملی'),blank=True,null=True)
 
     def get_first_available_day(self, max_days=30):
         """
@@ -367,5 +368,118 @@ class Email(models.Model):
                     break
 
         super().save(*args, **kwargs)
+
+class DoctorRegistration(models.Model):
+    """Model for doctor registration applications"""
+    STATUS_CHOICES = (
+        ('pending', 'در انتظار بررسی'),
+        ('approved', 'تایید شده'),
+        ('rejected', 'رد شده'),
+    )
+    
+    # Personal Information
+    first_name = models.CharField(max_length=50, verbose_name=_('نام'))
+    last_name = models.CharField(max_length=50, verbose_name=_('نام خانوادگی'))
+    email = models.EmailField(verbose_name=_('ایمیل'))
+    phone = models.CharField(max_length=20, verbose_name=_('شماره تماس'))
+    national_id = models.CharField(max_length=10, verbose_name=_('کد ملی'))
+    gender = models.CharField(choices=Doctor.GENDER_CHOICES, max_length=10, verbose_name=_('جنسیت'))
+    
+    # Professional Information
+    specialization = models.ForeignKey(Specialization, on_delete=models.SET_NULL, null=True, verbose_name=_('تخصص'))
+    license_number = models.CharField(max_length=50, verbose_name=_('شماره پروانه'))
+    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, verbose_name=_('شهر محل خدمت'))
+    bio = models.TextField(verbose_name=_('بیوگرافی'))
+    consultation_fee = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('هزینه ویزیت'))
+    consultation_duration = models.IntegerField(default=30, verbose_name=_('مدت زمان مشاوره (دقیقه)'))
+    
+    # Documents
+    profile_image = models.ImageField(upload_to='doctor_registrations/profiles/', verbose_name=_('تصویر پروفایل'))
+    license_image = models.ImageField(upload_to='doctor_registrations/licenses/', verbose_name=_('تصویر پروانه'))
+    degree_image = models.ImageField(upload_to='doctor_registrations/degrees/', verbose_name=_('تصویر مدرک تحصیلی'))
+    
+    # Application Status
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending', verbose_name=_('وضعیت'))
+    admin_notes = models.TextField(blank=True, verbose_name=_('یادداشت‌های ادمین'))
+    
+    # Timestamps
+    created_at = jmodels.jDateTimeField(auto_now_add=True, verbose_name=_('تاریخ ثبت درخواست'))
+    updated_at = jmodels.jDateTimeField(auto_now=True, verbose_name=_('تاریخ بروزرسانی'))
+    reviewed_at = jmodels.jDateTimeField(null=True, blank=True, verbose_name=_('تاریخ بررسی'))
+    reviewed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='reviewed_doctor_registrations', verbose_name=_('بررسی شده توسط'))
+    
+    class Meta:
+        verbose_name = _('درخواست عضویت پزشک')
+        verbose_name_plural = _('درخواست‌های عضویت پزشکان')
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} - {self.get_status_display()}"
+    
+    def approve(self, admin_user):
+        """Approve the doctor registration and create doctor profile"""
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        
+        # Create user account
+        username = f"dr_{self.email.split('@')[0]}"
+        password = User.objects.make_random_password()
+        
+        user = User.objects.create_user(
+            username=username,
+            email=self.email,
+            first_name=self.first_name,
+            last_name=self.last_name,
+            phone=self.phone,
+            user_type='doctor'
+        )
+        user.set_password(password)
+        user.save()
+        
+        # Create doctor profile
+        doctor = Doctor.objects.create(
+            user=user,
+            specialization=self.specialization,
+            license_number=self.license_number,
+            national_id=self.national_id,
+            city=self.city,
+            bio=self.bio,
+            profile_image=self.profile_image,
+            consultation_fee=self.consultation_fee,
+            consultation_duration=self.consultation_duration,
+            phone=self.phone,
+            gender=self.gender,
+            is_available=True
+        )
+        
+        # Update registration status
+        self.status = 'approved'
+        self.reviewed_by = admin_user
+        self.reviewed_at = timezone.now()
+        self.save()
+        
+        # Send welcome notification
+        from utils.utils import send_notification
+        message = f"""درخواست عضویت شما به عنوان پزشک تایید شد.
+        نام کاربری: {username}
+        رمز عبور موقت: {password}
+        لطفاً پس از ورود، رمز عبور خود را تغییر دهید."""
+        
+        send_notification(
+            user=user,
+            title='تایید عضویت پزشک',
+            message=message,
+            notification_type='success'
+        )
+        
+        return doctor
+    
+    def reject(self, admin_user, reason=""):
+        """Reject the doctor registration"""
+        self.status = 'rejected'
+        self.admin_notes = reason
+        self.reviewed_by = admin_user
+        self.reviewed_at = timezone.now()
+        self.save()
 
 

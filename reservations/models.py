@@ -130,6 +130,17 @@ class Reservation(models.Model):
                 
                 self.save()
                 
+                # Send confirmation notification
+                if self.patient and self.patient.user:
+                    from utils.utils import send_notification
+                    message = f"نوبت شما با دکتر {self.doctor.user.get_full_name()} در تاریخ {self.day.date} ساعت {self.time} تایید شد."
+                    send_notification(
+                        user=self.patient.user,
+                        title='تایید نوبت',
+                        message=message,
+                        notification_type='success'
+                    )
+                
                 return True, f"نوبت با موفقیت رزرو و پرداخت شد. مبلغ {appointment_fee:,} تومان از کیف پول شما کسر گردید."
                 
         except Exception as e:
@@ -140,7 +151,17 @@ class Reservation(models.Model):
         if self.status == 'pending' and self.payment_status == 'paid':
             self.status = 'confirmed'
             self.save()
-            # TODO: Send confirmation email/notification
+            
+            # Send confirmation notification
+            if self.patient and self.patient.user:
+                from utils.utils import send_notification
+                message = f"نوبت شما با دکتر {self.doctor.user.get_full_name()} در تاریخ {self.day.date} ساعت {self.time} تایید شد."
+                send_notification(
+                    user=self.patient.user,
+                    title='تایید نوبت',
+                    message=message,
+                    notification_type='success'
+                )
             return True
         return False
     
@@ -149,6 +170,12 @@ class Reservation(models.Model):
         if self.status in ['pending', 'confirmed']:
             # اگر نوبت رزرو شده بود، به حالت آزاد برگردان
             if self.status in ['pending', 'confirmed']:
+                # Store patient info for notification before clearing
+                patient_user = self.patient.user if self.patient else None
+                doctor_name = self.doctor.user.get_full_name()
+                appointment_date = self.day.date
+                appointment_time = self.time
+                
                 self.status = 'available'
                 self.patient = None
                 self.patient_name = ''
@@ -175,7 +202,17 @@ class Reservation(models.Model):
                         )
             
             self.save()
-            # TODO: Send cancellation email/notification
+            
+            # Send cancellation notification
+            if patient_user:
+                from utils.utils import send_notification
+                message = f"نوبت شما با دکتر {doctor_name} در تاریخ {appointment_date} ساعت {appointment_time} لغو شد."
+                send_notification(
+                    user=patient_user,
+                    title='لغو نوبت',
+                    message=message,
+                    notification_type='warning'
+                )
             return True
         return False
     
@@ -184,7 +221,17 @@ class Reservation(models.Model):
         if self.status == 'confirmed' and self.payment_status == 'paid':
             self.status = 'completed'
             self.save()
-            # TODO: Send completion email/notification
+            
+            # Send completion notification
+            if self.patient and self.patient.user:
+                from utils.utils import send_notification
+                message = f"نوبت شما با دکتر {self.doctor.user.get_full_name()} در تاریخ {self.day.date} ساعت {self.time} تکمیل شد. لطفاً نظر خود را درباره کیفیت خدمات ارائه دهید."
+                send_notification(
+                    user=self.patient.user,
+                    title='تکمیل نوبت',
+                    message=message,
+                    notification_type='success'
+                )
             return True
         return False
 
