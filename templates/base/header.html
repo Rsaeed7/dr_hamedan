@@ -241,9 +241,13 @@
 
                         <li><a href="{% url 'mag:list' %}">مجله پزشکی</a></li>
                         <li><a href="{% url 'clinics:clinic_list' %}">مراکز درمانی</a></li>
-                                            <li>
+                        <li>
                             <a href="{% url 'homecare:select_service' %}">خدمات پزشکی در محل</a>
-
+                        </li>
+                        <li>
+                            <a href="{% url 'doctors:doctor_registration' %}" class="text-primary">
+                                <i class="icon-user-md"></i> عضویت پزشکان
+                            </a>
                         </li>
                         <li><a href="{% url 'doctors:medexplor' %}" class="text_dr_2">لنزپزشکی</a></li>
                     </ul>
@@ -306,6 +310,12 @@
            class="nav-item">
             <i class="icon-user-outline text-dr"></i>
             <span>ورود</span>
+        </a>
+        
+        <a href="{% url 'doctors:doctor_registration' %}"
+           class="nav-item {% if request.resolver_match.url_name == 'doctor_registration' %}active{% endif %}">
+            <i class="icon-user-md text-dr"></i>
+            <span class="fs-12">عضویت پزشک</span>
         </a>
     {% endif %}
     {% if request.user.doctor %}
