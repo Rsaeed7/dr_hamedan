@@ -71,6 +71,7 @@ class Doctor(models.Model):
     # Geographic location fields
     latitude = models.DecimalField(max_digits=10, decimal_places=8, null=True, blank=True, verbose_name=_('عرض جغرافیایی'))
     longitude = models.DecimalField(max_digits=11, decimal_places=8, null=True, blank=True, verbose_name=_('طول جغرافیایی'))
+    national_id = models.CharField(max_length=10, verbose_name=_('کد ملی'),blank=True,null=True)
 
     def get_first_available_day(self, max_days=30):
         """
@@ -430,7 +431,6 @@ class DoctorRegistration(models.Model):
             first_name=self.first_name,
             last_name=self.last_name,
             phone=self.phone,
-            national_id=self.national_id,
             user_type='doctor'
         )
         user.set_password(password)
@@ -441,6 +441,7 @@ class DoctorRegistration(models.Model):
             user=user,
             specialization=self.specialization,
             license_number=self.license_number,
+            national_id=self.national_id,
             city=self.city,
             bio=self.bio,
             profile_image=self.profile_image,

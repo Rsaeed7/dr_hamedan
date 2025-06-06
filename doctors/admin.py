@@ -25,7 +25,7 @@ class DoctorRegistrationAdmin(admin.ModelAdmin):
             'fields': ('profile_image', 'license_image', 'degree_image')
         }),
         ('وضعیت درخواست', {
-            'fields': ('status', 'rejection_reason')
+            'fields': ('status',)
         }),
         ('اطلاعات سیستم', {
             'fields': ('created_at', 'updated_at'),
