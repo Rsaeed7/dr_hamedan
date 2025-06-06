@@ -16,6 +16,7 @@ from django.views.generic import ListView
 from django.db.models import Q, Avg
 
 """
+یعنی چی؟؟
 TO DO : Connecting the chat request to the wallet like an 
 appointment system (one step before submitting the request is also necessary).
 """
