@@ -3,6 +3,11 @@
 {% block body %}
     <section class="bg-bluelight">
         <div class="container margin_120_95">
+                    <div class="row text-center d-md-none">
+        <a href="{% url 'doctors:doctor_registration' %}" class="col-lg-12 col-md-12 box_general_2 rounded-0">
+            <h5 class=" text-white">برا عضویت به عنوان پزشک در دکتر همدان <span class="text-turquoise"> اینجا کلیک کنید </span></h5>
+        </a>
+    </div>
             <div class="main_title">
                 <h1 class="font-weight-bold m-b-30">امکانات دکترهمدان برای پزشکان</h1>
                 <div class="row">
@@ -26,6 +31,7 @@
                         <h6>گزارش کامل درامد</h6>
                         <p class="fs-13">میتوانید گزارش کاملی از درامد خود را در پنل کاربری مشاهده کنید</p>
                     </a>
+
                 </div>
 
                 <div class="row">
@@ -52,6 +58,11 @@
                         <h6>نسخه‌نویسی الکترونیک</h6>
                         <p class="fs-13">نسخه‌‌نویسی با تامین اجتماعی و سلامت به صورت یکپارچه در نرم‌افزار نسخه‌نویسی
                             الکترونیک انجام می‌شود.</p>
+                    </a>
+                </div>
+                     <div class="row">
+                    <a href="{% url 'doctors:doctor_registration' %}" class="col-lg-12 col-md-12 box_general_2 rounded-0">
+                        <h4 class=" text-white">برا عضویت به عنوان پزشک در دکتر همدان <span class="text-turquoise"> اینجا کلیک کنید </span></h4>
                     </a>
                 </div>
             </div>
@@ -103,7 +114,7 @@
                             </h5>
                         </div>
 
-                        <div id="pay_detail" class="collapse show" role="tabpanel" data-parent="#lenz_detail">
+                        <div id="lenz_detail" class="collapse show" role="tabpanel" data-parent="#lenz_detail">
                             <div class="card-body row">
                                 <div class="col-lg-6 col-md-6 box_general  rounded-10">
                                     <i class="pe-7s-more fs-50 m-b-5"></i>
@@ -158,10 +169,10 @@
 
                                                 <h3 class=" text_dr_3 box_general_3 bg-light-violet text-center" id="report">گزارش کامل کارکرد مالی شما</h3>
                 <div role="tablist" class="add_bottom_45 accordion">
-                    <div class="">
-                        <div class="" role="tab">
+                    <div >
+                        <div  role="tab">
                             <h5 class="mb-0">
-                                <a data-toggle="collapse" href="#text_detail" aria-expanded="true"><i
+                                <a data-toggle="collapse" href="#report_detail" aria-expanded="true"><i
                                         class="icon-info"></i>گزارش کامل کارکرد مالی شما در پنل مدیریتی</a>
                             </h5>
                         </div>
@@ -303,32 +314,40 @@
     </div>
 
 
-    <script>
+<script>
 document.addEventListener('DOMContentLoaded', function() {
-    // انتخاب تمام لینک‌هایی که با # شروع می‌شوند
     const internalLinks = document.querySelectorAll('a[href^="#"]');
 
-    // افزودن رویداد کلیک به هر لینک
     internalLinks.forEach(link => {
         link.addEventListener('click', function(e) {
-            e.preventDefault(); // جلوگیری از رفتار پیش‌فرض لینک
-
-            // دریافت آدرس مقصد
             const targetId = this.getAttribute('href');
+
+            // اگر لینک برای آکاردئون است، از پیش‌فرض جلوگیری نکن
+            if (targetId.includes('_detail')) return;
+
+            e.preventDefault();
             const targetElement = document.querySelector(targetId);
 
             if (targetElement) {
-                // اسکرول نرم به عنصر مقصد
                 targetElement.scrollIntoView({
                     behavior: 'smooth',
                     block: 'start'
                 });
 
-                // به روز رسانی URL بدون رفرش صفحه (اختیاری)
-                history.pushState(null, null, targetId);
+                // فقط برای هدرهای اصلی URL را آپدیت کن
+                if (['#pay', '#lenz', '#text', '#report', '#file',
+                     '#management', '#support', '#prescription'].includes(targetId)) {
+                    history.pushState(null, null, targetId);
+                }
             }
         });
     });
-});
+
+    // فعال کردن آکاردئون‌ها
+    $('.accordion .collapse').on('show.bs.collapse', function () {
+        $(this).parent().find('.pe-7s-more').removeClass('pe-7s-more').addClass('pe-7s-less');
+    }).on('hide.bs.collapse', function () {
+        $(this).parent().find('.pe-7s-less').removeClass('pe-7s-less').addClass('pe-7s-more');
+    });
 </script>
 {% endblock %}

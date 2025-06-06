@@ -532,9 +532,11 @@
                         <small class="m-b-10 font-weight-bold"> <i
                                 class="icon-location-outline"></i>{{ doctor.address }}
                         </small>
+
                     </div>
 
                     <div class="rev-header">
+
                         {% if doctor.get_first_available_day %}
                             <small class="rev-info text-sm-right">اولین نوبت خالی</small>
                             <small class="text-info">{{ doctor.get_first_available_day|persian_date_info }}</small>

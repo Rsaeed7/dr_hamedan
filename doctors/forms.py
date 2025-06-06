@@ -142,7 +142,7 @@ class DoctorRegistrationForm(forms.ModelForm):
         if national_id:
             # Check if national ID already exists
             from user.models import User
-            if User.objects.filter(national_id=national_id).exists():
+            if Doctor.objects.filter(national_id=national_id).exists():
                 raise forms.ValidationError("این کد ملی قبلاً استفاده شده است.")
             if DoctorRegistration.objects.filter(national_id=national_id, status='pending').exists():
                 raise forms.ValidationError("درخواست عضویت با این کد ملی در حال بررسی است.")

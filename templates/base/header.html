@@ -141,17 +141,17 @@
 </style>
 
 <header class="header_sticky">
-    <div class="container">
+    <div class="container header-d-container">
         <div class="row">
             <!--Logo-->
-            <div class="col-lg-3 col-6">
+            <div class="col-lg-2 col-6">
 
                 <div id="logo_home">
                     <h1><a href="/" title="DrHamedan">DrHamedan</a></h1>
                 </div>
             </div>
             <!--/Logo-->
-            <nav class="col-lg-9 col-6">
+            <nav class="col-lg-10 col-6">
                 <a class="cmn-toggle-switch cmn-toggle-switch__htx open_close m-r-100"
                    href="#0"><span>Menu mobile</span></a>
                 <ul id="top_access">
@@ -204,7 +204,7 @@
                         {% endif %}
                     </li>
                 </ul>
-                <div class="main-menu">
+                <div class="main-menu center-content">
                     <ul>
                         <li class="d-lg-none">
                             {% if user.is_authenticated %}
@@ -221,6 +221,7 @@
                             {% endif %}
                             </a>
                         </li>
+                    <li class="p-r-150-lg"><a href="{% url 'support:for_doctors' %}" class="text-turquoise">برای پزشکان</a></li>
                         <li>
                             <a href="{% url 'doctors:doctor_list' %}">نوبت دهی آنلاین</a>
                         </li>
@@ -244,21 +245,16 @@
                         <li>
                             <a href="{% url 'homecare:select_service' %}">خدمات پزشکی در محل</a>
                         </li>
-                        <li>
-                            <a href="{% url 'doctors:doctor_registration' %}" class="text-primary">
-                                <i class="icon-user-md"></i> عضویت پزشکان
-                            </a>
-                        </li>
                         <li><a href="{% url 'doctors:medexplor' %}" class="text_dr_2">لنزپزشکی</a></li>
                     </ul>
                 </div>
             </nav>
         </div>
 
-
     </div>
 
 </header>
+
 {% if messages %}
     {% for message in messages %}
         <div class="m-t-30 floating-alert {{ message.tags }}">
