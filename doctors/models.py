@@ -369,6 +369,23 @@ class Email(models.Model):
 
         super().save(*args, **kwargs)
 
+class EmailTemplate(models.Model):
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='email_templates')
+    title = models.CharField(max_length=200, verbose_name='عنوان قالب',blank=True,null=True)
+    subject = models.CharField(max_length=200, verbose_name='موضوع',blank=True,null=True)
+    body = models.TextField(verbose_name='متن نامه')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'قالب نامه'
+        verbose_name_plural = 'قالب‌های نامه'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.title} - {self.subject} - {self.body:30}"
+
+
 class DoctorRegistration(models.Model):
     """Model for doctor registration applications"""
     STATUS_CHOICES = (

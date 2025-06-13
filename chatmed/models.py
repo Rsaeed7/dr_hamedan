@@ -20,6 +20,7 @@ class ChatRequest(models.Model):
 
     patient = models.ForeignKey(Patient,unique=False, on_delete=models.CASCADE, related_name='chat_requests', verbose_name='بیمار')
     doctor = models.ForeignKey(Doctor,unique=False, on_delete=models.CASCADE, related_name='chat_requests', verbose_name='پزشک')
+    disease_summary = models.TextField(verbose_name='خلاصه بیماری',blank=True,null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=PENDING, verbose_name='وضعیت')
     created_at = jmodels.jDateTimeField(default=timezone.now, verbose_name='تاریخ ایجاد')
     updated_at = jmodels.jDateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')

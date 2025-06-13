@@ -566,8 +566,8 @@
                     </div>
                     <small class="rev-info text-sm-right">مشاوره متنی به مدت <span
                             class="text-info">30 دقیقه</span></small>
-                    <a href="{% url 'chat:request_chat' doctor.id %}" class="btn btn-primary col-lg-12 m-b-10 m-t-15">دریافت
-                        مشاوره متنی</a>
+                    <button onclick="showFormChat()" class="btn btn-primary col-lg-12 m-b-10 m-t-15">دریافت
+                        مشاوره متنی</button>
 
                 </div>
             {% endif %}
@@ -576,6 +576,83 @@
             <!-- /asdide -->
         </div>
     </div>
+
+    <div class="hidden" id="information">
+        <div id="formModal" class="modal text-right">
+            <div class="modal-content">
+                <span class="close" onclick="closeFormChat()">&times;</span>
+                <div id="booking-form">
+                    <div class="alert alert-info mt-3">
+                        رزرو ویزیت آنلاین <br>
+                        هزینه ویزیت: {{ doctor.online_visit_fee }} تومان
+                    </div>
+                    <form method="post" id="booking-form" action="{% url 'chat:request_chat' doctor.id %}">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="patient_name" class="form-label">نام<span class="text-red">*</span></label>
+                                    <input type="text" id="patient_name" name="patient_name"
+                                           class="form-control"
+                                           value="{% if user.first_name %}{{ user.first_name }}{% endif %}"
+                                           required>
+                                    <small class="text-danger font-weight-light"
+                                           id="name_alarm"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="patient_last_name" class="form-label">نام
+                                        خانوادگی<span class="text-red">*</span></label>
+                                    <input type="text" id="patient_last_name" name="patient_last_name"
+                                           class="form-control"
+                                           value="{% if user.last_name %}{{ user.last_name }}{% endif %}"
+                                           required>
+                                    <small class="text-danger font-weight-light"
+                                           id="last_name_alarm"></small>
+                                </div>
+                            </div>
+                                                    <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="patient_national_id" class="form-label">کد ملی</label>
+                                    <input type="text" id="patient_national_id" name="patient_national_id"
+                                           class="form-control"
+                                           value="{% if user.patient.national_id %}{{ user.patient.national_id }}{% endif %}">
+                                    <small class="text-danger font-weight-light"
+                                           id="national_id_alarm"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="phone" class="form-label">شماره تماس<span
+                                            class="text-red">*</span></label>
+                                    <input type="tel" id="phone" name="phone"
+                                           class="form-control" disabled
+                                           value="{% if user.phone %}{{ user.phone }}{% endif %}">
+                                    <small class="text-danger font-weight-light"
+                                           id="phone_alarm"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="disease_summary" class="form-label">خلاصه ای از علت مراجعه</label>
+                                    <input type="text" id="disease_summary"
+                                           name="disease_summary"
+                                           class="form-control">
+                                </div>
+                            </div>
+
+                        </div>
+                        <button  type="submit" id="submit-btn"
+                           class="btn btn-primary w-100">
+                            روزرو ویزیت آنلاین
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.getElementById('scrollButton').addEventListener('click', function () {
             const asideElement = document.getElementById('aside');
@@ -599,5 +676,88 @@
             document.getElementById("formModal").classList.add("hidden");
         }
     </script>
+    <script>
+        function showFormChat() {
+            document.getElementById("information").classList.remove("hidden");
 
+        }
+
+        function closeFormChat() {
+            document.getElementById("information").classList.add("hidden");
+        }
+
+
+    </script>
+    <script>
+
+
+    function validateForm() {
+        const name = document.getElementById('patient_name').value.trim();
+        const last_name = document.getElementById('patient_last_name').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const national_code = document.getElementById('patient_national_id').value.trim();
+
+        // Reset errors
+        document.getElementById('name_alarm').textContent = '';
+        document.getElementById('last_name_alarm').textContent = '';
+        document.getElementById('phone_alarm').textContent = '';
+        document.getElementById('national_id_alarm').textContent = '';
+
+        document.getElementById('patient_name').classList.remove('border-danger');
+        document.getElementById('patient_last_name').classList.remove('border-danger');
+        document.getElementById('phone').classList.remove('border-danger');
+        document.getElementById('patient_national_id').classList.remove('border-danger');
+
+        let isValid = true;
+
+        // Validate name
+        if (name.length < 3) {
+            document.getElementById('patient_name').classList.add('border-danger');
+            document.getElementById('name_alarm').textContent = 'نام باید حداقل ۳ حرف باشد.';
+            isValid = false;
+        }
+
+        // Validate last name
+        if (last_name.length < 3) {
+            document.getElementById('patient_last_name').classList.add('border-danger');
+            document.getElementById('last_name_alarm').textContent = 'نام خانوادگی باید حداقل ۳ حرف باشد.';
+            isValid = false;
+        }
+
+        // Validate phone (if not disabled)
+        if (!phone.match(/^0\d{10}$/) && !document.getElementById('phone').disabled) {
+            document.getElementById('phone').classList.add('border-danger');
+            document.getElementById('phone_alarm').textContent = 'شماره تلفن باید با ۰ شروع شود و ۱۱ رقم باشد.';
+            isValid = false;
+        }
+
+        // Validate national code (if provided)
+        if (national_code && !national_code.match(/^\d{10}$/)) {
+            document.getElementById('patient_national_id').classList.add('border-danger');
+            document.getElementById('national_id_alarm').textContent = 'کد ملی باید ۱۰ رقم باشد.';
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    // اضافه کردن رویدادهای اعتبارسنجی
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('patient_name').addEventListener('input', validateForm);
+        document.getElementById('patient_last_name').addEventListener('input', validateForm);
+        document.getElementById('phone').addEventListener('input', validateForm);
+        document.getElementById('patient_national_id').addEventListener('input', validateForm);
+
+        document.getElementById('booking-form').addEventListener('submit', function(e) {
+            if (!validateForm()) {
+                e.preventDefault();
+                // اسکرول به اولین فیلد دارای خطا
+                const firstError = document.querySelector('.border-danger');
+                if (firstError) {
+                    firstError.scrollIntoView({behavior: 'smooth', block: 'center'});
+                }
+            }
+        });
+    });
+</script>
 {% endblock %}

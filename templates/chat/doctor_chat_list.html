@@ -78,6 +78,7 @@
                                         <h3 class="font-medium">{{ req.patient.user.get_full_name }}</h3>
                                         <p class="text-sm text-gray-500">تاریخ
                                             درخواست: {{ req.created_at|date:"Y/m/d H:i" }}</p>
+                                        <small>خلاصه بیماری :  {{ req.disease_summary }}  </small>
                                     </div>
                                     <div class="flex space-x-2">
                                         <button onclick="handleRequest({{ req.id }}, 'approve')"

@@ -3,6 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.contrib import messages
 from django.urls import reverse
+
+import user
 from .models import Reservation, ReservationDay
 from doctors.models import Doctor
 from patients.models import PatientsFile
@@ -35,9 +37,11 @@ def book_appointment(request, doctor_id):
     
     if request.method == 'POST':
         try:
+            user = request.user
             date_str = request.POST.get('date')
             time_str = request.POST.get('time')
             patient_name = request.POST.get('patient_name', '').strip()
+            patient_last_name = request.POST.get('patient_last_name', '').strip()
             patient_national_id = request.POST.get('patient_national_id', '').strip()
             patient_email = request.POST.get('patient_email', '').strip()
             
@@ -82,16 +86,22 @@ def book_appointment(request, doctor_id):
             
             # رزرو نوبت
             patient_data = {
-                'name': patient_name,
-                'phone': request.POST.get('phone', request.user.phone if hasattr(request.user, 'phone') else ''),
+                'name': patient_name + ' ' + patient_last_name,
+                'phone': request.POST.get('phone', user.phone if hasattr(user, 'phone') else ''),
                 'national_id': patient_national_id,
                 'email': patient_email
             }
-            
+
             success, message = reservation.book_appointment(
                 patient_data=patient_data,
                 user=request.user
+
             )
+            user.first_name = patient_name
+            user.last_name = patient_last_name
+            user.patient.national_id = patient_national_id
+            user.patient.save()
+            user.save()
             
             if success:
                 messages.success(request, message)

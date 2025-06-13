@@ -2,8 +2,46 @@
 {% load static %}
 {% block body %}
 {% load persian_date %}
+{% load html_decode %}
+<style>
+video {
+    display: inline-block;
+    vertical-align: middle;
+    object-fit: cover;
+    width: 70px;
+    height: 70px;
+}
+
+</style>
+    <section class="scroll-container">
+        <div id="breadcrumb" style="background: rgba(144, 185, 227, 0.27); margin-bottom: 0;border-radius: 0">
+            <div class="container">
+                <ul class="scroll-container scroll-wrapper">
+                    {% for post in posts %}
+                        <li class="">
+                            <div title="">
+                                <a href="">
+                                    {% if post.video %}
+                                        <video class="rounded50 border-story"
+                                               src="{{ post.video.url }}"></video>
+                                    {% elif post.image %}
+                                        <img class="rounded50 border-story" width="70" height="70"
+                                             src="{{ post.image.url }}">
+
+
+                                    {% endif %}
+                                </a>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+        </div>
+    </section>
     <!-- Head -->
     <section class="hero_home version_2">
+
         <div class="content text-dark">
             <h4 class="text-info text-xl-center">نوبت آنلاین در دکتر همدان</h4>
             <p>
@@ -13,9 +51,8 @@
                 <div id="custom-search-input">
                     <div class="input-group">
                         <div style="display: flex; align-items: center; width: 100%;">
-                            <select class="search-query" name="specialty" id="specialty"
-                                    style="border-radius: 0 50px 50px 0; border-left: none; width: 18%;font-size: 10px">
-                                <option value="" >همه تخصص‌ها</option>
+                            <select class="search-query" name="specialty" id="specialty">
+                                <option value="" > همه تخصص‌ها </option>
                                 {% for spec in specializations %}
                                     <option value="{{ spec.name }}"
                                             {% if request.GET.specialty == spec.name %}selected{% endif %}>
@@ -252,7 +289,7 @@
                             <a href="{{ article.get_absolute_url }}" class="box_cat_home article_box">
                                 <img src="{{ article.image.url }}" class="rounded" width="150" height="100" alt="">
                                 <h3>{{ article.title }}</h3>
-                                <p>{{ article.description|truncatechars:60 }}
+                                <p>{{ article.description|truncatechars:60|html_decode|safe }}
                                 </p>
                             </a>
                         {% endfor %}

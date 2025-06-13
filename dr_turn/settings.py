@@ -50,6 +50,9 @@ INSTALLED_APPS = [
     'django_jalali',
     'tailwind',
     'channels',
+    'ckeditor',
+    'ckeditor_uploader',
+
 
     
     # Local apps
@@ -68,6 +71,18 @@ INSTALLED_APPS = [
     'sms_reminders',
 
 ]
+
+CKEDITOR_UPLOAD_PATH = "uploads/"
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'Full',
+        'height': 300,
+        'width': '100%',
+        'language': 'fa',
+        'contentsLangDirection': 'rtl',
+    },
+}
 
 # Authentication settings
 # LOGIN_URL = 'login'

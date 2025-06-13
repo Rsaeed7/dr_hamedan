@@ -5,6 +5,8 @@ from user.models import User
 from django.urls.base import reverse
 import jdatetime
 from django_jalali.db import models as jmodels
+from ckeditor.fields import RichTextField
+
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True , verbose_name="نام دسته بندی")
@@ -20,7 +22,7 @@ class Category(models.Model):
 class MagArticle(models.Model):
     STATUS_CHOICES = (("False", "پیش نویس"), ("True", "انتشار"))
     title = models.CharField(max_length=100, verbose_name='عنوان')
-    description = models.TextField(verbose_name='متن مقاله', blank=True)
+    description = RichTextField(verbose_name='متن مقاله', blank=True)
     image = models.ImageField(upload_to='blog', verbose_name='تصویر')
     date = jmodels.jDateTimeField(verbose_name='زمان', auto_now_add=True)
     category = models.ForeignKey(Category,on_delete=models.CASCADE,verbose_name='دسته بندی' ,related_name='category' , null=True , blank=True)

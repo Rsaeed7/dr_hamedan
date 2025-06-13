@@ -32,6 +32,8 @@ urlpatterns = [
     path('view/<uuid:pk>/', views.MessageDetailView.as_view(), name='detail'),
     path('reply/<uuid:pk>/', views.ReplyMessageView.as_view(), name='reply'),
     path('delete/<uuid:pk>/', views.DeleteMessageView.as_view(), name='delete'),
+    path('templates/', views.email_template_list, name='email_template_list'),
+    path('templates/create/', views.create_email_template, name='create_email_template'),
     path('important/', views.ImportantMessagesView.as_view(), name='important'),
     path('update-location/', views.update_doctor_location, name='update_location'),
 ] 

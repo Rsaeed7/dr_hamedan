@@ -9,12 +9,15 @@
     <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">جستجو</button>
 </form>
 
+
 <h1 class="text-2xl font-bold mb-6 text-gray-800">لیست گزارش‌های پزشکی</h1>
 
 <div class="overflow-x-auto">
     <a href="{% url 'patients:report_settings' %}" class="inline-block bg-yellow-500 hover:bg-blue-600 text-white text-xs font-semibold py-1 px-3 rounded">تنظمیات قالب ریپورت</a>
+    <a href="{% url 'patients:create_report_without_patient' %}" class="inline-block bg-red-500 hover:bg-blue-600 text-white text-xs font-semibold py-1 px-3 rounded">ثبت ریپورت برای بیماران بدون پرونده</a>
+    <a href="{% url 'patients:template_list' %}" class="inline-block bg-green-500 hover:bg-blue-600 text-white text-xs font-semibold py-1 px-3 rounded">لیست قالب های آماده ریپورت</a>
     <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm " style="margin-top: 10px">
-        <thead class="bg-gray-100 text-gray-700 text-sm">
+        <thead class="bg-gray-100 text-gray-700 text-sm text-center">
             <tr >
                 <th class="py-3 px-4 border-b">عنوان گزارش</th>
                 <th class="py-3 px-4 border-b">بیمار</th>
@@ -26,7 +29,7 @@
             {% for report in reports %}
             <tr class="hover:bg-gray-50">
                 <td class="py-2 px-4 border-b">{{ report.title }}</td>
-                <td class="py-2 px-4 border-b">{{ report.patient.user.get_full_name }}</td>
+                <td class="py-2 px-4 border-b">{{ report.name }}</td>
                 <td class="py-2 px-4 border-b">{{ report.created_at|date:"Y/m/d" }}</td>
                 <td class="py-2 px-4 border-b space-x-2 space-x-reverse">
                     <a href="{% url 'patients:report_detail' report.pk %}" class="inline-block bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold py-1 px-3 rounded">مشاهده</a>

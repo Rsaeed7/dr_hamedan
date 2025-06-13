@@ -1,9 +1,10 @@
 from django.contrib import admin
-from .models import PatientsFile,DrReportSettings,MedicalReport,ReportImage
+from .models import PatientsFile,DrReportSettings,MedicalReport,ReportImage,ReportTemplate
 
 admin.site.register(DrReportSettings)
 admin.site.register(MedicalReport)
 admin.site.register(ReportImage)
+admin.site.register(ReportTemplate)
 
 @admin.register(PatientsFile)
 class PatientsFileAdmin(admin.ModelAdmin):

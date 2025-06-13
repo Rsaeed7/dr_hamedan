@@ -1,6 +1,8 @@
 {% extends  'base/base.html' %}
 {% load static %}
 {% block body %}
+{% load html_decode %}
+
     <!-- Search -->
     <div class="filters_listing">
         <div class="container">
@@ -44,7 +46,7 @@
                                             alt=""></a>
                                 </div>
                                 <h3><a href="{{ article.get_absolute_url }}" title="">{{ article.title }}</a></h3>
-                                <small>{{ article.description|truncatechars:60 }}</small>
+                                <small>{{ article.description|truncatechars:60|html_decode|safe }}</small>
                             </li>
                         {% endfor %}
                     </ul>
@@ -79,7 +81,7 @@
                             <div class="col-lg-8">
                                 <div class="post_info">
                                     <h3><a href="{% url 'mag:article' object.slug %}">{{ object.title }}</a></h3>
-                                    <p>{{ object.description | truncatewords:70 }}</p>
+                                    <p>{{ object.description|truncatewords:40|html_decode|safe }}</p>
                                     <ul>
                                         <li><i class="icon-feather"></i>{{ object.writer.get_full_name }}</li>
                                         <li><i class="icon-calendar-empty"></i>{{ object.date|persian_date_info }}</li>

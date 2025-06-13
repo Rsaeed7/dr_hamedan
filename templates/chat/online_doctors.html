@@ -2,9 +2,108 @@
 {% load static %}
 {% block body %}
 
+<style>
+.mobile-filter-modal {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    z-index: 1050;
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+    overflow-y: auto;
+    border-radius: 1rem 1rem 0 0;
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+}
 
+.mobile-filter-modal.active {
+    transform: translateY(0%);
+}
+
+.filter-chip {
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    background: #f9f9f9;
+    transition: all 0.2s ease-in-out;
+}
+
+.filter-chip input {
+    display: none;
+}
+
+.filter-chip:has(input:checked) {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.filter-radio {
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 6px 16px;
+    cursor: pointer;
+    background: #f1f1f1;
+    transition: all 0.2s;
+}
+
+.filter-radio input {
+    display: none;
+}
+
+.filter-radio:has(input:checked) {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.shadow-top {
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+}
+
+@media (min-width: 992px) {
+    .mobile-filter-modal {
+        display: none;
+    }
+}
+
+</style>
     <!-- Search -->
-    {% include  'base/search.html' %}
+   <div class="filters_listing">
+    <div class="container">
+        <ul class="clearfix">
+            <form method="get" action="{% url 'chat:list_doctors' %}">
+                <div id="custom-search-input">
+                    <div class="input-group">
+                        <div style="display: flex; align-items: center; width: 100%;">
+                            <select class="search-query" name="specialty" id="specialty_list"
+                                    style="border-radius: 0 50px 50px 0; border-left: none; width: 20%;font-size: 10px">
+                                <option value="">همه تخصص‌ها</option>
+                                {% for special in specializations %}
+                                    <option value="{{ special.name }}"
+                                            {% if request.GET.specialty == special.name %}selected{% endif %}>
+                                        {{ special.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <input type="text" name="query" id="query" value="{{ request.GET.query }}"
+                                   class="search-query" placeholder="نام پزشک یا متخصص برای ویزیت آنلاین...."
+                                   style="flex-grow: 1; border-radius: 50px 0 0 50px; margin-right: -1px;">
+
+                            <input type="submit" class="btn_search" style="border-radius: 50px;" value="جستجو">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </ul>
+    </div>
+</div>
     <!-- /Search -->
 
 
@@ -36,7 +135,7 @@
         </div>
 
         <div class="row">
-            <aside class="col-xl-3 col-lg-3" id="sidebar">
+            <aside class="col-xl-3 col-lg-3  d-none d-lg-block" id="sidebar">
                 <div class="box_general_3 booking">
                     <h6 class="text_dr_3"><i class="icon-filter-1"></i>فیلترها</h6>
                     <form method="get" action="{% url 'chat:list_doctors' %}" id="filter-form"
@@ -87,7 +186,7 @@
 
 
                         <div class="filter-actions">
-                            <a href="{% url 'doctors:doctor_list' %}" class="btn-reset btn" type="button">
+                            <a href="{% url 'chat:list_doctors' %}" class="btn-reset btn" type="button">
                                 حذف همه فیلترها <i class="icon-cancel-1"></i>
                             </a>
                         </div>
@@ -99,6 +198,7 @@
                 </div>
             </aside>
             <div class="col-lg-9">
+            <button class="btn text_dr_3 d-lg-none" onclick="openMobileFilter()">فیلترها <i class="icon-filter-1"></i></button>
                 <ul class=" center-content margin-10" role="tablist">
                     <li>
                         <a class="nav-link  active p_1  dr_box2">دریافت مشاوره آنلاین</a>
@@ -127,9 +227,9 @@
                                     <p class="text-capitalize border-light">{{ doctor.specialization }}</p>
                                     <div class="m-t-10">
                                         <a href="{% url 'doctors:doctor_detail' doctor.pk %}"
-                                           class="text-dark">مشاهده پروفایل پزشک</a>
-                                        <a href="{% url 'chat:request_chat' doctor.id %}"
-                                           class="btn btn-info col-12 m-t-10">مشاوره متنی آنلاین</a>
+                                           class="text-secondary fs-12">مشاهده پروفایل پزشک</a>
+                                        <button onclick="showDynamicForm({{ doctor.id }}, '{{ doctor.online_visit_fee }}', '{% url 'chat:request_chat' doctor.id %}', '{{ doctor.user.get_full_name }}')"
+                                           class="btn btn-info col-12 m-t-10">مشاوره متنی آنلاین</button>
                                     </div>
                                 </div>
                             </div>
@@ -152,6 +252,148 @@
             </div>
         </div>
     </div>
+<!-- Mobile Filter Panel -->
+<div id="mobileFilterModal" class="mobile-filter-modal p-t-60 p-b-140">
+    <div class="filter-header d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
+                <a href="{% url 'chat:list_doctors' %}" class="text-danger font-weight-bold" type="button"> حذف همه
+        </a>
+        <h6 class="mb-0">فیلترها</h6>
+        <button class="btn btn-sm" onclick="closeMobileFilter()">
+            <i class="icon-cancel"></i>
+        </button>
+    </div>
+
+    <form method="get" action="{% url 'chat:list_doctors' %}" class="filter-body px-3 pt-3 ">
+
+        <!-- تخصص (چند انتخابی) -->
+        <div class="mb-4">
+            <label class="fw-bold mb-2 d-block">تخصص</label>
+            <div class="d-flex flex-wrap gap-2">
+                {% for special in specializations %}
+                    <label class="filter-chip">
+                        <input type="checkbox" name="specialty" value="{{ special.name }}"
+                               {% if special.name in specialty %}checked{% endif %}>
+                        {{ special.name }}
+                    </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- مرتب‌سازی (تک انتخابی) -->
+        <div class="mb-4">
+            <label class="fw-bold mb-2 d-block">مرتب‌سازی</label>
+            <div class="d-flex flex-column gap-2">
+                <label class="filter-radio">
+                    <input type="radio" name="sort" value="پر بازدیدترین" {% if request.GET.sort == 'پر بازدیدترین' %}checked{% endif %}>
+                    پر بازدیدترین
+                </label>
+                <label class="filter-radio">
+                    <input type="radio" name="sort" value="بالاترین امتیاز" {% if request.GET.sort == 'بالاترین امتیاز' %}checked{% endif %}>
+                    بالاترین امتیاز
+                </label>
+                <label class="filter-radio">
+                    <input type="radio" name="sort" value="پزشکان آنلاین"
+                                           {% if request.GET.sort == 'پزشکان آنلاین' %}checked{% endif %}>
+                    پزشکان آنلاین
+                </label>
+            </div>
+        </div>
+
+            <button type="submit" class="btn btn-primary w-100">اعمال فیلتر</button>
+    </form>
+</div>
+
+    <div class="hidden" id="information-modal">
+    <div class="modal text-right">
+        <div class="modal-content">
+            <span class="close" onclick="closeFormChat()">&times;</span>
+            <div id="booking-form">
+                <div class="alert alert-info mt-3" id="visit-fee-info">
+                    رزرو ویزیت آنلاین <br>
+                    هزینه ویزیت: <span id="visit-fee">---</span> تومان
+                </div>
+                <form method="post" id="dynamic-booking-form" action="">
+                    {% csrf_token %}
+                    <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="patient_name" class="form-label">نام<span class="text-red">*</span></label>
+                                    <input type="text" id="patient_name" name="patient_name"
+                                           class="form-control"
+                                           value="{% if user.first_name %}{{ user.first_name }}{% endif %}"
+                                           required>
+                                    <small class="text-danger font-weight-light"
+                                           id="name_alarm"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="patient_last_name" class="form-label">نام
+                                        خانوادگی<span class="text-red">*</span></label>
+                                    <input type="text" id="patient_last_name" name="patient_last_name"
+                                           class="form-control"
+                                           value="{% if user.last_name %}{{ user.last_name }}{% endif %}"
+                                           required>
+                                    <small class="text-danger font-weight-light"
+                                           id="last_name_alarm"></small>
+                                </div>
+                            </div>
+                                                    <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="patient_national_id" class="form-label">کد ملی</label>
+                                    <input type="text" id="patient_national_id" name="patient_national_id"
+                                           class="form-control"
+                                           value="{% if user.patient.national_id %}{{ user.patient.national_id }}{% endif %}">
+                                    <small class="text-danger font-weight-light"
+                                           id="national_id_alarm"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="phone" class="form-label">شماره تماس<span
+                                            class="text-red">*</span></label>
+                                    <input type="tel" id="phone" name="phone"
+                                           class="form-control" disabled
+                                           value="{% if user.phone %}{{ user.phone }}{% endif %}">
+                                    <small class="text-danger font-weight-light"
+                                           id="phone_alarm"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="disease_summary" class="form-label">خلاصه ای از علت مراجعه</label>
+                                    <input type="text" id="disease_summary"
+                                           name="disease_summary"
+                                           class="form-control">
+                                </div>
+                            </div>
+
+                        </div>
+                                       <button  type="submit" id="submit-btn"
+                           class="btn btn-primary w-100">
+                            روزرو ویزیت آنلاین
+                        </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function showDynamicForm(doctorId, fee, actionUrl, doctorName) {
+        const form = document.getElementById('dynamic-booking-form');
+        const feeSpan = document.getElementById('visit-fee');
+        const modal = document.getElementById('information-modal');
+
+        form.action = actionUrl;
+        feeSpan.textContent = fee;
+
+        modal.classList.remove('hidden');
+    }
+
+    function closeFormChat() {
+        document.getElementById('information-modal').classList.add('hidden');
+    }
+</script>
 
     <script>
         function createPagination(totalPages, currentPage) {
@@ -342,4 +584,87 @@
                             });
                         });
                     </script>
+    <script>
+    function openMobileFilter() {
+        document.getElementById('mobileFilterModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeMobileFilter() {
+        document.getElementById('mobileFilterModal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+</script>
+ <script>
+
+
+    function validateForm() {
+        const name = document.getElementById('patient_name').value.trim();
+        const last_name = document.getElementById('patient_last_name').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const national_code = document.getElementById('patient_national_id').value.trim();
+
+        // Reset errors
+        document.getElementById('name_alarm').textContent = '';
+        document.getElementById('last_name_alarm').textContent = '';
+        document.getElementById('phone_alarm').textContent = '';
+        document.getElementById('national_id_alarm').textContent = '';
+
+        document.getElementById('patient_name').classList.remove('border-danger');
+        document.getElementById('patient_last_name').classList.remove('border-danger');
+        document.getElementById('phone').classList.remove('border-danger');
+        document.getElementById('patient_national_id').classList.remove('border-danger');
+
+        let isValid = true;
+
+        // Validate name
+        if (name.length < 3) {
+            document.getElementById('patient_name').classList.add('border-danger');
+            document.getElementById('name_alarm').textContent = 'نام باید حداقل ۳ حرف باشد.';
+            isValid = false;
+        }
+
+        // Validate last name
+        if (last_name.length < 3) {
+            document.getElementById('patient_last_name').classList.add('border-danger');
+            document.getElementById('last_name_alarm').textContent = 'نام خانوادگی باید حداقل ۳ حرف باشد.';
+            isValid = false;
+        }
+
+        // Validate phone (if not disabled)
+        if (!phone.match(/^0\d{10}$/) && !document.getElementById('phone').disabled) {
+            document.getElementById('phone').classList.add('border-danger');
+            document.getElementById('phone_alarm').textContent = 'شماره تلفن باید با ۰ شروع شود و ۱۱ رقم باشد.';
+            isValid = false;
+        }
+
+        // Validate national code (if provided)
+        if (national_code && !national_code.match(/^\d{10}$/)) {
+            document.getElementById('patient_national_id').classList.add('border-danger');
+            document.getElementById('national_id_alarm').textContent = 'کد ملی باید ۱۰ رقم باشد.';
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    // اضافه کردن رویدادهای اعتبارسنجی
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('patient_name').addEventListener('input', validateForm);
+        document.getElementById('patient_last_name').addEventListener('input', validateForm);
+        document.getElementById('phone').addEventListener('input', validateForm);
+        document.getElementById('patient_national_id').addEventListener('input', validateForm);
+
+        document.getElementById('booking-form').addEventListener('submit', function(e) {
+            if (!validateForm()) {
+                e.preventDefault();
+                // اسکرول به اولین فیلد دارای خطا
+                const firstError = document.querySelector('.border-danger');
+                if (firstError) {
+                    firstError.scrollIntoView({behavior: 'smooth', block: 'center'});
+                }
+            }
+        });
+    });
+</script>
 {% endblock %}

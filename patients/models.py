@@ -65,7 +65,7 @@ class PatientsFile(models.Model):
 
     @property
     def name(self):
-        return self.user.name
+        return self.user.first_name + ' ' + self.user.last_name
 
 
     def __str__(self):
@@ -111,7 +111,7 @@ class VisitEntry(models.Model):
 
 class MedicalReport(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='reports')
-    patient = models.ForeignKey(PatientsFile, on_delete=models.CASCADE, related_name='reports')
+    patient = models.ForeignKey(PatientsFile, on_delete=models.CASCADE, related_name='reports',blank=True, null=True)
     name = models.CharField(max_length=50, verbose_name='نام بیمار')
     title = models.CharField(max_length=200,blank=True,null=True,verbose_name="عنوان")
     dr_requesting = models.CharField(max_length=50,blank=True,null=True,verbose_name='پزشک درخواست کننده')
@@ -142,3 +142,11 @@ class DrReportSettings(models.Model):
         return f"تنظیمات قالب ریپورت{self.doctor}"
 
 
+class ReportTemplate(models.Model):
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='report_templates')
+    title = models.CharField(max_length=100, verbose_name="عنوان قالب",blank=True,null=True,default='قالب آماده')
+    dr_requesting = models.CharField(max_length=50, blank=True, null=True, verbose_name='پزشک درخواست کننده',default=' ')
+    content = models.TextField(verbose_name="متن گزارش")
+
+    def __str__(self):
+        return f"{self.title} - {self.content:30}"

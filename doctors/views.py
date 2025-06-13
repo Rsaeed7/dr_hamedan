@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from patients.models import MedicalRecord
-from .models import Doctor, DoctorAvailability, Specialization, Clinic, City, DrComment, CommentTips ,Email,Supplementary_insurance, DoctorRegistration
+from .models import Doctor, DoctorAvailability, Specialization, Clinic, City, DrComment, CommentTips ,Email,Supplementary_insurance, DoctorRegistration,EmailTemplate
 from reservations.models import Reservation, ReservationDay
 from datetime import datetime, timedelta
 from django.db.models import  Sum, Avg
@@ -18,7 +18,7 @@ from django.views.generic import ListView, DetailView, CreateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.urls import reverse_lazy
-from .forms import EmailForm, DoctorRegistrationForm
+from .forms import EmailForm, DoctorRegistrationForm ,EmailTemplateForm
 from homecare.models import Service
 from reservations.turn_maker import create_availability_days_for_day_of_week
 from reservations.services import BookingService, AppointmentService
@@ -40,6 +40,7 @@ def index(request):
         'specializations': specializations,
         'articles': articles,
         'online_visit_doctors': online_visit_doctors,
+        'posts' : Post.objects.filter(status='published')[:13]
     }
     return render(request, 'index/homepage.html', context)
 
@@ -964,6 +965,11 @@ class SendMessageView(DoctorMessageMixin, CreateView):
         messages.success(self.request, 'نامه با موفقیت ارسال شد.')
         return response
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['templates'] = EmailTemplate.objects.filter(doctor=self.request.user.doctor)
+        return context
+
 
 class ReplyMessageView(DoctorMessageMixin, CreateView):
     model = Email
@@ -1010,6 +1016,27 @@ class DeleteMessageView(DoctorMessageMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success(request, 'نامه با موفقیت حذف شد.')
         return super().delete(request, *args, **kwargs)
+
+
+@login_required
+def email_template_list(request):
+    templates = request.user.doctor.email_templates.all()
+    return render(request, 'email/email_template_list.html', {'templates': templates})
+
+@login_required
+def create_email_template(request):
+    if request.method == 'POST':
+        form = EmailTemplateForm(request.POST)
+        if form.is_valid():
+            template = form.save(commit=False)
+            template.doctor = request.user.doctor
+            template.save()
+            messages.success(request, "قالب با موفقیت ذخیره شد.")
+            return redirect('doctors:email_template_list')
+    else:
+        form = EmailTemplateForm()
+    return render(request, 'email/create_email_template.html', {'form': form})
+
 
 
 @login_required
