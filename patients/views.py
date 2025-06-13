@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from homecare.models import HomeCareRequest
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -10,7 +11,7 @@ from clinics.models import ClinicComment as clinic_comment
 from django.views.generic import DetailView, CreateView, ListView
 from django.urls import reverse, reverse_lazy
 from .models import MedicalRecord, VisitEntry,MedicalReport,DrReportSettings
-from .forms import VisitEntryForm, MedicalRecordForm, ReportForm,DrReportSettingsForm,EditReportForm
+from .forms import VisitEntryForm, MedicalRecordForm, ReportForm,DrReportSettingsForm,EditReportForm,ReportTemplateForm
 from django.views.generic.edit import CreateView
 from .models import PatientsFile
 from django.contrib.auth.decorators import login_required
@@ -220,7 +221,7 @@ class VisitEntryCreateView(CreateView):
     def get_success_url(self):
         return reverse('patients:record-detail', kwargs={'pk': self.kwargs['record_id']})
 
-class CreateReportView(CreateView):
+class CreateReportView(LoginRequiredMixin, CreateView):
     model = MedicalReport
     form_class = ReportForm
     template_name = 'patients/create_report.html'
@@ -228,23 +229,26 @@ class CreateReportView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        patient = PatientsFile.objects.get(id=self.kwargs['patient_id'])
-        context['patient'] = patient  # ارسال نام بیمار به تمپلیت
+        if 'patient_id' in self.kwargs:
+            patient = get_object_or_404(PatientsFile, id=self.kwargs['patient_id'])
+            context['patient'] = patient
+        context['templates'] = self.request.user.doctor.report_templates.all()
         return context
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        patient = PatientsFile.objects.get(id=self.kwargs['patient_id'])
-        kwargs['patient_name'] = patient.name  # ارسال نام بیمار
-        kwargs['patient_age'] = patient.age  # ارسال سن بیمار
+        if 'patient_id' in self.kwargs:
+            patient = get_object_or_404(PatientsFile, id=self.kwargs['patient_id'])
+            kwargs['patient_name'] = patient.name
+            kwargs['patient_age'] = patient.age
         return kwargs
 
     def form_valid(self, form):
         form.instance.doctor = self.request.user.doctor
-        form.instance.patient_id = self.kwargs['patient_id']
-        form.instance.name = form.instance.patient.name  # تنظیم نام بیمار از مدل مرتبط
-
+        if 'patient_id' in self.kwargs:
+            form.instance.patient_id = self.kwargs['patient_id']
+            form.instance.name = form.instance.patient.name
         return super().form_valid(form)
-
 
 class ReportDetailView(DetailView):
     model = MedicalReport
@@ -349,3 +353,25 @@ def edit_report_settings(request):
         form = DrReportSettingsForm(instance=settings)
 
     return render(request, 'patients/report_settings.html', {'form': form})
+
+
+
+
+@login_required
+def report_template_list(request):
+    templates = request.user.doctor.report_templates.all()
+    return render(request, 'patients/template_list.html', {'templates': templates})
+
+
+@login_required
+def create_report_template(request):
+    if request.method == 'POST':
+        form = ReportTemplateForm(request.POST)
+        if form.is_valid():
+            template = form.save(commit=False)
+            template.doctor = request.user.doctor
+            template.save()
+            return redirect('patients:template_list')
+    else:
+        form = ReportTemplateForm()
+    return render(request, 'patients/create_template.html', {'form': form})

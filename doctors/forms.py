@@ -1,5 +1,5 @@
 from django import forms
-from .models import Doctor, Email, DoctorRegistration, Specialization, City
+from .models import Doctor, Email, DoctorRegistration, Specialization, City,EmailTemplate
 
 
 class EmailForm(forms.ModelForm):
@@ -50,6 +50,21 @@ class EmailForm(forms.ModelForm):
         if recipient == self.current_doctor:
             raise forms.ValidationError("شما نمی‌توانید برای خودتان نامه ارسال کنید.")
         return recipient
+
+class EmailTemplateForm(forms.ModelForm):
+    class Meta:
+        model = EmailTemplate
+        fields = ['title', 'subject', 'body']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'border'}),
+            'subject': forms.TextInput(attrs={'class': 'border'}),
+            'body': forms.Textarea(attrs={'rows': 5, 'class': 'border'}),
+        }
+        labels = {
+            'title': 'عنوان قالب',
+            'subject': 'موضوع نامه',
+            'body': 'متن نامه',
+        }
 
 
 class DoctorRegistrationForm(forms.ModelForm):

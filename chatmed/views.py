@@ -14,7 +14,7 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.views.generic import ListView
 from django.db.models import Q, Avg
-
+from django.views.decorators.http import require_POST
 """
 یعنی چی؟؟
 TO DO : Connecting the chat request to the wallet like an 
@@ -23,19 +23,31 @@ appointment system (one step before submitting the request is also necessary).
 
 
 @login_required
+@require_POST
 def request_chat(request, doctor_id):
     doctor = get_object_or_404(Doctor, id=doctor_id)
-    if not hasattr(request.user, 'patient'):
+    if  hasattr(request.user, 'doctor'):
         messages.error(request, 'فقط بیماران می‌توانند درخواست چت ارسال کنند')
         return redirect('doctors:index')
+    else:
+        patient = request.user.patient
+        existing_active_request = ChatRequest.objects.filter(Q(status='pending') | Q(status='approved'),patient=patient, doctor=doctor,).last()
+        if existing_active_request:
+            messages.info(request, 'شما یک درخواست فعال با پزشک مورد نظر دارید!')
+            return redirect('chat:request_status', request_id=existing_active_request.id)
+    user = request.user
+    patient_name = request.POST.get('patient_name', '').strip()
+    patient_last_name = request.POST.get('patient_last_name', '').strip()
+    patient_national_id = request.POST.get('patient_national_id', '').strip()
+    disease_summary = request.POST.get('disease_summary', '').strip()
+    user.first_name = patient_name
+    user.last_name = patient_last_name
+    user.save()
+    if patient_national_id:
+        user.patient.national_id = patient_national_id
+        user.patient.save()
 
-    patient = request.user.patient
-    existing_active_request = ChatRequest.objects.filter(Q(status='pending') | Q(status='approved'),patient=patient, doctor=doctor,).last()
-    if existing_active_request:
-        messages.info(request, 'شما یک درخواست فعال با پزشک مورد نظر دارید!')
-        return redirect('chat:request_status', request_id=existing_active_request.id)
-
-    new_request = ChatRequest.objects.create(patient=patient, doctor=doctor)
+    new_request = ChatRequest.objects.create(patient=patient, doctor=doctor,disease_summary=disease_summary)
     messages.success(request, 'درخواست چت با موفقیت ثبت شد')
     return redirect('chat:request_status', request_id=new_request.id)
 
@@ -229,8 +241,6 @@ def toggle_availability(request):
 
 
 
-
-
 class OnDoctorListView(ListView):
     model = Doctor
     template_name = 'chat/online_doctors.html'
@@ -295,9 +305,6 @@ class OnDoctorListView(ListView):
 
         })
         return context
-
-
-
 
 
 @require_POST

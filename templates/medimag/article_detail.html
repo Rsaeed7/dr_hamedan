@@ -2,6 +2,26 @@
 {% load static %}
 {% block body %}
 {% load persian_date %}
+    <style>
+    .article-body {
+    overflow-x: auto;
+    word-wrap: break-word;
+    font-size: 1rem;
+    line-height: 1.8;
+}
+
+.article-body img,
+.article-body iframe,
+.article-body table {
+    max-width: 100%;
+}
+
+.article-body table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+    </style>
     <!-- Search -->
     <div class="filters_listing">
         <div class="container">
@@ -38,7 +58,7 @@
                                             alt=""></a>
                                 </div>
                                 <h3><a href="{{ article.get_absolute_url }}" title="">{{ article.title }}</a></h3>
-                                <small>{{ article.description|truncatechars:60 }}</small>
+                                <small>{{ article.description|truncatechars:60|safe }}</small>
                             </li>
                         {% endfor %}
                     </ul>
@@ -71,8 +91,8 @@
                     </p>
                     <h1>{{ object.title }}</h1>
                     <div class="post-content">
-                        <div>
-                            <p>{{ object.description }}</p>
+                        <div class="article-body">
+                            <p>{{ object.description|safe}}</p>
                         </div>
                     </div>
                 </div>

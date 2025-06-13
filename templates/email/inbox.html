@@ -7,6 +7,7 @@
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold text-gray-800">صندوق ورودی</h2>
         <a class="bg-blue-100 rounded hover:bg-blue-600" href="{% url 'doctors:sent' %}">نامه های ارسال شده</a>
+        <a class="bg-green-300 rounded hover:bg-blue-600" href="{% url 'doctors:email_template_list' %}">قالب های آماده نامه</a>
         <div class="flex items-center space-x-4 space-x-reverse">
             <form method="get" class="flex items-center">
                 <input

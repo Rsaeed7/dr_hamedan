@@ -331,17 +331,16 @@ a.dr_box i {
     }
 }
 
-/* مخفی کردن اسکرول بار */
 .scroll-container {
-    overflow: auto;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+    overflow-x: auto; /* مخفی کردن اسکرول افقی */
+    overflow-y: auto;   /* فعال کردن اسکرول عمودی */
+    -ms-overflow-style: none;  /* مخفی کردن در IE و Edge */
+    scrollbar-width: none;     /* مخفی کردن در Firefox */
 }
 
 .scroll-container::-webkit-scrollbar {
-    display: none;
+    display: none; /* مخفی کردن در Chrome, Safari و Opera */
 }
-
 
 .flex {
     display: flex;
@@ -941,12 +940,27 @@ input#female-option:checked ~ .custom-slider {
   animation: pulse 1000ms ease-in-out;
 }
 
-
 ::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
-    display: none;
+    width: 8px;
+    height: 10px;
+    overflow-x: hidden;
 }
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1; /* رنگ پس‌زمینه */
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, #2a2a5a, #3a3a6d); /* سرمه‌ای تیره تا روشن */
+    border-radius: 3px;
+    border: 2px solid #fff;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(45deg, #121232, #2a2a5a); /* کمی تیره‌تر هنگام هاور */
+}
+
 
 
 
@@ -1015,4 +1029,11 @@ input#female-option:checked ~ .custom-slider {
 }
 .contact_us.last {
   border-right: 0;
+}
+
+.border-story {
+  border: 2px solid;
+  border-color: #a6329e !important;
+  padding:3px;
+  font-size: 10px;
 }

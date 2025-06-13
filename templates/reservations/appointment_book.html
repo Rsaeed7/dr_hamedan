@@ -212,11 +212,11 @@
                                 <div class="calendar-container">
                                     <div class="calendar-header">
                                         <button class="calendar-nav-btn" id="prev-month">
-                                            <i class="icon-right-1"></i>
+                                            <i class="icon-right-1 p-t-5"></i>
                                         </button>
                                         <div class="calendar-title" id="month-year"></div>
                                         <button class="calendar-nav-btn " id="next-month">
-                                            <i class="icon-left-1"></i>
+                                            <i class="icon-left-1 p-t-5"></i>
                                         </button>
                                     </div>
 
@@ -257,33 +257,30 @@
                                                         id="appointment-date-time"></strong><br>
                                                     هزینه ویزیت: {{ doctor.consultation_fee }} تومان
                                                 </div>
-
-
                                                 <form method="post" id="booking-form">
                                                     {% csrf_token %}
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
-                                                                <label for="patient_name" class="form-label">نام و نام
-                                                                    خانوادگی<span class="text-red">*</span></label>
+                                                                <label for="patient_name" class="form-label">نام<span class="text-red">*</span></label>
                                                                 <input type="text" id="patient_name" name="patient_name"
-                                                                       class="form-control" value=" {% if user.first_name %}{{ user.get_full_name }}{% endif %}"
+                                                                       class="form-control" value=" {% if user.first_name %}{{ user.first_name }}{% endif %}"
                                                                        required>
                                                                 <small class="text-danger font-weight-light"
                                                                        id="name_alarm"></small>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-6">
+                                                                                        <div class="col-md-6">
                                                             <div class="form-group">
-                                                                <label for="phone" class="form-label">شماره تماس<span
-                                                                        class="text-red">*</span></label>
-                                                                <input type="tel" id="phone" name="phone"
-                                                                       class="form-control" required value="{% if user.phone %}{{ user.phone }}{% endif %}">
+                                                                <label for="patient_last_name" class="form-label">نام خانوادگی<span class="text-red">*</span></label>
+                                                                <input type="text" id="patient_last_name" name="patient_last_name"
+                                                                       class="form-control" value=" {% if user.last_name %}{{ user.last_name }}{% endif %}"
+                                                                       required>
                                                                 <small class="text-danger font-weight-light"
-                                                                       id="phone_alarm"></small>
+                                                                       id="last_name_alarm"></small>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-6">
+                                                                                             <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <label for="patient_national_id" class="form-label">کد
                                                                     ملی <span
@@ -296,6 +293,17 @@
                                                                        id="code_alarm"></small>
                                                             </div>
                                                         </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="phone" class="form-label">شماره تماس<span
+                                                                        class="text-red">*</span></label>
+                                                                <input type="tel" id="phone" name="phone"
+                                                                       class="form-control" required value="{% if user.phone %}{{ user.phone }}{% endif %}">
+                                                                <small class="text-danger font-weight-light"
+                                                                       id="phone_alarm"></small>
+                                                            </div>
+                                                        </div>
+
                                                         <div class="col-md-6">
                                                             <div class="custom-gender-toggle">
                                                                 <input type="radio" id="male-option" name="gender"
@@ -722,6 +730,7 @@
 
             function validateForm() {
                 const name = $('#patient_name').val().trim();
+                const last_name = $('#patient_last_name').val().trim();
                 const phone = $('#phone').val().trim();
                 const national_code = $('#patient_national_id').val().trim();
 
@@ -734,6 +743,12 @@
                 if (name.length < 3) {
                     $('#patient_name').addClass('border-danger');
                     $('#name_alarm').text('نام باید حداقل ۳ حرف باشد.');
+                    elements.submitBtn.disabled = true;
+                    isValid = false;
+                }
+                if (last_name.length < 3) {
+                    $('#patient_last_name').addClass('border-danger');
+                    $('#last_name_alarm').text('نام خانوادگی باید حداقل ۳ حرف باشد.');
                     elements.submitBtn.disabled = true;
                     isValid = false;
                 }
@@ -757,6 +772,7 @@
 
             // اضافه کردن رویدادهای real-time به فیلدها
             $('#patient_name').on('input', validateForm);
+            $('#patient_last_name').on('input', validateForm);
             $('#phone').on('input', validateForm);
             $('#patient_national_id').on('input', validateForm);
 

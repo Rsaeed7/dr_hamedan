@@ -1,6 +1,6 @@
 from django import forms
 from django_jalali.forms import jDateTimeField, jDateField
-from .models import VisitEntry,MedicalRecord, MedicalReport, ReportImage,DrReportSettings
+from .models import VisitEntry,MedicalRecord, MedicalReport, ReportImage,DrReportSettings,ReportTemplate
 
 class VisitEntryForm(forms.ModelForm):
     
@@ -46,39 +46,57 @@ class MedicalRecordForm(forms.ModelForm):
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True
 
+    def __init__(self, attrs=None):
+        default_attrs = {'multiple': True}
+        if attrs:
+            default_attrs.update(attrs)
+        super().__init__(attrs=default_attrs)
+
 class MultipleFileField(forms.FileField):
     def __init__(self, *args, **kwargs):
         kwargs.setdefault("widget", MultipleFileInput())
         super().__init__(*args, **kwargs)
 
     def clean(self, data, initial=None):
-        if not data and initial:
-            return initial
-
-
-        if not isinstance(data, (list, tuple)):
-            data = [data]
-
-        return [super().clean(d, initial) for d in data]
-
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = single_file_clean(data, initial)
+        return result
 
 class ReportForm(forms.ModelForm):
     name = forms.CharField(
         label="نام بیمار",
-        widget=forms.TextInput(attrs={'class': 'px-4 py-2 border border-gray-300 rounded-md', 'placeholder': 'نام بیمار'})
+        widget=forms.TextInput(
+            attrs={'class': 'px-4 py-2 border border-gray-300 rounded-md', 'placeholder': 'نام بیمار'})
     )
     title = forms.CharField(
         label="موضوع",
-        widget=forms.TextInput(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md', 'placeholder': 'موضوع ریپورت'})
+        widget=forms.TextInput(
+            attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md', 'placeholder': 'موضوع ریپورت'})
     )
     content = forms.CharField(
         label="شرح",
-        widget=forms.Textarea(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md', 'rows': 5, 'placeholder': 'شرح ریپورت'})
+        widget=forms.Textarea(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md', 'rows': 5,
+                                     'placeholder': 'شرح ریپورت'})
     )
-    images = MultipleFileField(label="تصاویر گزارش", required=False)
-    dr_requesting = forms.CharField(label="پزشک درخواست کننده", required=False,
-                                    widget=forms.TextInput(attrs={'class': 'px-4 py-2 border border-gray-300 rounded-md', 'placeholder': 'پزشک معالج'})
-                                    )
+    images = MultipleFileField(
+        label="تصاویر گزارش",
+        required=False,
+        widget=MultipleFileInput(attrs={
+            'class': 'px-4 py-2 border border-gray-300 rounded-md',
+            'accept': 'image/*'
+        })
+    )
+    dr_requesting = forms.CharField(
+        label="پزشک درخواست کننده",
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'px-4 py-2 border border-gray-300 rounded-md',
+            'placeholder': 'پزشک معالج'
+        })
+    )
     age = forms.IntegerField(
         label="سن بیمار",
         required=False,
@@ -88,17 +106,22 @@ class ReportForm(forms.ModelForm):
 
     class Meta:
         model = MedicalReport
-        fields = ['title', 'content', 'dr_requesting', 'age']
+        fields = ['name', 'title', 'content', 'dr_requesting', 'age', 'images']
 
     def __init__(self, *args, **kwargs):
         patient_name = kwargs.pop('patient_name', None)
-        patient_age = kwargs.pop('patient_age', None)  # دریافت سن بیمار از ویو
+        patient_age = kwargs.pop('patient_age', None)
         super().__init__(*args, **kwargs)
 
         if patient_name:
-            self.fields['name'].initial = patient_name  # مقدار اولیه نام بیمار
+            self.fields['name'].initial = patient_name
+            self.fields['name'].widget.attrs['readonly'] = True
+            self.fields['name'].widget.attrs['class'] += ' bg-gray-100'
+
         if patient_age:
-            self.fields['age'].initial = patient_age  # مقدار اولیه سن بیمار
+            self.fields['age'].initial = patient_age
+            self.fields['age'].widget.attrs['readonly'] = True
+            self.fields['age'].widget.attrs['class'] += ' bg-gray-100'
 
     def save(self, commit=True):
         report = super().save(commit=commit)
@@ -140,3 +163,20 @@ class DrReportSettingsForm(forms.ModelForm):
         labels = {
             'custom_css': 'استایل سفارشی',
         }
+
+
+class ReportTemplateForm(forms.ModelForm):
+    class Meta:
+        model = ReportTemplate
+        fields = ['title', 'dr_requesting', 'content']
+        labels = {
+            'title': 'عنوان قالب',
+            'dr_requesting': 'پزشک معالج',
+            'content': 'متن گزارش',
+        }
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'border'}),
+            'dr_requesting': forms.TextInput(attrs={'class': 'border'}),
+            'content': forms.Textarea(attrs={'class': 'border'}),
+        }
+
