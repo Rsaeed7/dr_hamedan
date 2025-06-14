@@ -122,21 +122,25 @@
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Search -->
-    <div class="filters_listing">
-        <div class="container">
-            <ul class="clearfix">
-                <form method="get" action="{% url 'clinics:clinic_list' %}">
-                    <div id="custom-search-input">
-                        <div class="input-group">
+<div class="filters_listing">
+    <div class="container">
+        <ul class="clearfix">
+            <form method="get" action="{% url 'clinics:clinic_list' %}">
+                <div id="custom-search-input">
+                    <div class="input-group">
+                        <div style="display: flex; align-items: center; width: 100%;">
                             <input type="text" name="query" id="query" value="{{ request.GET.query }}"
-                                   class="search-query" placeholder="نام  یا آدرس کلینیک">
-                            <input type="submit" class="btn_search" style="border-radius: 50px" value="جستجو">
+                                   class="search-query" placeholder="نام یا آدرس کلینیک..."
+                                   style="flex-grow: 1; border-radius: 50px; margin-right: -1px;">
+
+                            <input type="submit" class="btn_search" style="border-radius: 50px;" value="جستجو">
                         </div>
                     </div>
-                </form>
-            </ul>
-        </div>
+                </div>
+            </form>
+        </ul>
     </div>
+</div>
     <!-- /Search -->
 
     <div class="container margin_60">
