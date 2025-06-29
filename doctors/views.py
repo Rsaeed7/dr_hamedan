@@ -51,9 +51,86 @@ def specializations(request):
 
 
 def explore(request):
-    posts = Post.objects.filter(status='published')
+    """
+    Enhanced explore view with lazy loading, search, and filtering
+    """
+    from django.core.paginator import Paginator
+    from django.http import JsonResponse
+    from django.template.loader import render_to_string
+    
+    # Get filter parameters
+    search_query = request.GET.get('search', '').strip()
+    media_type = request.GET.get('media_type', 'all')  # all, image, video, none
+    specialty = request.GET.get('specialty', '')
+    page = request.GET.get('page', 1)
+    
+    # Base queryset - published posts with related data
+    posts = Post.objects.filter(status='published').select_related(
+        'doctor', 'doctor__user'
+    ).prefetch_related('medical_lenses', 'post_likes')
+    
+    # Apply search filter
+    if search_query:
+        from django.db import models as db_models
+        posts = posts.filter(
+            db_models.Q(title__icontains=search_query) |
+            db_models.Q(content__icontains=search_query) |
+            db_models.Q(doctor__user__first_name__icontains=search_query) |
+            db_models.Q(doctor__user__last_name__icontains=search_query) |
+            db_models.Q(medical_lenses__name__icontains=search_query)
+        ).distinct()
+    
+    # Apply media type filter
+    if media_type != 'all':
+        posts = posts.filter(media_type=media_type)
+    
+    # Apply specialty filter
+    if specialty:
+        posts = posts.filter(doctor__specialization__icontains=specialty)
+    
+    # Order by creation date (newest first)
+    posts = posts.order_by('-created_at')
+    
+    # Paginate results (12 posts per page for grid layout)
+    paginator = Paginator(posts, 12)
+    posts_page = paginator.get_page(page)
+    
+    # Handle AJAX requests for lazy loading
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        posts_html = render_to_string(
+            'index/explore_posts_partial.html', 
+            {'posts': posts_page, 'request': request}
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'posts_html': posts_html,
+            'has_next': posts_page.has_next(),
+            'next_page': posts_page.next_page_number() if posts_page.has_next() else None,
+            'total_count': paginator.count,
+            'current_page': posts_page.number,
+            'total_pages': paginator.num_pages
+        })
+    
+    # Get specializations for filter dropdown
+    from doctors.models import Doctor
+    specializations = Doctor.objects.values_list('specialization', flat=True).distinct().order_by('specialization')
+    
+    # Get statistics
+    stats = {
+        'total_posts': Post.objects.filter(status='published').count(),
+        'video_posts': Post.objects.filter(status='published', media_type='video').count(),
+        'image_posts': Post.objects.filter(status='published', media_type='image').count(),
+        'doctors_count': Doctor.objects.count()
+    }
+    
     context = {
-        'posts': posts,
+        'posts': posts_page,
+        'search_query': search_query,
+        'media_type': media_type,
+        'specialty': specialty,
+        'specializations': specializations,
+        'stats': stats,
     }
     return render(request, 'index/medexplore.html', context)
 
