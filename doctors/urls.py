@@ -26,6 +26,12 @@ urlpatterns = [
     path('explore/', views.explore, name='explore'),
     path('specializations/', views.specializations, name='specializations'),
     
+    # Blocked Days Management
+    path('blocked-days/', views.manage_blocked_days, name='manage_blocked_days'),
+    path('add-blocked-day/', views.add_blocked_day, name='add_blocked_day'),
+    path('remove-blocked-day/<int:pk>/', views.remove_blocked_day, name='remove_blocked_day'),
+    path('api/blocked-days/', views.get_blocked_days_json, name='get_blocked_days_json'),
+    
     # Email/Messaging URLs
     path('inbox/', views.InboxView.as_view(), name='inbox'),
     path('sent/', views.SentMessagesView.as_view(), name='sent_messages'),

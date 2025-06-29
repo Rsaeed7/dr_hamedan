@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from patients.models import MedicalRecord
-from .models import Doctor, DoctorAvailability, Specialization, Clinic, City, DrComment, CommentTips ,Email,Supplementary_insurance, DoctorRegistration,EmailTemplate
+from .models import Doctor, DoctorAvailability, Specialization, Clinic, DrComment, CommentTips ,Email,Supplementary_insurance, DoctorRegistration,EmailTemplate
 from reservations.models import Reservation, ReservationDay
 from datetime import datetime, timedelta
 from django.db.models import  Sum, Avg
@@ -23,6 +23,7 @@ from homecare.models import Service
 from reservations.turn_maker import create_availability_days_for_day_of_week
 from reservations.services import BookingService, AppointmentService
 import random
+from doctors.models import DoctorBlockedDay
 
 
 def index(request):
@@ -1348,3 +1349,122 @@ def doctor_appointments_tabs(request):
     }
 
     return render(request, 'doctors/doctor_appointments.html', context)
+
+
+@login_required
+def manage_blocked_days(request):
+    """مدیریت روزهای مسدود شده پزشک"""
+    try:
+        doctor = request.user.doctor
+    except Doctor.DoesNotExist:
+        return redirect('doctors:doctor_list')
+
+    from datetime import date
+    
+    # Get blocked days for this doctor
+    blocked_days = DoctorBlockedDay.objects.filter(doctor=doctor).order_by('-date')
+    
+    # Get today's date for validation
+    today = date.today()
+    
+    context = {
+        'doctor': doctor,
+        'blocked_days': blocked_days,
+        'today': today,
+    }
+
+    return render(request, 'doctors/blocked_days.html', context)
+
+
+@login_required
+def add_blocked_day(request):
+    """افزودن روز مسدود جدید"""
+    try:
+        doctor = request.user.doctor
+    except Doctor.DoesNotExist:
+        return redirect('doctors:doctor_list')
+
+    if request.method == 'POST':
+        from datetime import datetime, date
+        import jdatetime
+        
+        date_str = request.POST.get('date')
+        reason = request.POST.get('reason', '')
+        
+        if date_str:
+            try:
+                # Parse the date (expecting YYYY-MM-DD format)
+                block_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+                
+                # Validate that the date is in the future
+                if block_date <= date.today():
+                    messages.error(request, 'فقط می‌توانید روزهای آینده را مسدود کنید.')
+                    return redirect('doctors:doctor_availability')
+                
+                # Check if already blocked
+                if DoctorBlockedDay.objects.filter(doctor=doctor, date=block_date).exists():
+                    messages.warning(request, 'این تاریخ قبلاً مسدود شده است.')
+                    return redirect('doctors:doctor_availability')
+                
+                # Create blocked day
+                blocked_day = DoctorBlockedDay.objects.create(
+                    doctor=doctor,
+                    date=block_date,
+                    reason=reason
+                )
+                
+                # Convert to Jalali for display
+                jalali_date = jdatetime.date.fromgregorian(date=block_date)
+                messages.success(request, f'تاریخ {jalali_date.strftime("%Y/%m/%d")} با موفقیت مسدود شد.')
+                
+            except ValueError:
+                messages.error(request, 'فرمت تاریخ نامعتبر است.')
+        else:
+            messages.error(request, 'لطفا تاریخ را انتخاب کنید.')
+    
+    return redirect('doctors:doctor_availability')
+
+
+@login_required
+def remove_blocked_day(request, pk):
+    """حذف روز مسدود شده"""
+    try:
+        doctor = request.user.doctor
+        blocked_day = get_object_or_404(DoctorBlockedDay, pk=pk, doctor=doctor)
+    except Doctor.DoesNotExist:
+        return redirect('doctors:doctor_list')
+    
+    if request.method == 'POST':
+        import jdatetime
+        
+        # Convert to Jalali for display
+        jalali_date = jdatetime.date.fromgregorian(date=blocked_day.date)
+        blocked_day.delete()
+        
+        messages.success(request, f'مسدودیت تاریخ {jalali_date.strftime("%Y/%m/%d")} برداشته شد.')
+    
+    return redirect('doctors:doctor_availability')
+
+
+@login_required
+def get_blocked_days_json(request):
+    """دریافت روزهای مسدود شده به فرمت JSON برای تقویم"""
+    try:
+        doctor = request.user.doctor
+    except Doctor.DoesNotExist:
+        return JsonResponse({'blocked_days': []})
+    
+    import jdatetime
+    
+    blocked_days = DoctorBlockedDay.objects.filter(doctor=doctor).values_list('date', 'reason')
+    
+    blocked_days_list = []
+    for block_date, reason in blocked_days:
+        jalali_date = jdatetime.date.fromgregorian(date=block_date)
+        blocked_days_list.append({
+            'date': block_date.strftime('%Y-%m-%d'),
+            'jalali_date': jalali_date.strftime('%Y/%m/%d'),
+            'reason': reason or 'مسدود شده'
+        })
+    
+    return JsonResponse({'blocked_days': blocked_days_list})
