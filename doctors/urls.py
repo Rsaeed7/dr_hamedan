@@ -36,4 +36,5 @@ urlpatterns = [
     path('templates/create/', views.create_email_template, name='create_email_template'),
     path('important/', views.ImportantMessagesView.as_view(), name='important'),
     path('update-location/', views.update_doctor_location, name='update_location'),
+    path('test-fonts/', views.test_fonts, name='test_fonts'),
 ] 

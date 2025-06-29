@@ -1078,3 +1078,7 @@ def update_doctor_location(request):
         'success': False,
         'message': 'درخواست نامعتبر'
     })
+
+def test_fonts(request):
+    """Test page for verifying IRANSansWeb fonts are loading correctly"""
+    return render(request, 'test_fonts.html')
