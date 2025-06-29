@@ -478,41 +478,67 @@ def doctor_appointments(request):
     date_from = request.GET.get('date_from', '')
     date_to = request.GET.get('date_to', '')
 
-    # تبدیل تاریخ‌ها
+    # تبدیل تاریخ‌ها با مدیریت خطا بهتر
     date_from_obj = None
     date_to_obj = None
     
     if date_from:
         try:
+            from datetime import datetime
             date_from_obj = datetime.strptime(date_from, '%Y-%m-%d').date()
         except ValueError:
-            pass
+            from django.contrib import messages
+            messages.warning(request, 'فرمت تاریخ شروع نامعتبر است')
 
     if date_to:
         try:
+            from datetime import datetime
             date_to_obj = datetime.strptime(date_to, '%Y-%m-%d').date()
         except ValueError:
-            pass
+            from django.contrib import messages
+            messages.warning(request, 'فرمت تاریخ پایان نامعتبر است')
 
-    # استفاده از سرویس برای دریافت نوبت‌ها
+    # استفاده از سرویس برای دریافت نوبت‌ها با بهینه‌سازی query
     appointments = BookingService.get_doctor_appointments(
         doctor=doctor,
         date_from=date_from_obj,
         date_to=date_to_obj,
         status_filter=status
+    ).select_related(
+        'patient', 'patient__user', 'day'
+    ).prefetch_related(
+        'patient__medicalrecord_set'
     )
     
     # اضافه کردن پرونده پزشکی به هر نوبت
     for appointment in appointments:
-        record = MedicalRecord.objects.filter(patient=appointment.patient, doctor=doctor).first()
-        appointment.medical_record = record
+        if appointment.patient:
+            record = appointment.patient.medicalrecord_set.filter(doctor=doctor).first()
+            appointment.medical_record = record
+        else:
+            appointment.medical_record = None
+
+    # افزودن pagination
+    from django.core.paginator import Paginator
+    paginator = Paginator(appointments, 20)  # نمایش 20 نوبت در هر صفحه
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    # آمار برای نمایش
+    total_appointments = appointments.count()
+    has_filters = any([status != 'all', date_from, date_to])
 
     context = {
         'doctor': doctor,
-        'appointments': appointments,
+        'appointments': page_obj,
+        'page_obj': page_obj,
+        'is_paginated': page_obj.has_other_pages,
+        'paginator': paginator,
         'status': status,
         'date_from': date_from,
         'date_to': date_to,
+        'total_appointments': total_appointments,
+        'has_filters': has_filters,
     }
 
     return render(request, 'doctors/appointments.html', context)
@@ -1159,3 +1185,166 @@ def update_doctor_location(request):
 def test_fonts(request):
     """Test page for verifying IRANSansWeb fonts are loading correctly"""
     return render(request, 'test_fonts.html')
+
+@login_required
+def doctor_appointments_tabs(request):
+    """نمایش نوبت‌های پزشک با قابلیت فیلتر و ایجاد نوبت همان روز"""
+    try:
+        doctor = request.user.doctor
+    except Doctor.DoesNotExist:
+        return redirect('doctors:doctor_list')
+
+    from datetime import datetime, date, timedelta
+    from django.db.models import Q
+    from patients.models import PatientsFile
+    
+    # Get filter parameters
+    search = request.GET.get('search', '')
+    date_filter = request.GET.get('date_filter', '')
+    status_filter = request.GET.get('status_filter', '')
+    
+    # Base appointments query
+    appointments = Reservation.objects.filter(
+        doctor=doctor
+    ).exclude(
+        status='available'
+    ).select_related(
+        'patient', 'patient__user', 'day'
+    ).order_by('-day__date', '-time')
+    
+    # Apply search filter
+    if search:
+        appointments = appointments.filter(
+            Q(patient__user__first_name__icontains=search) |
+            Q(patient__user__last_name__icontains=search) |
+            Q(patient_name__icontains=search) |
+            Q(phone__icontains=search) |
+            Q(patient_national_id__icontains=search)
+        )
+    
+    # Apply date filter
+    if date_filter:
+        try:
+            filter_date = datetime.strptime(date_filter, '%Y-%m-%d').date()
+            appointments = appointments.filter(day__date=filter_date)
+        except ValueError:
+            pass
+    
+    # Apply status filter
+    if status_filter:
+        appointments = appointments.filter(status=status_filter)
+    
+    # Get today's date
+    today = date.today()
+    
+    # Separate appointments by time period
+    today_appointments = appointments.filter(day__date=today)
+    upcoming_appointments = appointments.filter(day__date__gt=today)[:10]
+    past_appointments = appointments.filter(day__date__lt=today)[:10]
+    
+    # Get today's available time slots for same-day appointments
+    today_available_slots = []
+    try:
+        today_reservation_day = ReservationDay.objects.get(
+            doctor=doctor,
+            date=today,
+            is_available=True
+        )
+        
+        # Get all reserved times for today
+        reserved_times = Reservation.objects.filter(
+            doctor=doctor,
+            day=today_reservation_day
+        ).exclude(
+            status__in=['cancelled', 'available']
+        ).values_list('time', flat=True)
+        
+        # Generate available time slots (assuming 30-minute intervals)
+        from datetime import time
+        current_time = today_reservation_day.start_time
+        end_time = today_reservation_day.end_time
+        
+        while current_time < end_time:
+            if current_time not in reserved_times:
+                # Only show future time slots for today
+                now = datetime.now().time()
+                if current_time > now:
+                    today_available_slots.append(current_time)
+            
+            # Add 30 minutes
+            current_datetime = datetime.combine(today, current_time)
+            current_datetime += timedelta(minutes=30)
+            current_time = current_datetime.time()
+            
+    except ReservationDay.DoesNotExist:
+        pass
+    
+    # Handle same-day appointment creation
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'create_same_day_appointment':
+            patient_name = request.POST.get('patient_name')
+            patient_phone = request.POST.get('patient_phone')
+            appointment_time = request.POST.get('appointment_time')
+            notes = request.POST.get('notes', '')
+            
+            if patient_name and patient_phone and appointment_time:
+                try:
+                    time_obj = datetime.strptime(appointment_time, '%H:%M').time()
+                    
+                    # Create or get patient file
+                    patient_file, created = PatientsFile.objects.get_or_create(
+                        phone=patient_phone,
+                        defaults={
+                            'name': patient_name,
+                            'created_by_doctor': doctor
+                        }
+                    )
+                    
+                    # Create reservation
+                    reservation = Reservation.objects.create(
+                        doctor=doctor,
+                        day=today_reservation_day,
+                        time=time_obj,
+                        patient=patient_file,
+                        patient_name=patient_name,
+                        phone=patient_phone,
+                        notes=notes,
+                        status='confirmed',  # Same-day appointments are auto-confirmed
+                        created_by_doctor=True
+                    )
+                    
+                    messages.success(request, f'نوبت همان روز برای {patient_name} در ساعت {appointment_time} ایجاد شد.')
+                    
+                    if created:
+                        messages.info(request, f'پرونده جدید برای {patient_name} ایجاد شد.')
+                    
+                except ValueError:
+                    messages.error(request, 'فرمت زمان نامعتبر است.')
+                except Exception as e:
+                    messages.error(request, f'خطا در ایجاد نوبت: {str(e)}')
+            else:
+                messages.error(request, 'لطفا تمام فیلدهای ضروری را پر کنید.')
+        
+        return redirect('doctors:doctor_appointments_tabs')
+    
+    # Prepare available patients for quick selection
+    recent_patients = PatientsFile.objects.filter(
+        reservation__doctor=doctor
+    ).distinct().order_by('-updated_at')[:20]
+    
+    context = {
+        'doctor': doctor,
+        'today_appointments': today_appointments,
+        'upcoming_appointments': upcoming_appointments,
+        'past_appointments': past_appointments,
+        'today_available_slots': today_available_slots,
+        'recent_patients': recent_patients,
+        'search': search,
+        'date_filter': date_filter,
+        'status_filter': status_filter,
+        'today_date': today,
+    }
+
+    return render(request, 'doctors/doctor_appointments.html', context)

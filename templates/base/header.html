@@ -243,7 +243,7 @@
                         <li>
                             <a href="{% url 'homecare:select_service' %}">خدمات پزشکی در محل</a>
                         </li>
-                        <li><a href="{% url 'doctors:medexplor' %}" class="text_dr_2">لنزپزشکی</a></li>
+                        <li><a href="{% url 'doctors:explore' %}" class="text_dr_2">لنزپزشکی</a></li>
                     </ul>
                 </div>
             </nav>
@@ -276,8 +276,8 @@
         <span>خانه</span>
     </a>
 
-    <a href="{% url 'doctors:medexplor' %}"
-       class="nav-item {% if request.resolver_match.url_name == 'medexplor' %}active{% endif %}">
+                                <a href="{% url 'doctors:explore' %}"
+                               class="nav-item {% if request.resolver_match.url_name == 'explore' %}active{% endif %}">
         <i class="icon-instagramm text-dr"></i>
         <span>لنز</span>
     </a>

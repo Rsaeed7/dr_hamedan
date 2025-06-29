@@ -92,6 +92,38 @@
         padding-left: 0;
         padding-right: 1rem;
     }
+
+    /* Enhanced filter form styles */
+    .filter-form.loading {
+        opacity: 0.7;
+        pointer-events: none;
+    }
+
+    .search-input:focus {
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        border-color: #3b82f6;
+    }
+
+    /* Simple loading spinner */
+    .spinner {
+        border: 2px solid #f3f4f6;
+        border-top: 2px solid #3b82f6;
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Status badges hover effects */
+    .status-badge:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
 </style>
 {% endblock %}
 
@@ -171,47 +203,61 @@
                 <p class="text-gray-600 mt-1">مدیریت و مشاهده تمام نوبت‌های شما</p>
             </div>
 
-            <!-- Filter Section -->
+            <!-- Enhanced Filter Section -->
             <div class="bg-white rounded-lg shadow-md p-6 mb-6">
                 <h2 class="text-lg font-medium text-gray-800 mb-4">فیلتر نوبت‌ها</h2>
 
-{#            TO DO : The filter is not working.      #}
-
-                <form method="get" action="{% url 'doctors:doctor_appointments' %}"
+                <form method="get" action="{% url 'doctors:doctor_appointments' %}" id="filterForm"
                       class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    
+                    <!-- Status Filter -->
                     <div>
                         <label for="status" class="block text-sm font-medium text-gray-700 mb-1">وضعیت</label>
                         <select id="status" name="status"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                             <option value="all" {% if status == 'all' %}selected{% endif %}>همه وضعیت‌ها</option>
                             <option value="pending" {% if status == 'pending' %}selected{% endif %}>در انتظار</option>
-                            <option value="confirmed" {% if status == 'confirmed' %}selected{% endif %}>تأیید شده
-                            </option>
-                            <option value="completed" {% if status == 'completed' %}selected{% endif %}>تکمیل شده
-                            </option>
+                            <option value="confirmed" {% if status == 'confirmed' %}selected{% endif %}>تأیید شده</option>
+                            <option value="completed" {% if status == 'completed' %}selected{% endif %}>تکمیل شده</option>
                             <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>لغو شده</option>
                         </select>
                     </div>
 
+                    <!-- Date From Filter -->
                     <div>
                         <label for="date_from" class="block text-sm font-medium text-gray-700 mb-1">از تاریخ</label>
-                        <input type="text" id="date_from" name="date_from" value="{{ date_from|date:'Y-m-d' }}"
-                               class="jalali-datepicker w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        <input type="date" id="date_from" name="date_from" value="{{ date_from }}"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     </div>
 
+                    <!-- Date To Filter -->
                     <div>
                         <label for="date_to" class="block text-sm font-medium text-gray-700 mb-1">تا تاریخ</label>
-                        <input type="text" id="date_to" name="date_to" value="{{ date_to|date:'Y-m-d' }}"
-                               class="jalali-datepicker w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        <input type="date" id="date_to" name="date_to" value="{{ date_to }}"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     </div>
 
+                    <!-- Submit Button -->
                     <div class="flex items-end">
-                        <button type="submit"
+                        <button type="submit" id="filterButton"
                                 class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150">
                             اعمال فیلترها
                         </button>
                     </div>
                 </form>
+
+                <!-- Clear Filters Button -->
+                {% if status != 'all' or date_from or date_to %}
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <button onclick="clearFilters()" 
+                            class="text-sm text-gray-600 hover:text-blue-600 transition-colors">
+                        <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                        پاک کردن فیلترها
+                    </button>
+                </div>
+                {% endif %}
             </div>
 
             <!-- Appointments List -->
@@ -225,17 +271,13 @@
                         {% endif %}
                     </h2>
                     <span class="text-sm text-gray-500">
-                    {{ appointments.count }} نوبت
-                </span>
+                        {{ appointments.count }} نوبت
+                    </span>
                 </div>
 
                 {% if appointments %}
                     <div class="divide-y divide-gray-200">
                         {% for appointment in appointments %}
-                            <td class="text-center">
-
-                            </td>
-
                             <div class="p-6 hover:bg-gray-50 appointment-card">
                                 <div class="flex flex-col md:flex-row md:items-center md:justify-between">
                                     <div class="flex items-start mb-4 md:mb-0">
@@ -245,7 +287,6 @@
                                                      alt="{{ appointment.patient.user.get_full_name }}"
                                                      class="w-10 h-10 rounded-full object-cover ml-4">
                                             {% else %}
-
                                                 <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center ml-4">
                                                 <span class="text-gray-600 text-sm font-bold">
                                                     {% if appointment.patient.user.first_name %}
@@ -255,7 +296,6 @@
                                                     {% endif %}
                                                 </span>
                                                 </div>
-
                                             {% endif %}
                                         {% else %}
                                             <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center ml-4">
@@ -294,12 +334,11 @@
                                     </div>
                                     <br>
 
-
                                     <div class="flex flex-col space-y-2 md:space-y-0 md:flex-row md:space-x-reverse md:space-x-4 md:items-center">
                                         <div class="text-left">
                                             <p class="text-sm font-medium text-gray-600">{{ appointment.day.date|persian_weekday }} {{ appointment.day.date|date:'j' }} {{ appointment.day.date|persian_month_name }}</p>
                                             <p class="text-lg font-semibold text-gray-800">{{ appointment.time|time:"H:i" }}</p>
-                                            <span class="inline-flex items-center mt-1 px-2.5 py-0.5 rounded-full text-xs font-medium
+                                            <span class="inline-flex items-center mt-1 px-2.5 py-0.5 rounded-full text-xs font-medium status-badge
                                             {% if appointment.status == 'confirmed' %}
                                                 bg-blue-100 text-blue-800
                                             {% elif appointment.status == 'completed' %}
@@ -369,7 +408,7 @@
                         {% endfor %}
                     </div>
 
-                    <!-- Pagination -->
+                    <!-- Enhanced Pagination -->
                     {% if is_paginated %}
                         <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
                             <div>
@@ -382,14 +421,14 @@
                             <div>
                                 <nav class="flex items-center">
                                     {% if page_obj.has_previous %}
-                                        <a href="?{% if status != 'all' %}status={{ status }}&{% endif %}{% if date_from %}date_from={{ date_from|date:'Y-m-d' }}&{% endif %}{% if date_to %}date_to={{ date_to|date:'Y-m-d' }}&{% endif %}page={{ page_obj.previous_page_number }}"
+                                        <a href="?{% if status != 'all' %}status={{ status }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}page={{ page_obj.previous_page_number }}"
                                            class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                                             قبلی
                                         </a>
                                     {% endif %}
 
                                     {% if page_obj.has_next %}
-                                        <a href="?{% if status != 'all' %}status={{ status }}&{% endif %}{% if date_from %}date_from={{ date_from|date:'Y-m-d' }}&{% endif %}{% if date_to %}date_to={{ date_to|date:'Y-m-d' }}&{% endif %}page={{ page_obj.next_page_number }}"
+                                        <a href="?{% if status != 'all' %}status={{ status }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}page={{ page_obj.next_page_number }}"
                                            class="mr-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                                             بعدی
                                         </a>
@@ -421,21 +460,106 @@
 {% endblock %}
 
 {% block extra_js %}
-<!-- Add jQuery if not already included -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- Add Jalali Datepicker -->
-<script src="https://unpkg.com/persian-date@latest/dist/persian-date.min.js"></script>
-<script src="https://unpkg.com/persian-datepicker@latest/dist/js/persian-datepicker.min.js"></script>
 <script>
-    $(document).ready(function() {
-        $('.jalali-datepicker').persianDatepicker({
-            format: 'YYYY/MM/DD',
-            altFormat: 'YYYY-MM-DD',
-            observer: true,
-            initialValue: true,
-            autoClose: true,
-            initialValueType: 'gregorian'
+document.addEventListener('DOMContentLoaded', function() {
+    const filterForm = document.getElementById('filterForm');
+    const statusSelect = document.getElementById('status');
+    const dateFromInput = document.getElementById('date_from');
+    const dateToInput = document.getElementById('date_to');
+    const filterButton = document.getElementById('filterButton');
+
+    // Auto-submit form when status changes
+    if (statusSelect) {
+        statusSelect.addEventListener('change', function() {
+            showLoading();
+            filterForm.submit();
+        });
+    }
+
+    // Auto-submit form when date changes
+    if (dateFromInput) {
+        dateFromInput.addEventListener('change', function() {
+            // Validate date range
+            if (dateToInput.value && this.value && this.value > dateToInput.value) {
+                alert('تاریخ شروع نمی‌تواند از تاریخ پایان بزرگ‌تر باشد');
+                this.value = '';
+                return;
+            }
+            showLoading();
+            filterForm.submit();
+        });
+    }
+
+    if (dateToInput) {
+        dateToInput.addEventListener('change', function() {
+            // Validate date range
+            if (dateFromInput.value && this.value && this.value < dateFromInput.value) {
+                alert('تاریخ پایان نمی‌تواند از تاریخ شروع کوچک‌تر باشد');
+                this.value = '';
+                return;
+            }
+            showLoading();
+            filterForm.submit();
+        });
+    }
+
+    // Show loading state
+    function showLoading() {
+        if (filterButton) {
+            const originalText = filterButton.innerHTML;
+            filterButton.innerHTML = '<div class="spinner mx-auto"></div>';
+            filterButton.disabled = true;
+            
+            // Restore button after timeout as fallback
+            setTimeout(() => {
+                filterButton.innerHTML = originalText;
+                filterButton.disabled = false;
+            }, 5000);
+        }
+        
+        // Add loading class to form
+        if (filterForm) {
+            filterForm.classList.add('loading');
+        }
+    }
+
+    // Add filter form class
+    if (filterForm) {
+        filterForm.classList.add('filter-form');
+    }
+
+    // Add status badge classes for hover effects
+    document.querySelectorAll('.status-badge').forEach(badge => {
+        badge.addEventListener('mouseover', function() {
+            this.style.transform = 'translateY(-1px)';
+            this.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+        });
+        
+        badge.addEventListener('mouseout', function() {
+            this.style.transform = '';
+            this.style.boxShadow = '';
         });
     });
+});
+
+// Clear filters function
+function clearFilters() {
+    const form = document.getElementById('filterForm');
+    
+    // Reset all form fields
+    document.getElementById('status').value = 'all';
+    document.getElementById('date_from').value = '';
+    document.getElementById('date_to').value = '';
+    
+    // Submit form
+    form.submit();
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        clearFilters();
+    }
+});
 </script>
 {% endblock %}
