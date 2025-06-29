@@ -198,7 +198,8 @@ def clinic_appointments(request):
     try:
         clinic = Clinic.objects.get(admin=request.user)
     except Clinic.DoesNotExist:
-        return redirect('doctors:doctor_list')  # Redirect if user is not a clinic admin
+        messages.error(request, 'شما دسترسی به این صفحه ندارید')
+        return redirect('doctors:doctor_list')
     
     # Get all doctors in this clinic
     doctors = Doctor.objects.filter(clinic=clinic)
@@ -206,46 +207,86 @@ def clinic_appointments(request):
     # Get filter parameters
     doctor_id = request.GET.get('doctor_id', 'all')
     status = request.GET.get('status', 'all')
-    date_from = request.GET.get('date_from', '')
-    date_to = request.GET.get('date_to', '')
+    date_from_str = request.GET.get('date_from', '')
+    date_to_str = request.GET.get('date_to', '')
+    search_query = request.GET.get('search', '')
     
-    # Base query - all appointments for clinic doctors
-    appointments = Reservation.objects.filter(doctor__in=doctors)
+    # Base query - all appointments for clinic doctors with select_related for optimization
+    appointments = Reservation.objects.filter(
+        doctor__in=doctors
+    ).select_related(
+        'doctor', 'doctor__user', 'doctor__specialization', 'day', 'patient', 'patient__user'
+    ).exclude(
+        status='available'  # Exclude available slots, only show actual appointments
+    )
     
     # Apply filters
-    if doctor_id != 'all':
-        appointments = appointments.filter(doctor_id=doctor_id)
+    if doctor_id != 'all' and doctor_id.isdigit():
+        appointments = appointments.filter(doctor_id=int(doctor_id))
     
     if status != 'all':
         appointments = appointments.filter(status=status)
     
-    if date_from:
+    # Search filter
+    if search_query:
+        appointments = appointments.filter(
+            Q(patient_name__icontains=search_query) |
+            Q(phone__icontains=search_query) |
+            Q(patient_national_id__icontains=search_query)
+        )
+    
+    # Date filtering with proper error handling
+    date_from_obj = None
+    date_to_obj = None
+    
+    if date_from_str:
         try:
             from datetime import datetime
-            date_from = datetime.strptime(date_from, '%Y-%m-%d').date()
-            appointments = appointments.filter(day__date__gte=date_from)
+            date_from_obj = datetime.strptime(date_from_str, '%Y-%m-%d').date()
+            appointments = appointments.filter(day__date__gte=date_from_obj)
         except ValueError:
-            pass
+            messages.warning(request, 'فرمت تاریخ شروع نامعتبر است')
     
-    if date_to:
+    if date_to_str:
         try:
             from datetime import datetime
-            date_to = datetime.strptime(date_to, '%Y-%m-%d').date()
-            appointments = appointments.filter(day__date__lte=date_to)
+            date_to_obj = datetime.strptime(date_to_str, '%Y-%m-%d').date()
+            appointments = appointments.filter(day__date__lte=date_to_obj)
         except ValueError:
-            pass
+            messages.warning(request, 'فرمت تاریخ پایان نامعتبر است')
     
-    # Order by date and time
-    appointments = appointments.order_by('day__date', 'time')
+    # Order by date and time (most recent first)
+    appointments = appointments.order_by('-day__date', '-time')
+    
+    # Pagination
+    from django.core.paginator import Paginator
+    paginator = Paginator(appointments, 20)  # Show 20 appointments per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    # Statistics for dashboard
+    total_appointments = appointments.count()
+    pending_count = appointments.filter(status='pending').count()
+    confirmed_count = appointments.filter(status='confirmed').count()
+    completed_count = appointments.filter(status='completed').count()
+    cancelled_count = appointments.filter(status='cancelled').count()
     
     context = {
         'clinic': clinic,
         'doctors': doctors,
-        'appointments': appointments,
+        'page_obj': page_obj,
+        'appointments': page_obj,  # For backward compatibility
         'selected_doctor': doctor_id,
         'status': status,
-        'date_from': date_from,
-        'date_to': date_to,
+        'date_from': date_from_str,  # Keep original string for form
+        'date_to': date_to_str,     # Keep original string for form
+        'search_query': search_query,
+        'total_appointments': total_appointments,
+        'pending_count': pending_count,
+        'confirmed_count': confirmed_count,
+        'completed_count': completed_count,
+        'cancelled_count': cancelled_count,
+        'has_filters': any([doctor_id != 'all', status != 'all', date_from_str, date_to_str, search_query]),
     }
     
     return render(request, 'clinics/appointments.html', context)
