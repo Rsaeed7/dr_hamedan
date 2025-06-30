@@ -307,6 +307,27 @@ class DoctorAvailability(models.Model):
     def get_day_of_week_display(self):
         return dict(self.DAYS_OF_WEEK).get(self.day_of_week, '')
 
+class DoctorBlockedDay(models.Model):
+    """
+    روزهای مسدود شده توسط پزشک
+    برای مسدود کردن تاریخ‌های خاص که در برنامه هفتگی پزشک موجود است
+    """
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='blocked_days', verbose_name=_('پزشک'))
+    date = jmodels.jDateField(verbose_name=_('تاریخ مسدود شده'))
+    reason = models.CharField(max_length=200, blank=True, verbose_name=_('دلیل'))
+    created_at = jmodels.jDateTimeField(auto_now_add=True, verbose_name=_('تاریخ ایجاد'))
+    updated_at = jmodels.jDateTimeField(auto_now=True, verbose_name=_('تاریخ بروزرسانی'))
+    
+    class Meta:
+        verbose_name = _('روز مسدود شده')
+        verbose_name_plural = _('روزهای مسدود شده')
+        unique_together = ['doctor', 'date']
+        ordering = ['-date']
+    
+    def __str__(self):
+        reason_text = f" ({self.reason})" if self.reason else ""
+        return f"{self.doctor.user.get_full_name()} - {self.date}{reason_text}"
+
 class Email(models.Model):
     sender = models.ForeignKey(
         Doctor,

@@ -9,7 +9,6 @@ local-cdn/
 venv/
 # Byte-compiled / optimized / DLL files
 __pycache__/
-/__pycache__/
 *.py[cod]
 *$py.class
 
@@ -68,7 +67,7 @@ cover/
 # Django stuff:
 *.log
 local_settings.py
-
+db.sqlite3
 db.sqlite3-journal
 
 # Flask stuff:
@@ -130,7 +129,7 @@ celerybeat.pid
 
 # SageMath parsed files
 *.sage.py
-db.sqlite3
+
 # Environments
 .env
 .venv
@@ -304,8 +303,3 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
-
-
-
-.zip
-media

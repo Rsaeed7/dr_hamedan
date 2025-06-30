@@ -5,35 +5,50 @@ app_name = 'doctors'
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('doctor_list', views.DoctorListView.as_view(), name='doctor_list'),
-    path('specializations', views.specializations, name='specializations'),
-    path('<int:pk>/', views.doctor_detail, name='doctor_detail'),
+    path('registration/', views.doctor_registration, name='doctor_registration'),
+    path('list/', views.DoctorListView.as_view(), name='doctor_list'),
+    path('doctor/<int:pk>/', views.doctor_detail, name='doctor_detail'),
     path('dashboard/', views.doctor_dashboard, name='doctor_dashboard'),
     path('availability/', views.doctor_availability, name='doctor_availability'),
     path('earnings/', views.doctor_earnings, name='doctor_earnings'),
     path('appointments/', views.doctor_appointments, name='doctor_appointments'),
-    path('doctor/profile/', views.doctor_profile, name='doctor_profile'),
-    path('appointment/<int:pk>/confirm/', views.confirm_appointment, name='confirm_appointment'),
-    path('appointment/<int:pk>/complete/', views.complete_appointment, name='complete_appointment'),
-    path('appointment/<int:pk>/cancel/', views.cancel_appointment, name='cancel_appointment'),
+    path('appointments-tabs/', views.doctor_appointments_tabs, name='doctor_appointments_tabs'),
+    path('profile/', views.doctor_profile, name='doctor_profile'),
+    path('confirm-appointment/<int:pk>/', views.confirm_appointment, name='confirm_appointment'),
+    path('complete-appointment/<int:pk>/', views.complete_appointment, name='complete_appointment'),
+    path('cancel-appointment/<int:pk>/', views.cancel_appointment, name='cancel_appointment'),
     path('toggle-availability/', views.toggle_availability, name='toggle_availability'),
-    path('add-availability-day/', views.add_availability_day, name='add_availability_day'),
-    path('edit-availability-day/<int:pk>/', views.edit_availability_day, name='edit_availability_day'),
-    path('delete-availability-day/<int:pk>/', views.delete_availability_day, name='delete_availability_day'),
+    path('add-availability/', views.add_availability_day, name='add_availability_day'),
     path('update-settings/', views.update_settings, name='update_settings'),
-    path('update-payment-settings/', views.update_payment_settings, name='update_payment_settings'),
-    path('medexplor/', views.explore, name='medexplor'),
-    path('register/', views.doctor_registration, name='doctor_registration'),
-
+    path('delete-availability/<int:pk>/', views.delete_availability_day, name='delete_availability_day'),
+    path('edit-availability/<int:pk>/', views.edit_availability_day, name='edit_availability_day'),
+    path('update-payment/', views.update_payment_settings, name='update_payment_settings'),
+    path('explore/', views.explore, name='explore'),
+    path('specializations/', views.specializations, name='specializations'),
+    
+    # Blocked Days Management
+    path('blocked-days/', views.manage_blocked_days, name='manage_blocked_days'),
+    path('add-blocked-day/', views.add_blocked_day, name='add_blocked_day'),
+    path('remove-blocked-day/<int:pk>/', views.remove_blocked_day, name='remove_blocked_day'),
+    path('api/blocked-days/', views.get_blocked_days_json, name='get_blocked_days_json'),
+    
+    # Email/Messaging URLs
     path('inbox/', views.InboxView.as_view(), name='inbox'),
-    path('doctor-search/', views.doctor_search, name='doctor-search'),
-    path('sent/', views.SentMessagesView.as_view(), name='sent'),
-    path('send/', views.SendMessageView.as_view(), name='send'),
-    path('view/<uuid:pk>/', views.MessageDetailView.as_view(), name='detail'),
-    path('reply/<uuid:pk>/', views.ReplyMessageView.as_view(), name='reply'),
-    path('delete/<uuid:pk>/', views.DeleteMessageView.as_view(), name='delete'),
-    path('templates/', views.email_template_list, name='email_template_list'),
-    path('templates/create/', views.create_email_template, name='create_email_template'),
-    path('important/', views.ImportantMessagesView.as_view(), name='important'),
-    path('update-location/', views.update_doctor_location, name='update_location'),
+    path('sent/', views.SentMessagesView.as_view(), name='sent_messages'),
+    path('important/', views.ImportantMessagesView.as_view(), name='important_messages'),
+    path('message/<int:pk>/', views.MessageDetailView.as_view(), name='message_detail'),
+    path('send/', views.SendMessageView.as_view(), name='send_message'),
+    path('reply/<int:pk>/', views.ReplyMessageView.as_view(), name='reply_message'),
+    path('delete-message/<int:pk>/', views.DeleteMessageView.as_view(), name='delete_message'),
+    path('email-templates/', views.email_template_list, name='email_template_list'),
+    path('create-email-template/', views.create_email_template, name='create_email_template'),
+    
+    # Location update
+    path('update-location/', views.update_doctor_location, name='update_doctor_location'),
+    
+    # Doctor search API
+    path('api/search/', views.doctor_search, name='doctor_search'),
+    
+    # Test fonts
+    path('test-fonts/', views.test_fonts, name='test_fonts'),
 ] 

@@ -1,239 +1,304 @@
 <!DOCTYPE html>
 {% load static %}
+{% load persian_date %}
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}دکتر  - سیستم رزرو نوبت پزشک{% endblock %}</title>
+    <title>اکتشاف محتوا - دکتر همدان</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Heroicons CDN -->
-    <script src="https://unpkg.com/@heroicons/v2.0.18/24/outline/index.js"></script>
-    {% block extra_css %}{% endblock %}
+    
+    <!-- Custom Fonts -->
+    <link href="{% static 'css/fonts.css' %}" rel="stylesheet">
+    
+    <!-- Meta tags -->
+    <meta name="description" content="اکتشاف بهترین محتوای پزشکی از پزشکان متخصص">
+    <meta name="keywords" content="پزشک، سلامت، محتوای پزشکی، ویدیو آموزشی">
+    
+    <style>
+        /* Simple Persian UI styles */
+        body {
+            font-family: 'IRANSansWeb', Tahoma, Arial, sans-serif;
+        }
+        
+        /* Simple Masonry Grid */
+        .masonry-grid {
+            column-count: 1;
+            column-gap: 1.5rem;
+        }
+        
+        @media (min-width: 640px) {
+            .masonry-grid {
+                column-count: 2;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .masonry-grid {
+                column-count: 3;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .masonry-grid {
+                column-count: 4;
+            }
+        }
+        
+        .masonry-item {
+            break-inside: avoid;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        /* Simple hover effects */
+        .post-card {
+            transition: all 0.3s ease;
+        }
+        
+        .post-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Simple animations */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Simple search input */
+        .search-input:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+        }
+        
+        /* Simple loading spinner */
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Simple stats cards */
+        .stats-card {
+            transition: transform 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* Simple button styles */
+        .btn-primary {
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+    </style>
 </head>
-<style>
-.masonry-grid {
-    display: grid!important;
-    grid-gap: 1rem!important;
-    grid-template-columns: repeat(3, 1fr)!important;
-    grid-auto-rows: 10px!important;
-}
 
-.masonry-item {
-    width: 100%;
-}
-
-.masonry-item img {
-    width: 100%;
-    height: auto;
-    display: block;
-    border-radius: 2px;
-}
-
-</style>
-
-{#TO DO : Need a search bar#}
-{#TO DO :Play video for posts with video#}
-{#TO DO :Approaching Insta Explore#}
-
-<header class="bg-gradient-to-r from-blue-600 to-indigo-700 shadow-lg">
+<body class="bg-gray-50 min-h-screen">
+    <!-- Simple Navigation Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50 border-b">
         <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
-                <a href="{% url 'doctors:doctor_list' %}" class="flex items-center space-x-2">
-                    <span class="text-2xl font-bold text-white">دکتر </span>
+                <!-- Simple Logo -->
+                <a href="{% url 'doctors:doctor_list' %}" class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">د</span>
+                    </div>
+                    <span class="text-xl font-bold text-gray-900">دکتر همدان</span>
                 </a>
                 
+                <!-- Simple Navigation -->
                 <div class="hidden md:flex items-center space-x-8">
-                    <a href="{% url 'doctors:doctor_list' %}" class="text-blue-100 hover:text-white transition-colors flex items-center">
-                        <heroicon-outline-user-group class="w-5 h-5 mr-1" />
+                    <a href="{% url 'doctors:doctor_list' %}" class="text-gray-600 hover:text-blue-600 transition-colors">
                         پزشکان
                     </a>
-                    <a href="{% url 'clinics:clinic_list' %}" class="text-blue-100 hover:text-white transition-colors flex items-center">
-                        <heroicon-outline-building-office-2 class="w-5 h-5 mr-1" />
+                    <a href="{% url 'clinics:clinic_list' %}" class="text-gray-600 hover:text-blue-600 transition-colors">
                         کلینیک‌ها
                     </a>
-                    
-                    <div class="relative group">
-                        <button class="flex items-center text-blue-100 hover:text-white transition-colors">
-                            <heroicon-outline-academic-cap class="w-5 h-5 mr-1" />
-                            <span>تخصص‌ها</span>
-                            <heroicon-outline-chevron-down class="w-4 h-4 ml-1" />
-                        </button>
-                        <div class="absolute left-0 mt-2 w-56 origin-top-left bg-white rounded-lg shadow-xl ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                            {% for specialization in specializations %}
-                                <a href="{% url 'doctors:doctor_list' %}?specialty={{ specialization.name }}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                    {{ specialization.name }}
-                                </a>
-                            {% empty %}
-                                <div class="px-4 py-2 text-sm text-gray-500">هیچ تخصصی موجود نیست</div>
-                            {% endfor %}
+                    <a href="{% url 'doctors:explore' %}" class="text-blue-600 font-medium border-b-2 border-blue-600 pb-1">
+                        اکتشاف
+                    </a>
+                </div>
+                
+                <!-- Simple User Menu -->
+                {% if user.is_authenticated %}
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm text-gray-600 hidden md:block">{{ user.phone }}</span>
+                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                            <span class="text-blue-600 text-sm font-medium">{{ user.first_name|first|default:"کاربر"|first }}</span>
                         </div>
                     </div>
-                    
-                    {% if user.is_authenticated %}
-                    <div class="relative group">
-                        <button class="flex items-center space-x-2 text-blue-100 hover:text-white transition-colors">
-                            <span class="font-medium">{{ user.phone }}</span>
-                            <heroicon-outline-chevron-down class="w-4 h-4" />
-                        </button>
-                        <div class="absolute right-0 mt-2 w-56 origin-top-right bg-white rounded-lg shadow-xl ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                            {% if user.doctor %}
-                            <a href="{% url 'doctors:doctor_dashboard' %}" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
-                                <heroicon-outline-briefcase class="w-5 h-5 mr-2 text-blue-600" />
-                                داشبورد پزشک
-                            </a>
-                            {% endif %}
-                            
-                            {% if user.administered_clinics.exists %}
-                            <a href="{% url 'clinics:clinic_dashboard' %}" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
-                                <heroicon-outline-building-office class="w-5 h-5 mr-2 text-green-600" />
-                                داشبورد کلینیک
-                            </a>
-                            {% endif %}
-                            
-                            <div class="py-1">
-                                <a href="{% url 'patients:patient_dashboard' %}" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
-                                    <heroicon-outline-calendar class="w-5 h-5 mr-2 text-purple-600" />
-                                    نوبت‌های من
-                                </a>
-                                <a href="{% url 'patients:patient_profile' %}" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
-                                    <heroicon-outline-user-circle class="w-5 h-5 mr-2 text-indigo-600" />
-                                    پروفایل
-                                </a>
-                                <a href="{% url 'wallet:wallet_dashboard' %}" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
-                                    <heroicon-outline-wallet class="w-5 h-5 mr-2 text-yellow-600" />
-                                    کیف پول
-                                </a>
-                            </div>
-                            
-                            <div class="py-1">
-                                {% if user.is_staff %}
-                                <a href="{% url 'admin:index' %}" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
-                                    <heroicon-outline-cog-6-tooth class="w-5 h-5 mr-2 text-gray-600" />
-                                    پنل مدیریت
-                                </a>
-                                {% endif %}
-                                <a href="{% url 'account:logout' %}" class="flex items-center px-4 py-3 text-sm text-red-600 hover:bg-gray-50">
-                                    <heroicon-outline-arrow-left-on-rectangle class="w-5 h-5 mr-2" />
-                                    خروج
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    {% else %}
-                    <a href="{% url 'account:register' %}" class="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg hover:bg-white/30 transition-colors text-white flex items-center">
-                        <heroicon-outline-arrow-right-on-rectangle class="w-5 h-5 mr-2" />
+                {% else %}
+                    <a href="{% url 'account:register' %}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
                         ورود
                     </a>
-                    {% endif %}
-                </div>
+                {% endif %}
             </div>
         </nav>
     </header>
-<body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
-    <!-- Header/Navigation -->
 
-    <!-- Main Content -->
+    <!-- Simple Main Content -->
     <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-<section id="recent" class="py-16 bg-gray-50">
-    <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 masonry-grid" data-aos="fade-up" data-aos-delay="200">
-            {% for post in posts %}
-            <div class="group masonry-item" data-aos="fade-up">
-                <a href="{{ post.get_absolute_url }}" title="{{ post.title }}" data-gallery="recent-gallery-app" class="glightbox block overflow-hidden shadow-md">
-                    <div class="overflow-hidden">
-                        {% if post.image %}
-                        <img src="{{ post.image.url }}"  class="w-full h-full" alt="{{ post.title }}" />
-                        {% else %}
-                        <video src="{{ post.video.url }}"  class="w-full h-full" alt="{{ post.title }}" />
-                        {% endif %}
-                    </div>
-                </a>
-            </div>
-            {% endfor %}
+        <!-- Simple Page Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">اکتشاف محتوای پزشکی</h1>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                بهترین مقالات، ویدیوها و نکات پزشکی را از متخصصان برتر کشور مطالعه کنید
+            </p>
         </div>
 
-    </div>
-</section>
+        <!-- Simple Statistics Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+            <div class="stats-card bg-white rounded-lg p-6 text-center shadow-sm border">
+                <div class="text-3xl font-bold text-blue-600 mb-2">{{ stats.total_posts }}</div>
+                <div class="text-sm text-gray-600">کل پست‌ها</div>
+            </div>
+            <div class="stats-card bg-white rounded-lg p-6 text-center shadow-sm border">
+                <div class="text-3xl font-bold text-green-600 mb-2">{{ stats.video_posts }}</div>
+                <div class="text-sm text-gray-600">ویدیوها</div>
+            </div>
+            <div class="stats-card bg-white rounded-lg p-6 text-center shadow-sm border">
+                <div class="text-3xl font-bold text-purple-600 mb-2">{{ stats.image_posts }}</div>
+                <div class="text-sm text-gray-600">تصاویر</div>
+            </div>
+            <div class="stats-card bg-white rounded-lg p-6 text-center shadow-sm border">
+                <div class="text-3xl font-bold text-indigo-600 mb-2">{{ stats.doctors_count }}</div>
+                <div class="text-sm text-gray-600">پزشکان</div>
+            </div>
+        </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        let containers = document.querySelectorAll(".shape-scroll-container");
+        <!-- Simple Search and Filters -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-8 border">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <!-- Simple Search Input -->
+                <div class="md:col-span-2">
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="searchInput"
+                            placeholder="جستجو در عنوان، محتوا، یا نام پزشک..."
+                            value="{{ search_query }}"
+                            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg search-input transition-all duration-200"
+                        >
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Simple Media Type Filter -->
+                <div>
+                    <select id="mediaTypeFilter" class="w-full py-3 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="all" {% if media_type == 'all' %}selected{% endif %}>همه محتوا</option>
+                        <option value="video" {% if media_type == 'video' %}selected{% endif %}>ویدیوها</option>
+                        <option value="image" {% if media_type == 'image' %}selected{% endif %}>تصاویر</option>
+                        <option value="none" {% if media_type == 'none' %}selected{% endif %}>متن‌ها</option>
+                    </select>
+                </div>
+                
+                <!-- Simple Specialty Filter -->
+                <div>
+                    <select id="specialtyFilter" class="w-full py-3 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">همه تخصص‌ها</option>
+                        {% for spec in specializations %}
+                            <option value="{{ spec }}" {% if specialty == spec %}selected{% endif %}>{{ spec }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
 
-        containers.forEach(function (container, index) {
-            let btnLeft = document.getElementById("btnLeft" + (index + 1));
-            let btnRight = document.getElementById("btnRight" + (index + 1));
+        <!-- Posts Grid -->
+        <div class="masonry-grid" id="postsGrid">
+            {% include 'index/explore_posts_partial.html' with posts=posts %}
+        </div>
 
-            btnLeft.addEventListener("click", function () {
-                container.scrollBy({left: -300, behavior: "smooth"});
-            });
+        <!-- Simple Loading Indicator -->
+        <div id="loadingIndicator" class="hidden text-center py-8">
+            <div class="spinner mx-auto mb-4"></div>
+            <p class="text-gray-600">در حال بارگیری...</p>
+        </div>
 
-            btnRight.addEventListener("click", function () {
-                container.scrollBy({left: 300, behavior: "smooth"});
-            });
-        });
+        <!-- Simple Load More Button -->
+        {% if posts.has_next %}
+        <div class="text-center mt-8">
+            <button 
+                id="loadMoreBtn" 
+                class="btn-primary bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                data-next-page="{{ posts.next_page_number }}"
+            >
+                مشاهده بیشتر
+            </button>
+        </div>
+        {% endif %}
 
-        // Initialize AOS
-        AOS.init({
-            duration: 1000,
-            easing: 'ease-in-out',
-            once: true,
-            mirror: false
-        });
-
-        // Initialize GLightbox
-        const lightbox = GLightbox({
-            selector: '.glightbox',
-            touchNavigation: true,
-            loop: true,
-            autoplayVideos: true
-        });
-    });
-</script>
-
-    <script>
-        // اسکریپت برای محاسبه ارتفاع آیتم‌ها (همان نسخه کارکرده)
-        function resizeMasonryItem(item){
-            const grid = document.querySelector('.masonry-grid');
-            const rowGap = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-row-gap'));
-            const rowHeight = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-auto-rows'));
-            const content = item.querySelector('img');
-            const rowSpan = Math.ceil((content.getBoundingClientRect().height + rowGap) / (rowHeight + rowGap));
-            item.style.gridRowEnd = 'span ' + rowSpan;
-        }
-
-        function resizeAllMasonryItems(){
-            const allItems = document.querySelectorAll('.masonry-item');
-            allItems.forEach(item => {
-                resizeMasonryItem(item);
-            });
-        }
-
-        window.addEventListener('load', resizeAllMasonryItems);
-        window.addEventListener('resize', resizeAllMasonryItems);
-    </script>
+        <!-- Simple Empty State -->
+        <div id="emptyState" class="hidden text-center py-16">
+            <div class="max-w-md mx-auto">
+                <div class="mb-4">
+                    <svg class="w-16 h-16 text-gray-300 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-medium text-gray-900 mb-2">محتوایی یافت نشد</h3>
+                <p class="text-gray-500 mb-6">متأسفانه محتوایی با این فیلترها پیدا نشد. لطفاً جستجوی دیگری امتحان کنید.</p>
+                <button onclick="clearFilters()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                    پاک کردن فیلترها
+                </button>
+            </div>
+        </div>
     </main>
-</body>
-    <footer class="border-t border-gray-200 mt-16 bg-white">
+
+    <!-- Simple Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-16">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div>
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">دکتر </h3>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                            <span class="text-white font-bold text-lg">د</span>
+                        </div>
+                        <span class="text-xl font-bold text-gray-900">دکتر همدان</span>
+                    </div>
                     <p class="text-sm text-gray-500">دسترسی به خدمات درمانی را برای همه آسان و راحت می‌کنیم.</p>
                 </div>
                 <div>
                     <h4 class="text-sm font-semibold text-gray-900 mb-4">خدمات</h4>
                     <ul class="space-y-2">
-                        <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">پیدا کردن پزشک</a></li>
-                        <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">رزرو نوبت</a></li>
-                        <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">مشاوره آنلاین</a></li>
+                        <li><a href="{% url 'doctors:doctor_list' %}" class="text-sm text-gray-500 hover:text-blue-600">پیدا کردن پزشک</a></li>
+                        <li><a href="{% url 'clinics:clinic_list' %}" class="text-sm text-gray-500 hover:text-blue-600">کلینیک‌ها</a></li>
+                        <li><a href="{% url 'doctors:explore' %}" class="text-sm text-gray-500 hover:text-blue-600">اکتشاف محتوا</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 class="text-sm font-semibold text-gray-900 mb-4">شرکت</h4>
                     <ul class="space-y-2">
                         <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">درباره ما</a></li>
-                        <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">فرصت‌های شغلی</a></li>
+                        <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">تماس با ما</a></li>
                         <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">بلاگ</a></li>
                     </ul>
                 </div>
@@ -242,13 +307,224 @@
                     <ul class="space-y-2">
                         <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">حریم خصوصی</a></li>
                         <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">شرایط استفاده</a></li>
-                        <li><a href="#" class="text-sm text-gray-500 hover:text-blue-600">تماس با ما</a></li>
                     </ul>
                 </div>
             </div>
-            <div class="border-t border-gray-100 mt-8 pt-8 text-center md:text-left">
-                <p class="text-sm text-gray-500">&copy; {% now "Y" %} دکتر . تمامی حقوق محفوظ است.</p>
+            <div class="border-t border-gray-100 mt-8 pt-8 text-center">
+                <p class="text-sm text-gray-500">&copy; {% now "Y" %} دکتر همدان. تمامی حقوق محفوظ است.</p>
             </div>
         </div>
     </footer>
+
+    <!-- Simple JavaScript -->
+    <script>
+        let currentPage = {{ posts.number }};
+        let hasNextPage = {{ posts.has_next|yesno:"true,false" }};
+        let totalPages = {{ posts.paginator.num_pages }};
+        let isLoading = false;
+        let searchTimeout;
+
+        // DOM Elements
+        const searchInput = document.getElementById('searchInput');
+        const mediaTypeFilter = document.getElementById('mediaTypeFilter');
+        const specialtyFilter = document.getElementById('specialtyFilter');
+        const postsGrid = document.getElementById('postsGrid');
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const emptyState = document.getElementById('emptyState');
+
+        // Search functionality
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                performSearch();
+            }, 500);
+        });
+
+        // Filter change handlers
+        mediaTypeFilter.addEventListener('change', performSearch);
+        specialtyFilter.addEventListener('change', performSearch);
+
+        // Load more button
+        if (loadMoreBtn) {
+            loadMoreBtn.addEventListener('click', loadMorePosts);
+        }
+
+        // Perform search/filter
+        function performSearch() {
+            if (isLoading) return;
+            
+            const searchQuery = searchInput.value.trim();
+            const mediaType = mediaTypeFilter.value;
+            const specialty = specialtyFilter.value;
+            
+            // Reset pagination
+            currentPage = 1;
+            
+            // Update URL
+            const url = new URL(window.location);
+            url.searchParams.set('search', searchQuery);
+            url.searchParams.set('media_type', mediaType);
+            url.searchParams.set('specialty', specialty);
+            url.searchParams.delete('page');
+            window.history.pushState({}, '', url);
+            
+            loadPosts(true);
+        }
+
+        // Load more posts
+        function loadMorePosts() {
+            if (isLoading || !hasNextPage) return;
+            
+            currentPage++;
+            loadPosts(false);
+        }
+
+        // Load posts via AJAX
+        function loadPosts(resetGrid = false) {
+            if (isLoading) return;
+            
+            isLoading = true;
+            showLoading();
+            
+            const searchQuery = searchInput.value.trim();
+            const mediaType = mediaTypeFilter.value;
+            const specialty = specialtyFilter.value;
+            
+            const params = new URLSearchParams({
+                search: searchQuery,
+                media_type: mediaType,
+                specialty: specialty,
+                page: currentPage
+            });
+            
+            fetch(`{% url 'doctors:explore' %}?${params}`, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (resetGrid) {
+                        postsGrid.innerHTML = data.posts_html;
+                    } else {
+                        postsGrid.innerHTML += data.posts_html;
+                    }
+                    
+                    hasNextPage = data.has_next;
+                    totalPages = data.total_pages;
+                    
+                    // Update load more button
+                    updateLoadMoreButton();
+                    
+                    // Show empty state if no posts
+                    if (data.total_count === 0) {
+                        showEmptyState();
+                    } else {
+                        hideEmptyState();
+                    }
+                    
+                    // Add simple fade-in animation to new posts
+                    const newPosts = postsGrid.querySelectorAll('.masonry-item:not(.fade-in)');
+                    newPosts.forEach((post, index) => {
+                        setTimeout(() => {
+                            post.classList.add('fade-in');
+                        }, index * 50);
+                    });
+                } else {
+                    showError('خطا در بارگیری محتوا');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError('خطا در ارتباط با سرور');
+            })
+            .finally(() => {
+                isLoading = false;
+                hideLoading();
+            });
+        }
+
+        // UI Helper Functions
+        function showLoading() {
+            loadingIndicator.classList.remove('hidden');
+            if (loadMoreBtn) {
+                loadMoreBtn.disabled = true;
+                loadMoreBtn.textContent = 'در حال بارگیری...';
+            }
+        }
+
+        function hideLoading() {
+            loadingIndicator.classList.add('hidden');
+        }
+
+        function updateLoadMoreButton() {
+            if (!loadMoreBtn) return;
+            
+            if (hasNextPage) {
+                loadMoreBtn.classList.remove('hidden');
+                loadMoreBtn.disabled = false;
+                loadMoreBtn.textContent = 'مشاهده بیشتر';
+            } else {
+                loadMoreBtn.classList.add('hidden');
+            }
+        }
+
+        function showEmptyState() {
+            emptyState.classList.remove('hidden');
+            postsGrid.classList.add('hidden');
+        }
+
+        function hideEmptyState() {
+            emptyState.classList.add('hidden');
+            postsGrid.classList.remove('hidden');
+        }
+
+        function showError(message) {
+            alert(message);
+        }
+
+        function clearFilters() {
+            searchInput.value = '';
+            mediaTypeFilter.value = 'all';
+            specialtyFilter.value = '';
+            
+            // Update URL
+            const url = new URL(window.location);
+            url.search = '';
+            window.history.pushState({}, '', url);
+            
+            performSearch();
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                clearFilters();
+            } else if (e.ctrlKey && e.key === 'f') {
+                e.preventDefault();
+                searchInput.focus();
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Focus search input on load
+            if (window.innerWidth > 768) {
+                searchInput.focus();
+            }
+            
+            // Add simple fade-in animation to initial posts
+            const initialPosts = postsGrid.querySelectorAll('.masonry-item');
+            initialPosts.forEach((post, index) => {
+                setTimeout(() => {
+                    post.classList.add('fade-in');
+                }, index * 50);
+            });
+        });
+    </script>
+</body>
 </html>

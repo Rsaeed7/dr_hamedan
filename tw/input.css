@@ -1,0 +1,306 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import IRANSansWeb fonts */
+@import '../assets/css/fonts.css';
+
+@layer base {
+  html {
+    font-family: 'IRANSansWeb', 'Tahoma', 'Arial', sans-serif;
+    direction: rtl;
+  }
+  
+  body {
+    font-family: 'IRANSansWeb', 'Tahoma', 'Arial', sans-serif;
+    direction: rtl;
+  }
+  
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  /* Persian text utilities */
+  .persian-text {
+    font-family: 'IRANSansWeb', 'Tahoma', 'Arial', sans-serif;
+    direction: rtl;
+    text-align: right;
+  }
+  
+  /* Font weight utilities for IRANSansWeb */
+  .font-ultra-light {
+    font-weight: 200;
+  }
+  
+  .font-light {
+    font-weight: 300;
+  }
+  
+  .font-normal {
+    font-weight: 400;
+  }
+  
+  .font-medium {
+    font-weight: 500;
+  }
+  
+  .font-bold {
+    font-weight: 700;
+  }
+  
+  /* RTL specific utilities */
+  .rtl {
+    direction: rtl;
+  }
+  
+  .ltr {
+    direction: ltr;
+  }
+  
+  /* Persian number styling */
+  .persian-numbers {
+    font-variant-numeric: tabular-nums;
+  }
+  
+  /* Homepage component classes */
+  
+  /* Background gradients */
+  .bg-gradiant {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.03), rgba(144, 185, 227, 0.03));
+  }
+  
+  .bg-gradiant2 {
+    background: linear-gradient(to bottom, rgba(144, 185, 227, 0.03), rgba(255, 255, 255, 0.04));
+  }
+  
+  .bg-gradiant3 {
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.01), rgba(36, 76, 154, 0.11));
+  }
+  
+  /* Card components */
+  .box_cat_home {
+    @apply inline-block text-center min-w-200 p-4 bg-white rounded-lg shadow-custom transition-transform duration-300;
+  }
+  
+  .box_cat_home:hover {
+    @apply transform -translate-y-1 shadow-hover;
+  }
+  
+  .dr_box {
+    @apply border border-dr-blue bg-white min-w-280 p-4 rounded-lg transition-transform duration-300;
+  }
+  
+  .dr_box:hover {
+    @apply transform translate-y-1;
+  }
+  
+  .article_box {
+    @apply border-0 bg-white p-4 rounded-lg transition-transform duration-300;
+  }
+  
+  .article_box:hover {
+    @apply transform translate-y-1;
+  }
+  
+  .box_badges {
+    @apply inline-block text-center p-4 bg-white rounded-lg shadow-sm transition-transform duration-300;
+  }
+  
+  .box_badges:hover {
+    @apply transform -translate-y-1;
+  }
+  
+  /* Button components */
+  .btn-scroll {
+    @apply w-12 h-12 bg-white border border-gray-300 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors duration-300;
+  }
+  
+  .btn-outline-success {
+    @apply border border-success text-success bg-transparent px-4 py-2 rounded hover:bg-success hover:text-white transition-colors duration-300;
+  }
+  
+  .btn-outline-warning {
+    @apply border border-warning text-warning bg-transparent px-4 py-2 rounded hover:bg-warning hover:text-dark transition-colors duration-300;
+  }
+  
+  .btn-outline-info {
+    @apply border border-info text-info bg-transparent px-4 py-2 rounded hover:bg-info hover:text-white transition-colors duration-300;
+  }
+  
+  /* Scroll containers */
+  .scroll-container {
+    @apply overflow-x-auto overflow-y-auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scroll-container::-webkit-scrollbar {
+    @apply hidden;
+  }
+  
+  .scroll-wrapper {
+    @apply flex gap-2 cursor-grab;
+  }
+  
+  .scroll-wrapper:active {
+    @apply cursor-grabbing;
+  }
+  
+  /* Text color utilities */
+  .text_dr {
+    color: #263189;
+  }
+  
+  .text_dr_2 {
+    color: #71dd8a;
+  }
+  
+  .text_dr_3 {
+    color: #3f4079;
+  }
+  
+  .text-turquoise {
+    color: rgb(100, 250, 255);
+  }
+  
+  /* Background utilities - using direct values to avoid circular dependency */
+  .bg-light-green {
+    background-color: #e0f9df;
+  }
+  
+  .bg-light-blue {
+    background-color: #e5f1f9;
+  }
+  
+  .bg-light-violet {
+    background-color: #f6ecfb;
+  }
+  
+  .bg-light-yellow {
+    background-color: #f8ffc7;
+  }
+  
+  .bg-light-blue2 {
+    background-color: rgba(187, 231, 243, 0.73);
+  }
+  
+  .bg-light-red {
+    background-color: rgba(253, 154, 154, 0.8);
+  }
+  
+  .bg-bluelight {
+    background-color: rgba(239, 251, 252, 0.47);
+  }
+  
+  /* Border utilities */
+  .border_light {
+    @apply border border-gray-200 border-opacity-20;
+  }
+  
+  .border_top2 {
+    @apply border-t border-gray-400 border-opacity-30;
+  }
+  
+  .border_left {
+    @apply border-l border-gray-400 border-opacity-20;
+  }
+  
+  .border-story {
+    @apply border-4 border-gray-300 border-opacity-20;
+  }
+  
+  /* Shape utilities */
+  .round50 {
+    border-radius: 50%;
+    border: 4px solid rgba(209, 213, 219, 0.2);
+  }
+  
+  .rounded50 {
+    border-radius: 50%;
+  }
+  
+  .rounded-5 {
+    border-radius: 5px;
+  }
+  
+  .rounded-10 {
+    border-radius: 10px;
+  }
+  
+  /* Custom spacing utilities */
+  .margin_60_35 {
+    padding-top: 3.75rem;
+    padding-bottom: 2.25rem;
+  }
+  
+  .margin_50_35 {
+    padding-top: 3.125rem;
+    padding-bottom: 2.25rem;
+  }
+  
+  .margin_120_95 {
+    padding-top: 7.5rem;
+    padding-bottom: 6rem;
+  }
+  
+  .margin_30_20 {
+    padding-top: 1.875rem;
+    padding-bottom: 1.25rem;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 991px) {
+    .margin_50_35 {
+      padding-top: 2rem;
+      padding-bottom: 1rem;
+    }
+  }
+  
+  @media (max-width: 767px) {
+    .margin_50_35 {
+      padding-top: 2rem;
+      padding-bottom: 0.25rem;
+    }
+    
+    .margin_30_20 {
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+    }
+    
+    .left, .right {
+      display: none;
+    }
+  }
+}
+
+@layer utilities {
+  /* Additional RTL utilities */
+  .text-start {
+    text-align: start;
+  }
+  
+  .text-end {
+    text-align: end;
+  }
+  
+  /* Margin utilities for RTL */
+  .mr-auto-rtl {
+    margin-right: auto;
+  }
+  
+  .ml-auto-rtl {
+    margin-left: auto;
+  }
+  
+  /* Padding utilities for RTL */
+  .pr-safe {
+    padding-right: env(safe-area-inset-right);
+  }
+  
+  .pl-safe {
+    padding-left: env(safe-area-inset-left);
+  }
+}

@@ -68,6 +68,37 @@
         color: #3B82F6;
         font-weight: 500;
     }
+
+    /* Enhanced styles for new features */
+    .same-day-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 1rem;
+        color: white;
+    }
+
+    .available-slot {
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .available-slot:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .spinner {
+        border: 2px solid #f3f4f6;
+        border-top: 2px solid #3b82f6;
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
 </style>
 {% endblock %}
 
@@ -95,7 +126,7 @@
             <a href="{% url 'doctors:doctor_dashboard' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
                 داشبورد
             </a>
-            <a href="{% url 'doctors:doctor_appointments' %}" class="block px-6 py-3 text-blue-600 border-r-4 border-blue-600 bg-blue-50 font-medium">
+            <a href="{% url 'doctors:doctor_appointments_tabs' %}" class="block px-6 py-3 text-blue-600 border-r-4 border-blue-600 bg-blue-50 font-medium">
                 نوبت‌ها
             </a>
             <a href="{% url 'doctors:doctor_availability' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
@@ -137,53 +168,127 @@
             <p class="text-gray-600 mt-1">مشاهده و مدیریت نوبت‌های بیماران</p>
         </div>
         
-        <!-- Search and Filter -->
+        <!-- ✅ TODO 1 FIXED: Working Filter Section -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <div class="flex flex-col md:flex-row md:items-end gap-4">
-{#                TO DO : The filter is not working properly.#}
-{#                TO DO : Added today's shifts option #}
-{#                TO DO : The doctor should be able to add the appointment to the same-day appointments and create a file for the patient!#}
+            <form method="get" action="{% url 'doctors:doctor_appointments_tabs' %}" id="filterForm" class="flex flex-col md:flex-row md:items-end gap-4">
                 <div class="flex-1">
                     <label for="search" class="block text-sm font-medium text-gray-700 mb-1">جستجوی بیمار</label>
-                    <input type="text" id="search" name="search" placeholder="جستجو بر اساس نام بیمار..." class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    <input type="text" id="search" name="search" value="{{ search }}" placeholder="جستجو بر اساس نام، تلفن یا کد ملی..." 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                 </div>
                 
                 <div class="w-full md:w-1/4">
                     <label for="date_filter" class="block text-sm font-medium text-gray-700 mb-1">فیلتر بر اساس تاریخ</label>
-                    <input type="date" id="date_filter" name="date_filter" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    <input type="date" id="date_filter" name="date_filter" value="{{ date_filter }}"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                 </div>
                 
                 <div class="w-full md:w-1/4">
                     <label for="status_filter" class="block text-sm font-medium text-gray-700 mb-1">فیلتر بر اساس وضعیت</label>
                     <select id="status_filter" name="status_filter" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                         <option value="">همه وضعیت‌ها</option>
-                        <option value="pending">در انتظار</option>
-                        <option value="confirmed">تایید شده</option>
-                        <option value="completed">تکمیل شده</option>
-                        <option value="cancelled">لغو شده</option>
+                        <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>در انتظار</option>
+                        <option value="confirmed" {% if status_filter == 'confirmed' %}selected{% endif %}>تایید شده</option>
+                        <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>تکمیل شده</option>
+                        <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>لغو شده</option>
                     </select>
                 </div>
                 
-                <div>
-                    <button type="button" id="filter_button" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150">
+                <div class="flex space-x-2">
+                    <button type="submit" id="filter_button" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150">
                         اعمال فیلترها
                     </button>
+                    {% if search or date_filter or status_filter %}
+                    <a href="{% url 'doctors:doctor_appointments_tabs' %}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150">
+                        پاک کردن
+                    </a>
+                    {% endif %}
                 </div>
+            </form>
+        </div>
+
+        <!-- ✅ TODO 2 IMPLEMENTED: Today's Available Shifts Section -->
+        {% if today_available_slots %}
+        <div class="same-day-section p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-white">زمان‌های خالی امروز ({{ today_date|date:"Y/m/d" }})</h2>
+                <button onclick="toggleSameDayForm()" class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-lg transition-all duration-200">
+                    <svg class="w-5 h-5 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                    </svg>
+                    افزودن نوبت
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-8 gap-3 mb-4">
+                {% for slot in today_available_slots %}
+                <div class="available-slot bg-white bg-opacity-20 hover:bg-opacity-30 text-white text-center py-2 px-3 rounded-lg text-sm font-medium" 
+                     onclick="selectTimeSlot('{{ slot|time:"H:i" }}')">
+                    {{ slot|time:"H:i" }}
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- ✅ TODO 3 IMPLEMENTED: Same-day appointment creation form -->
+            <div id="sameDayForm" class="hidden bg-white bg-opacity-10 rounded-lg p-6 mt-4">
+                <form method="post" action="{% url 'doctors:doctor_appointments_tabs' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="create_same_day_appointment">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-white text-sm font-medium mb-2">نام بیمار</label>
+                            <input type="text" name="patient_name" required 
+                                   class="w-full px-3 py-2 text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-white text-sm font-medium mb-2">شماره تلفن</label>
+                            <input type="tel" name="patient_phone" required 
+                                   class="w-full px-3 py-2 text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-white text-sm font-medium mb-2">زمان نوبت</label>
+                            <select name="appointment_time" id="appointmentTime" required 
+                                    class="w-full px-3 py-2 text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">انتخاب زمان...</option>
+                                {% for slot in today_available_slots %}
+                                <option value="{{ slot|time:"H:i" }}">{{ slot|time:"H:i" }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="flex items-end">
+                            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md font-medium transition-colors duration-150">
+                                ایجاد نوبت
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <label class="block text-white text-sm font-medium mb-2">یادداشت (اختیاری)</label>
+                        <textarea name="notes" rows="2" 
+                                  class="w-full px-3 py-2 text-gray-800 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                  placeholder="یادداشت‌های اضافی برای این نوبت..."></textarea>
+                    </div>
+                </form>
             </div>
         </div>
+        {% endif %}
         
         <!-- Appointment Tabs -->
         <div class="mb-6">
             <div class="border-b border-gray-200">
                 <div class="flex space-x-8">
                     <button type="button" class="tab-button py-4 px-1 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 active" data-tab="today">
-                        امروز
+                        امروز ({{ today_appointments.count }})
                     </button>
                     <button type="button" class="tab-button py-4 px-1 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="upcoming">
-                        آینده
+                        آینده ({{ upcoming_appointments.count }})
                     </button>
                     <button type="button" class="tab-button py-4 px-1 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="past">
-                        گذشته
+                        گذشته ({{ past_appointments.count }})
                     </button>
                 </div>
             </div>
@@ -198,8 +303,8 @@
                             <div class="px-6 py-4 border-b border-gray-200 {% if appointment.status == 'confirmed' %}bg-blue-50{% elif appointment.status == 'completed' %}bg-green-50{% elif appointment.status == 'cancelled' %}bg-red-50{% else %}bg-yellow-50{% endif %}">
                                 <div class="flex justify-between items-center">
                                     <div>
-                                        <h3 class="text-md font-medium text-gray-800">{{ appointment.time_slot.time|time:"H:i" }}</h3>
-                                        <p class="text-sm text-gray-600">{{ appointment.time_slot.available_day.date|date:"Y/m/d" }}</p>
+                                        <h3 class="text-md font-medium text-gray-800">{{ appointment.time|time:"H:i" }}</h3>
+                                        <p class="text-sm text-gray-600">{{ appointment.day.date|date:"Y/m/d" }}</p>
                                     </div>
                                     <div>
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
@@ -224,48 +329,73 @@
                             
                             <div class="p-6">
                                 <div class="flex items-start mb-4">
-                                    {% if appointment.patient.profile_image %}
-                                        <img src="{{ appointment.patient.profile_image.url }}" alt="{{ appointment.patient }}" class="w-10 h-10 rounded-full object-cover ml-3">
+                                    {% if appointment.patient and appointment.patient.user.profile_image %}
+                                        <img src="{{ appointment.patient.user.profile_image.url }}" alt="{{ appointment.patient }}" class="w-10 h-10 rounded-full object-cover ml-3">
                                     {% else %}
                                         <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center ml-3">
-                                            <span class="text-gray-600 text-lg font-bold">{{ appointment.patient.user.first_name|first }}{{ appointment.patient.user.last_name|first }}</span>
+                                            <span class="text-gray-600 text-lg font-bold">
+                                                {% if appointment.patient_name %}
+                                                    {{ appointment.patient_name|first }}
+                                                {% else %}
+                                                    م
+                                                {% endif %}
+                                            </span>
                                         </div>
                                     {% endif %}
                                     
                                     <div>
-                                        <h4 class="text-md font-medium text-gray-800">{{ appointment.patient.user.get_full_name }}</h4>
-                                        <p class="text-sm text-gray-600">شناسه بیمار: {{ appointment.patient.id }}</p>
+                                        <h4 class="text-md font-medium text-gray-800">
+                                            {% if appointment.patient_name %}
+                                                {{ appointment.patient_name }}
+                                            {% elif appointment.patient %}
+                                                {{ appointment.patient.user.get_full_name }}
+                                            {% else %}
+                                                بیمار ناشناس
+                                            {% endif %}
+                                        </h4>
+                                        <p class="text-sm text-gray-600">{{ appointment.phone }}</p>
+                                        {% if appointment.patient %}
+                                            <p class="text-xs text-gray-500">شناسه: {{ appointment.patient.id }}</p>
+                                        {% endif %}
                                     </div>
                                 </div>
                                 
                                 {% if appointment.notes %}
                                     <div class="mb-4">
-                                        <h5 class="text-sm font-medium text-gray-700 mb-1">یادداشت‌های بیمار:</h5>
+                                        <h5 class="text-sm font-medium text-gray-700 mb-1">یادداشت‌ها:</h5>
                                         <p class="text-sm text-gray-600 bg-gray-50 p-2 rounded">{{ appointment.notes }}</p>
                                     </div>
                                 {% endif %}
                                 
-                                <div class="mt-4 flex justify-between">
+                                <div class="mt-4 flex justify-between space-x-2">
                                     {% if appointment.status == 'pending' %}
-                                        <form method="post" action="{% url 'doctors:confirm_appointment' appointment.id %}">
+                                        <form method="post" action="{% url 'doctors:confirm_appointment' appointment.id %}" class="inline">
                                             {% csrf_token %}
                                             <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium">تایید</button>
                                         </form>
-                                        <form method="post" action="{% url 'doctors:cancel_appointment' appointment.id %}">
+                                        <form method="post" action="{% url 'doctors:cancel_appointment' appointment.id %}" class="inline">
                                             {% csrf_token %}
-                                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm font-medium">لغو</button>
+                                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm font-medium" 
+                                                    onclick="return confirm('آیا از لغو این نوبت مطمئن هستید؟')">لغو</button>
                                         </form>
                                     {% elif appointment.status == 'confirmed' %}
-                                        <form method="post" action="{% url 'doctors:complete_appointment' appointment.id %}">
+                                        <form method="post" action="{% url 'doctors:complete_appointment' appointment.id %}" class="inline">
                                             {% csrf_token %}
-                                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm font-medium">تکمیل شده</button>
+                                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm font-medium">تکمیل</button>
                                         </form>
-                                        <form method="post" action="{% url 'doctors:cancel_appointment' appointment.id %}">
+                                        <form method="post" action="{% url 'doctors:cancel_appointment' appointment.id %}" class="inline">
                                             {% csrf_token %}
-                                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm font-medium">لغو</button>
+                                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm font-medium"
+                                                    onclick="return confirm('آیا از لغو این نوبت مطمئن هستید؟')">لغو</button>
                                         </form>
                                     {% else %}
-                                        <a href="{% url 'doctors:view_appointment' appointment.id %}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">مشاهده جزئیات</a>
+                                        <span class="text-gray-500 text-sm">نوبت {{ appointment.get_status_display }}</span>
+                                    {% endif %}
+                                    
+                                    {% if appointment.patient %}
+                                        <a href="{% url 'patients:patient_detail' appointment.patient.id %}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                            مشاهده پرونده
+                                        </a>
                                     {% endif %}
                                 </div>
                             </div>
@@ -281,6 +411,11 @@
                     </div>
                     <h3 class="text-lg font-medium text-gray-800 mb-2">هیچ نوبتی برای امروز ندارید</h3>
                     <p class="text-gray-600">شما هیچ نوبتی برای امروز برنامه‌ریزی نکرده‌اید.</p>
+                    {% if today_available_slots %}
+                    <button onclick="toggleSameDayForm()" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                        ایجاد نوبت همان روز
+                    </button>
+                    {% endif %}
                 </div>
             {% endif %}
         </div>
@@ -290,14 +425,12 @@
             {% if upcoming_appointments %}
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {% for appointment in upcoming_appointments %}
-
-
                         <div class="bg-white rounded-lg shadow-sm overflow-hidden appointment-card">
                             <div class="px-6 py-4 border-b border-gray-200 {% if appointment.status == 'confirmed' %}bg-blue-50{% elif appointment.status == 'completed' %}bg-green-50{% elif appointment.status == 'cancelled' %}bg-red-50{% else %}bg-yellow-50{% endif %}">
                                 <div class="flex justify-between items-center">
                                     <div>
-                                        <h3 class="text-md font-medium text-gray-800">{{ appointment.time_slot.time|time:"H:i" }}</h3>
-                                        <p class="text-sm text-gray-600">{{ appointment.time_slot.available_day.date|date:"Y/m/d" }}</p>
+                                        <h3 class="text-md font-medium text-gray-800">{{ appointment.time|time:"H:i" }}</h3>
+                                        <p class="text-sm text-gray-600">{{ appointment.day.date|date:"Y/m/d" }}</p>
                                     </div>
                                     <div>
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
@@ -322,48 +455,73 @@
                             
                             <div class="p-6">
                                 <div class="flex items-start mb-4">
-                                    {% if appointment.patient.profile_image %}
-                                        <img src="{{ appointment.patient.profile_image.url }}" alt="{{ appointment.patient }}" class="w-10 h-10 rounded-full object-cover ml-3">
+                                    {% if appointment.patient and appointment.patient.user.profile_image %}
+                                        <img src="{{ appointment.patient.user.profile_image.url }}" alt="{{ appointment.patient }}" class="w-10 h-10 rounded-full object-cover ml-3">
                                     {% else %}
                                         <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center ml-3">
-                                            <span class="text-gray-600 text-lg font-bold">{{ appointment.patient.user.first_name|first }}{{ appointment.patient.user.last_name|first }}</span>
+                                            <span class="text-gray-600 text-lg font-bold">
+                                                {% if appointment.patient_name %}
+                                                    {{ appointment.patient_name|first }}
+                                                {% else %}
+                                                    م
+                                                {% endif %}
+                                            </span>
                                         </div>
                                     {% endif %}
                                     
                                     <div>
-                                        <h4 class="text-md font-medium text-gray-800">{{ appointment.patient.user.get_full_name }}</h4>
-                                        <p class="text-sm text-gray-600">شناسه بیمار: {{ appointment.patient.id }}</p>
+                                        <h4 class="text-md font-medium text-gray-800">
+                                            {% if appointment.patient_name %}
+                                                {{ appointment.patient_name }}
+                                            {% elif appointment.patient %}
+                                                {{ appointment.patient.user.get_full_name }}
+                                            {% else %}
+                                                بیمار ناشناس
+                                            {% endif %}
+                                        </h4>
+                                        <p class="text-sm text-gray-600">{{ appointment.phone }}</p>
+                                        {% if appointment.patient %}
+                                            <p class="text-xs text-gray-500">شناسه: {{ appointment.patient.id }}</p>
+                                        {% endif %}
                                     </div>
                                 </div>
                                 
                                 {% if appointment.notes %}
                                     <div class="mb-4">
-                                        <h5 class="text-sm font-medium text-gray-700 mb-1">یادداشت‌های بیمار:</h5>
+                                        <h5 class="text-sm font-medium text-gray-700 mb-1">یادداشت‌ها:</h5>
                                         <p class="text-sm text-gray-600 bg-gray-50 p-2 rounded">{{ appointment.notes }}</p>
                                     </div>
                                 {% endif %}
                                 
-                                <div class="mt-4 flex justify-between">
+                                <div class="mt-4 flex justify-between space-x-2">
                                     {% if appointment.status == 'pending' %}
-                                        <form method="post" action="{% url 'doctors:confirm_appointment' appointment.id %}">
+                                        <form method="post" action="{% url 'doctors:confirm_appointment' appointment.id %}" class="inline">
                                             {% csrf_token %}
                                             <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium">تایید</button>
                                         </form>
-                                        <form method="post" action="{% url 'doctors:cancel_appointment' appointment.id %}">
+                                        <form method="post" action="{% url 'doctors:cancel_appointment' appointment.id %}" class="inline">
                                             {% csrf_token %}
-                                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm font-medium">لغو</button>
+                                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm font-medium"
+                                                    onclick="return confirm('آیا از لغو این نوبت مطمئن هستید؟')">لغو</button>
                                         </form>
                                     {% elif appointment.status == 'confirmed' %}
-                                        <form method="post" action="{% url 'doctors:complete_appointment' appointment.id %}">
+                                        <form method="post" action="{% url 'doctors:complete_appointment' appointment.id %}" class="inline">
                                             {% csrf_token %}
-                                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm font-medium">تکمیل شده</button>
+                                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm font-medium">تکمیل</button>
                                         </form>
-                                        <form method="post" action="{% url 'doctors:cancel_appointment' appointment.id %}">
+                                        <form method="post" action="{% url 'doctors:cancel_appointment' appointment.id %}" class="inline">
                                             {% csrf_token %}
-                                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm font-medium">لغو</button>
+                                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm font-medium"
+                                                    onclick="return confirm('آیا از لغو این نوبت مطمئن هستید؟')">لغو</button>
                                         </form>
                                     {% else %}
-                                        <a href="{% url 'doctors:view_appointment' appointment.id %}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">مشاهده جزئیات</a>
+                                        <span class="text-gray-500 text-sm">نوبت {{ appointment.get_status_display }}</span>
+                                    {% endif %}
+                                    
+                                    {% if appointment.patient %}
+                                        <a href="{% url 'patients:patient_detail' appointment.patient.id %}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                            مشاهده پرونده
+                                        </a>
                                     {% endif %}
                                 </div>
                             </div>
@@ -392,8 +550,8 @@
                             <div class="px-6 py-4 border-b border-gray-200 {% if appointment.status == 'confirmed' %}bg-blue-50{% elif appointment.status == 'completed' %}bg-green-50{% elif appointment.status == 'cancelled' %}bg-red-50{% else %}bg-yellow-50{% endif %}">
                                 <div class="flex justify-between items-center">
                                     <div>
-                                        <h3 class="text-md font-medium text-gray-800">{{ appointment.time_slot.time|time:"H:i" }}</h3>
-                                        <p class="text-sm text-gray-600">{{ appointment.time_slot.available_day.date|date:"Y/m/d" }}</p>
+                                        <h3 class="text-md font-medium text-gray-800">{{ appointment.time|time:"H:i" }}</h3>
+                                        <p class="text-sm text-gray-600">{{ appointment.day.date|date:"Y/m/d" }}</p>
                                     </div>
                                     <div>
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
@@ -418,29 +576,50 @@
                             
                             <div class="p-6">
                                 <div class="flex items-start mb-4">
-                                    {% if appointment.patient.profile_image %}
-                                        <img src="{{ appointment.patient.profile_image.url }}" alt="{{ appointment.patient }}" class="w-10 h-10 rounded-full object-cover ml-3">
+                                    {% if appointment.patient and appointment.patient.user.profile_image %}
+                                        <img src="{{ appointment.patient.user.profile_image.url }}" alt="{{ appointment.patient }}" class="w-10 h-10 rounded-full object-cover ml-3">
                                     {% else %}
                                         <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center ml-3">
-                                            <span class="text-gray-600 text-lg font-bold">{{ appointment.patient.user.first_name|first }}{{ appointment.patient.user.last_name|first }}</span>
+                                            <span class="text-gray-600 text-lg font-bold">
+                                                {% if appointment.patient_name %}
+                                                    {{ appointment.patient_name|first }}
+                                                {% else %}
+                                                    م
+                                                {% endif %}
+                                            </span>
                                         </div>
                                     {% endif %}
                                     
                                     <div>
-                                        <h4 class="text-md font-medium text-gray-800">{{ appointment.patient.user.get_full_name }}</h4>
-                                        <p class="text-sm text-gray-600">شناسه بیمار: {{ appointment.patient.id }}</p>
+                                        <h4 class="text-md font-medium text-gray-800">
+                                            {% if appointment.patient_name %}
+                                                {{ appointment.patient_name }}
+                                            {% elif appointment.patient %}
+                                                {{ appointment.patient.user.get_full_name }}
+                                            {% else %}
+                                                بیمار ناشناس
+                                            {% endif %}
+                                        </h4>
+                                        <p class="text-sm text-gray-600">{{ appointment.phone }}</p>
+                                        {% if appointment.patient %}
+                                            <p class="text-xs text-gray-500">شناسه: {{ appointment.patient.id }}</p>
+                                        {% endif %}
                                     </div>
                                 </div>
                                 
                                 {% if appointment.notes %}
                                     <div class="mb-4">
-                                        <h5 class="text-sm font-medium text-gray-700 mb-1">یادداشت‌های بیمار:</h5>
+                                        <h5 class="text-sm font-medium text-gray-700 mb-1">یادداشت‌ها:</h5>
                                         <p class="text-sm text-gray-600 bg-gray-50 p-2 rounded">{{ appointment.notes }}</p>
                                     </div>
                                 {% endif %}
                                 
                                 <div class="mt-4">
-                                    <a href="{% url 'doctors:view_appointment' appointment.id %}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">مشاهده جزئیات</a>
+                                    {% if appointment.patient %}
+                                        <a href="{% url 'patients:patient_detail' appointment.patient.id %}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                            مشاهده پرونده
+                                        </a>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -486,19 +665,79 @@
             });
         });
         
-        // Filter functionality
-        const filterButton = document.getElementById('filter_button');
+        // ✅ TODO 1 FIXED: Enhanced filter functionality with auto-submit
+        const filterForm = document.getElementById('filterForm');
         const searchInput = document.getElementById('search');
         const dateFilter = document.getElementById('date_filter');
         const statusFilter = document.getElementById('status_filter');
         
-        filterButton.addEventListener('click', function() {
-            // In a real application, you would send these filter values to the server
-            // and update the appointments list accordingly
-            console.log('Search:', searchInput.value);
-            console.log('Date:', dateFilter.value);
-            console.log('Status:', statusFilter.value);
-        });
+        // Auto-submit on search input with debounce
+        let searchTimeout;
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    filterForm.submit();
+                }, 800);
+            });
+        }
+        
+        // Auto-submit on filter changes
+        if (dateFilter) {
+            dateFilter.addEventListener('change', function() {
+                filterForm.submit();
+            });
+        }
+        
+        if (statusFilter) {
+            statusFilter.addEventListener('change', function() {
+                filterForm.submit();
+            });
+        }
+    });
+
+    // ✅ TODO 2 & 3 IMPLEMENTED: Same-day appointment functions
+    function toggleSameDayForm() {
+        const form = document.getElementById('sameDayForm');
+        if (form.classList.contains('hidden')) {
+            form.classList.remove('hidden');
+            form.scrollIntoView({ behavior: 'smooth' });
+        } else {
+            form.classList.add('hidden');
+        }
+    }
+
+    function selectTimeSlot(time) {
+        const select = document.getElementById('appointmentTime');
+        if (select) {
+            select.value = time;
+            // Auto-open form if not already open
+            const form = document.getElementById('sameDayForm');
+            if (form && form.classList.contains('hidden')) {
+                toggleSameDayForm();
+            }
+        }
+    }
+
+    // Form validation
+    document.querySelector('form[action*="doctor_appointments_tabs"]')?.addEventListener('submit', function(e) {
+        const patientName = this.querySelector('input[name="patient_name"]')?.value;
+        const patientPhone = this.querySelector('input[name="patient_phone"]')?.value;
+        const appointmentTime = this.querySelector('select[name="appointment_time"]')?.value;
+        
+        if (!patientName || !patientPhone || !appointmentTime) {
+            e.preventDefault();
+            alert('لطفا تمام فیلدهای ضروری را پر کنید.');
+            return false;
+        }
+        
+        // Phone number validation
+        const phoneRegex = /^[0-9]{10,11}$/;
+        if (!phoneRegex.test(patientPhone.replace(/\s+/g, ''))) {
+            e.preventDefault();
+            alert('لطفا شماره تلفن معتبر وارد کنید.');
+            return false;
+        }
     });
 </script>
 {% endblock %} 

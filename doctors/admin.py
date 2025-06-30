@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Doctor, DoctorAvailability, Specialization,City,DrServices,DrComment,CommentTips,Email,Supplementary_insurance,DoctorRegistration,EmailTemplate
+from .models import Doctor, DoctorAvailability, Specialization,City,DrServices,DrComment,CommentTips,Email,Supplementary_insurance,DoctorRegistration,EmailTemplate, DoctorBlockedDay
 
 admin.site.register(Email)
 admin.site.register(City)
@@ -114,3 +114,11 @@ class DoctorAvailabilityAdmin(admin.ModelAdmin):
     list_display = ('doctor', 'get_day_of_week_display', 'start_time', 'end_time')
     list_filter = ('day_of_week', 'doctor')
     search_fields = ('doctor__user__username', 'doctor__user__first_name', 'doctor__user__last_name')
+
+@admin.register(DoctorBlockedDay)
+class DoctorBlockedDayAdmin(admin.ModelAdmin):
+    list_display = ('doctor', 'date', 'reason', 'created_at')
+    list_filter = ('doctor', 'date', 'created_at')
+    search_fields = ('doctor__user__username', 'doctor__user__first_name', 'doctor__user__last_name', 'reason')
+    date_hierarchy = 'date'
+    ordering = ['-date']
