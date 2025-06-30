@@ -1,7 +1,7 @@
 {% extends  'base/base.html' %}
 {% load static %}
 {% load jformat %}
-
+{% load persian_date %}
 {% block body %}
     <section class="bg-light">
         <div class="container margin_120_95">
@@ -23,7 +23,7 @@
 
                 <div class="col-lg-6 box_general booking">
                     <h5 class="border-bottom">اطلاعات نوبت</h5>
-                    <p class="p-r-10">تاریخ : {{ appointment.day.date|jformat:"j F Y" }}</p>
+                    <p class="p-r-10">تاریخ : {{ appointment.day.date|persian_date_info }}</p>
                     <p class="p-r-10">ساعت: {{ appointment.time|time:"H:i" }}</p>
                     <p class="p-r-10">هزینه ویزیت: {{ appointment.amount }} تومان</p>
                     <p class="p-r-10 ">وضعیت پرداخت:
