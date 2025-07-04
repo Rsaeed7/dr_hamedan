@@ -4,66 +4,74 @@
 
 {% block extra_css %}
 <style>
-    /* Custom sidebar height and animations */
+    /* Simplified styles with better consistency */
     .sidebar {
         height: calc(100vh - 4rem);
-        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        background-color: #f8fafc;
+        border-left: 1px solid #e5e7eb;
     }
 
     .main-content {
         height: calc(100vh - 4rem);
         overflow-y: auto;
+        background-color: #f9fafb;
     }
 
     .nav-item {
-        position: relative;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
+        border-radius: 8px;
+        margin-bottom: 4px;
     }
 
-    .nav-item::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 0;
-        height: 100%;
-        background: linear-gradient(135deg, rgba(38, 49, 137, 0.1) 0%, rgba(113, 221, 138, 0.1) 100%);
-        transition: width 0.3s ease;
-    }
-
-    .nav-item:hover::before {
-        width: 100%;
+    .nav-item:hover {
+        background-color: rgba(38, 49, 137, 0.08);
     }
 
     .nav-item.active {
-        background: linear-gradient(135deg, rgba(38, 49, 137, 0.15) 0%, rgba(113, 221, 138, 0.05) 100%);
-        border-right: 4px solid #263189;
+        background-color: rgba(38, 49, 137, 0.12);
+        border-right: 3px solid #263189;
     }
 
     .profile-card {
-        background: linear-gradient(135deg, #263189 0%, #3f4079 100%);
-        box-shadow: 0 8px 32px rgba(38, 49, 137, 0.3);
+        background: linear-gradient(to right, #263189, #3f4079);
+        border-radius: 12px;
+        margin: 16px;
     }
 
     .stat-card {
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
+        transition: all 0.2s ease;
+        border-radius: 12px;
+        background-color: white;
+        border: 1px solid #e5e7eb;
     }
 
-    .stat-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-        transition: left 0.6s ease;
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     }
 
-    .stat-card:hover::before {
-        left: 100%;
+    .action-card {
+        transition: all 0.2s ease;
+        border-radius: 12px;
+        background-color: white;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .action-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .appointment-card {
+        transition: all 0.2s ease;
+        border-radius: 12px;
+        background-color: white;
+        border: 1px solid #e5e7eb;
+    }
+
+    .appointment-card:hover {
+        border-color: #263189;
+        transform: translateY(-2px);
     }
 
     @media (max-width: 768px) {
@@ -77,132 +85,111 @@
 {% block content %}
 <div class="bg-gradiant min-h-screen rtl">
     <div class="flex flex-col md:flex-row">
-        <!-- Enhanced Sidebar -->
-        <div class="w-full md:w-72 sidebar shadow-2xl border-l border_light">
-            <a href="{% url 'doctors:doctor_profile' %}" class="block hover:shadow-lg transition-all duration-300">
-                <div class="profile-card p-6 text-white">
-                    <div class="flex items-center">
-                        {% if doctor.profile_image %}
-                            <img src="{{ doctor.profile_image.url }}" alt="{{ doctor }}"
-                                 class="w-16 h-16 round50 object-cover ml-4 border-4 border-white border-opacity-30">
-                        {% else %}
-                            <div class="w-16 h-16 round50 bg-white bg-opacity-20 flex items-center justify-center ml-4 border-4 border-white border-opacity-30">
-                                <span class="text-white text-xl font-bold">{{ doctor.user.first_name|first }}{{ doctor.user.last_name|first }}</span>
-                            </div>
-                        {% endif %}
-                        <div>
-                            <h2 class="text-xl font-bold">دکتر {{ doctor.user.last_name }}</h2>
-                            <p class="text-white text-opacity-80 text-sm">{{ doctor.specialization }}</p>
-                            <div class="flex items-center mt-2">
-                                <div class="w-2 h-2 bg-green-400 rounded-full ml-2"></div>
-                                <span class="text-xs text-white text-opacity-70">آنلاین</span>
+        <!-- Simplified Sidebar -->
+        <div class="w-full md:w-64 sidebar shadow-sm">
+            <div class="p-4">
+                <a href="{% url 'doctors:doctor_profile' %}" class="block">
+                    <div class="profile-card p-4 text-white">
+                        <div class="flex items-center">
+                            {% if doctor.profile_image %}
+                                <img src="{{ doctor.profile_image.url }}" alt="{{ doctor }}"
+                                     class="w-12 h-12 round50 object-cover ml-3">
+                            {% else %}
+                                <div class="w-12 h-12 round50 bg-white bg-opacity-20 flex items-center justify-center ml-3">
+                                    <span class="text-white text-lg font-bold">{{ doctor.user.first_name|first }}{{ doctor.user.last_name|first }}</span>
+                                </div>
+                            {% endif %}
+                            <div>
+                                <h2 class="font-bold">دکتر {{ doctor.user.last_name }}</h2>
+                                <p class="text-white text-opacity-80 text-xs">{{ doctor.specialization }}</p>
                             </div>
                         </div>
                     </div>
-                </div>
-            </a>
+                </a>
+            </div>
 
-            <nav class="mt-6 px-3">
-                <div class="mb-3">
-                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wide px-3">منوی اصلی</span>
+            <nav class="px-3 mt-2">
+                <div class="mb-2">
+                    <span class="text-xs font-semibold text-gray-400 px-3">منوی اصلی</span>
                 </div>
-                <a href="{% url 'doctors:doctor_dashboard' %}"
-                   class="nav-item active flex items-center px-4 py-3 mb-2 text_dr font-medium rounded-10 relative z-10">
-                    <div class="w-8 h-8 bg-dr-primary bg-opacity-20 rounded-5 flex items-center justify-center ml-3">
-                        <i class="icon-dashboard text-sm"></i>
+                <a href="{% url 'doctors:doctor_dashboard' %}" class="nav-item active flex items-center px-3 py-2 text_dr font-medium">
+                    <div class="w-7 h-7 bg-blue-50 rounded-5 flex items-center justify-center ml-2">
+                        <i class="icon-dashboard text-sm text_dr"></i>
                     </div>
                     <span>داشبورد</span>
                 </a>
-                <a href="{% url 'chat:chat_room_list' %}"
-                   class="nav-item flex items-center px-4 py-3 mb-2 text-secondary hover:text_dr_2 rounded-10 relative z-10">
-                    <div class="w-8 h-8 bg-dr-secondary bg-opacity-20 rounded-5 flex items-center justify-center ml-3">
-                        <i class="icon-video text-sm"></i>
+                <a href="{% url 'chat:chat_room_list' %}" class="nav-item flex items-center px-3 py-2 text-secondary hover:text_dr_2">
+                    <div class="w-7 h-7 bg-teal-50 rounded-5 flex items-center justify-center ml-2">
+                        <i class="icon-video text-sm text_dr_2"></i>
                     </div>
                     <span>ویزیت آنلاین</span>
                 </a>
-                <a href="{% url 'doctors:doctor_appointments' %}"
-                   class="nav-item flex items-center px-4 py-3 mb-2 text-secondary hover:text_dr rounded-10 relative z-10">
-                    <div class="w-8 h-8 bg-info bg-opacity-20 rounded-5 flex items-center justify-center ml-3">
-                        <i class="icon-calendar text-sm"></i>
+                <a href="{% url 'doctors:doctor_appointments' %}" class="nav-item flex items-center px-3 py-2 text-secondary hover:text_dr">
+                    <div class="w-7 h-7 bg-green-50 rounded-5 flex items-center justify-center ml-2">
+                        <i class="icon-calendar text-sm text-success"></i>
                     </div>
                     <span>نوبت‌ها</span>
                 </a>
-                <a href="{% url 'doctors:doctor_availability' %}"
-                   class="nav-item flex items-center px-4 py-3 mb-2 text-secondary hover:text-warning rounded-10 relative z-10">
-                    <div class="w-8 h-8 bg-warning bg-opacity-20 rounded-5 flex items-center justify-center ml-3">
-                        <i class="icon-clock text-sm"></i>
+                <a href="{% url 'doctors:doctor_availability' %}" class="nav-item flex items-center px-3 py-2 text-secondary hover:text-warning">
+                    <div class="w-7 h-7 bg-yellow-50 rounded-5 flex items-center justify-center ml-2">
+                        <i class="icon-clock text-sm text-warning"></i>
                     </div>
-                    <span>مدیریت زمان‌های حضور</span>
+                    <span>زمان‌های حضور</span>
                 </a>
-                <a href="{% url 'doctors:doctor_earnings' %}"
-                   class="nav-item flex items-center px-4 py-3 mb-2 text-secondary hover:text-success rounded-10 relative z-10">
-                    <div class="w-8 h-8 bg-success bg-opacity-20 rounded-5 flex items-center justify-center ml-3">
-                        <i class="icon-money text-sm"></i>
+                <a href="{% url 'doctors:doctor_earnings' %}" class="nav-item flex items-center px-3 py-2 text-secondary hover:text-success">
+                    <div class="w-7 h-7 bg-green-50 rounded-5 flex items-center justify-center ml-2">
+                        <i class="icon-money text-sm text-success"></i>
                     </div>
                     <span>درآمد</span>
                 </a>
                 
-                <div class="my-4 border-t border_light"></div>
-                <div class="mb-3">
-                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wide px-3">محتوا و ارتباطات</span>
+                <div class="my-3 border-t border_light"></div>
+                <div class="mb-2">
+                    <span class="text-xs font-semibold text-gray-400 px-3">محتوا و ارتباطات</span>
                 </div>
                 
-                <a href="{% url 'docpages:doctor_posts' %}"
-                   class="nav-item flex items-center px-4 py-3 mb-2 text-secondary hover:text-info rounded-10 relative z-10">
-                    <div class="w-8 h-8 bg-info bg-opacity-20 rounded-5 flex items-center justify-center ml-3">
-                        <i class="icon-edit text-sm"></i>
+                <a href="{% url 'docpages:doctor_posts' %}" class="nav-item flex items-center px-3 py-2 text-secondary hover:text-info">
+                    <div class="w-7 h-7 bg-purple-50 rounded-5 flex items-center justify-center ml-2">
+                        <i class="icon-edit text-sm text_dr_3"></i>
                     </div>
                     <span>پست‌های من</span>
                 </a>
-                <a href="{% url 'doctors:inbox' %}"
-                   class="nav-item flex items-center px-4 py-3 mb-2 text-secondary hover:text_dr rounded-10 relative z-10">
-                    <div class="w-8 h-8 bg-dr-primary bg-opacity-20 rounded-5 flex items-center justify-center ml-3">
-                        <i class="icon-mail text-sm"></i>
+                <a href="{% url 'doctors:inbox' %}" class="nav-item flex items-center px-3 py-2 text-secondary hover:text_dr">
+                    <div class="w-7 h-7 bg-indigo-50 rounded-5 flex items-center justify-center ml-2">
+                        <i class="icon-mail text-sm text-info"></i>
                     </div>
                     <span>نامه ها</span>
                 </a>
-                <a href="{% url 'patients:report_list' %}"
-                   class="nav-item flex items-center px-4 py-3 mb-2 text-secondary hover:text-warning rounded-10 relative z-10">
-                    <div class="w-8 h-8 bg-warning bg-opacity-20 rounded-5 flex items-center justify-center ml-3">
-                        <i class="icon-doc text-sm"></i>
+                <a href="{% url 'patients:report_list' %}" class="nav-item flex items-center px-3 py-2 text-secondary hover:text-warning">
+                    <div class="w-7 h-7 bg-yellow-50 rounded-5 flex items-center justify-center ml-2">
+                        <i class="icon-doc text-sm text-warning"></i>
                     </div>
                     <span>ریپورت ها</span>
                 </a>
-                <a href="{% url 'home:doctor_detail' doctor.id %}"
-                   class="nav-item flex items-center px-4 py-3 mb-2 text-secondary hover:text_dr_3 rounded-10 relative z-10">
-                    <div class="w-8 h-8 bg-dr-tertiary bg-opacity-20 rounded-5 flex items-center justify-center ml-3">
-                        <i class="icon-eye text-sm"></i>
-                    </div>
-                    <span>مشاهده پروفایل عمومی</span>
-                </a>
             </nav>
 
-            <div class="mt-auto p-4 m-4">
-                <div class="bg-gradiant2 rounded-15 p-4 border border_light">
+            <div class="mt-auto p-3 mx-3 mb-3">
+                <div class="bg-gray-50 rounded-10 p-3 border border_light">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
-                            <div class="flex-shrink-0 w-8 h-8 rounded-5 bg-white bg-opacity-80 flex items-center justify-center">
+                            <div class="w-6 h-6 rounded-full flex items-center justify-center">
                                 {% if doctor.is_available %}
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-success" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                    </svg>
+                                    <span class="w-4 h-4 bg-success rounded-full"></span>
                                 {% else %}
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-danger" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                    </svg>
+                                    <span class="w-4 h-4 bg-danger rounded-full"></span>
                                 {% endif %}
                             </div>
-                            <div class="mr-3">
-                                <p class="text-xs text-secondary font-medium">وضعیت نوبت‌دهی</p>
+                            <div class="mr-2">
+                                <p class="text-xs text-secondary">وضعیت نوبت‌دهی</p>
                                 {% if doctor.is_available %}
-                                    <span class="text-success font-bold text-sm">فعال</span>
+                                    <span class="text-success text-xs font-bold">فعال</span>
                                 {% else %}
-                                    <span class="text-danger font-bold text-sm">غیرفعال</span>
+                                    <span class="text-danger text-xs font-bold">غیرفعال</span>
                                 {% endif %}
                             </div>
                         </div>
                         <a href="{% url 'doctors:toggle_availability' %}" 
-                           class="btn-outline-info text-xs px-3 py-1">
+                           class="text-xs px-2 py-1 bg-white rounded-5 text_dr border border_light hover:bg-blue-50">
                             تغییر
                         </a>
                     </div>
@@ -213,338 +200,262 @@
         <!-- Enhanced Main Content -->
         <div class="flex-1 p-8 bg-gradiant2 main-content">
             <!-- Hero Welcome Section -->
-            <div class="bg-white rounded-20 p-8 shadow-hover margin_30_20 relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-full h-2 bg-gradiant"></div>
-                <div class="flex justify-between items-start">
-                    <div class="flex-1">
-                        <h1 class="text-4xl font-bold text_dr mb-2">
+            <div class="bg-white rounded-20 p-6 shadow-sm margin_30_20">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-2xl font-bold text_dr">
                             سلام دکتر {{ doctor.user.last_name }} 👋
                         </h1>
-                        <p class="text_dr_3 text-lg mb-4">{{ today|date:"l، Y/m/d" }}</p>
-                        <div class="bg-gradiant rounded-15 p-6 border border_light">
-                            <div class="flex items-center">
-                                <div class="w-12 h-12 bg-white bg-opacity-80 rounded-10 flex items-center justify-center ml-4">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text_dr" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h3 class="text-white font-bold text-lg">در خدمت سلامت جامعه</h3>
-                                    <p class="text-white text-opacity-80 text-sm">آماده ارائه بهترین خدمات درمانی به بیماران عزیز هستید</p>
-                                </div>
+                        <p class="text-secondary text-sm mt-1">{{ today|date:"l، Y/m/d" }}</p>
+                        
+                        <div class="mt-4 flex items-center">
+                            <div class="flex items-center bg-gray-50 rounded-10 px-4 py-2 ml-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text_dr ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                <span class="text-sm">{{ today_appointments }} نوبت امروز</span>
                             </div>
+                            
+                            <a href="{% url 'doctors:doctor_availability' %}" class="text-sm text_dr flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                </svg>
+                                تنظیم نوبت‌دهی
+                            </a>
                         </div>
                     </div>
-                    <div class="text-left hidden lg:block">
-                        <div class="bg-light-blue rounded-15 p-6 text-center">
-                            <div class="text-3xl font-bold text_dr">{{ today_appointments }}</div>
-                            <div class="text-sm text-secondary mt-1">نوبت امروز</div>
+                    {% if doctor.profile_image %}
+                        <img src="{{ doctor.profile_image.url }}" alt="{{ doctor }}" class="w-16 h-16 round50 object-cover hidden md:block">
+                    {% else %}
+                        <div class="w-16 h-16 round50 bg-blue-100 flex items-center justify-center hidden md:block">
+                            <span class="text-blue-600 font-bold text-lg">{{ doctor.user.first_name|first }}{{ doctor.user.last_name|first }}</span>
                         </div>
-                    </div>
+                    {% endif %}
                 </div>
             </div>
 
             <!-- Enhanced Quick Actions -->
-            <div class="bg-white rounded-20 shadow-hover p-8 margin_30_20">
-                <div class="flex items-center justify-between mb-8">
+            <div class="bg-white rounded-20 shadow-sm p-6 margin_30_20">
+                <div class="flex items-center justify-between mb-6">
                     <div>
-                        <h2 class="text-2xl font-bold text_dr mb-2">دسترسی سریع</h2>
-                        <p class="text-secondary">دسترسی آسان به ابزارهای اصلی</p>
+                        <h2 class="text-xl font-bold text_dr mb-1">دسترسی سریع</h2>
+                        <p class="text-secondary text-sm">دسترسی آسان به ابزارهای اصلی</p>
                     </div>
                     <div class="hidden lg:block">
-                        <div class="bg-gradiant2 rounded-10 px-4 py-2">
+                        <div class="bg-gray-50 rounded-10 px-4 py-2">
                             <span class="text-xs text-secondary font-medium">{{ today_appointments }} نوبت امروز</span>
                         </div>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <a href="{% url 'doctors:doctor_availability' %}"
-                       class="group relative bg-gradient-to-br from-blue-50 to-blue-100 rounded-20 p-6 border border-dr-primary border-opacity-20 hover:shadow-lg hover:scale-105 transition-all duration-300">
-                        <div class="absolute top-4 left-4 w-2 h-2 bg-dr-primary rounded-full"></div>
-                        <div class="w-16 h-16 bg-dr-primary bg-opacity-20 rounded-15 flex items-center justify-center mb-4 group-hover:bg-opacity-30 transition-all duration-300">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text_dr" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <a href="{% url 'doctors:doctor_availability' %}" class="action-card p-4 flex items-center">
+                        <div class="w-12 h-12 bg-blue-50 rounded-10 flex items-center justify-center ml-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text_dr" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 002 2z"/>
                             </svg>
                         </div>
-                        <h3 class="font-bold text_dr mb-2 text-lg">مدیریت زمان‌ها</h3>
-                        <p class="text-sm text-secondary leading-relaxed">تنظیم و مدیریت زمان‌های حضور و نوبت‌دهی</p>
+                        <div>
+                            <h3 class="font-bold text_dr mb-1">مدیریت زمان‌ها</h3>
+                            <p class="text-xs text-secondary">تنظیم زمان‌های نوبت‌دهی</p>
+                        </div>
                     </a>
 
-                    <a href="{% url 'doctors:doctor_appointments' %}"
-                       class="group relative bg-gradient-to-br from-green-50 to-green-100 rounded-20 p-6 border border-success border-opacity-20 hover:shadow-lg hover:scale-105 transition-all duration-300">
-                        <div class="absolute top-4 left-4 w-2 h-2 bg-success rounded-full"></div>
-                        <div class="w-16 h-16 bg-success bg-opacity-20 rounded-15 flex items-center justify-center mb-4 group-hover:bg-opacity-30 transition-all duration-300">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <a href="{% url 'doctors:doctor_appointments' %}" class="action-card p-4 flex items-center">
+                        <div class="w-12 h-12 bg-green-50 rounded-10 flex items-center justify-center ml-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                             </svg>
                         </div>
-                        <h3 class="font-bold text-success mb-2 text-lg">نوبت‌ها</h3>
-                        <p class="text-sm text-secondary leading-relaxed">مشاهده و مدیریت نوبت‌های رزرو شده بیماران</p>
+                        <div>
+                            <h3 class="font-bold text-success mb-1">نوبت‌ها</h3>
+                            <p class="text-xs text-secondary">مدیریت نوبت‌های بیماران</p>
+                        </div>
                     </a>
 
-                    <a href="{% url 'doctors:doctor_earnings' %}"
-                       class="group relative bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-20 p-6 border border-warning border-opacity-20 hover:shadow-lg hover:scale-105 transition-all duration-300">
-                        <div class="absolute top-4 left-4 w-2 h-2 bg-warning rounded-full"></div>
-                        <div class="w-16 h-16 bg-warning bg-opacity-20 rounded-15 flex items-center justify-center mb-4 group-hover:bg-opacity-30 transition-all duration-300">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <a href="{% url 'doctors:doctor_earnings' %}" class="action-card p-4 flex items-center">
+                        <div class="w-12 h-12 bg-yellow-50 rounded-10 flex items-center justify-center ml-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
                         </div>
-                        <h3 class="font-bold text-warning mb-2 text-lg">درآمد</h3>
-                        <p class="text-sm text-secondary leading-relaxed">مشاهده آمار درآمد و گزارش‌های مالی</p>
+                        <div>
+                            <h3 class="font-bold text-warning mb-1">درآمد</h3>
+                            <p class="text-xs text-secondary">گزارش‌های مالی</p>
+                        </div>
                     </a>
 
-                    <a href="{% url 'docpages:doctor_posts' %}"
-                       class="group relative bg-gradient-to-br from-purple-50 to-purple-100 rounded-20 p-6 border border-dr-tertiary border-opacity-20 hover:shadow-lg hover:scale-105 transition-all duration-300">
-                        <div class="absolute top-4 left-4 w-2 h-2 bg-dr-tertiary rounded-full"></div>
-                        <div class="w-16 h-16 bg-dr-tertiary bg-opacity-20 rounded-15 flex items-center justify-center mb-4 group-hover:bg-opacity-30 transition-all duration-300">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text_dr_3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <a href="{% url 'docpages:doctor_posts' %}" class="action-card p-4 flex items-center">
+                        <div class="w-12 h-12 bg-purple-50 rounded-10 flex items-center justify-center ml-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text_dr_3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                             </svg>
                         </div>
-                        <h3 class="font-bold text_dr_3 mb-2 text-lg">پست‌ها</h3>
-                        <p class="text-sm text-secondary leading-relaxed">ایجاد و مدیریت محتوای تخصصی</p>
+                        <div>
+                            <h3 class="font-bold text_dr_3 mb-1">پست‌ها</h3>
+                            <p class="text-xs text-secondary">محتوای تخصصی</p>
+                        </div>
                     </a>
 
-                    <a href="{% url 'chat:chat_room_list' %}"
-                       class="group relative bg-gradient-to-br from-teal-50 to-teal-100 rounded-20 p-6 border border-dr-secondary border-opacity-20 hover:shadow-lg hover:scale-105 transition-all duration-300">
-                        <div class="absolute top-4 left-4 w-2 h-2 bg-dr-secondary rounded-full"></div>
-                        <div class="w-16 h-16 bg-dr-secondary bg-opacity-20 rounded-15 flex items-center justify-center mb-4 group-hover:bg-opacity-30 transition-all duration-300">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text_dr_2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <a href="{% url 'chat:chat_room_list' %}" class="action-card p-4 flex items-center">
+                        <div class="w-12 h-12 bg-teal-50 rounded-10 flex items-center justify-center ml-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text_dr_2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                             </svg>
                         </div>
-                        <h3 class="font-bold text_dr_2 mb-2 text-lg">ویزیت آنلاین</h3>
-                        <p class="text-sm text-secondary leading-relaxed">گفتگو و مشاوره آنلاین با بیماران</p>
+                        <div>
+                            <h3 class="font-bold text_dr_2 mb-1">ویزیت آنلاین</h3>
+                            <p class="text-xs text-secondary">مشاوره آنلاین</p>
+                        </div>
                     </a>
 
-                    <a href="{% url 'doctors:doctor_profile' %}"
-                       class="group relative bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-20 p-6 border border-info border-opacity-20 hover:shadow-lg hover:scale-105 transition-all duration-300">
-                        <div class="absolute top-4 left-4 w-2 h-2 bg-info rounded-full"></div>
-                        <div class="w-16 h-16 bg-info bg-opacity-20 rounded-15 flex items-center justify-center mb-4 group-hover:bg-opacity-30 transition-all duration-300">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-info" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <a href="{% url 'doctors:doctor_profile' %}" class="action-card p-4 flex items-center">
+                        <div class="w-12 h-12 bg-indigo-50 rounded-10 flex items-center justify-center ml-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-info" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                             </svg>
                         </div>
-                        <h3 class="font-bold text-info mb-2 text-lg">پروفایل</h3>
-                        <p class="text-sm text-secondary leading-relaxed">ویرایش و به‌روزرسانی اطلاعات شخصی</p>
+                        <div>
+                            <h3 class="font-bold text-info mb-1">پروفایل</h3>
+                            <p class="text-xs text-secondary">اطلاعات شخصی</p>
+                        </div>
                     </a>
                 </div>
             </div>
 
             <!-- Enhanced Stats Section -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 margin_30_20">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 margin_30_20">
                 <!-- Total Appointments -->
-                <div class="stat-card bg-white rounded-20 p-6 shadow-hover border border_light hover:shadow-lg transition-all duration-300 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-20 h-20 bg-dr-primary bg-opacity-10 rounded-full -mr-10 -mt-10"></div>
-                    <div class="relative z-10">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 bg-dr-primary bg-opacity-20 rounded-15 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text_dr" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                </svg>
-                            </div>
-                            <div class="text-left">
-                                <div class="text-3xl font-bold text_dr">{{ total_appointments }}</div>
-                                <div class="text-xs text-secondary mt-1">کل نوبت‌ها</div>
-                            </div>
+                <div class="stat-card p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="w-10 h-10 bg-blue-50 rounded-10 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text_dr" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
                         </div>
-                        <div class="bg-light-green rounded-10 p-3">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs text-success font-medium">تکمیل شده</span>
-                                <span class="text-sm font-bold text-success">{{ completed_appointments }}</span>
-                            </div>
+                        <div class="text-left">
+                            <div class="text-xl font-bold text_dr">{{ total_appointments }}</div>
+                            <div class="text-xs text-secondary">کل نوبت‌ها</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Pending Appointments -->
-                <div class="stat-card bg-white rounded-20 p-6 shadow-hover border border_light hover:shadow-lg transition-all duration-300 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-20 h-20 bg-warning bg-opacity-10 rounded-full -mr-10 -mt-10"></div>
-                    <div class="relative z-10">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 bg-warning bg-opacity-20 rounded-15 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                            </div>
-                            <div class="text-left">
-                                <div class="text-3xl font-bold text-warning">{{ pending_appointments }}</div>
-                                <div class="text-xs text-secondary mt-1">در انتظار</div>
-                            </div>
+                <div class="stat-card p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="w-10 h-10 bg-yellow-50 rounded-10 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
                         </div>
-                        <div class="bg-light-yellow rounded-10 p-3">
-                            <a href="{% url 'doctors:doctor_appointments' %}" class="flex items-center justify-between group">
-                                <span class="text-xs text_dr font-medium group-hover:text_dr_3">مشاهده نوبت‌ها</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text_dr group-hover:text_dr_3 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                                </svg>
-                            </a>
+                        <div class="text-left">
+                            <div class="text-xl font-bold text-warning">{{ pending_appointments }}</div>
+                            <div class="text-xs text-secondary">در انتظار</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Today's Appointments -->
-                <div class="stat-card bg-white rounded-20 p-6 shadow-hover border border_light hover:shadow-lg transition-all duration-300 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-20 h-20 bg-success bg-opacity-10 rounded-full -mr-10 -mt-10"></div>
-                    <div class="relative z-10">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 bg-success bg-opacity-20 rounded-15 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                            </div>
-                            <div class="text-left">
-                                <div class="text-3xl font-bold text-success">{{ today_appointments }}</div>
-                                <div class="text-xs text-secondary mt-1">نوبت امروز</div>
-                            </div>
+                <div class="stat-card p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="w-10 h-10 bg-green-50 rounded-10 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
                         </div>
-                        <div class="bg-light-green rounded-10 p-3">
-                            <a href="{% url 'doctors:doctor_appointments' %}" class="flex items-center justify-between group">
-                                <span class="text-xs text_dr font-medium group-hover:text_dr_3">برنامه زمانی</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text_dr group-hover:text_dr_3 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                                </svg>
-                            </a>
+                        <div class="text-left">
+                            <div class="text-xl font-bold text-success">{{ today_appointments }}</div>
+                            <div class="text-xs text-secondary">نوبت امروز</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Monthly Earnings -->
-                <div class="stat-card bg-white rounded-20 p-6 shadow-hover border border_light hover:shadow-lg transition-all duration-300 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-20 h-20 bg-dr-tertiary bg-opacity-10 rounded-full -mr-10 -mt-10"></div>
-                    <div class="relative z-10">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="w-12 h-12 bg-dr-tertiary bg-opacity-20 rounded-15 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text_dr_3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                            </div>
-                            <div class="text-left">
-                                <div class="text-xl font-bold text_dr_3">{{ current_month_earnings|default:"0" }}</div>
-                                <div class="text-xs text-secondary mt-1">درآمد ماه جاری</div>
-                            </div>
+                <div class="stat-card p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="w-10 h-10 bg-purple-50 rounded-10 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text_dr_3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
                         </div>
-                        <div class="bg-light-violet rounded-10 p-3">
-                            <a href="{% url 'doctors:doctor_earnings' %}" class="flex items-center justify-between group">
-                                <span class="text-xs text_dr font-medium group-hover:text_dr_3">جزئیات درآمد</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text_dr group-hover:text_dr_3 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                                </svg>
-                            </a>
+                        <div class="text-left">
+                            <div class="text-md font-bold text_dr_3">{{ current_month_earnings|default:"0" }}</div>
+                            <div class="text-xs text-secondary">درآمد ماه جاری</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Enhanced Today's Appointments -->
-            <div class="bg-white rounded-20 shadow-hover p-8 margin_30_20">
-                <div class="flex justify-between items-center mb-8">
+            <!-- Today's Appointments List -->
+            <div class="bg-white rounded-20 shadow-sm p-6 margin_30_20">
+                <div class="flex justify-between items-center mb-6">
                     <div>
-                        <h2 class="text-2xl font-bold text_dr mb-2">نوبت‌های امروز</h2>
-                        <p class="text-secondary">برنامه ملاقات‌های {{ today|date:"l، Y/m/d" }}</p>
+                        <h2 class="text-xl font-bold text_dr mb-1">نوبت‌های امروز</h2>
+                        <p class="text-secondary text-sm">{{ today|date:"l، Y/m/d" }}</p>
                     </div>
-                    <div class="flex items-center space-x-3 space-x-reverse">
-                        <div class="bg-gradiant2 rounded-10 px-4 py-2">
-                            <span class="text-xs text-secondary font-medium">{{ today_appointments }} نوبت</span>
-                        </div>
-                        <a href="{% url 'doctors:doctor_appointments' %}" class="btn-outline-info text-sm px-6 py-2 hover:scale-105 transition-transform">
-                            همه نوبت‌ها
-                        </a>
-                    </div>
+                    <a href="{% url 'doctors:doctor_appointments' %}" class="text-sm text_dr hover:underline">
+                        مشاهده همه
+                    </a>
                 </div>
 
                 {% if today_appointments_list %}
-                    <div class="space-y-4">
+                    <div class="space-y-3">
                         {% for appointment in today_appointments_list %}
-                            <div class="group relative bg-gradient-to-r from-white to-gray-50 rounded-20 p-6 border border_light hover:shadow-lg hover:border-dr-primary hover:border-opacity-30 transition-all duration-300">
-                                <div class="absolute top-0 left-0 w-1 h-full bg-dr-primary rounded-r-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                <div class="flex justify-between items-center">
-                                    <div class="flex items-center">
-                                        {% if appointment.patient.profile_image %}
-                                            <img src="{{ appointment.patient.profile_image.url }}"
-                                                 alt="{{ appointment.patient }}"
-                                                 class="w-14 h-14 round50 object-cover ml-4 border-2 border-white shadow-md">
-                                        {% else %}
-                                            <div class="w-14 h-14 round50 bg-gradient-to-br from-dr-primary to-dr-tertiary flex items-center justify-center ml-4 shadow-md">
-                                                <span class="text-white text-lg font-bold">{{ appointment.patient.user.first_name|first }}{{ appointment.patient.user.last_name|first }}</span>
-                                            </div>
-                                        {% endif %}
-                                        <div>
-                                            <h3 class="font-bold text_dr mb-1 text-lg">{{ appointment.patient.user.get_full_name }}</h3>
-                                            <div class="flex items-center text-secondary text-sm">
-                                                <div class="w-8 h-8 bg-light-blue rounded-10 flex items-center justify-center ml-2">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text_dr" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                    </svg>
-                                                </div>
-                                                <span class="font-medium">{{ appointment.time_slot.time|time:"H:i" }}</span>
-                                            </div>
+                            <div class="appointment-card p-4 flex justify-between items-center">
+                                <div class="flex items-center">
+                                    {% if appointment.patient.profile_image %}
+                                        <img src="{{ appointment.patient.profile_image.url }}"
+                                             alt="{{ appointment.patient }}"
+                                             class="w-12 h-12 round50 object-cover ml-3 border border-gray-100">
+                                    {% else %}
+                                        <div class="w-12 h-12 round50 bg-blue-100 flex items-center justify-center ml-3">
+                                            <span class="text-blue-600 font-bold">{{ appointment.patient.user.first_name|first }}{{ appointment.patient.user.last_name|first }}</span>
+                                        </div>
+                                    {% endif %}
+                                    <div>
+                                        <h3 class="font-bold text_dr text-sm">{{ appointment.patient.user.get_full_name }}</h3>
+                                        <div class="flex items-center text-secondary text-xs mt-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            <span>{{ appointment.time_slot.time|time:"H:i" }}</span>
                                         </div>
                                     </div>
-                                    <div class="flex items-center space-x-3 space-x-reverse">
-                                        <span class="inline-flex items-center px-4 py-2 rounded-15 text-sm font-bold border-2
-                                            {% if appointment.status == 'confirmed' %}
-                                                bg-gradient-to-r from-blue-50 to-blue-100 text_dr border-dr-primary
-                                            {% elif appointment.status == 'completed' %}
-                                                bg-gradient-to-r from-green-50 to-green-100 text-success border-success
-                                            {% elif appointment.status == 'cancelled' %}
-                                                bg-gradient-to-r from-red-50 to-red-100 text-danger border-danger
-                                            {% else %}
-                                                bg-gradient-to-r from-yellow-50 to-yellow-100 text-warning border-warning
-                                            {% endif %}
-                                        ">
-                                            {% if appointment.status == 'confirmed' %}
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                                </svg>
-                                                تایید شده
-                                            {% elif appointment.status == 'completed' %}
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                </svg>
-                                                تکمیل شده
-                                            {% elif appointment.status == 'cancelled' %}
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                                </svg>
-                                                لغو شده
-                                            {% else %}
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                </svg>
-                                                در انتظار
-                                            {% endif %}
-                                        </span>
-                                    </div>
                                 </div>
+                                <span class="px-3 py-1 rounded-lg text-xs font-medium
+                                    {% if appointment.status == 'confirmed' %}
+                                        bg-blue-50 text_dr
+                                    {% elif appointment.status == 'completed' %}
+                                        bg-green-50 text-success
+                                    {% elif appointment.status == 'cancelled' %}
+                                        bg-red-50 text-danger
+                                    {% else %}
+                                        bg-yellow-50 text-warning
+                                    {% endif %}
+                                ">
+                                    {% if appointment.status == 'confirmed' %}
+                                        تایید شده
+                                    {% elif appointment.status == 'completed' %}
+                                        تکمیل شده
+                                    {% elif appointment.status == 'cancelled' %}
+                                        لغو شده
+                                    {% else %}
+                                        در انتظار
+                                    {% endif %}
+                                </span>
                             </div>
                         {% endfor %}
                     </div>
                 {% else %}
-                    <div class="text-center py-16 bg-gradient-to-br from-gray-50 to-blue-50 rounded-20 border border_light">
-                        <div class="w-20 h-20 bg-gradient-to-br from-dr-primary to-dr-tertiary rounded-20 flex items-center justify-center mx-auto mb-6">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>
-                        </div>
-                        <h3 class="text-2xl font-bold text_dr mb-3">آرامش کامل! 🌟</h3>
-                        <p class="text-secondary mb-8 text-lg leading-relaxed max-w-md mx-auto">امروز هیچ نوبتی برنامه‌ریزی نشده. فرصت مناسبی برای استراحت یا برنامه‌ریزی آینده</p>
-                        <div class="flex justify-center space-x-4 space-x-reverse">
-                            <a href="{% url 'doctors:doctor_availability' %}" class="btn-outline-info px-8 py-3 hover:scale-105 transition-all duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                                مدیریت زمان‌ها
-                            </a>
-                            <a href="{% url 'doctors:doctor_appointments' %}" class="btn-outline-success px-8 py-3 hover:scale-105 transition-all duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                </svg>
-                                مشاهده تقویم
-                            </a>
-                        </div>
+                    <div class="text-center py-8 bg-gray-50 rounded-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto mb-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <h3 class="text-lg font-bold text_dr mb-1">امروز نوبتی ندارید</h3>
+                        <p class="text-secondary text-sm mb-4">فرصت مناسبی برای استراحت یا برنامه‌ریزی</p>
+                        <a href="{% url 'doctors:doctor_availability' %}" class="text-sm text_dr hover:underline">
+                            مدیریت زمان‌های حضور
+                        </a>
                     </div>
                 {% endif %}
             </div>
