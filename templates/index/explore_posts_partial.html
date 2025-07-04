@@ -2,182 +2,47 @@
 {% load jformat %}
 
 {% for post in posts %}
-<div class="masonry-item">
-    <div class="post-card bg-white rounded-lg shadow-sm border overflow-hidden">
-        <!-- Media Content -->
-        {% if post.image or post.video %}
-            <div class="relative overflow-hidden">
-                {% if post.video %}
-                    <!-- Video Thumbnail -->
-                    <div class="relative aspect-video bg-gray-900 group cursor-pointer">
-                        <video class="w-full h-full object-cover">
-                            <source src="{{ post.video.url }}" type="video/mp4">
-                        </video>
-                        <!-- Simple Video Play Button -->
-                        <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 group-hover:bg-opacity-20 transition-all duration-200">
-                            <div class="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center hover:bg-red-700 transition-colors">
-                                <svg class="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M8 5v14l11-7z"/>
-                                </svg>
-                            </div>
-                        </div>
-                        <!-- Simple Video Badge -->
-                        <div class="absolute top-3 left-3 bg-red-600 text-white px-2 py-1 rounded text-xs font-medium">
-                            ویدیو
-                        </div>
-                    </div>
-                {% elif post.image %}
-                    <!-- Image -->
-                    <div class="relative overflow-hidden aspect-video">
-                        <img src="{{ post.image.url }}" alt="{{ post.title }}" 
-                             class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
-                        <!-- Simple Image Badge -->
-                        <div class="absolute top-3 left-3 bg-blue-600 text-white px-2 py-1 rounded text-xs font-medium">
-                            تصویر
-                        </div>
-                    </div>
-                {% endif %}
+<div class="grid-item" data-post-id="{{ post.id }}" onclick="openPost({{ post.id }})">
+    {% if post.video %}
+        <video src="{{ post.video.url }}" class="w-full h-full object-cover" muted></video>
+        <div class="video-indicator">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
+            </svg>
+        </div>
+    {% elif post.image %}
+        <img src="{{ post.image.url }}" alt="{{ post.title }}" loading="lazy">
+    {% else %}
+        <div class="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center p-6">
+            <h3 class="text-white text-center font-medium line-clamp-3">{{ post.title }}</h3>
+        </div>
+    {% endif %}
+    
+    <div class="grid-item-overlay">
+        <div class="overlay-stats">
+            <div class="stat-item">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                </svg>
+                <span>{{ post.likes.count|default:0 }}</span>
             </div>
-        {% else %}
-            <!-- Text Post Placeholder -->
-            <div class="w-full h-48 bg-gray-100 flex items-center justify-center">
-                <div class="text-center">
-                    <div class="w-16 h-16 bg-gray-300 rounded-lg flex items-center justify-center mx-auto mb-3">
-                        <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
-                    </div>
-                    <span class="text-gray-600 text-sm font-medium">محتوای متنی</span>
-                </div>
-                <!-- Simple Text Badge -->
-                <div class="absolute top-3 left-3 bg-gray-600 text-white px-2 py-1 rounded text-xs font-medium">
-                    متن
-                </div>
-            </div>
-        {% endif %}
-
-        <!-- Post Content -->
-        <div class="p-6">
-            <!-- Post Title -->
-            <h3 class="text-lg font-bold text-gray-900 mb-3 line-clamp-2 leading-tight">
-                {{ post.title }}
-            </h3>
-
-            <!-- Post Content Excerpt -->
-            {% if post.content %}
-            <div class="text-gray-600 text-sm mb-4 line-clamp-3 leading-relaxed">
-                {{ post.content|truncatewords:20|striptags }}
-            </div>
-            {% endif %}
-
-            <!-- Medical Lenses Tags -->
-            {% if post.medical_lenses.all %}
-            <div class="flex flex-wrap gap-2 mb-4">
-                {% for lens in post.medical_lenses.all|slice:":3" %}
-                <span class="inline-block bg-blue-50 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">
-                    {{ lens.name }}
-                </span>
-                {% endfor %}
-                {% if post.medical_lenses.all|length > 3 %}
-                <span class="inline-block bg-gray-50 text-gray-600 px-2 py-1 rounded-full text-xs">
-                    +{{ post.medical_lenses.all|length|add:"-3" }}
-                </span>
-                {% endif %}
-            </div>
-            {% endif %}
-
-            <!-- Doctor Info -->
-            <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center space-x-3">
-                    <!-- Doctor Avatar -->
-                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                        {% if post.doctor.user.profile_image %}
-                            <img src="{{ post.doctor.user.profile_image.url }}" 
-                                 alt="{{ post.doctor.user.get_full_name }}" 
-                                 class="w-10 h-10 rounded-full object-cover">
-                        {% else %}
-                            <span class="text-blue-700 text-sm font-medium">
-                                {{ post.doctor.user.first_name|first|default:"د" }}
-                            </span>
-                        {% endif %}
-                    </div>
-                    
-                    <!-- Doctor Details -->
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-gray-900 truncate">
-                            دکتر {{ post.doctor.user.get_full_name }}
-                        </p>
-                        {% if post.doctor.specialization %}
-                        <p class="text-xs text-gray-500 truncate">
-                            {{ post.doctor.specialization }}
-                        </p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Post Stats and Actions -->
-            <div class="flex items-center justify-between pt-4 border-t border-gray-100">
-                <!-- Post Stats -->
-                <div class="flex items-center space-x-4 text-sm text-gray-500">
-                    <!-- Likes Count -->
-                    <div class="flex items-center space-x-1">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                        </svg>
-                        <span>{{ post.likes.count }}</span>
-                    </div>
-                    
-                    <!-- Comments Count -->
-                    <div class="flex items-center space-x-1">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                        </svg>
-                        <span>{{ post.comments.count }}</span>
-                    </div>
-                    
-                    <!-- Post Date -->
-                    <div class="flex items-center space-x-1">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <span>{{ post.created_at|jformat:"%Y/%m/%d" }}</span>
-                    </div>
-                </div>
-
-                <!-- Action Button -->
-                <a href="{% url 'docpages:post_detail' post.id %}" 
-                   class="inline-flex items-center px-3 py-1 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors">
-                    مطالعه
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                    </svg>
-                </a>
+            <div class="stat-item">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clip-rule="evenodd"/>
+                </svg>
+                <span>{{ post.comments.count|default:0 }}</span>
             </div>
         </div>
     </div>
 </div>
 {% endfor %}
 
-<!-- Simple Utilities -->
 <style>
-/* Simple line clamp utility */
-.line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
+/* Line clamp utility for text posts */
 .line-clamp-3 {
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
-}
-
-/* Simple aspect ratio utility */
-.aspect-video {
-    aspect-ratio: 16 / 9;
 }
 </style> 
