@@ -555,14 +555,16 @@
                 </button>
             </div>
             
-            <form method="post" action="{% url 'doctors:add_blocked_day' %}">
+            <form method="post" action="{% url 'doctors:add_blocked_day' %}" id="blockDayForm" onsubmit="return validateBlockDayForm()">
                 {% csrf_token %}
                 <div class="space-y-6">
                     <div>
                         <label for="block_date" class="block text-sm font-bold text_dr mb-2">تاریخ</label>
-                        <input type="text" name="date" id="block_date" required readonly
+                        <input type="text" name="date_display" id="block_date" required readonly
                                placeholder="انتخاب تاریخ..."
                                class="w-full px-4 py-3 border border_light rounded-15 focus:outline-none focus:ring-2 focus:ring-danger focus:border-danger cursor-pointer transition-all duration-300">
+                        <!-- Hidden input to store the date in correct format for backend -->
+                        <input type="hidden" name="date" id="block_date_hidden">
                         <p class="text-xs text-secondary mt-2 bg-light-yellow p-2 rounded-10">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -619,36 +621,50 @@
                 }
             });
         }
-
-        // Initialize Jalali DatePicker for blocked days
-        let blockDateCalendar = null;
-        const blockDateInput = document.getElementById('block_date');
         
-        if (blockDateInput) {
-            const today = new JalaliDate();
-            
-            // Create the date picker with modal-specific settings
-            blockDateCalendar = createJalaliDatePicker(blockDateInput, {
-                minDate: today.addDays(1), // Tomorrow onwards
-                onSelect: function(date, dateString) {
-                    // Additional validation to ensure future dates only
-                    const selectedDate = new JalaliDate(date.year, date.month, date.day);
-                    if (!selectedDate.isAfter(today)) {
-                        alert('فقط می‌توانید روزهای آینده را مسدود کنید.');
-                        blockDateInput.value = '';
-                        return false;
-                    }
+        // Initialize Persian DatePicker for block_date input
+        $("#block_date").persianDatepicker({
+            format: 'YYYY/MM/DD',
+            autoClose: true,
+            initialValueType: 'persian',
+            onlySelectOnDate: true,
+            minDate: new Date(),
+            calendar: {
+                persian: {
+                    locale: 'fa'
                 }
-            });
-            
-            // Fix calendar positioning in modal - wait for DOM to be ready
-            setTimeout(() => {
-                const calendarContainer = blockDateInput.parentNode.querySelector('div[style*="position: absolute"]');
-                if (calendarContainer) {
-                    calendarContainer.style.zIndex = '99999';
-                    calendarContainer.style.position = 'absolute';
+            },
+            onSelect: function(unix) {
+                // Additional validation to ensure future dates only
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                if (new Date(unix) <= today) {
+                    alert('فقط می‌توانید روزهای آینده را مسدود کنید.');
+                    $("#block_date").val('');
+                    $("#block_date_hidden").val('');
+                    return false;
                 }
-            }, 100);
+                
+                // Convert to Gregorian date format for backend (YYYY-MM-DD)
+                const selectedDate = new Date(unix);
+                const year = selectedDate.getFullYear();
+                const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+                const day = String(selectedDate.getDate()).padStart(2, '0');
+                const formattedDate = `${year}-${month}-${day}`;
+                
+                // Set hidden input value with the formatted Gregorian date
+                $("#block_date_hidden").val(formattedDate);
+                
+                console.log('Selected date for display:', $("#block_date").val());
+                console.log('Selected date for backend:', formattedDate);
+            }
+        });
+        
+        // Add calendar icon for better UX
+        if ($("#block_date").parent().css('position') !== 'relative') {
+            $("#block_date").parent().css('position', 'relative');
+            $("#block_date").after('<i class="icon-calendar text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"></i>');
         }
     });
 
@@ -657,50 +673,14 @@
         const modal = document.getElementById('blockDayModal');
         if (modal.classList.contains('hidden')) {
             modal.classList.remove('hidden');
-            // Show and focus the calendar
-            setTimeout(function() {
-                const blockDateInput = document.getElementById('block_date');
-                if (blockDateInput) {
-                    // Clear any existing value first
-                    blockDateInput.value = '';
-                    
-                    // Trigger the calendar to show
-                    blockDateInput.focus();
-                    const clickEvent = new Event('click', { bubbles: true });
-                    blockDateInput.dispatchEvent(clickEvent);
-                    
-                    // Force calendar visibility and positioning
-                    setTimeout(() => {
-                        const calendarContainer = blockDateInput.parentNode.querySelector('div[style*="position: absolute"]');
-                        if (calendarContainer) {
-                            calendarContainer.style.display = 'block !important';
-                            calendarContainer.style.zIndex = '99999 !important';
-                            calendarContainer.style.position = 'absolute !important';
-                            calendarContainer.style.top = '100%';
-                            calendarContainer.style.right = '0';
-                            calendarContainer.style.left = 'auto';
-                            calendarContainer.style.marginTop = '5px';
-                        }
-                        
-                        // Also check for the calendar element itself
-                        const calendarElement = calendarContainer ? calendarContainer.querySelector('.jalali-calendar') : null;
-                        if (calendarElement) {
-                            calendarElement.style.zIndex = '99999 !important';
-                            calendarElement.style.position = 'relative';
-                        }
-                    }, 100);
-                }
-            }, 300);
-        } else {
-            modal.classList.add('hidden');
-            // Hide calendar and reset form
+            // Reset form and prepare input
             const blockDateInput = document.getElementById('block_date');
             if (blockDateInput) {
-                const calendarContainer = blockDateInput.parentNode.querySelector('div[style*="position: absolute"]');
-                if (calendarContainer) {
-                    calendarContainer.style.display = 'none';
-                }
+                blockDateInput.value = '';
+                setTimeout(() => blockDateInput.focus(), 300);
             }
+        } else {
+            modal.classList.add('hidden');
             // Reset form
             const form = modal.querySelector('form');
             if (form) {
@@ -730,6 +710,16 @@
             }
         }
     });
+
+    // Form validation to ensure date is properly set
+    function validateBlockDayForm() {
+        const dateHidden = document.getElementById('block_date_hidden');
+        if (!dateHidden.value) {
+            alert('لطفا یک تاریخ معتبر انتخاب کنید.');
+            return false;
+        }
+        return true;
+    }
 </script>
 {% endblock %}
 
