@@ -4,88 +4,358 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}دکتر  - سیستم رزرو نوبت پزشک{% endblock %}</title>
-    <!-- Bootstrap RTL CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
+    <title>{% block title %}دکتر - سیستم رزرو نوبت پزشک{% endblock %}</title>
+    <link href="{% static 'css/icon_fonts/css/all_icons_min.css' %}" rel="stylesheet">
     <!-- IRANSansWeb Local Fonts -->
     <link href="{% static 'css/fonts.css' %}" rel="stylesheet">
     <link href="{% static 'css/extra.css' %}" rel="stylesheet">
+    <link href="{% static 'css/util.css' %}" rel="stylesheet">
     <!-- Custom CSS for color scheme consistency -->
     <style>
         :root {
-            --primary-color: #1e4460;
-            --secondary-color: #00c072;
-            --light-bg: #f8f9fa;
-            --hover-color: #3498db;
+            --primary: #263189;
+            --primary-light: rgba(38, 49, 137, 0.1);
+            --secondary: #6c757d;
+            --success: #28a745;
+            --info: #17a2b8;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
         }
-        
-        body {
-            background: linear-gradient(to bottom right, #f8f9fa, #e6f2ff);
-            min-height: 100vh;
-            font-family: 'IRANSansWeb', 'Tahoma', 'Arial', sans-serif;
+
+        /* Base Styles */
+body {
+            font-family: 'IRANSans', sans-serif;
+            background-color: #f5f7fa;
+            direction: rtl;
             display: flex;
             flex-direction: column;
+            min-height: 100vh;
         }
-        
+
+        /* Header Styles */
         .navbar {
-            background: linear-gradient(to right, var(--primary-color), #2c5d86);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background-color: var(--primary);
+            box-shadow: var(--box-shadow);
+        {#padding: 0.75rem 1rem;#} position: sticky;
+            top: 0;
+            z-index: 1030;
         }
-        
-        .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
+
+        .navbar-brand {
+            font-size: 1.25rem;
         }
-        
-        .btn-success {
-            background-color: var(--secondary-color);
-            border-color: var(--secondary-color);
+
+        .navbar-nav .nav-link {
+            padding: 0.5rem 1rem;
         }
-        
-        .text-primary {
-            color: var(--primary-color) !important;
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            min-height: calc(100vh - 60px);
+            background: white;
+            border-left: 1px solid rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            position: fixed;
+            top: 60px;
+            right: 0;
+            z-index: 1020;
+            overflow-y: auto;
         }
-        
-        .dropdown-menu {
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+        .sidebar-content {
+            height: calc(100vh - 120px);
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
         }
-        
-        .card {
-            border-radius: 0.75rem;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s, box-shadow 0.2s;
+
+        .profile-card {
+            background: linear-gradient(135deg, var(--primary), #4a54e0);
+            border-radius: var(--border-radius);
+            color: white;
+            transition: var(--transition);
+            padding: 1rem;
+            margin-bottom: 1rem;
         }
-        
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+
+        .profile-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--box-shadow);
         }
-        
-        main {
-            flex: 1;
+
+        .nav-item {
+            transition: var(--transition);
+            border-radius: 8px;
+            margin-bottom: 0.25rem;
         }
-        
-        .notification-icon {
-            width: 40px;
-            height: 40px;
+
+        .nav-item:hover {
+            background-color: var(--primary-light);
+        }
+
+        .nav-item.active {
+            background-color: var(--primary-light);
+            position: relative;
+        }
+
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        .nav-link {
+            padding: 0.75rem 1rem;
+            color: var(--dark);
             display: flex;
             align-items: center;
-            justify-content: center;
         }
-        
-        .notification-dropdown .unread {
-            background-color: rgba(13, 110, 253, 0.05);
+
+        .nav-link i {
+            margin-left: 0.5rem;
+            width: 20px;
+            text-align: center;
         }
-        
-        .smaller {
+
+        /* Main Content Styles */
+        .main-content {
+            margin-right: 280px;
+            padding: 2rem;
+            transition: var(--transition);
+            flex: 1;
+            margin-top: 60px;
+        }
+
+        /* Cards */
+        .card {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            background: white;
+            margin-bottom: 1.5rem;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card {
+            border-left: 4px solid;
+            border-radius: var(--border-radius);
+        }
+
+        .stat-card.appointments {
+            border-left-color: var(--primary);
+        }
+
+        .stat-card.pending {
+            border-left-color: var(--warning);
+        }
+
+        .stat-card.today {
+            border-left-color: var(--success);
+        }
+
+        .stat-card.earnings {
+            border-left-color: var(--info);
+        }
+
+        /* Quick Actions */
+        .action-card {
+            transition: var(--transition);
+            border-radius: var(--border-radius);
+        }
+
+        .action-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--box-shadow);
+        }
+
+        /* Appointments */
+        .appointment-card {
+            transition: var(--transition);
+            border-radius: var(--border-radius);
+        }
+
+        .appointment-card:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        .status-badge {
             font-size: 0.75rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 50px;
         }
-        
-        .hover-text-primary:hover {
-            color: var(--primary-color) !important;
-            transition: color 0.3s;
+
+        /* Footer Styles */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            margin-top: auto;
+        }
+
+        footer a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        footer a:hover {
+            color: white;
+        }
+
+        footer h5 {
+            margin-bottom: 1.25rem;
+            font-size: 1.1rem;
+        }
+
+        footer ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(100%);
+                width: 280px;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-right: 0;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1.5rem;
+            }
+
+            .welcome-section {
+                flex-direction: column;
+            }
+
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            footer .row > div {
+                margin-bottom: 1.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 1rem;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .navbar-brand {
+                font-size: 1rem;
+            }
+
+            .navbar-nav .nav-link {
+                padding: 0.5rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade {
+            animation: fadeIn 0.6s ease forwards;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        /* Loading Skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 4px;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* Toggle button for mobile sidebar */
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1050;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 992px) {
+            .sidebar-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
         }
     </style>
     <!-- Local Tailwind CSS with Persian fonts -->
@@ -94,295 +364,232 @@
     <script src="https://unpkg.com/@heroicons/v2.0.18/24/outline/index.js"></script>
     <!-- Jalali Date Picker CSS -->
     <link rel="stylesheet" href="https://unpkg.com/persian-datepicker@latest/dist/css/persian-datepicker.min.css">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
     {% block extra_css %}{% endblock %}
 </head>
 <body>
 <!-- Header/Navigation -->
 
-<header class="navbar navbar-expand-lg navbar-dark">
-    <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="{% url 'doctors:doctor_list' %}">
-            <i class="fa-solid fa-stethoscope me-2"></i>
-            <span class="fw-bold">دکتر</span>
-        </a>
-        
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        
-        <div class="collapse navbar-collapse" id="navbarMain">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'doctors:doctor_list' %}">
-                        <i class="fa-solid fa-user-doctor me-1"></i>
-                        پزشکان
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'clinics:clinic_list' %}">
-                        <i class="fa-solid fa-hospital me-1"></i>
-                        کلینیک‌ها
-                    </a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fa-solid fa-graduation-cap me-1"></i>
-                        تخصص‌ها
-                    </a>
-                    <ul class="dropdown-menu">
-                        {% for specialization in specializations %}
-                            <li>
-                                <a class="dropdown-item" href="{% url 'doctors:doctor_list' %}?specialty={{ specialization.name }}">
-                                    {{ specialization.name }}
-                                </a>
-                            </li>
-                        {% empty %}
-                            <li><span class="dropdown-item text-muted">هیچ تخصصی موجود نیست</span></li>
-                        {% endfor %}
-                    </ul>
-                </li>
-            </ul>
-            
-            <div class="d-flex">
-                {% if user.is_authenticated %}
-                    <!-- Notification Bell -->
-                    <div class="dropdown me-3">
-                        <button class="btn btn-outline-light position-relative" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fa-solid fa-bell"></i>
-                            {% if user.doctor and user.doctor.unread_notifications_count > 0 or user.unread_notifications_count > 0 %}
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                    {{ user.doctor.unread_notifications_count|default:user.unread_notifications_count }}
-                                    <span class="visually-hidden">پیام خوانده نشده</span>
-                                </span>
-                            {% endif %}
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-end notification-dropdown p-0" aria-labelledby="notificationDropdown" style="width: 320px; max-height: 400px; overflow-y: auto;">
-                            <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
-                                <h6 class="m-0">اعلان‌ها</h6>
-                                {% if user.doctor and user.doctor.unread_notifications_count > 0 or user.unread_notifications_count > 0 %}
-                                    <a href="#" class="text-primary text-decoration-none small">علامت‌گذاری همه به عنوان خوانده‌شده</a>
-                                {% endif %}
-                            </div>
-                            
-                            <div id="notifications-container">
-                                {% if user.doctor %}
-                                    <!-- Notifications for doctors -->
-                                    <a href="#" class="dropdown-item p-3 border-bottom d-flex align-items-center unread">
-                                        <div class="notification-icon bg-primary text-white rounded-circle p-2 me-3">
-                                            <i class="fa-solid fa-calendar-check"></i>
-                                        </div>
-                                        <div>
-                                            <p class="m-0 small">نوبت جدید رزرو شده است</p>
-                                            <span class="text-muted smaller">۱۰ دقیقه پیش</span>
-                                        </div>
-                                    </a>
-                                    <a href="#" class="dropdown-item p-3 border-bottom d-flex align-items-center">
-                                        <div class="notification-icon bg-success text-white rounded-circle p-2 me-3">
-                                            <i class="fa-solid fa-message"></i>
-                                        </div>
-                                        <div>
-                                            <p class="m-0 small">پیام جدید از بیمار</p>
-                                            <span class="text-muted smaller">۲ ساعت پیش</span>
-                                        </div>
-                                    </a>
-                                    <a href="#" class="dropdown-item p-3 border-bottom d-flex align-items-center unread">
-                                        <div class="notification-icon bg-info text-white rounded-circle p-2 me-3">
-                                            <i class="fa-solid fa-star"></i>
-                                        </div>
-                                        <div>
-                                            <p class="m-0 small">نظر جدید دریافت کردید</p>
-                                            <span class="text-muted smaller">دیروز</span>
-                                        </div>
-                                    </a>
-                                {% else %}
-                                    <!-- Notifications for patients -->
-                                    <a href="#" class="dropdown-item p-3 border-bottom d-flex align-items-center unread">
-                                        <div class="notification-icon bg-primary text-white rounded-circle p-2 me-3">
-                                            <i class="fa-solid fa-calendar-check"></i>
-                                        </div>
-                                        <div>
-                                            <p class="m-0 small">یادآوری نوبت پزشک</p>
-                                            <span class="text-muted smaller">فردا ساعت ۱۰:۰۰</span>
-                                        </div>
-                                    </a>
-                                    <a href="#" class="dropdown-item p-3 border-bottom d-flex align-items-center">
-                                        <div class="notification-icon bg-success text-white rounded-circle p-2 me-3">
-                                            <i class="fa-solid fa-circle-check"></i>
-                                        </div>
-                                        <div>
-                                            <p class="m-0 small">نوبت شما تایید شد</p>
-                                            <span class="text-muted smaller">۳ ساعت پیش</span>
-                                        </div>
-                                    </a>
-                                {% endif %}
-                                
-                                {% if not user.doctor and not user.unread_notifications_count > 0 %}
-                                    <div class="p-4 text-center text-muted">
-                                        <i class="fa-solid fa-bell-slash fa-2x mb-3"></i>
-                                        <p class="m-0">هیچ اعلان جدیدی ندارید</p>
-                                    </div>
-                                {% endif %}
-                            </div>
-                            
-                            <div class="text-center p-2 border-top">
-                                <a href="#" class="text-primary text-decoration-none small">مشاهده همه اعلان‌ها</a>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="dropdown">
-                        <button class="btn btn-outline-light dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown">
-                            <i class="fa-solid fa-user-circle me-1"></i>
-                            {{ user.get_full_name }}
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-end">
-                            {% if user.doctor %}
-                                <a href="{% url 'doctors:doctor_dashboard' %}"
-                                   class="dropdown-item">
-                                    <i class="fa-solid fa-briefcase me-2"></i>
-                                    داشبورد پزشک
-                                </a>
-                            {% endif %}
+<header class="navbar">
+    <nav class="mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <a href="{% url 'doctors:index' %}">
+                <img src="{% static 'img/logo_white.png' %}" width="150">
+            </a>
+            <a href="{% url 'doctors:doctor_list' %}" class="flex items-center space-x-2">
+                <span class=" font-bold text-white">پنل مدیریت پزشکی </span>
+            </a>
 
-                            {% if user.administered_clinics.exists %}
-                                <a href="{% url 'clinics:clinic_dashboard' %}"
-                                   class="dropdown-item">
-                                    <i class="fa-solid fa-hospital me-2"></i>
-                                    داشبورد کلینیک
-                                </a>
-                            {% endif %}
 
-                            <div class="dropdown-divider"></div>
-
-                            <a href="{% url 'patients:patient_dashboard' %}"
-                               class="dropdown-item">
-                                <i class="fa-solid fa-calendar me-2"></i>
-                                نوبت‌های من
-                            </a>
-                            <a href="{% url 'patients:patient_profile' %}"
-                               class="dropdown-item">
-                                <i class="fa-solid fa-user me-2"></i>
-                                پروفایل
-                            </a>
-                            <a href="{% url 'wallet:wallet_dashboard' %}"
-                               class="dropdown-item">
-                                <i class="fa-solid fa-wallet me-2"></i>
-                                کیف پول
-                            </a>
-
-                            <div class="dropdown-divider"></div>
-
-                            {% if request.user.is_staff or request.user.is_superuser %}
-                                <a href="{% url 'homecare:admin_requests_list' %}"
-                                   class="dropdown-item">
-                                    <i class="fa-solid fa-calendar me-2"></i>
-                                    مدیریت خدمات در منزل
-                                </a>
-                            {% endif %}
-
-                            {% if user.is_staff %}
-                                <a href="{% url 'admin:index' %}"
-                                   class="dropdown-item">
-                                    <i class="fa-solid fa-cog me-2"></i>
-                                    پنل مدیریت
-                                </a>
-                            {% endif %}
-
-                            <div class="dropdown-divider"></div>
-
-                            <a href="{% url 'account:logout' %}"
-                               class="dropdown-item text-danger">
-                                <i class="fa-solid fa-arrow-left me-2"></i>
-                                خروج
-                            </a>
-                        </div>
-                    </div>
-                {% else %}
-                    <a href="{% url 'account:register' %}"
-                       class="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg hover:bg-white/30 transition-colors text-white flex items-center">
-                        <heroicon-outline-arrow-right-on-rectangle class="w-5 h-5 mr-2"/>
-                        ورود
-                    </a>
-                {% endif %}
-            </div>
         </div>
-    </div>
+    </nav>
 </header>
 
-<!-- Messages -->
-{% if messages %}
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-        {% for message in messages %}
-            <div class="p-4 rounded-lg mb-4 flex items-center {% if message.tags == 'error' %}bg-red-50 text-red-800{% elif message.tags == 'success' %}bg-green-50 text-green-800{% else %}bg-blue-50 text-blue-800{% endif %}">
-                <heroicon-outline-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}
-                    exclamation-circle{% else %}information-circle{% endif %} class="w-full h-6 mr-3 shrink-0"/>
-                <p>{{ message }}</p>
+<!-- Sidebar -->
+{% if request.user.doctor %}
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-content">
+        <!-- Profile Card -->
+        <div class="profile-card">
+            <a href="{% url 'doctors:doctor_profile' %}" class="no-underline text-white">
+                <div class="flex items-center">
+                    {% if doctor.profile_image %}
+                        <img src="{{ doctor.profile_image.url }}" alt="{{ doctor }}"
+                             class="rounded-full me-3" width="50" height="50">
+                    {% else %}
+                        <div class="rounded-full bg-white/20 flex items-center justify-center me-3"
+                             style="width: 50px; height: 50px;">
+                            <span class="text-white font-bold">{{ doctor.user.first_name|first }}{{ doctor.user.last_name|first }}</span>
+                        </div>
+                    {% endif %}
+                    <div>
+                        <h5 class="m-0">دکتر {{ doctor.user.last_name }}</h5>
+                        <small class="opacity-75">{{ doctor.specialization }}</small>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+
+        <!-- Navigation -->
+        <nav class="flex-grow-1">
+            <div class="mb-3">
+                <small class="text-muted fw-bold px-2">منوی اصلی</small>
             </div>
-        {% endfor %}
+
+            <ul class="nav flex-column">
+                <li class="nav-item mb-1 {% if request.resolver_match.url_name == 'doctor_dashboard' %}active{% endif %}">
+                    <a href="{% url 'doctors:doctor_dashboard' %}" class="nav-link">
+                        <i class="icon-website ms-2"></i>
+                        <span>داشبورد</span>
+                    </a>
+                </li>
+                <li class="nav-item mb-1 {% if request.resolver_match.url_name == 'chat_room_list' %}active{% endif %}">
+                    <a href="{% url 'chat:chat_room_list' %}" class="nav-link d-flex align-items-center">
+                        <i class="icon-chat-inv ms-2"></i>
+                        <span>ویزیت آنلاین</span>
+                    </a>
+                </li>
+                <li class="nav-item mb-1 {% if request.resolver_match.url_name == 'doctor_appointments' %}active{% endif %}">
+                    <a href="{% url 'doctors:doctor_appointments' %}" class="nav-link d-flex align-items-center">
+                        <i class="icon-calendar-8 ms-2"></i>
+                        <span>نوبت‌ها</span>
+                    </a>
+                </li>
+                <li class="nav-item mb-1 {% if request.resolver_match.url_name == 'doctor_availability' %}active{% endif %}">
+                    <a href="{% url 'doctors:doctor_availability' %}" class="nav-link d-flex align-items-center">
+                        <i class="icon-clock-8 ms-2"></i>
+                        <span>زمان‌های حضور</span>
+                    </a>
+                </li>
+                <li class="nav-item mb-1 {% if request.resolver_match.url_name == 'doctor_earnings' %}active{% endif %}">
+                    <a href="{% url 'doctors:doctor_earnings' %}" class="nav-link d-flex align-items-center">
+                        <i class="icon-chart ms-2"></i>
+                        <span>درآمد</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="my-3 border-top"></div>
+
+            <div class="mb-3">
+                <small class="text-muted fw-bold px-2">محتوا و ارتباطات</small>
+            </div>
+
+            <ul class="nav flex-column">
+                <li class="nav-item mb-1 {% if request.resolver_match.url_name == 'inbox' %}active{% endif %}">
+                    <a href="{% url 'doctors:inbox' %}" class="nav-link d-flex align-items-center">
+                        <i class=" icon-mail-alt ms-2"></i>
+                        <span>نامه‌ها</span>
+                    </a>
+                </li>
+                <li class="nav-item mb-1  {% if request.resolver_match.url_name == 'report_list' %}active{% endif %}">
+                    <a href="{% url 'patients:report_list' %}" class="nav-link d-flex align-items-center">
+                        <i class="icon-doc-7 ms-2"></i>
+                        <span>ریپورت‌ها</span>
+                    </a>
+                </li>
+                <li class="nav-item mb-1  {% if request.resolver_match.url_name == 'doctor_posts' %}active{% endif %}">
+                    <a href="{% url 'docpages:doctor_posts' %}" class="nav-link d-flex align-items-center">
+                        <i class="icon-th-large ms-2"></i>
+                        <span>پست‌های من</span>
+                    </a>
+                </li>
+                <li class="nav-item mb-1  {% if request.resolver_match.url_name == 'manage_comments' %}active{% endif %}">
+                    <a href="{% url 'docpages:manage_comments' %}" class="nav-link d-flex align-items-center">
+                        <i class="icon-comment-5 ms-2"></i>
+                        <span>مدیریت نظرات</span>
+                    </a>
+                </li>
+            </ul>
+
+        </nav>
+
+        <!-- Availability Toggle -->
+        <div class="mt-auto">
+            <div class="bg-gray-100 shadow-none rounded-md">
+                <div class="p-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="mr-2">
+                                {% if doctor.is_available %}
+                                    <div class="bg-green-500 rounded-full w-3 h-3 m-t-25 m-l-5"></div>
+                                {% else %}
+                                    <div class="bg-red-500 rounded-full w-3 h-3 m-t-25  m-l-5"></div>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <small class="text-gray-500">وضعیت نوبت‌دهی</small>
+                                <div class="font-bold">
+                                    {% if doctor.is_available %}
+                                        <span class="text-green-600">فعال</span>
+                                    {% else %}
+                                        <span class="text-red-600">غیرفعال</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <a href="{% url 'doctors:toggle_availability' %}"
+                           class="text-blue-600 border border-blue-600 text-sm px-3 py-1 rounded hover:bg-blue-50 transition">
+                            تغییر
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
+</div>
+
+<!-- Mobile Sidebar Toggle Button -->
+<button class="sidebar-toggle" id="sidebarToggle">
+    <i class="fas fa-bars"></i>
+</button>
 {% endif %}
 
 <!-- Main Content -->
-<main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<main class="main-content">
+    <!-- Messages -->
+    {% if messages %}
+        <div id="toast-container" class="fixed top-4 left-4 z-50 space-y-2">
+            {% for message in messages %}
+                <div class="toast-message flex items-start gap-2 rounded-lg shadow-lg px-4 py-3
+            {% if message.tags == 'success' %}bg-green-50 text-green-800 border border-green-200
+            {% elif message.tags == 'error' %}bg-red-50 text-red-800 border border-red-200
+            {% else %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}
+            animate-fade-in transition-opacity duration-500 ease-in-out"
+                >
+                    <svg class="w-6 h-6 mt-1 shrink-0" fill="none" stroke="currentColor" stroke-width="2"
+                         viewBox="0 0 24 24">
+                        {% if message.tags == 'success' %}
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M5 13l4 4L19 7"/>
+                        {% elif message.tags == 'error' %}
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        {% else %}
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M13 16h-1v-4h-1m1-4h.01M12 18h.01"/>
+                        {% endif %}
+                    </svg>
+                    <p class="text-sm">{{ message }}</p>
+                </div>
+            {% endfor %}
+        </div>
+
+        <script>
+            setTimeout(() => {
+                const container = document.getElementById('toast-container');
+                if (container) {
+                    container.classList.add('opacity-0', 'transition-opacity');
+                    setTimeout(() => container.remove(), 500);  // cleanup after fade-out
+                }
+            }, 10000); // 10 seconds
+        </script>
+
+        <style>
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .animate-fade-in {
+                animation: fadeIn 0.4s ease-out;
+            }
+        </style>
+    {% endif %}
+
+
     {% block content %}
     {% endblock %}
 </main>
 
-<!-- Footer -->
-<footer class="bg-dark text-white py-5 mt-auto">
-    <div class="container">
-        <div class="row g-4">
-            <div class="col-lg-3 col-md-6">
-                <h5 class="text-white mb-3">دکتر</h5>
-                <p class="text-white-50 small">دسترسی به خدمات درمانی را برای همه آسان و راحت می‌کنیم.</p>
-                <div class="mt-4">
-                    <a href="#" class="btn btn-sm btn-outline-light rounded-circle me-2"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#" class="btn btn-sm btn-outline-light rounded-circle me-2"><i class="fa-brands fa-telegram"></i></a>
-                    <a href="#" class="btn btn-sm btn-outline-light rounded-circle"><i class="fa-brands fa-linkedin"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <h5 class="text-white mb-3">خدمات</h5>
-                <ul class="list-unstyled">
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-text-primary">پیدا کردن پزشک</a></li>
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-text-primary">رزرو نوبت</a></li>
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-text-primary">مشاوره آنلاین</a></li>
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-text-primary">خدمات در منزل</a></li>
-                </ul>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <h5 class="text-white mb-3">شرکت</h5>
-                <ul class="list-unstyled">
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-text-primary">درباره ما</a></li>
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-text-primary">فرصت‌های شغلی</a></li>
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-text-primary">بلاگ</a></li>
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-text-primary">همکاری با پزشکان</a></li>
-                </ul>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <h5 class="text-white mb-3">پشتیبانی</h5>
-                <ul class="list-unstyled">
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-text-primary">حریم خصوصی</a></li>
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-text-primary">شرایط استفاده</a></li>
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-text-primary">سوالات متداول</a></li>
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-text-primary">تماس با ما</a></li>
-                </ul>
-            </div>
-        </div>
-        <hr class="my-4 border-light">
-        <div class="row">
-            <div class="col-md-6 text-center text-md-start">
-                <p class="mb-0 text-white-50">&copy; {% now "Y" %} دکتر. تمامی حقوق محفوظ است.</p>
-            </div>
-            <div class="col-md-6 text-center text-md-end">
-                <img src="https://cdn-icons-png.flaticon.com/512/196/196548.png" alt="eNamad" height="30" class="me-2">
-                <img src="https://cdn-icons-png.flaticon.com/512/196/196566.png" alt="Samandehi" height="30">
-            </div>
-        </div>
-    </div>
-</footer>
 
 <!-- Bootstrap Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -390,6 +597,31 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://unpkg.com/persian-date@latest/dist/persian-date.min.js"></script>
 <script src="https://unpkg.com/persian-datepicker@latest/dist/js/persian-datepicker.min.js"></script>
+
+<script>
+    // Toggle sidebar on mobile
+    document.getElementById('sidebarToggle').addEventListener('click', function () {
+        document.getElementById('sidebar').classList.toggle('active');
+    });
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', function (event) {
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('sidebarToggle');
+
+        if (window.innerWidth <= 992 &&
+            !sidebar.contains(event.target) &&
+            !toggleBtn.contains(event.target) &&
+            sidebar.classList.contains('active')) {
+            sidebar.classList.remove('active');
+        }
+    });
+
+    // Prevent closing when clicking inside sidebar
+    document.getElementById('sidebar').addEventListener('click', function (event) {
+        event.stopPropagation();
+    });
+</script>
 
 {% block extra_js %}{% endblock %}
 </body>

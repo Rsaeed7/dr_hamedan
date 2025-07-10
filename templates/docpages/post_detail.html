@@ -1,331 +1,501 @@
-{% extends 'base.html' %}
-{% load jformat %}
+<!DOCTYPE html>
+{% load static %}
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ post.title }} - دکتر {{ post.doctor.user.last_name }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-{% block title %}{{ post.title }} - دکتر {{ post.doctor.user.last_name }}{% endblock %}
-{% load persian_date %}
-{% block extra_css %}
-<style>
-    /* RTL specific styles */
-    .rtl .mr-3 {
-        margin-right: 0;
-        margin-left: 0.75rem;
-    }
-    
-    .rtl .mr-1 {
-        margin-right: 0;
-        margin-left: 0.25rem;
-    }
-    
-    .rtl .ml-4 {
-        margin-left: 0;
-        margin-right: 1rem;
-    }
-    
-    .rtl .ml-2 {
-        margin-left: 0;
-        margin-right: 0.5rem;
-    }
-    
-    .rtl .space-x-4 {
-        margin-right: 0;
-        margin-left: 1rem;
-    }
-    
-    .rtl .text-right {
-        text-align: left;
-    }
-    
-    .rtl .flex-row {
-        flex-direction: row-reverse;
-    }
-    
-    .rtl .flex-col {
-        flex-direction: column;
-    }
-    
-    .rtl .gap-4 {
-        gap: 1rem;
-    }
-    
-    .rtl .space-y-4 {
-        margin-top: 1rem;
-        margin-bottom: 0;
-    }
-    
-    .rtl .space-y-6 {
-        margin-top: 1.5rem;
-        margin-bottom: 0;
-    }
-    
-    .like-button {
-        transition: all 0.3s ease;
-        border: 2px solid #e5e7eb;
-        background: white;
-    }
-    
-    .like-button:hover {
-        border-color: #ef4444;
-        background: #fef2f2;
-    }
-    
-    .like-button.liked {
-        border-color: #ef4444;
-        background: #ef4444;
-        color: white;
-    }
-    
-    .like-button.liked:hover {
-        background: #dc2626;
-        border-color: #dc2626;
-    }
-    
-    .medical-lens-tag {
-        display: inline-block;
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: white;
-        margin: 0.25rem;
-        text-decoration: none;
-    }
-    
-    .medical-lens-tag:hover {
-        opacity: 0.8;
-        color: white;
-        text-decoration: none;
-    }
-    
-    .video-container {
-        position: relative;
-        width: 100%;
-        height: 0;
-        padding-bottom: 56.25%; /* 16:9 aspect ratio */
-        overflow: hidden;
-        border-radius: 0.5rem;
-    }
-    
-    .video-container video {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-</style>
-{% endblock %}
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #000;
+            color: white;
+            font-family: 'IRANSansWeb', sans-serif;
+        }
+        .like-button {
+            transition: all 0.3s ease;
+        }
+        .like-button.liked {
+            background-color: #dc2626;
+            color: white;
+            border-color: #dc2626;
+        }
+    </style>
+        <style>
+        /* Persian UI styles */
+        body {
+            font-family: 'IRANSansWeb', Tahoma, Arial, sans-serif;
+            background-color: #000;
+        }
 
-{% block content %}
-<div class="container mx-auto px-4 py-6 rtl">
-    <div class="mb-6">
-        <a href="{% url 'docpages:doctor_page' post.doctor.id %}" class="text-blue-600 hover:text-blue-800">
-            &rarr; بازگشت به پست‌های دکتر {{ post.doctor.user.last_name }}
-        </a>
-    </div>
-    
-    <article class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
-        <!-- Media Section -->
-        {% if post.media_type == 'image' and post.image %}
-            <div class="w-full h-96 overflow-hidden">
-                <img src="{{ post.image.url }}" alt="{{ post.title }}" class="w-full h-full object-cover">
-            </div>
-        {% elif post.media_type == 'video' and post.video %}
-            <div class="video-container">
-                <video controls preload="metadata" class="w-full">
-                    <source src="{{ post.video.url }}" type="video/mp4">
-                    مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
-                </video>
-            </div>
-        {% endif %}
-        
-        <div class="p-6">
-            <!-- Doctor Info -->
-            <div class="flex items-center mb-4">
-                {% if post.doctor.profile_image %}
-                    <img src="{{ post.doctor.profile_image.url }}" alt="{{ post.doctor }}" class="w-10 h-10 rounded-full object-cover mr-3">
-                {% else %}
-                    <div class="w-10 h-10 rounded-full bg-blue-200 flex items-center justify-center mr-3">
-                        <span class="text-blue-600 text-sm font-bold">{{ post.doctor.user.first_name|first }}{{ post.doctor.user.last_name|first }}</span>
-                    </div>
-                {% endif %}
-                
-                <div>
-                    <h4 class="text-sm font-medium text-gray-900">دکتر {{ post.doctor.user.get_full_name }}</h4>
-                    <p class="text-xs text-gray-500">{{ post.created_at|persian_date_info }} ساعت {{ post.created_at|time:"H:i" }}</p>
+        /* Instagram-like Grid */
+        .explore-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3px;
+            max-width: 975px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            .explore-grid {
+                gap: 2px;
+            }
+        }
+
+        /* Grid item with 1:1 aspect ratio */
+        .grid-item {
+            position: relative;
+            aspect-ratio: 1;
+            overflow: hidden;
+            background-color: #262626;
+            cursor: pointer;
+        }
+
+        /* Large items in grid pattern */
+        .grid-item:nth-child(10n+3) {
+            grid-column: span 2;
+            grid-row: span 2;
+        }
+
+        /* Image styling */
+        .grid-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        /* Video indicator */
+        .video-indicator {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            color: white;
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+        }
+
+        /* Hover overlay */
+        .grid-item-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .grid-item:hover .grid-item-overlay {
+            opacity: 1;
+        }
+
+        .grid-item:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Overlay stats */
+        .overlay-stats {
+            display: flex;
+            gap: 20px;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Instagram-style header */
+        .instagram-header {
+            background-color: #000;
+            border-bottom: 1px solid #262626;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        /* Search bar */
+        .search-bar {
+            background-color: #262626;
+            border: none;
+            color: #fafafa;
+            padding: 8px 16px;
+            border-radius: 8px;
+            width: 268px;
+        }
+
+        .search-bar::placeholder {
+            color: #8e8e8e;
+        }
+
+        .search-bar:focus {
+            outline: none;
+            background-color: #363636;
+        }
+
+        /* Filter pills */
+        .filter-pill {
+            background-color: #262626;
+            color: #fafafa;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .filter-pill:hover {
+            background-color: #363636;
+        }
+
+        .filter-pill.active {
+            background-color: #fafafa;
+            color: #000;
+        }
+
+        /* Loading skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #262626 25%, #363636 50%, #262626 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Modal styles */
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #000;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #262626;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #363636;
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 640px) {
+            .instagram-header {
+                padding: 0 16px;
+            }
+
+            .search-bar {
+                width: 100%;
+            }
+
+            .overlay-stats {
+                font-size: 14px;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen text-white">
+
+    <!-- Header -->
+        <header class="instagram-header">
+        <nav class="max-w-[975px] mx-auto px-5">
+            <div class="flex justify-between items-center h-[60px]">
+                <!-- Logo -->
+            <a href="{% url 'doctors:index' %}">
+                <img src="{% static 'img/logo_white.png' %}" width="150">
+            </a>
+
+                <!-- Search Bar (Desktop) -->
+                <div class="hidden md:block">
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="جستجو"
+                        value="{{ search_query }}"
+                        class="search-bar"
+                    >
+                </div>
+
+                <!-- Navigation Icons -->
+                <div class="flex items-center gap-5">
+                    <a href="{% url 'doctors:doctor_list' %}" class="text-white hover:text-gray-300 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                        </svg>
+                    </a>
+                    <button class="text-white hover:text-gray-300 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"/>
+                        </svg>
+                    </button>
+                    {% if user.is_authenticated %}
+                        <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                            <span class="text-white text-sm font-medium">{{ user.first_name|first|default:"ک"|first }}</span>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'account:register' %}" class="text-white hover:text-gray-300 transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                        </a>
+                    {% endif %}
                 </div>
             </div>
-            
-            <!-- Post Title -->
-            <h1 class="text-2xl font-bold text-gray-800 mb-4">{{ post.title }}</h1>
-            
-            <!-- Medical Lenses Tags -->
-            {% if post.medical_lenses.exists %}
-                <div class="mb-4">
-                    <h5 class="text-sm font-medium text-gray-700 mb-2">موضوعات:</h5>
-                    {% for lens in post.medical_lenses.all %}
-                        <a href="{% url 'docpages:doctor_page' post.doctor.id %}?lens={{ lens.id }}" 
-                           class="medical-lens-tag" 
-                           style="background-color: {{ lens.color }};">
-                            {{ lens.name }}
-                        </a>
-                    {% endfor %}
+        </nav>
+    </header>
+    <header class="bg-black border-b border-gray-800 sticky top-0 z-50 px-4 py-3">
+        <div class="max-w-4xl mx-auto flex items-center justify-between">
+            <a href="{% url 'docpages:doctor_page' post.doctor.id %}" class="text-blue-400 hover:text-blue-300 text-sm">
+                ← بازگشت به پست‌های دکتر {{ post.doctor.user.last_name }}
+            </a>
+            <span class="text-sm text-gray-400">{{ post.created_at|persian_date_info }} ساعت {{ post.created_at|time:"H:i" }}</span>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-6">
+
+        <!-- Media -->
+        <div class="rounded-xl overflow-hidden mb-6">
+            {% if post.media_type == 'image' and post.image %}
+                <img src="{{ post.image.url }}" alt="{{ post.title }}" class="w-full h-auto object-cover">
+            {% elif post.media_type == 'video' and post.video %}
+                <div class="aspect-w-16 aspect-h-9">
+                    <video controls class="w-full h-full object-cover rounded-xl">
+                        <source src="{{ post.video.url }}" type="video/mp4">
+                        مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
+                    </video>
                 </div>
             {% endif %}
-            
-            <!-- Post Content -->
-            <div class="prose max-w-none mb-6">
-                {{ post.content|linebreaks }}
-            </div>
-            
-            <!-- Like Section -->
-            <div class="flex items-center justify-between border-t pt-4">
-                <div class="flex items-center space-x-4 space-x-reverse">
-                    {% if user.is_authenticated %}
-                        <button id="like-btn" 
-                                class="like-button {% if user_liked %}liked{% endif %} px-4 py-2 rounded-lg flex items-center space-x-2 space-x-reverse"
-                                data-post-id="{{ post.id }}"
-                                data-liked="{{ user_liked|yesno:'true,false' }}">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
-                            </svg>
-                            <span id="like-text">{% if user_liked %}لایک شده{% else %}لایک{% endif %}</span>
-                        </button>
-                    {% else %}
-                        <div class="flex items-center space-x-2 space-x-reverse text-gray-500">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
-                            </svg>
-                            <span>لایک</span>
-                        </div>
-                    {% endif %}
-                    
-                    <span id="like-count" class="text-gray-600">{{ like_count }} لایک</span>
+        </div>
+
+        <!-- Title -->
+        <h1 class="text-2xl font-bold mb-2">{{ post.title }}</h1>
+
+        <!-- Doctor Info -->
+        <div class="flex items-center gap-3 mb-6">
+            {% if post.doctor.profile_image %}
+                <img src="{{ post.doctor.profile_image.url }}" class="w-10 h-10 rounded-full object-cover">
+            {% else %}
+                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold">
+                    {{ post.doctor.user.first_name|first }}{{ post.doctor.user.last_name|first }}
                 </div>
-                
-                <div class="text-sm text-gray-500">
-                    {{ comments.count }} نظر
-                </div>
+            {% endif %}
+            <div>
+                <p class="text-sm font-semibold">دکتر {{ post.doctor.user.get_full_name }}</p>
+                <p class="text-xs text-gray-400">{{ post.doctor.specialization }}</p>
             </div>
         </div>
-    </article>
-    
-    <!-- Comments Section -->
-    <div class="bg-white rounded-lg shadow-md p-6">
-        <h3 class="text-xl font-bold text-gray-800 mb-6">نظرات</h3>
-        
-        <!-- Comment Form -->
-        {% if user.is_authenticated %}
-            <form method="post" class="mb-8">
-                {% csrf_token %}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700 mb-2">نام</label>
-                        <input type="text" id="name" name="name" required 
-                               value="{% if user.first_name and user.last_name %}{{ user.first_name }} {{ user.last_name }}{% endif %}"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">ایمیل</label>
-                        <input type="email" id="email" name="email" required 
-                               value="{{ user.email }}"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                </div>
-                <div class="mb-4">
-                    <label for="body" class="block text-sm font-medium text-gray-700 mb-2">نظر شما</label>
-                    <textarea id="body" name="body" rows="4" required
-                              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              placeholder="نظر خود را بنویسید..."></textarea>
-                </div>
-                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-300">
-                    ارسال نظر
-                </button>
-            </form>
-        {% else %}
-            <div class="mb-8 p-4 bg-gray-50 rounded-lg text-center">
-                <p class="text-gray-600">برای ارسال نظر، لطفاً <a href="{% url 'user:login' %}" class="text-blue-600 hover:text-blue-800">وارد شوید</a>.</p>
-            </div>
-        {% endif %}
-        
-        <!-- Comments List -->
-        {% if comments %}
-            <div class="space-y-6">
-                {% for comment in comments %}
-                    <div class="border-b border-gray-200 pb-6 last:border-b-0">
-                        <div class="flex items-start space-x-3 space-x-reverse">
-                            <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                <span class="text-gray-600 text-sm font-bold">{{ comment.name|first }}</span>
-                            </div>
-                            <div class="flex-1">
-                                <div class="flex items-center space-x-2 space-x-reverse mb-2">
-                                    <h4 class="font-medium text-gray-900">{{ comment.name }}</h4>
-                                    <span class="text-sm text-gray-500">{{ comment.created_at|jformat:"%Y/%m/%d" }}</span>
-                                </div>
-                                <p class="text-gray-700">{{ comment.body|linebreaks }}</p>
-                            </div>
-                        </div>
-                    </div>
+
+        <!-- Tags -->
+        {% if post.medical_lenses.exists %}
+            <div class="flex flex-wrap gap-2 mb-6">
+                {% for lens in post.medical_lenses.all %}
+                    <a href="{% url 'docpages:doctor_page' post.doctor.id %}?lens={{ lens.id }}"
+                       class="px-3 py-1 rounded-full text-sm font-medium"
+                       style="background-color: {{ lens.color }};">
+                        {{ lens.name }}
+                    </a>
                 {% endfor %}
             </div>
-        {% else %}
-            <p class="text-gray-500 text-center py-8">هنوز نظری ثبت نشده است.</p>
         {% endif %}
-    </div>
-</div>
 
-{% if user.is_authenticated %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const likeBtn = document.getElementById('like-btn');
-    const likeText = document.getElementById('like-text');
-    const likeCount = document.getElementById('like-count');
-    
-    if (likeBtn) {
-        likeBtn.addEventListener('click', function() {
-            const postId = this.dataset.postId;
-            const isLiked = this.dataset.liked === 'true';
-            
-            // Disable button during request
-            this.disabled = true;
-            
-            fetch(`/docpages/ajax/toggle-like/${postId}/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-                    'Content-Type': 'application/json',
-                },
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Update button state
-                    if (data.liked) {
-                        this.classList.add('liked');
-                        this.dataset.liked = 'true';
-                        likeText.textContent = 'لایک شده';
-                    } else {
-                        this.classList.remove('liked');
-                        this.dataset.liked = 'false';
-                        likeText.textContent = 'لایک';
-                    }
-                    
-                    // Update like count
-                    likeCount.textContent = `${data.like_count} لایک`;
-                } else {
-                    alert('خطا در ثبت لایک');
+        <!-- Content -->
+        <div class="prose prose-invert max-w-none mb-6 leading-loose text-gray-100">
+            {{ post.content|linebreaks }}
+        </div>
+
+        <!-- Like + Comment Count -->
+        <div class="flex items-center justify-between border-t border-gray-800 pt-4 mb-8">
+            <div class="flex items-center gap-4">
+                {% if user.is_authenticated %}
+                    <button id="like-btn"
+                            class="like-button px-4 py-2 border border-gray-600 rounded-lg flex items-center gap-2 {% if user_liked %}liked{% endif %}"
+                            data-post-id="{{ post.id }}"
+                            data-liked="{{ user_liked|yesno:'true,false' }}">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                        </svg>
+                        <span id="like-text">{% if user_liked %}لایک شده{% else %}لایک{% endif %}</span>
+                    </button>
+                {% else %}
+                    <span class="text-gray-500 text-sm">برای لایک وارد شوید</span>
+                {% endif %}
+                <span id="like-count" class="text-sm text-gray-400">{{ like_count }} لایک</span>
+            </div>
+            <div class="text-sm text-gray-400">{{ comments.count }} نظر</div>
+        </div>
+
+        <!-- Comments -->
+<!-- Comments Section -->
+<section class="mt-10 border-t border-gray-800 pt-6">
+    <h2 class="text-lg font-semibold mb-6 text-white">نظرات کاربران</h2>
+
+    <!-- Comment Form -->
+    {% if user.is_authenticated %}
+        <form method="post" class="space-y-4 mb-10">
+            {% csrf_token %}
+
+            <!-- Name  -->
+            <div class="grid">
+                <div>
+                    <label for="name" class="block text-sm text-gray-400 mb-1">نام</label>
+                    <input type="text" id="name" name="name" required
+                           value="{% if user.first_name and user.last_name %}{{ user.first_name }} {{ user.last_name }}{% endif %}"
+                           class="w-full bg-gray-900 text-white border border-gray-700 rounded-md px-4 py-2 text-sm focus:ring-2 focus:ring-blue-600 outline-none">
+                </div>
+            </div>
+
+            <!-- Comment -->
+            <div>
+                <label for="body" class="block text-sm text-gray-400 mb-1">نظر شما</label>
+                <textarea id="body" name="body" rows="4" required
+                          class="w-full bg-gray-900 text-white border border-gray-700 rounded-md px-4 py-2 text-sm focus:ring-2 focus:ring-blue-600 outline-none"
+                          placeholder="نظر خود را بنویسید..."></textarea>
+            </div>
+
+            <button type="submit"
+                    class="bg-blue-600 hover:bg-blue-700 transition text-white px-6 py-2 rounded-md text-sm font-medium">
+                ارسال نظر
+            </button>
+        </form>
+    {% else %}
+        <p class="text-gray-400 text-sm mb-6">
+            برای ارسال نظر <a href="{% url 'account:register' %}" class="text-blue-400 hover:underline">وارد شوید</a>.
+        </p>
+    {% endif %}
+
+    <!-- Comments List -->
+    {% if comments %}
+        <div class="space-y-6">
+            {% for comment in comments %}
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-sm font-bold text-white">
+                        {{ comment.name|first }}
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-sm font-semibold text-white">{{ comment.name }}</span>
+                            <span class="text-xs text-gray-500">{{ comment.created_at}}</span>
+                        </div>
+                        <p class="text-sm text-gray-300 leading-relaxed">{{ comment.body|linebreaksbr }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-sm text-gray-500">هیچ نظری هنوز ثبت نشده است.</p>
+    {% endif %}
+</section>
+  {% if messages %}
+        <div id="toast-container" class="fixed top-4 left-4 z-50 space-y-2">
+            {% for message in messages %}
+                <div class="toast-message flex items-start gap-2 rounded-lg shadow-lg px-4 py-3
+            {% if message.tags == 'success' %}bg-green-50 text-green-800 border border-green-200
+            {% elif message.tags == 'error' %}bg-red-50 text-red-800 border border-red-200
+            {% else %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}
+            animate-fade-in transition-opacity duration-500 ease-in-out"
+                >
+                    <svg class="w-6 h-6 mt-1 shrink-0" fill="none" stroke="currentColor" stroke-width="2"
+                         viewBox="0 0 24 24">
+                        {% if message.tags == 'success' %}
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M5 13l4 4L19 7"/>
+                        {% elif message.tags == 'error' %}
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        {% else %}
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M13 16h-1v-4h-1m1-4h.01M12 18h.01"/>
+                        {% endif %}
+                    </svg>
+                    <p class="text-sm">{{ message }}</p>
+                </div>
+            {% endfor %}
+        </div>
+
+        <script>
+            setTimeout(() => {
+                const container = document.getElementById('toast-container');
+                if (container) {
+                    container.classList.add('opacity-0', 'transition-opacity');
+                    setTimeout(() => container.remove(), 500);  // cleanup after fade-out
                 }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('خطا در ارتباط با سرور');
-            })
-            .finally(() => {
-                this.disabled = false;
+            }, 5000); // 10 seconds
+        </script>
+
+        <style>
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .animate-fade-in {
+                animation: fadeIn 0.4s ease-out;
+            }
+        </style>
+    {% endif %}
+    </main>
+
+    {% if user.is_authenticated %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const likeBtn = document.getElementById('like-btn');
+            const likeText = document.getElementById('like-text');
+            const likeCount = document.getElementById('like-count');
+
+            likeBtn?.addEventListener('click', function () {
+                const postId = this.dataset.postId;
+                const isLiked = this.dataset.liked === 'true';
+                this.disabled = true;
+
+                fetch(`/docpages/ajax/toggle-like/${postId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'Content-Type': 'application/json',
+                    },
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            this.dataset.liked = data.liked ? 'true' : 'false';
+                            likeText.textContent = data.liked ? 'لایک شده' : 'لایک';
+                            likeCount.textContent = `${data.like_count} لایک`;
+                            this.classList.toggle('liked', data.liked);
+                        }
+                    })
+                    .catch(err => alert('خطا در ارتباط'))
+                    .finally(() => this.disabled = false);
             });
         });
-    }
-});
-</script>
-{% endif %}
-{% endblock %} 
+    </script>
+    {% endif %}
+
+</body>
+</html>

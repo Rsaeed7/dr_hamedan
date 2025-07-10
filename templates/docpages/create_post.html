@@ -9,83 +9,83 @@
         margin-right: 0;
         margin-left: 0.75rem;
     }
-    
+
     .rtl .mr-1 {
         margin-right: 0;
         margin-left: 0.25rem;
     }
-    
+
     .rtl .ml-3 {
         margin-left: 0;
         margin-right: 0.75rem;
     }
-    
+
     .rtl .text-right {
         text-align: left;
     }
-    
+
     .rtl .justify-between {
         justify-content: space-between;
     }
-    
+
     .rtl .items-center {
         align-items: center;
     }
-    
+
     .rtl .flex-row {
         flex-direction: row-reverse;
     }
-    
+
     .rtl .flex-col {
         flex-direction: column;
     }
-    
+
     .rtl .gap-4 {
         gap: 1rem;
     }
-    
+
     .rtl .space-x-3 {
         margin-right: 0.75rem;
         margin-left: 0;
     }
-    
+
     .rtl .border-l-4 {
         border-left: 0;
         border-right: 4px solid;
     }
-    
+
     .rtl .file\:mr-4 {
         margin-right: 0;
         margin-left: 1rem;
     }
-    
+
     .rtl .mx-2 {
         margin-left: 0.5rem;
         margin-right: 0.5rem;
     }
-    
+
     .sidebar {
         height: calc(100vh - 4rem);
     }
-    
+
     .main-content {
         height: calc(100vh - 4rem);
         overflow-y: auto;
     }
-    
+
     @media (max-width: 768px) {
         .sidebar, .main-content {
             height: auto;
         }
     }
-    
+
     /* Add help tooltip styles */
     .tooltip {
         position: relative;
         display: inline-block;
         cursor: help;
     }
-    
+
     .tooltip .tooltip-text {
         visibility: hidden;
         width: 200px;
@@ -102,26 +102,26 @@
         opacity: 0;
         transition: opacity 0.3s;
     }
-    
+
     .tooltip:hover .tooltip-text {
         visibility: visible;
         opacity: 1;
     }
-    
+
     /* Mobile sidebar toggle */
     .mobile-sidebar-toggle {
         display: none;
     }
-    
+
     @media (max-width: 768px) {
         .mobile-sidebar-toggle {
             display: block;
         }
-        
+
         .sidebar {
             display: none;
         }
-        
+
         .sidebar.active {
             display: block;
             position: fixed;
@@ -132,7 +132,7 @@
             z-index: 50;
         }
     }
-    
+
     /* New styles for enhanced features */
     .media-upload-section {
         border: 2px dashed #d1d5db;
@@ -142,33 +142,33 @@
         transition: all 0.3s ease;
         margin-bottom: 1rem;
     }
-    
+
     .media-upload-section:hover {
         border-color: #3b82f6;
         background-color: #f8fafc;
     }
-    
+
     .media-upload-section.has-file {
         border-color: #10b981;
         background-color: #f0fdf4;
     }
-    
+
     .media-upload-section.disabled {
         opacity: 0.5;
         pointer-events: none;
     }
-    
+
     .media-preview {
         max-width: 300px;
         max-height: 200px;
         border-radius: 0.5rem;
         margin: 1rem auto;
     }
-    
+
     .medical-lens-input {
         position: relative;
     }
-    
+
     .medical-lens-suggestions {
         position: absolute;
         top: 100%;
@@ -183,7 +183,7 @@
         z-index: 10;
         display: none;
     }
-    
+
     .medical-lens-suggestion {
         padding: 0.75rem;
         cursor: pointer;
@@ -191,29 +191,29 @@
         display: flex;
         align-items: center;
     }
-    
+
     .medical-lens-suggestion:hover {
         background-color: #f9fafb;
     }
-    
+
     .medical-lens-suggestion:last-child {
         border-bottom: none;
     }
-    
+
     .medical-lens-color {
         width: 1rem;
         height: 1rem;
         border-radius: 50%;
         margin-left: 0.5rem;
     }
-    
+
     .selected-lenses {
         display: flex;
         flex-wrap: wrap;
         gap: 0.5rem;
         margin-top: 0.5rem;
     }
-    
+
     .selected-lens {
         display: inline-flex;
         align-items: center;
@@ -223,7 +223,7 @@
         font-weight: 500;
         color: white;
     }
-    
+
     .selected-lens .remove-lens {
         margin-right: 0.5rem;
         cursor: pointer;
@@ -233,68 +233,9 @@
 {% endblock %}
 
 {% block content %}
-<!-- Mobile sidebar toggle -->
-<div class="mobile-sidebar-toggle p-4 bg-gray-50 md:hidden">
-    <button id="sidebarToggle" type="button" class="text-gray-600 hover:text-gray-900">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-    </button>
-</div>
-
 <div class="flex flex-col md:flex-row rtl">
-    <!-- Sidebar -->
-    <div class="w-full md:w-64 bg-white shadow-md sidebar" id="sidebar">
-        <div class="p-6 border-b border-gray-200">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center">
-                    {% if doctor.profile_image %}
-                        <img src="{{ doctor.profile_image.url }}" alt="{{ doctor }}" class="w-10 h-10 rounded-full object-cover ml-3">
-                    {% else %}
-                        <div class="w-10 h-10 rounded-full bg-blue-200 flex items-center justify-center ml-3">
-                            <span class="text-blue-600 text-lg font-bold">{{ doctor.user.first_name|first }}{{ doctor.user.last_name|first }}</span>
-                        </div>
-                    {% endif %}
-                    <div>
-                        <h2 class="text-lg font-medium text-gray-800">دکتر {{ doctor.user.last_name }}</h2>
-                        <p class="text-sm text-gray-600">{{ doctor.specialization }}</p>
-                    </div>
-                </div>
-                <button id="closeSidebar" class="md:hidden text-gray-600 hover:text-gray-900">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-        
-        <nav class="mt-4">
-            <a href="{% url 'doctors:doctor_dashboard' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
-                داشبورد
-            </a>
-            <a href="{% url 'doctors:doctor_appointments' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
-                نوبت‌ها
-            </a>
-            <a href="{% url 'doctors:doctor_availability' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
-                مدیریت زمان حضور
-            </a>
-            <a href="{% url 'doctors:doctor_earnings' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
-                درآمد
-            </a>
-            <a href="{% url 'docpages:doctor_posts' %}" class="block px-6 py-3 text-blue-600 border-r-4 border-blue-600 bg-blue-50 font-medium">
-                پست‌های من
-            </a>
-            <a href="{% url 'docpages:manage_comments' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
-                مدیریت نظرات
-            </a>
-            <a href="{% url 'doctors:doctor_detail' doctor.id %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
-                مشاهده پروفایل عمومی
-            </a>
-        </nav>
-    </div>
-    
     <!-- Main Content -->
-    <div class="flex-1 p-6 bg-gray-50 main-content">
+    <div class="flex-1 p-6 bg-gray-50 ">
         <!-- Breadcrumbs -->
         <div class="mb-6 text-sm text-gray-500">
             <a href="{% url 'doctors:doctor_dashboard' %}" class="hover:text-blue-600">داشبورد</a>
@@ -303,10 +244,10 @@
             <span class="mx-2">›</span>
             <span class="text-gray-700">ایجاد پست جدید</span>
         </div>
-        
+
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold text-gray-800">ایجاد پست جدید</h1>
-            
+
             <a href="{% url 'docpages:doctor_posts' %}" class="flex items-center text-blue-600 hover:text-blue-800">
                 بازگشت به پست‌ها
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -314,7 +255,7 @@
                 </svg>
             </a>
         </div>
-        
+
         {% if messages %}
             <div class="mb-6">
                 {% for message in messages %}
@@ -324,7 +265,7 @@
                 {% endfor %}
             </div>
         {% endif %}
-        
+
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
                 <div class="flex justify-between items-center">
@@ -337,48 +278,48 @@
                     </div>
                 </div>
             </div>
-            
+
             <form method="post" action="{% url 'docpages:create_post' %}" enctype="multipart/form-data" class="p-6" id="postForm">
                 {% csrf_token %}
-                
+
                 <div class="mb-6">
                     <label for="title" class="block text-sm font-medium text-gray-700 mb-1">عنوان پست</label>
-                    <input type="text" id="title" name="title" value="{{ form_data.title|default:'' }}" required 
+                    <input type="text" id="title" name="title" value="{{ form_data.title|default:'' }}" required
                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     <p class="mt-1 text-sm text-gray-500">یک عنوان واضح و توصیفی برای پست خود انتخاب کنید</p>
                 </div>
-                
+
                 <div class="mb-6">
                     <label for="content" class="block text-sm font-medium text-gray-700 mb-1">محتوا</label>
-                    <textarea id="content" name="content" rows="12" required 
+                    <textarea id="content" name="content" rows="12" required
                               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ form_data.content|default:'' }}</textarea>
                     <p class="mt-1 text-sm text-gray-500">محتوای پست خود را اینجا بنویسید. می‌توانید اطلاعات مفید، به‌روزرسانی‌ها یا اطلاعیه‌هایی برای بیماران خود قرار دهید.</p>
                 </div>
-                
+
                 <!-- Medical Lenses Section -->
                 <div class="mb-6">
                     <label class="block text-sm font-medium text-gray-700 mb-2">موضوعات پزشکی</label>
                     <div class="medical-lens-input">
-                        <input type="text" id="lens-search" 
+                        <input type="text" id="lens-search"
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                                placeholder="نام موضوع پزشکی را تایپ کنید...">
-                        
+
                         <div id="lens-suggestions" class="medical-lens-suggestions"></div>
                     </div>
-                    
+
                     <div id="selected-lenses" class="selected-lenses"></div>
-                    
+
                     <!-- Hidden inputs for selected lenses -->
                     <div id="lens-inputs"></div>
-                    
+
                     <p class="mt-1 text-sm text-gray-500">موضوعات پزشکی مرتبط با پست خود را انتخاب کنید تا بیماران بتوانند آن را راحت‌تر پیدا کنند</p>
                 </div>
-                
+
                 <!-- Media Upload Section -->
                 <div class="mb-6">
                     <label class="block text-sm font-medium text-gray-700 mb-2">رسانه (اختیاری)</label>
                     <p class="text-sm text-gray-500 mb-4">می‌توانید یک تصویر یا یک ویدیو آپلود کنید (نه هر دو)</p>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Image Upload -->
                         <div class="media-upload-section" id="image-upload-section">
@@ -389,13 +330,13 @@
                                 <h3 class="text-lg font-medium text-gray-700 mb-2">آپلود تصویر</h3>
                                 <p class="text-sm text-gray-500 mb-4">فرمت‌های مجاز: JPG, PNG, GIF</p>
                             </div>
-                            
+
                             <input type="file" id="image" name="image" accept="image/*" class="hidden">
-                            <button type="button" onclick="document.getElementById('image').click()" 
+                            <button type="button" onclick="document.getElementById('image').click()"
                                     class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300">
                                 انتخاب تصویر
                             </button>
-                            
+
                             <div id="image-preview" class="hidden">
                                 <img id="image-preview-img" class="media-preview" alt="پیش‌نمایش تصویر">
                                 <button type="button" onclick="removeImage()" class="text-red-600 hover:text-red-800 text-sm mt-2">
@@ -403,7 +344,7 @@
                                 </button>
                             </div>
                         </div>
-                        
+
                         <!-- Video Upload -->
                         <div class="media-upload-section" id="video-upload-section">
                             <div class="mb-4">
@@ -413,13 +354,13 @@
                                 <h3 class="text-lg font-medium text-gray-700 mb-2">آپلود ویدیو</h3>
                                 <p class="text-sm text-gray-500 mb-4">فرمت‌های مجاز: MP4, AVI, MOV</p>
                             </div>
-                            
+
                             <input type="file" id="video" name="video" accept="video/*" class="hidden">
-                            <button type="button" onclick="document.getElementById('video').click()" 
+                            <button type="button" onclick="document.getElementById('video').click()"
                                     class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-300">
                                 انتخاب ویدیو
                             </button>
-                            
+
                             <div id="video-preview" class="hidden">
                                 <video id="video-preview-video" class="media-preview" controls>
                                     <source id="video-source" type="video/mp4">
@@ -432,9 +373,9 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <input type="hidden" name="action" id="action" value="publish">
-                
+
                 <div class="flex items-center justify-end space-x-3">
                     <a href="{% url 'docpages:doctor_posts' %}" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
                         انصراف
@@ -458,23 +399,23 @@
         document.getElementById('action').value = action;
         document.getElementById('postForm').submit();
     }
-    
+
     // Mobile sidebar toggle
     document.addEventListener('DOMContentLoaded', function() {
         const toggleButton = document.getElementById('sidebarToggle');
         const closeButton = document.getElementById('closeSidebar');
         const sidebar = document.getElementById('sidebar');
-        
+
         if (toggleButton && closeButton && sidebar) {
             toggleButton.addEventListener('click', function() {
                 sidebar.classList.add('active');
             });
-            
+
             closeButton.addEventListener('click', function() {
                 sidebar.classList.remove('active');
             });
         }
-        
+
         // Enhanced functionality
         const imageInput = document.getElementById('image');
         const videoInput = document.getElementById('video');
@@ -486,7 +427,7 @@
         const lensSuggestions = document.getElementById('lens-suggestions');
         const selectedLensesContainer = document.getElementById('selected-lenses');
         const lensInputsContainer = document.getElementById('lens-inputs');
-        
+
         let selectedLenses = [];
         let searchTimeout;
 
@@ -498,17 +439,17 @@
                 videoPreview.classList.add('hidden');
                 videoSection.classList.remove('has-file');
                 videoSection.classList.remove('disabled');
-                
+
                 const file = e.target.files[0];
                 const reader = new FileReader();
-                
+
                 reader.onload = function(e) {
                     document.getElementById('image-preview-img').src = e.target.result;
                     imagePreview.classList.remove('hidden');
                     imageSection.classList.add('has-file');
                     videoSection.classList.add('disabled');
                 };
-                
+
                 reader.readAsDataURL(file);
             }
         });
@@ -520,10 +461,10 @@
                 imagePreview.classList.add('hidden');
                 imageSection.classList.remove('has-file');
                 imageSection.classList.remove('disabled');
-                
+
                 const file = e.target.files[0];
                 const url = URL.createObjectURL(file);
-                
+
                 document.getElementById('video-source').src = url;
                 document.getElementById('video-preview-video').load();
                 videoPreview.classList.remove('hidden');
@@ -535,14 +476,14 @@
         // Medical lens search
         lensSearch.addEventListener('input', function() {
             const query = this.value.trim();
-            
+
             clearTimeout(searchTimeout);
-            
+
             if (query.length < 2) {
                 lensSuggestions.style.display = 'none';
                 return;
             }
-            
+
             searchTimeout = setTimeout(() => {
                 fetch(`/docpages/ajax/search-medical-lenses/?q=${encodeURIComponent(query)}`)
                     .then(response => response.json())
@@ -559,18 +500,18 @@
 
         function displayLensSuggestions(lenses) {
             lensSuggestions.innerHTML = '';
-            
+
             if (lenses.length === 0) {
                 lensSuggestions.style.display = 'none';
                 return;
             }
-            
+
             lenses.forEach(lens => {
                 // Skip already selected lenses
                 if (selectedLenses.find(selected => selected.id === lens.id)) {
                     return;
                 }
-                
+
                 const suggestion = document.createElement('div');
                 suggestion.className = 'medical-lens-suggestion';
                 suggestion.innerHTML = `
@@ -580,16 +521,16 @@
                         <div class="text-sm text-gray-500">${lens.description}</div>
                     </div>
                 `;
-                
+
                 suggestion.addEventListener('click', () => {
                     selectLens(lens);
                     lensSearch.value = '';
                     lensSuggestions.style.display = 'none';
                 });
-                
+
                 lensSuggestions.appendChild(suggestion);
             });
-            
+
             lensSuggestions.style.display = 'block';
         }
 
@@ -597,7 +538,7 @@
             if (selectedLenses.find(selected => selected.id === lens.id)) {
                 return;
             }
-            
+
             selectedLenses.push(lens);
             updateSelectedLensesDisplay();
         }
@@ -610,7 +551,7 @@
         function updateSelectedLensesDisplay() {
             // Update visual display
             selectedLensesContainer.innerHTML = '';
-            
+
             selectedLenses.forEach(lens => {
                 const lensElement = document.createElement('div');
                 lensElement.className = 'selected-lens';
@@ -621,10 +562,10 @@
                 `;
                 selectedLensesContainer.appendChild(lensElement);
             });
-            
+
             // Update hidden inputs
             lensInputsContainer.innerHTML = '';
-            
+
             selectedLenses.forEach(lens => {
                 const input = document.createElement('input');
                 input.type = 'hidden';
@@ -656,4 +597,4 @@
         document.getElementById('image-upload-section').classList.remove('disabled');
     }
 </script>
-{% endblock %} 
+{% endblock %}
