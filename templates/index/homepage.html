@@ -13,10 +13,9 @@ video {
 }
 
 </style>
-    <section>
+    <section class="scroll-container">
         <div id="breadcrumb" style="background: rgba(144, 185, 227, 0.27); margin-bottom: 0;border-radius: 0">
             <div class="container">
-            <button id="btnLeft1" class="hidden"></button>
                 <ul class="scroll-container scroll-wrapper">
                     {% for post in posts %}
                         <li class="">
@@ -34,7 +33,6 @@ video {
                         </li>
                     {% endfor %}
                 </ul>
-            <button id="btnRight1" class="hidden"></button>
             </div>
 
         </div>
@@ -136,50 +134,8 @@ video {
     <section>
         <div class="container margin_60_35 bg-gradiant2">
             <h3 class="text_dr">پزشکان دکتر همدان</h3>
-<<<<<<< HEAD
             <div class="scroll-wrapper-box flex">
     <button class="scroll-left left btn-scroll"><i class="icon-right-open-4"></i></button>
-=======
-<<<<<<< HEAD
-            <div class="flex rounded">
-                <button id="btnLeft2" class="left btn-scroll"><i class="icon-right-open-4"></i></button>
-                <div class="scroll-container p-15" id="scrollContainer">
-                    <div class="scroll-wrapper">
-                        {% for doctor in doctors %}
-                            <a href="{% url 'doctors:doctor_detail' doctor.pk %}" class="box_cat_home dr_box">
-                                {% if doctor.profile_image.name %}
-                                    <img src="{{ doctor.profile_image.url }}" alt="{{ doctor.user.get_full_name }}"
-                                         class="round50" width="80" height="80"
-                                    >
-                                {% endif %}
-                                <h3>دکتر {{ doctor.user.get_full_name }}</h3>
-                                <p>{{ doctor.specialization.name }}</p>
-                                <div class="text-right text-secondary">
-                                    <i class="icon-star-5"><small>{{ doctor.comment_rate }}</small></i>
-                                    <small class="icon-location">{{ doctor.address }}</small>
-                                    {% if doctor.get_first_available_day %}
-                                    <p class="text-dark small p-t-10">اولین نوبت خالی <span class="text-success p-r-20">{{ doctor.get_first_available_day|persian_date_info }}</span>
-                                    {% else %}
-                                    <p class="text-dark small p-t-10">اولین نوبت خالی <span class="text-danger p-r-20">فعلا نوبت خالی وجود ندارد</span>
-                                    {% endif %}
-                                    <p class="text-dark small">زمان تقریبی انتظار <span
-                                    class="text-success p-r-20">{{ doctor.get_most_common_waiting_time }}</span>
-                                    </p>
-                                    <button href="{% url 'doctors:doctor_detail' doctor.pk %}"
-                                            class="btn btn-outline-success col-md-12">دریافت نوبت
-                                    </button>
-                                </div>
-                            </a>
-                        {% empty %}
-                            <a href="#" class="box_cat_home dr_box">
-                                <h3>پزشکی یافت نشد</h3>
-                            </a>
-                        {% endfor %}
-=======
-            <div class="scroll-wrapper-box flex">
-    <button class="scroll-left left btn-scroll"><i class="icon-right-open-4"></i></button>
->>>>>>> test
->>>>>>> da9dabc48bbe88c61448e5de1f9a16cfec1d5a17
 
     <div class="scroll-container p-15">
         <div class="scroll-wrapper">
@@ -202,14 +158,6 @@ video {
                         <p class="text-dark small">زمان تقریبی انتظار <span class="text-success p-r-20">{{ doctor.get_most_common_waiting_time }}</span></p>
                         <button class="btn btn-outline-success col-md-12">دریافت نوبت</button>
                     </div>
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-                </div>
-                <button id="btnRight2" class="right btn-scroll"><i class="icon-left-open-4"></i></button>
-            </div>
-=======
->>>>>>> da9dabc48bbe88c61448e5de1f9a16cfec1d5a17
                 </a>
             {% endfor %}
         </div>
@@ -218,10 +166,6 @@ video {
     <button class="scroll-right right btn-scroll"><i class="icon-left-open-4"></i></button>
 </div>
 
-<<<<<<< HEAD
-=======
->>>>>>> test
->>>>>>> da9dabc48bbe88c61448e5de1f9a16cfec1d5a17
                         <p class="text-center text_dr"><a href="{% url 'doctors:doctor_list' %}"> مشاهده همه پزشک ها <i class="icon-left-4"></i> </a></p>
         </div>
     </section>
@@ -232,18 +176,8 @@ video {
         <section>
             <div class="container margin_60_35 bg-gradiant text-center">
                 <h4 class="text-secondary">پزشک های شهر شما</h4>
-<<<<<<< HEAD
                 <div class="scroll-wrapper-box flex rounded">
                     <button class="scroll-left left btn-scroll2"><i class="icon-right-open-4"></i></button>
-=======
-<<<<<<< HEAD
-                <div class="flex rounded">
-                    <button id="btnLeft3" class="left btn-scroll2"><i class="icon-right-open-4"></i></button>
-=======
-                <div class="scroll-wrapper-box flex rounded">
-                    <button class="scroll-left left btn-scroll2"><i class="icon-right-open-4"></i></button>
->>>>>>> test
->>>>>>> da9dabc48bbe88c61448e5de1f9a16cfec1d5a17
                     <div class="scroll-container p-15" id="scrollContainer">
                         <div class="scroll-wrapper">
                             {% for city in cities %}
@@ -257,15 +191,7 @@ video {
                             {% endfor %}
                         </div>
                     </div>
-<<<<<<< HEAD
                     <button  class="scroll-right right btn-scroll2"><i class="icon-left-open-4"></i></button>
-=======
-<<<<<<< HEAD
-                    <button id="btnRight3" class="right btn-scroll2"><i class="icon-left-open-4"></i></button>
-=======
-                    <button  class="scroll-right right btn-scroll2"><i class="icon-left-open-4"></i></button>
->>>>>>> test
->>>>>>> da9dabc48bbe88c61448e5de1f9a16cfec1d5a17
                 </div>
             </div>
 
@@ -277,18 +203,8 @@ video {
     <section>
         <div class="container bg-gradiant2">
             <h3 class="text_dr">مراکز درمانی و کلینیک ها</h3>
-<<<<<<< HEAD
             <div class="scroll-wrapper-box flex rounded">
                 <button class="scroll-left left btn-scroll"><i class="icon-right-open-4"></i></button>
-=======
-<<<<<<< HEAD
-            <div class="flex rounded">
-                <button id="btnLeft4" class="left btn-scroll"><i class="icon-right-open-4"></i></button>
-=======
-            <div class="scroll-wrapper-box flex rounded">
-                <button class="scroll-left left btn-scroll"><i class="icon-right-open-4"></i></button>
->>>>>>> test
->>>>>>> da9dabc48bbe88c61448e5de1f9a16cfec1d5a17
                 <div class="scroll-container p-15" id="scrollContainer">
                     <div class="scroll-wrapper">
                         {% for clinic in clinics %}
@@ -312,15 +228,7 @@ video {
                         {% endfor %}
                     </div>
                 </div>
-<<<<<<< HEAD
                 <button class="scroll-right right btn-scroll"><i class="icon-left-open-4"></i></button>
-=======
-<<<<<<< HEAD
-                <button id="btnRight4" class="right btn-scroll"><i class="icon-left-open-4"></i></button>
-=======
-                <button class="scroll-right right btn-scroll"><i class="icon-left-open-4"></i></button>
->>>>>>> test
->>>>>>> da9dabc48bbe88c61448e5de1f9a16cfec1d5a17
             </div>
                         <p class="text-center text_dr"><a href="{% url 'clinics:clinic_list' %}"> مشاهده همه مراکز <i class="icon-left-4"></i> </a></p>
         </div>
@@ -333,18 +241,8 @@ video {
     <section>
         <div class="container">
             <h3 class="text_dr">دریافت مشاوره آنلاین</h3>
-<<<<<<< HEAD
             <div class="scroll-wrapper-box flex rounded">
                  <button  class="scroll-left left btn-scroll"><i class="icon-right-open-4"></i></button>
-=======
-<<<<<<< HEAD
-            <div class="flex rounded">
-                 <button id="btnLeft5" class="left btn-scroll"><i class="icon-right-open-4"></i></button>
-=======
-            <div class="scroll-wrapper-box flex rounded">
-                 <button  class="scroll-left left btn-scroll"><i class="icon-right-open-4"></i></button>
->>>>>>> test
->>>>>>> da9dabc48bbe88c61448e5de1f9a16cfec1d5a17
                 <div class="scroll-container p-15" id="scrollContainer">
                     <div class="scroll-wrapper">
                         {% for doctor in online_visit_doctors %}
@@ -363,15 +261,7 @@ video {
                         {% endfor %}
                     </div>
                 </div>
-<<<<<<< HEAD
                  <button  class="scroll-right right btn-scroll"><i class="icon-left-open-4"></i></button>
-=======
-<<<<<<< HEAD
-                 <button id="btnRight5" class="right btn-scroll"><i class="icon-left-open-4"></i></button>
-=======
-                 <button  class="scroll-right right btn-scroll"><i class="icon-left-open-4"></i></button>
->>>>>>> test
->>>>>>> da9dabc48bbe88c61448e5de1f9a16cfec1d5a17
             </div>
             <p class="text-center text_dr"><a href="{% url 'chat:list_doctors' %}"> مشاهده همه پزشک ها <i class="icon-left-4"></i> </a></p>
         </div>
@@ -382,18 +272,8 @@ video {
     <section>
         <div class="container margin_120_95">
             <h3 class="text-success">مجله سلامت</h3>
-<<<<<<< HEAD
             <div class="scroll-wrapper-box flex article_bg">
                 <button  class="scroll-left left btn-scroll"><i class="icon-right-open-4"></i></button>
-=======
-<<<<<<< HEAD
-            <div class="flex article_bg">
-                <button id="btnLeft6" class="left btn-scroll"><i class="icon-right-open-4"></i></button>
-=======
-            <div class="scroll-wrapper-box flex article_bg">
-                <button  class="scroll-left left btn-scroll"><i class="icon-right-open-4"></i></button>
->>>>>>> test
->>>>>>> da9dabc48bbe88c61448e5de1f9a16cfec1d5a17
                 <div class="scroll-container p-15" id="scrollContainer">
                     <div class="scroll-wrapper">
                         {% for article in articles %}
@@ -408,15 +288,7 @@ video {
 
                 </div>
 
-<<<<<<< HEAD
                 <button  class="scroll-right right btn-scroll"><i class="icon-left-open-4"></i></button>
-=======
-<<<<<<< HEAD
-                <button id="btnRight6" class="right btn-scroll"><i class="icon-left-open-4"></i></button>
-=======
-                <button  class="scroll-right right btn-scroll"><i class="icon-left-open-4"></i></button>
->>>>>>> test
->>>>>>> da9dabc48bbe88c61448e5de1f9a16cfec1d5a17
             </div>
                         <p class="text-left"><a href="{% url 'mag:list' %}" class="text-success">مشاهده همه مقاله ها <i class="icon-left-dir"></i></a>
             {#            </p>#}
