@@ -6,24 +6,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>اکتشاف محتوا - دکتر همدان</title>
-    
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <!-- Custom Fonts -->
     <link href="{% static 'css/fonts.css' %}" rel="stylesheet">
-    
+
     <!-- Meta tags -->
     <meta name="description" content="اکتشاف بهترین محتوای پزشکی از پزشکان متخصص">
     <meta name="keywords" content="پزشک، سلامت، محتوای پزشکی، ویدیو آموزشی">
-    
+
     <style>
         /* Persian UI styles */
         body {
             font-family: 'IRANSansWeb', Tahoma, Arial, sans-serif;
             background-color: #000;
         }
-        
+
         /* Instagram-like Grid */
         .explore-grid {
             display: grid;
@@ -32,13 +32,13 @@
             max-width: 975px;
             margin: 0 auto;
         }
-        
+
         @media (max-width: 768px) {
             .explore-grid {
                 gap: 2px;
             }
         }
-        
+
         /* Grid item with 1:1 aspect ratio */
         .grid-item {
             position: relative;
@@ -47,13 +47,13 @@
             background-color: #262626;
             cursor: pointer;
         }
-        
+
         /* Large items in grid pattern */
         .grid-item:nth-child(10n+3) {
             grid-column: span 2;
             grid-row: span 2;
         }
-        
+
         /* Image styling */
         .grid-item img {
             width: 100%;
@@ -61,7 +61,7 @@
             object-fit: cover;
             transition: transform 0.3s ease;
         }
-        
+
         /* Video indicator */
         .video-indicator {
             position: absolute;
@@ -70,7 +70,7 @@
             color: white;
             filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
         }
-        
+
         /* Hover overlay */
         .grid-item-overlay {
             position: absolute;
@@ -82,15 +82,15 @@
             opacity: 0;
             transition: opacity 0.2s ease;
         }
-        
+
         .grid-item:hover .grid-item-overlay {
             opacity: 1;
         }
-        
+
         .grid-item:hover img {
             transform: scale(1.05);
         }
-        
+
         /* Overlay stats */
         .overlay-stats {
             display: flex;
@@ -99,13 +99,13 @@
             font-weight: bold;
             font-size: 16px;
         }
-        
+
         .stat-item {
             display: flex;
             align-items: center;
             gap: 6px;
         }
-        
+
         /* Instagram-style header */
         .instagram-header {
             background-color: #000;
@@ -114,7 +114,7 @@
             top: 0;
             z-index: 50;
         }
-        
+
         /* Search bar */
         .search-bar {
             background-color: #262626;
@@ -124,16 +124,16 @@
             border-radius: 8px;
             width: 268px;
         }
-        
+
         .search-bar::placeholder {
             color: #8e8e8e;
         }
-        
+
         .search-bar:focus {
             outline: none;
             background-color: #363636;
         }
-        
+
         /* Filter pills */
         .filter-pill {
             background-color: #262626;
@@ -145,62 +145,62 @@
             transition: all 0.2s ease;
             border: 1px solid transparent;
         }
-        
+
         .filter-pill:hover {
             background-color: #363636;
         }
-        
+
         .filter-pill.active {
             background-color: #fafafa;
             color: #000;
         }
-        
+
         /* Loading skeleton */
         .skeleton {
             background: linear-gradient(90deg, #262626 25%, #363636 50%, #262626 75%);
             background-size: 200% 100%;
             animation: loading 1.5s infinite;
         }
-        
+
         @keyframes loading {
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
-        
+
         /* Modal styles */
         .modal-backdrop {
             background-color: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(5px);
         }
-        
+
         /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
-        
+
         ::-webkit-scrollbar-track {
             background: #000;
         }
-        
+
         ::-webkit-scrollbar-thumb {
             background: #262626;
             border-radius: 4px;
         }
-        
+
         ::-webkit-scrollbar-thumb:hover {
             background: #363636;
         }
-        
+
         /* Mobile optimizations */
         @media (max-width: 640px) {
             .instagram-header {
                 padding: 0 16px;
             }
-            
+
             .search-bar {
                 width: 100%;
             }
-            
+
             .overlay-stats {
                 font-size: 14px;
                 gap: 12px;
@@ -215,21 +215,21 @@
         <nav class="max-w-[975px] mx-auto px-5">
             <div class="flex justify-between items-center h-[60px]">
                 <!-- Logo -->
-                <a href="{% url 'doctors:doctor_list' %}" class="flex items-center">
-                    <h1 class="text-2xl font-bold">دکتر همدان</h1>
-                </a>
-                
+            <a href="{% url 'doctors:index' %}">
+                <img src="{% static 'img/logo_white.png' %}" width="150">
+            </a>
+
                 <!-- Search Bar (Desktop) -->
                 <div class="hidden md:block">
-                    <input 
-                        type="text" 
+                    <input
+                        type="text"
                         id="searchInput"
                         placeholder="جستجو"
                         value="{{ search_query }}"
                         class="search-bar"
                     >
                 </div>
-                
+
                 <!-- Navigation Icons -->
                 <div class="flex items-center gap-5">
                     <a href="{% url 'doctors:doctor_list' %}" class="text-white hover:text-gray-300 transition-colors">
@@ -260,8 +260,8 @@
 
     <!-- Mobile Search Bar -->
     <div class="md:hidden px-4 py-3 border-b border-gray-800">
-        <input 
-            type="text" 
+        <input
+            type="text"
             id="mobileSearchInput"
             placeholder="جستجو"
             value="{{ search_query }}"
@@ -315,7 +315,7 @@
                             <h3 class="text-white text-center font-medium line-clamp-3">{{ post.title }}</h3>
                         </div>
                     {% endif %}
-                    
+
                     <div class="grid-item-overlay">
                         <div class="overlay-stats">
                             <div class="stat-item">
@@ -350,8 +350,8 @@
         <!-- Load More -->
         {% if posts.has_next %}
         <div class="text-center py-8">
-            <button 
-                id="loadMoreBtn" 
+            <button
+                id="loadMoreBtn"
                 class="text-blue-500 font-medium hover:text-blue-400 transition-colors"
                 data-next-page="{{ posts.next_page_number }}"
             >
@@ -408,11 +408,11 @@
                 // Remove active from all pills
                 filterPills.forEach(p => p.classList.remove('active'));
                 this.classList.add('active');
-                
+
                 // Get filter type
                 const filter = this.dataset.filter;
                 const specialty = this.dataset.specialty;
-                
+
                 if (filter) {
                     currentFilter = filter;
                     currentSpecialty = '';
@@ -420,7 +420,7 @@
                     currentFilter = 'all';
                     currentSpecialty = specialty;
                 }
-                
+
                 performSearch();
             });
         });
@@ -442,12 +442,12 @@
         // Perform search/filter
         function performSearch() {
             if (isLoading) return;
-            
+
             const searchQuery = (searchInput?.value || mobileSearchInput?.value || '').trim();
-            
+
             // Reset pagination
             currentPage = 1;
-            
+
             // Update URL
             const url = new URL(window.location);
             url.searchParams.set('search', searchQuery);
@@ -455,14 +455,14 @@
             url.searchParams.set('specialty', currentSpecialty);
             url.searchParams.delete('page');
             window.history.pushState({}, '', url);
-            
+
             loadPosts(true);
         }
 
         // Load more posts
         function loadMorePosts() {
             if (isLoading || !hasNextPage) return;
-            
+
             currentPage++;
             loadPosts(false);
         }
@@ -470,19 +470,19 @@
         // Load posts via AJAX
         function loadPosts(resetGrid = false) {
             if (isLoading) return;
-            
+
             isLoading = true;
             showLoading();
-            
+
             const searchQuery = (searchInput?.value || mobileSearchInput?.value || '').trim();
-            
+
             const params = new URLSearchParams({
                 search: searchQuery,
                 media_type: currentFilter,
                 specialty: currentSpecialty,
                 page: currentPage
             });
-            
+
             fetch(`{% url 'doctors:explore' %}?${params}`, {
                 method: 'GET',
                 headers: {
@@ -499,15 +499,15 @@
                         // Create temporary container to parse HTML
                         const temp = document.createElement('div');
                         temp.innerHTML = data.posts_html;
-                        
+
                         // Append each grid item
                         temp.querySelectorAll('.grid-item').forEach(item => {
                             postsGrid.appendChild(item);
                         });
                     }
-                    
+
                     hasNextPage = data.has_next;
-                    
+
                     // Update load more button
                     updateLoadMoreButton();
                 }
@@ -536,7 +536,7 @@
 
         function updateLoadMoreButton() {
             if (!loadMoreBtn) return;
-            
+
             if (hasNextPage) {
                 loadMoreBtn.parentElement.classList.remove('hidden');
                 loadMoreBtn.disabled = false;
@@ -566,7 +566,7 @@
                 <div class="flex flex-col md:flex-row h-full">
                     <!-- Media Section -->
                     <div class="md:w-3/5 bg-black flex items-center justify-center">
-                        ${post.video ? 
+                        ${post.video ?
                             `<video src="${post.video}" controls class="max-w-full max-h-full"></video>` :
                             post.image ?
                             `<img src="${post.image}" alt="${post.title}" class="max-w-full max-h-full object-contain">` :
@@ -576,7 +576,7 @@
                             </div>`
                         }
                     </div>
-                    
+
                     <!-- Details Section -->
                     <div class="md:w-2/5 bg-gray-900 flex flex-col">
                         <!-- Header -->
@@ -594,13 +594,13 @@
                                 </svg>
                             </button>
                         </div>
-                        
+
                         <!-- Content -->
                         <div class="flex-1 overflow-y-auto p-4">
                             <h2 class="text-xl font-bold mb-2">${post.title}</h2>
                             <p class="text-gray-300 whitespace-pre-wrap">${post.content}</p>
                         </div>
-                        
+
                         <!-- Actions -->
                         <div class="p-4 border-t border-gray-800">
                             <div class="flex items-center gap-4 mb-4">
@@ -621,7 +621,7 @@
                     </div>
                 </div>
             `;
-            
+
             modalContent.innerHTML = modalHTML;
             postModal.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
@@ -651,7 +651,7 @@
                     }
                 }
             });
-            
+
             postsGrid.addEventListener('mouseout', function(e) {
                 const gridItem = e.target.closest('.grid-item');
                 if (gridItem) {

@@ -68,45 +68,60 @@ class MultipleFileField(forms.FileField):
 class ReportForm(forms.ModelForm):
     name = forms.CharField(
         label="نام بیمار",
-        widget=forms.TextInput(
-            attrs={'class': 'px-4 py-2 border border-gray-300 rounded-md', 'placeholder': 'نام بیمار'})
-    )
-    title = forms.CharField(
-        label="موضوع",
-        widget=forms.TextInput(
-            attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md', 'placeholder': 'موضوع ریپورت'})
-    )
-    content = forms.CharField(
-        label="شرح",
-        widget=forms.Textarea(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md', 'rows': 5,
-                                     'placeholder': 'شرح ریپورت'})
-    )
-    images = MultipleFileField(
-        label="تصاویر گزارش",
-        required=False,
-        widget=MultipleFileInput(attrs={
-            'class': 'px-4 py-2 border border-gray-300 rounded-md',
-            'accept': 'image/*'
-        })
-    )
-    dr_requesting = forms.CharField(
-        label="پزشک درخواست کننده",
-        required=False,
         widget=forms.TextInput(attrs={
-            'class': 'px-4 py-2 border border-gray-300 rounded-md',
-            'placeholder': 'پزشک معالج'
+            'class': 'w-full px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500',
+            'placeholder': 'نام بیمار'
         })
     )
+
     age = forms.IntegerField(
         label="سن بیمار",
         required=False,
-        widget=forms.NumberInput(
-            attrs={'class': 'px-4 py-2 border border-gray-300 rounded-md', 'placeholder': 'سن بیمار'})
+        widget=forms.NumberInput(attrs={
+            'class': 'w-full px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500',
+            'placeholder': 'سن بیمار'
+        })
+    )
+
+    title = forms.CharField(
+        label="عنوان گزارش",
+        widget=forms.TextInput(attrs={
+            'class': 'w-full px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500',
+            'placeholder': 'عنوان گزارش'
+        })
+    )
+
+    dr_requesting = forms.CharField(
+        label="پزشک درخواست‌کننده",
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'w-full px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500',
+            'placeholder': 'پزشک معالج یا درخواست‌کننده'
+        })
+    )
+
+    content = forms.CharField(
+        label="متن گزارش",
+        widget=forms.Textarea(attrs={
+            'class': 'w-full px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500',
+            'rows': 6,
+            'placeholder': 'متن گزارش را وارد کنید...'
+        })
+    )
+
+    images = forms.FileField(
+        label="تصاویر پیوست",
+        required=False,
+        widget=MultipleFileInput(attrs={
+            'multiple': True,
+            'class': 'w-full px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500',
+            'accept': 'image/*'
+        })
     )
 
     class Meta:
         model = MedicalReport
-        fields = ['name', 'title', 'content', 'dr_requesting', 'age', 'images']
+        fields = ['name', 'age', 'title', 'dr_requesting', 'content', 'images']
 
     def __init__(self, *args, **kwargs):
         patient_name = kwargs.pop('patient_name', None)
@@ -116,25 +131,24 @@ class ReportForm(forms.ModelForm):
         if patient_name:
             self.fields['name'].initial = patient_name
             self.fields['name'].widget.attrs['readonly'] = True
-            self.fields['name'].widget.attrs['class'] += ' bg-gray-100'
+            self.fields['name'].widget.attrs['class'] += ' bg-gray-100 cursor-not-allowed'
 
         if patient_age:
             self.fields['age'].initial = patient_age
             self.fields['age'].widget.attrs['readonly'] = True
-            self.fields['age'].widget.attrs['class'] += ' bg-gray-100'
+            self.fields['age'].widget.attrs['class'] += ' bg-gray-100 cursor-not-allowed'
 
     def save(self, commit=True):
         report = super().save(commit=commit)
-        if self.cleaned_data.get('images'):
-            for image in self.cleaned_data['images']:
+        images = self.cleaned_data.get('images')
+        if images:
+            for image in images:
                 ReportImage.objects.create(
                     report=report,
                     image=image,
                     caption=f"تصویر گزارش {report.title}"
                 )
         return report
-
-
 
 class EditReportForm(forms.ModelForm):
     class Meta:
@@ -175,8 +189,17 @@ class ReportTemplateForm(forms.ModelForm):
             'content': 'متن گزارش',
         }
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'border'}),
-            'dr_requesting': forms.TextInput(attrs={'class': 'border'}),
-            'content': forms.Textarea(attrs={'class': 'border'}),
+            'title': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
+                'placeholder': 'مثلاً: گزارش سونوگرافی شکم'
+            }),
+            'dr_requesting': forms.TextInput(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
+                'placeholder': 'نام پزشک درخواست‌کننده'
+            }),
+            'content': forms.Textarea(attrs={
+                'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500',
+                'rows': 6,
+                'placeholder': 'متن گزارش را وارد کنید...'
+            }),
         }
-

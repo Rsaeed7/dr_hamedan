@@ -11,7 +11,7 @@ class EmailForm(forms.ModelForm):
             'hx-get': '/doctors/search/',
             'hx-target': '#doctor-results',
             'hx-trigger': 'keyup changed delay:300ms',
-            'class': 'w-full px-3 py-2 border border-gray-300 rounded-lg'
+            'class': 'w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition'
         })
     )
 
@@ -19,9 +19,17 @@ class EmailForm(forms.ModelForm):
         model = Email
         fields = ['search_doctor', 'recipient', 'subject', 'body', 'is_important']
         widgets = {
-            'body': forms.Textarea(attrs={'rows': 5, 'class': 'border'}),
-            'subject': forms.TextInput(attrs={'class': 'border'}),
-            'is_important': forms.CheckboxInput(attrs={'class': 'border'}),
+            'recipient': forms.HiddenInput(),
+            'body': forms.Textarea(attrs={
+                'rows': 5,
+                'class': 'w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition'
+            }),
+            'subject': forms.TextInput(attrs={
+                'class': 'w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition'
+            }),
+            'is_important': forms.CheckboxInput(attrs={
+                'class': 'h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500'
+            }),
         }
         labels = {
             'recipient': 'پزشک گیرنده',
@@ -33,17 +41,11 @@ class EmailForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.current_doctor = kwargs.pop('current_doctor', None)
         super().__init__(*args, **kwargs)
-        self.fields['recipient'].widget = forms.HiddenInput()
 
         if self.current_doctor:
             self.fields['recipient'].queryset = Doctor.objects.filter(
                 is_available=True
             ).exclude(id=self.current_doctor.id).select_related('user', 'specialization')
-
-            self.fields['recipient'].widget.attrs.update({'class': 'form-select'})
-            self.fields['recipient'].label_from_instance = lambda obj: (
-                f"{obj.user.get_full_name()} - {getattr(obj.specialization, 'name', 'بدون تخصص')}"
-            )
 
     def clean_recipient(self):
         recipient = self.cleaned_data.get('recipient')
@@ -56,9 +58,19 @@ class EmailTemplateForm(forms.ModelForm):
         model = EmailTemplate
         fields = ['title', 'subject', 'body']
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'border'}),
-            'subject': forms.TextInput(attrs={'class': 'border'}),
-            'body': forms.Textarea(attrs={'rows': 5, 'class': 'border'}),
+            'title': forms.TextInput(attrs={
+                'class': 'w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400',
+                'placeholder': 'مثلاً قالب یادداشت پزشکی',
+            }),
+            'subject': forms.TextInput(attrs={
+                'class': 'w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400',
+                'placeholder': 'موضوع نامه را وارد کنید',
+            }),
+            'body': forms.Textarea(attrs={
+                'rows': 6,
+                'class': 'w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400',
+                'placeholder': 'متن نامه را بنویسید...',
+            }),
         }
         labels = {
             'title': 'عنوان قالب',

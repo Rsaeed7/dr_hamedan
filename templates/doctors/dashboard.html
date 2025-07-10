@@ -2,159 +2,13 @@
 
 {% block title %}داشبورد پزشک - دکتر {% endblock %}
 
-{% block extra_css %}
-<style>
-    /* RTL specific styles */
-    .rtl .mr-3 {
-        margin-right: 0;
-        margin-left: 0.75rem;
-    }
-    
-    .rtl .ml-2 {
-        margin-left: 0;
-        margin-right: 0.5rem;
-    }
-    
-    .rtl .border-l-4 {
-        border-left: none;
-        border-right: 4px solid;
-    }
-    
-    .rtl .text-right {
-        text-align: left;
-    }
-    
-    .rtl .justify-between {
-        justify-content: space-between;
-    }
-    
-    .rtl .items-center {
-        align-items: center;
-    }
-    
-    .rtl .space-x-4 {
-        margin-right: 0;
-        margin-left: 1rem;
-    }
-    
-    .rtl .space-y-4 {
-        margin-top: 0;
-        margin-bottom: 1rem;
-    }
-    
-    .rtl .flex-row {
-        flex-direction: row-reverse;
-    }
-    
-    .rtl .flex-col {
-        flex-direction: column;
-    }
-    
-    .rtl .gap-4 {
-        gap: 1rem;
-    }
-    
-    .rtl .mr-4 {
-        margin-right: 0;
-        margin-left: 1rem;
-    }
-    
-    .rtl .md:pr-4 {
-        padding-right: 0;
-        padding-left: 1rem;
-    }
-    
-    .rtl .md:pl-4 {
-        padding-left: 0;
-        padding-right: 1rem;
-    }
-    
-    .rtl .md:border-l {
-        border-left: none;
-        border-right: 1px solid;
-    }
-    
-    /* Existing styles */
-    .sidebar {
-        height: calc(100vh - 4rem);
-    }
-    
-    .main-content {
-        height: calc(100vh - 4rem);
-        overflow-y: auto;
-    }
-    
-    @media (max-width: 768px) {
-        .sidebar, .main-content {
-            height: auto;
-        }
-    }
-</style>
-{% endblock %}
-
 {% block content %}
 <div class="flex flex-col md:flex-row rtl">
-    <!-- Sidebar -->
-    <div class="w-full md:w-64 bg-white shadow-md sidebar">
-        <div class="p-6 border-b border-gray-200">
-        <a href="{% url 'doctors:doctor_profile' %}">
-            <div class="flex items-center">
-                {% if doctor.profile_image %}
-                    <img src="{{ doctor.profile_image.url }}" alt="{{ doctor }}" class="w-10 h-10 rounded-full object-cover ml-3">
-                {% else %}
-                    <div class="w-10 h-10 rounded-full bg-blue-200 flex items-center justify-center ml-3">
-                        <span class="text-blue-600 text-lg font-bold">{{ doctor.user.first_name|first }}{{ doctor.user.last_name|first }}</span>
-                    </div>
-                {% endif %}
-                <div>
-                    <h2 class="text-lg font-medium text-gray-800">دکتر {{ doctor.user.last_name }}</h2>
-                    <p class="text-sm text-gray-600">{{ doctor.specialization }}</p>
-                </div>
-            </div>
-        </a>
-        </div>
-        
-        <nav class="mt-4">
-            <a href="{% url 'doctors:doctor_dashboard' %}" class="block px-6 py-3 text-blue-600 border-r-4 border-blue-600 bg-blue-50 font-medium">
-                داشبورد
-            </a>
-            <a href="{% url 'doctors:doctor_appointments' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
-                نوبت‌ها
-            </a>
-            <a href="{% url 'doctors:doctor_availability' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
-                مدیریت زمان‌های حضور
-            </a>
-            <a href="{% url 'doctors:doctor_earnings' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
-                درآمد
-            </a>
-            <a href="{% url 'home:doctor_detail' doctor.id %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
-                مشاهده پروفایل عمومی
-            </a>
 
-        </nav>
-        
-        <div class="mt-auto p-6">
-            <div class="flex items-center">
-                <div class="flex-shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                    </svg>
-                </div>
-                <p class="mr-2 text-sm text-gray-600">
-                    {% if doctor.is_available %}
-                        <span class="text-green-600 font-medium">قابل رزرو</span>
-                    {% else %}
-                        <span class="text-red-600 font-medium">غیرقابل رزرو</span>
-                    {% endif %}
-                </p>
-            </div>
-        </div>
-    </div>
-    
     <!-- Main Content -->
-    <div class="flex-1 p-6 bg-gray-50 main-content">
+    <div class="flex-1 p-6 bg-gray-50">
         <h1 class="text-2xl font-bold text-gray-800 mb-6">داشبورد پزشک</h1>
-        
+
         <!-- Stats -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div class="bg-white p-6 rounded-lg shadow-md">
@@ -170,7 +24,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <div class="flex items-center">
                     <div class="p-3 rounded-full bg-green-100 text-green-600">
@@ -184,7 +38,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <div class="flex items-center">
                     <div class="p-3 rounded-full bg-purple-100 text-purple-600">
@@ -199,13 +53,13 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Upcoming Appointments -->
         <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
             <div class="px-6 py-4 border-b border-gray-200">
                 <h2 class="text-lg font-medium text-gray-800">نوبت‌های پیش رو</h2>
             </div>
-            
+
             {% if upcoming_appointments %}
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
@@ -240,19 +94,19 @@
                                         {% endif %}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <div class="flex space-x-2">
+                                        <div class="flex space-x-2 space-x-reverse">
                                             {% if appointment.status == 'pending' and appointment.payment_status == 'paid' %}
                                                 <a href="{% url 'reservations:confirm_appointment' appointment.id %}" class="text-green-600 hover:text-green-900">تایید</a>
                                             {% endif %}
-                                            
+
                                             {% if appointment.status == 'confirmed' %}
                                                 <a href="{% url 'reservations:complete_appointment' appointment.id %}" class="text-blue-600 hover:text-blue-900">تکمیل</a>
                                             {% endif %}
-                                            
+
                                             {% if appointment.status == 'pending' or appointment.status == 'confirmed' %}
                                                 <a href="{% url 'reservations:cancel_appointment' appointment.id %}" class="text-red-600 hover:text-red-900">لغو</a>
                                             {% endif %}
-                                            
+
                                             <a href="{% url 'reservations:appointment_status' appointment.id %}" class="text-gray-600 hover:text-gray-900">مشاهده</a>
                                         </div>
                                     </td>
@@ -261,7 +115,7 @@
                         </tbody>
                     </table>
                 </div>
-                
+
                 <div class="px-6 py-4 border-t border-gray-200">
                     <a href="{% url 'doctors:doctor_appointments' %}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">مشاهده همه نوبت‌ها ←</a>
                 </div>
@@ -271,29 +125,29 @@
                 </div>
             {% endif %}
         </div>
-        
+
         <!-- Quick Actions -->
         <div class="bg-white rounded-lg shadow-md overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200">
                 <h2 class="text-lg font-medium text-gray-800">عملیات سریع</h2>
             </div>
-            
+
             <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <a href="{% url 'doctors:doctor_availability' %}" class="flex items-center p-3 bg-blue-50 rounded-md hover:bg-blue-100">
+                <a href="{% url 'doctors:doctor_availability' %}" class="flex items-center p-3 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                     <span class="text-blue-600 font-medium">مدیریت زمان‌های حضور</span>
                 </a>
-                
-                <a href="{% url 'doctors:doctor_earnings' %}" class="flex items-center p-3 bg-green-50 rounded-md hover:bg-green-100">
+
+                <a href="{% url 'doctors:doctor_earnings' %}" class="flex items-center p-3 bg-green-50 rounded-md hover:bg-green-100 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 8h6m-5 0a3 3 0 110 6H9l3 3m-3-6h6m6 1a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <span class="text-green-600 font-medium">مشاهده درآمد</span>
                 </a>
-                
-                <a href="{% url 'home:doctor_detail' doctor.id %}" class="flex items-center p-3 bg-purple-50 rounded-md hover:bg-purple-100">
+
+                <a href="{% url 'home:doctor_detail' doctor.id %}" class="flex items-center p-3 bg-purple-50 rounded-md hover:bg-purple-100 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -303,4 +157,4 @@
         </div>
     </div>
 </div>
-{% endblock %} 
+{% endblock %}

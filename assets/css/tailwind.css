@@ -7,6 +7,62 @@
 2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
 */
 
+@import url("https://fonts.googleapis.com/css?family=Poppins:300,400,400i,500,500i,600,600i,700,700i,800");
+
+
+@font-face {
+	font-family: IRANSans;
+	font-style: normal;
+	font-weight: bold;
+		 url('fonts/IRANSansWeb_Bold.woff2') format('woff2'),
+		 url('fonts/IRANSansWeb_Bold.woff') format('woff'),
+		 url('fonts/IRANSansWeb_Bold.ttf') format('truetype');
+}
+@font-face {
+	font-family: IRANSans;
+	font-style: normal;
+	font-weight: 500;
+	src: url('fonts/IRANSansWeb_Medium.eot');
+	src: url('fonts/IRANSansWeb_Medium.eot?#iefix') format('embedded-opentype'),
+		 url('fonts/IRANSansWeb_Medium.woff2') format('woff2'),
+		 url('fonts/IRANSansWeb_Medium.woff') format('woff'),
+		 url('fonts/IRANSansWeb_Medium.ttf') format('truetype');
+}
+@font-face {
+	font-family: IRANSans;
+	font-style: normal;
+	font-weight: 300;
+	src: url('fonts/IRANSansWeb_Light.eot');
+	src: url('fonts/IRANSansWeb_Light.eot?#iefix') format('embedded-opentype'),
+		 url('fonts/IRANSansWeb_Light.woff2') format('woff2'),
+		 url('fonts/IRANSansWeb_Light.woff') format('woff'),
+		 url('fonts/IRANSansWeb_Light.ttf') format('truetype');
+}
+@font-face {
+	font-family: IRANSans;
+	font-style: normal;
+	font-weight: 200;
+	src: url('fonts/IRANSansWeb_UltraLight.eot');
+	src: url('fonts/IRANSansWeb_UltraLight.eot?#iefix') format('embedded-opentype'),
+		 url('fonts/IRANSansWeb_UltraLight.woff2') format('woff2'),
+		 url('fonts/IRANSansWeb_UltraLight.woff') format('woff'),
+		 url('fonts/IRANSansWeb_UltraLight.ttf') format('truetype');
+}
+@font-face {
+	font-family: IRANSans;
+	font-style: normal;
+	font-weight: normal;
+	src: url('fonts/IRANSansWeb.eot');
+	src: url('fonts/IRANSansWeb.eot?#iefix') format('embedded-opentype'),
+		 url('fonts/IRANSansWeb.woff2') format('woff2'),
+		 url('fonts/IRANSansWeb.woff') format('woff'),
+		 url('fonts/IRANSansWeb.ttf') format('truetype');
+}
+
+a,h1,p,b,h2,body,h3,h4,h6,h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6{font-family:IRANSans!important}
+a,h1,p,b,h2,body,h3,h4,h6,h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6{direction:rtl!important;}
+
+
 *,
 ::before,
 ::after {

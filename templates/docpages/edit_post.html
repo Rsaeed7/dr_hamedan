@@ -233,68 +233,10 @@
 {% endblock %}
 
 {% block content %}
-<!-- Mobile sidebar toggle -->
-<div class="mobile-sidebar-toggle p-4 bg-gray-50 md:hidden">
-    <button id="sidebarToggle" type="button" class="text-gray-600 hover:text-gray-900">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-    </button>
-</div>
 
 <div class="flex flex-col md:flex-row rtl">
-    <!-- Sidebar -->
-    <div class="w-full md:w-64 bg-white shadow-md sidebar" id="sidebar">
-        <div class="p-6 border-b border-gray-200">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center">
-                    {% if doctor.profile_image %}
-                        <img src="{{ doctor.profile_image.url }}" alt="{{ doctor }}" class="w-10 h-10 rounded-full object-cover ml-3">
-                    {% else %}
-                        <div class="w-10 h-10 rounded-full bg-blue-200 flex items-center justify-center ml-3">
-                            <span class="text-blue-600 text-lg font-bold">{{ doctor.user.first_name|first }}{{ doctor.user.last_name|first }}</span>
-                        </div>
-                    {% endif %}
-                    <div>
-                        <h2 class="text-lg font-medium text-gray-800">دکتر {{ doctor.user.last_name }}</h2>
-                        <p class="text-sm text-gray-600">{{ doctor.specialization }}</p>
-                    </div>
-                </div>
-                <button id="closeSidebar" class="md:hidden text-gray-600 hover:text-gray-900">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-        
-        <nav class="mt-4">
-            <a href="{% url 'doctors:doctor_dashboard' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
-                داشبورد
-            </a>
-            <a href="{% url 'doctors:doctor_appointments' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
-                نوبت‌ها
-            </a>
-            <a href="{% url 'doctors:doctor_availability' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
-                مدیریت زمان حضور
-            </a>
-            <a href="{% url 'doctors:doctor_earnings' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
-                درآمد
-            </a>
-            <a href="{% url 'docpages:doctor_posts' %}" class="block px-6 py-3 text-blue-600 border-r-4 border-blue-600 bg-blue-50 font-medium">
-                پست‌های من
-            </a>
-            <a href="{% url 'docpages:manage_comments' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
-                مدیریت نظرات
-            </a>
-            <a href="{% url 'doctors:doctor_detail' doctor.id %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
-                مشاهده پروفایل عمومی
-            </a>
-        </nav>
-    </div>
-    
     <!-- Main Content -->
-    <div class="flex-1 p-6 bg-gray-50 main-content">
+    <div class="flex-1 p-6 bg-gray-50">
         <!-- Breadcrumbs -->
         <div class="mb-6 text-sm text-gray-500">
             <a href="{% url 'doctors:doctor_dashboard' %}" class="hover:text-blue-600">داشبورد</a>

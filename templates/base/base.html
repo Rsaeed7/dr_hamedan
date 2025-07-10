@@ -165,26 +165,23 @@
 
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // انتخاب همه کانتینرها
-        let containers = document.querySelectorAll(".scroll-container");
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".scroll-wrapper-box").forEach(function (wrapper) {
+        const container = wrapper.querySelector(".scroll-container");
+        const btnLeft = wrapper.querySelector(".scroll-left");
+        const btnRight = wrapper.querySelector(".scroll-right");
 
-        containers.forEach(function (container, index) {
-            let isRTL = getComputedStyle(container).direction === "rtl";
-            let btnLeft = document.getElementById("btnLeft" + (index + 1));
-            let btnRight = document.getElementById("btnRight" + (index + 1));
+        const isRTL = getComputedStyle(container).direction === "rtl";
 
-            // رویداد دکمه چپ
-            btnLeft.addEventListener("click", function () {
-                container.scrollBy({left: isRTL ? 800 : -800, behavior: "smooth"});
-            });
+        btnLeft.addEventListener("click", function () {
+            container.scrollBy({ left: isRTL ? 800 : -800, behavior: "smooth" });
+        });
 
-            // رویداد دکمه راست
-            btnRight.addEventListener("click", function () {
-                container.scrollBy({left: isRTL ? -800 : 800, behavior: "smooth"});
-            });
+        btnRight.addEventListener("click", function () {
+            container.scrollBy({ left: isRTL ? -800 : 800, behavior: "smooth" });
         });
     });
+});
 
 </script>
 <script>
