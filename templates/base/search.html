@@ -5,13 +5,12 @@
                 <div id="custom-search-input">
                     <div class="input-group">
                         <div style="display: flex; align-items: center; width: 100%;">
-                            <select class="search-query" name="specialty" id="specialty_list"
-                                    style="border-radius: 0 50px 50px 0; border-left: none; width: 20%;font-size: 10px">
-                                <option value="">همه تخصص‌ها</option>
-                                {% for special in specializations %}
-                                    <option value="{{ special.name }}"
-                                            {% if request.GET.specialty == special.name %}selected{% endif %}>
-                                        {{ special.name }}
+                            <select class="search-query" name="specialty" id="specialty">
+                                <option value="" > همه تخصص‌ها </option>
+                                {% for spec in specializations %}
+                                    <option value="{{ spec.name }}"
+                                            {% if request.GET.specialty == spec.name %}selected{% endif %}>
+                                        {{ spec.name }}
                                     </option>
                                 {% endfor %}
                             </select>
