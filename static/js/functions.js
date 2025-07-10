@@ -39,6 +39,22 @@
 		}, 500);
 	});
 
+
+	var $headerStick = $('.header_sticky');
+	var $online_visit = $('#online_visit');
+	$(window).on("scroll", function () {
+		if ($(this).scrollTop() > 1) {
+			$headerStick.addClass("sticky");
+		} else {
+			$headerStick.removeClass("sticky");
+		}
+		;
+		if ($(this).scrollTop() == 0) {
+			$online_visit.fadeIn();
+		} else {
+			$online_visit.fadeOut();
+		}
+	});
 	// Menu
 	$('a.open_close').on("click", function () {
 		$('.main-menu').toggleClass('show');

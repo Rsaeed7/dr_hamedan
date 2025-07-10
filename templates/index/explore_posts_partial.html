@@ -1,0 +1,48 @@
+{% load static %}
+{% load jformat %}
+
+{% for post in posts %}
+<div class="grid-item" data-post-id="{{ post.id }}" onclick="openPost({{ post.id }})">
+    {% if post.video %}
+        <video src="{{ post.video.url }}" class="w-full h-full object-cover" muted></video>
+        <div class="video-indicator">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
+            </svg>
+        </div>
+    {% elif post.image %}
+        <img src="{{ post.image.url }}" alt="{{ post.title }}" loading="lazy">
+    {% else %}
+        <div class="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center p-6">
+            <h3 class="text-white text-center font-medium line-clamp-3">{{ post.title }}</h3>
+        </div>
+    {% endif %}
+
+    <div class="grid-item-overlay">
+        <div class="overlay-stats">
+            <div class="stat-item">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                </svg>
+                <span>{{ post.likes.count|default:0 }}</span>
+            </div>
+            <div class="stat-item">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clip-rule="evenodd"/>
+                </svg>
+                <span>{{ post.comments.count|default:0 }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<style>
+/* Line clamp utility for text posts */
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+</style>

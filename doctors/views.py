@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from patients.models import MedicalRecord
-from .models import Doctor, DoctorAvailability, Specialization, Clinic, City, DrComment, CommentTips ,Email,Supplementary_insurance, DoctorRegistration,EmailTemplate
+from .models import Doctor, DoctorAvailability, Specialization, Clinic, DrComment, CommentTips ,Email,Supplementary_insurance, DoctorRegistration,EmailTemplate
 from reservations.models import Reservation, ReservationDay
 from datetime import datetime, timedelta
 from django.db.models import  Sum, Avg
@@ -23,6 +23,7 @@ from homecare.models import Service
 from reservations.turn_maker import create_availability_days_for_day_of_week
 from reservations.services import BookingService, AppointmentService
 import random
+from doctors.models import DoctorBlockedDay
 
 
 def index(request):
@@ -51,9 +52,86 @@ def specializations(request):
 
 
 def explore(request):
-    posts = Post.objects.filter(status='published')
+    """
+    Enhanced explore view with lazy loading, search, and filtering
+    """
+    from django.core.paginator import Paginator
+    from django.http import JsonResponse
+    from django.template.loader import render_to_string
+    
+    # Get filter parameters
+    search_query = request.GET.get('search', '').strip()
+    media_type = request.GET.get('media_type', 'all')  # all, image, video, none
+    specialty = request.GET.get('specialty', '')
+    page = request.GET.get('page', 1)
+    
+    # Base queryset - published posts with related data
+    posts = Post.objects.filter(status='published').select_related(
+        'doctor', 'doctor__user'
+    ).prefetch_related('medical_lenses', 'post_likes')
+    
+    # Apply search filter
+    if search_query:
+        from django.db import models as db_models
+        posts = posts.filter(
+            db_models.Q(title__icontains=search_query) |
+            db_models.Q(content__icontains=search_query) |
+            db_models.Q(doctor__user__first_name__icontains=search_query) |
+            db_models.Q(doctor__user__last_name__icontains=search_query) |
+            db_models.Q(medical_lenses__name__icontains=search_query)
+        ).distinct()
+    
+    # Apply media type filter
+    if media_type != 'all':
+        posts = posts.filter(media_type=media_type)
+    
+    # Apply specialty filter
+    if specialty:
+        posts = posts.filter(doctor__specialization__icontains=specialty)
+    
+    # Order by creation date (newest first)
+    posts = posts.order_by('-created_at')
+    
+    # Paginate results (12 posts per page for grid layout)
+    paginator = Paginator(posts, 12)
+    posts_page = paginator.get_page(page)
+    
+    # Handle AJAX requests for lazy loading
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        posts_html = render_to_string(
+            'index/explore_posts_partial.html', 
+            {'posts': posts_page, 'request': request}
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'posts_html': posts_html,
+            'has_next': posts_page.has_next(),
+            'next_page': posts_page.next_page_number() if posts_page.has_next() else None,
+            'total_count': paginator.count,
+            'current_page': posts_page.number,
+            'total_pages': paginator.num_pages
+        })
+    
+    # Get specializations for filter dropdown
+    from doctors.models import Doctor
+    specializations = Doctor.objects.values_list('specialization', flat=True).distinct().order_by('specialization')
+    
+    # Get statistics
+    stats = {
+        'total_posts': Post.objects.filter(status='published').count(),
+        'video_posts': Post.objects.filter(status='published', media_type='video').count(),
+        'image_posts': Post.objects.filter(status='published', media_type='image').count(),
+        'doctors_count': Doctor.objects.count()
+    }
+    
     context = {
-        'posts': posts,
+        'posts': posts_page,
+        'search_query': search_query,
+        'media_type': media_type,
+        'specialty': specialty,
+        'specializations': specializations,
+        'stats': stats,
     }
     return render(request, 'index/medexplore.html', context)
 
@@ -247,10 +325,11 @@ def doctor_dashboard(request):
     ).count()
 
     # دریافت نوبت‌های امروز
-    today = timezone.now().date()
+    today_jalali = jdatetime.date.today()
     todays_appointments = Reservation.objects.filter(
         doctor=doctor,
-        day__date=today
+        day__date=today_jalali,
+        patient__isnull=False
     ).order_by('time')
 
     # محاسبه کل درآمد
@@ -388,44 +467,48 @@ def doctor_earnings(request):
     return render(request, 'doctors/doctor_earnings.html', context)
 
 
+
+def fa_to_en_numbers(fa_str):
+    fa_digits = '۰۱۲۳۴۵۶۷۸۹'
+    en_digits = '0123456789'
+    trans_table = str.maketrans(''.join(fa_digits), ''.join(en_digits))
+    return fa_str.translate(trans_table)
+
+def jalali_to_gregorian(date_str):
+    try:
+        # تبدیل اعداد فارسی به انگلیسی
+        date_str = fa_to_en_numbers(date_str)
+        # پشتیبانی از جداکننده / و -
+        date_str = date_str.replace('/', '-')
+        parts = list(map(int, date_str.split('-')))
+        j_date = jdatetime.date(parts[0], parts[1], parts[2])
+        g_date = j_date.togregorian()
+        return datetime(g_date.year, g_date.month, g_date.day)
+    except Exception as e:
+        print(f"[!] Error converting date: {e}")
+        return None
+
 @login_required
 def doctor_appointments(request):
-    """نمایش و مدیریت نوبت‌های پزشک"""
     try:
         doctor = request.user.doctor
     except Doctor.DoesNotExist:
         return redirect('doctors:doctor_list')
 
-    # دریافت پارامترهای فیلتر
     status = request.GET.get('status', 'all')
     date_from = request.GET.get('date_from', '')
     date_to = request.GET.get('date_to', '')
 
-    # تبدیل تاریخ‌ها
-    date_from_obj = None
-    date_to_obj = None
-    
-    if date_from:
-        try:
-            date_from_obj = datetime.strptime(date_from, '%Y-%m-%d').date()
-        except ValueError:
-            pass
+    date_from_obj = jalali_to_gregorian(date_from) if date_from else None
+    date_to_obj = jalali_to_gregorian(date_to) if date_to else None
 
-    if date_to:
-        try:
-            date_to_obj = datetime.strptime(date_to, '%Y-%m-%d').date()
-        except ValueError:
-            pass
-
-    # استفاده از سرویس برای دریافت نوبت‌ها
     appointments = BookingService.get_doctor_appointments(
         doctor=doctor,
         date_from=date_from_obj,
         date_to=date_to_obj,
         status_filter=status
     )
-    
-    # اضافه کردن پرونده پزشکی به هر نوبت
+
     for appointment in appointments:
         record = MedicalRecord.objects.filter(patient=appointment.patient, doctor=doctor).first()
         appointment.medical_record = record
@@ -440,6 +523,37 @@ def doctor_appointments(request):
 
     return render(request, 'doctors/appointments.html', context)
 
+@login_required
+def doctor_appointments_today(request):
+    try:
+        doctor = request.user.doctor
+    except Doctor.DoesNotExist:
+        return redirect('doctors:doctor_list')
+
+    # تاریخ امروز به میلادی (بدون ساعت)
+    today = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
+    tomorrow = today + timedelta(days=1)
+
+    appointments = BookingService.get_doctor_appointments(
+        doctor=doctor,
+        date_from=today,
+        date_to=tomorrow,
+        status_filter='all'  # یا می‌توانید از request.GET بگیرید اگر لازم بود
+    )
+
+    for appointment in appointments:
+        record = MedicalRecord.objects.filter(patient=appointment.patient, doctor=doctor).first()
+        appointment.medical_record = record
+
+    context = {
+        'doctor': doctor,
+        'appointments': appointments,
+        'status': 'all',
+        'date_from': None,
+        'date_to': None,
+    }
+
+    return render(request, 'doctors/appointments.html', context)
 
 @login_required
 def doctor_profile(request):
@@ -834,14 +948,18 @@ class DoctorMessageMixin(LoginRequiredMixin):
 class InboxView(DoctorMessageMixin, ListView):
     model = Email
     template_name = 'email/inbox.html'
-    context_object_name = 'messages'
+    context_object_name = 'emails'
     paginate_by = 100
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = Email.objects.filter(
+            recipient=self.request.user.doctor
+        ).select_related(
+            'sender__user',
+            'sender__specialization'
+        ).order_by('-is_read', '-sent_at')
+
         search_query = self.request.GET.get('search')
-
-
         if search_query:
             queryset = queryset.filter(
                 Q(tracking_number__icontains=search_query) |
@@ -850,12 +968,8 @@ class InboxView(DoctorMessageMixin, ListView):
                 Q(sender__user__first_name__icontains=search_query) |
                 Q(sender__user__last_name__icontains=search_query)
             )
-        return Email.objects.filter(
-            recipient=self.request.user.doctor
-        ).select_related(
-            'sender__user',
-            'sender__specialization'
-        ).order_by('-is_read', '-sent_at')
+
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1078,3 +1192,289 @@ def update_doctor_location(request):
         'success': False,
         'message': 'درخواست نامعتبر'
     })
+
+def test_fonts(request):
+    """Test page for verifying IRANSansWeb fonts are loading correctly"""
+    return render(request, 'test_fonts.html')
+
+@login_required
+def doctor_appointments_tabs(request):
+    """نمایش نوبت‌های پزشک با قابلیت فیلتر و ایجاد نوبت همان روز"""
+    try:
+        doctor = request.user.doctor
+    except Doctor.DoesNotExist:
+        return redirect('doctors:doctor_list')
+
+    from datetime import datetime, date, timedelta
+    from django.db.models import Q
+    from patients.models import PatientsFile
+    
+    # Get filter parameters
+    search = request.GET.get('search', '')
+    date_filter = request.GET.get('date_filter', '')
+    status_filter = request.GET.get('status_filter', '')
+    
+    # Base appointments query
+    appointments = Reservation.objects.filter(
+        doctor=doctor
+    ).exclude(
+        status='available'
+    ).select_related(
+        'patient', 'patient__user', 'day'
+    ).order_by('-day__date', '-time')
+    
+    # Apply search filter
+    if search:
+        appointments = appointments.filter(
+            Q(patient__user__first_name__icontains=search) |
+            Q(patient__user__last_name__icontains=search) |
+            Q(patient_name__icontains=search) |
+            Q(phone__icontains=search) |
+            Q(patient_national_id__icontains=search)
+        )
+    
+    # Apply date filter
+    if date_filter:
+        try:
+            filter_date = datetime.strptime(date_filter, '%Y-%m-%d').date()
+            appointments = appointments.filter(day__date=filter_date)
+        except ValueError:
+            pass
+    
+    # Apply status filter
+    if status_filter:
+        appointments = appointments.filter(status=status_filter)
+    
+    # Get today's date
+    today = date.today()
+    
+    # Separate appointments by time period
+    today_appointments = appointments.filter(day__date=today)
+    upcoming_appointments = appointments.filter(day__date__gt=today)[:10]
+    past_appointments = appointments.filter(day__date__lt=today)[:10]
+    
+    # Get today's available time slots for same-day appointments
+    today_available_slots = []
+    try:
+        today_reservation_day = ReservationDay.objects.get(
+            doctor=doctor,
+            date=today,
+            is_available=True
+        )
+        
+        # Get all reserved times for today
+        reserved_times = Reservation.objects.filter(
+            doctor=doctor,
+            day=today_reservation_day
+        ).exclude(
+            status__in=['cancelled', 'available']
+        ).values_list('time', flat=True)
+        
+        # Generate available time slots (assuming 30-minute intervals)
+        from datetime import time
+        current_time = today_reservation_day.start_time
+        end_time = today_reservation_day.end_time
+        
+        while current_time < end_time:
+            if current_time not in reserved_times:
+                # Only show future time slots for today
+                now = datetime.now().time()
+                if current_time > now:
+                    today_available_slots.append(current_time)
+            
+            # Add 30 minutes
+            current_datetime = datetime.combine(today, current_time)
+            current_datetime += timedelta(minutes=30)
+            current_time = current_datetime.time()
+            
+    except ReservationDay.DoesNotExist:
+        pass
+    
+    # Handle same-day appointment creation
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'create_same_day_appointment':
+            patient_name = request.POST.get('patient_name')
+            patient_phone = request.POST.get('patient_phone')
+            appointment_time = request.POST.get('appointment_time')
+            notes = request.POST.get('notes', '')
+            
+            if patient_name and patient_phone and appointment_time:
+                try:
+                    time_obj = datetime.strptime(appointment_time, '%H:%M').time()
+                    
+                    # Create or get patient file
+                    patient_file, created = PatientsFile.objects.get_or_create(
+                        phone=patient_phone,
+                        defaults={
+                            'name': patient_name,
+                            'created_by_doctor': doctor
+                        }
+                    )
+                    
+                    # Create reservation
+                    reservation = Reservation.objects.create(
+                        doctor=doctor,
+                        day=today_reservation_day,
+                        time=time_obj,
+                        patient=patient_file,
+                        patient_name=patient_name,
+                        phone=patient_phone,
+                        notes=notes,
+                        status='confirmed',  # Same-day appointments are auto-confirmed
+                        created_by_doctor=True
+                    )
+                    
+                    messages.success(request, f'نوبت همان روز برای {patient_name} در ساعت {appointment_time} ایجاد شد.')
+                    
+                    if created:
+                        messages.info(request, f'پرونده جدید برای {patient_name} ایجاد شد.')
+                    
+                except ValueError:
+                    messages.error(request, 'فرمت زمان نامعتبر است.')
+                except Exception as e:
+                    messages.error(request, f'خطا در ایجاد نوبت: {str(e)}')
+            else:
+                messages.error(request, 'لطفا تمام فیلدهای ضروری را پر کنید.')
+        
+        return redirect('doctors:doctor_appointments_tabs')
+    
+    # Prepare available patients for quick selection
+    recent_patients = PatientsFile.objects.filter(
+        reservation__doctor=doctor
+    ).distinct().order_by('-updated_at')[:20]
+    
+    context = {
+        'doctor': doctor,
+        'today_appointments': today_appointments,
+        'upcoming_appointments': upcoming_appointments,
+        'past_appointments': past_appointments,
+        'today_available_slots': today_available_slots,
+        'recent_patients': recent_patients,
+        'search': search,
+        'date_filter': date_filter,
+        'status_filter': status_filter,
+        'today_date': today,
+    }
+
+    return render(request, 'doctors/doctor_appointments.html', context)
+
+
+@login_required
+def manage_blocked_days(request):
+    """مدیریت روزهای مسدود شده پزشک"""
+    try:
+        doctor = request.user.doctor
+    except Doctor.DoesNotExist:
+        return redirect('doctors:doctor_list')
+
+    from datetime import date
+    
+    # Get blocked days for this doctor
+    blocked_days = DoctorBlockedDay.objects.filter(doctor=doctor).order_by('-date')
+    
+    # Get today's date for validation
+    today = date.today()
+    
+    context = {
+        'doctor': doctor,
+        'blocked_days': blocked_days,
+        'today': today,
+    }
+
+    return render(request, 'doctors/blocked_days.html', context)
+
+
+@login_required
+def add_blocked_day(request):
+    """افزودن روز مسدود جدید"""
+    try:
+        doctor = request.user.doctor
+    except Doctor.DoesNotExist:
+        return redirect('doctors:doctor_list')
+
+    if request.method == 'POST':
+        from datetime import datetime, date
+        import jdatetime
+        
+        date_str = request.POST.get('date')
+        reason = request.POST.get('reason', '')
+        
+        if date_str:
+            try:
+                # Parse the date (expecting YYYY-MM-DD format)
+                block_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+                
+                # Validate that the date is in the future
+                if block_date <= date.today():
+                    messages.error(request, 'فقط می‌توانید روزهای آینده را مسدود کنید.')
+                    return redirect('doctors:doctor_availability')
+                
+                # Check if already blocked
+                if DoctorBlockedDay.objects.filter(doctor=doctor, date=block_date).exists():
+                    messages.warning(request, 'این تاریخ قبلاً مسدود شده است.')
+                    return redirect('doctors:doctor_availability')
+                
+                # Create blocked day
+                blocked_day = DoctorBlockedDay.objects.create(
+                    doctor=doctor,
+                    date=block_date,
+                    reason=reason
+                )
+                
+                # Convert to Jalali for display
+                jalali_date = jdatetime.date.fromgregorian(date=block_date)
+                messages.success(request, f'تاریخ {jalali_date.strftime("%Y/%m/%d")} با موفقیت مسدود شد.')
+                
+            except ValueError:
+                messages.error(request, 'فرمت تاریخ نامعتبر است.')
+        else:
+            messages.error(request, 'لطفا تاریخ را انتخاب کنید.')
+    
+    return redirect('doctors:doctor_availability')
+
+
+@login_required
+def remove_blocked_day(request, pk):
+    """حذف روز مسدود شده"""
+    try:
+        doctor = request.user.doctor
+        blocked_day = get_object_or_404(DoctorBlockedDay, pk=pk, doctor=doctor)
+    except Doctor.DoesNotExist:
+        return redirect('doctors:doctor_list')
+    
+    if request.method == 'POST':
+        import jdatetime
+        
+        # Convert to Jalali for display
+        jalali_date = jdatetime.date.fromgregorian(date=blocked_day.date)
+        blocked_day.delete()
+        
+        messages.success(request, f'مسدودیت تاریخ {jalali_date.strftime("%Y/%m/%d")} برداشته شد.')
+    
+    return redirect('doctors:doctor_availability')
+
+
+@login_required
+def get_blocked_days_json(request):
+    """دریافت روزهای مسدود شده به فرمت JSON برای تقویم"""
+    try:
+        doctor = request.user.doctor
+    except Doctor.DoesNotExist:
+        return JsonResponse({'blocked_days': []})
+    
+    import jdatetime
+    
+    blocked_days = DoctorBlockedDay.objects.filter(doctor=doctor).values_list('date', 'reason')
+    
+    blocked_days_list = []
+    for block_date, reason in blocked_days:
+        jalali_date = jdatetime.date.fromgregorian(date=block_date)
+        blocked_days_list.append({
+            'date': block_date.strftime('%Y-%m-%d'),
+            'jalali_date': jalali_date.strftime('%Y/%m/%d'),
+            'reason': reason or 'مسدود شده'
+        })
+    
+    return JsonResponse({'blocked_days': blocked_days_list})

@@ -3,242 +3,507 @@
 {% block title %}مدیریت زمان‌های حضور - دکتر {% endblock %}
 
 {% block extra_css %}
+{% load static %}
 <style>
-    .sidebar {
-        height: calc(100vh - 4rem);
-    }
-    
-    .main-content {
-        height: calc(100vh - 4rem);
+    /* اضافه کردن استایل برای مدال و backdrop */
+    .modal {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 50;
+        display: none;
         overflow-y: auto;
     }
-    
-    @media (max-width: 768px) {
-        .sidebar, .main-content {
-            height: auto;
+
+    .modal.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-dialog {
+        position: relative;
+        width: auto;
+        margin: 1rem;
+        max-width: 500px;
+        width: 100%;
+        animation: modalFadeIn 0.3s ease-out;
+    }
+
+    @keyframes modalFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
         }
     }
-    
-    .day-block {
-        transition: all 0.2s;
+
+    .modal-backdrop {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 40;
+        background-color: rgba(0, 0, 0, 0.5);
     }
-    
-    .day-block:hover {
+</style>
+<style>
+    :root {
+        --dr-primary: #263189;
+        --dr-secondary: #71DD8A;
+        --dr-tertiary: #3F4079;
+        --text-dr: #2A2B42;
+        --text-dr-2: #4A4B68;
+        --text-dr-3: #6A6B8E;
+        --border-light: #E2E4F0;
+        --bg-gradiant: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+        --bg-gradiant2: #F8FAFC;
+        --shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.08);
+        --rounded-10: 10px;
+        --rounded-15: 15px;
+        --rounded-20: 20px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --text-dr: #E2E8F0;
+            --text-dr-2: #CBD5E1;
+            --text-dr-3: #94A3B8;
+            --border-light: #334155;
+            --bg-gradiant: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+            --bg-gradiant2: #0F172A;
+            --shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .bg-white {
+            background-color: #1E293B !important;
+            color: #E2E8F0;
+        }
+
+        .border_light {
+            border-color: #334155 !important;
+        }
+
+        .text-secondary {
+            color: #94A3B8 !important;
+        }
+    }
+
+    /* Base Styles */
+    .rtl {
+        direction: rtl;
+        text-align: right;
+    }
+
+    .min-h-screen {
+        min-height: 100vh;
+    }
+
+    .margin_30_20 {
+        margin-bottom: 30px;
+    }
+
+    @media (max-width: 768px) {
+        .margin_30_20 {
+            margin-bottom: 20px;
+        }
+    }
+
+    /* Card Styles */
+    .card {
+        background: white;
+        border-radius: var(--rounded-20);
+        box-shadow: var(--shadow-hover);
+        transition: all 0.3s ease;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        border-bottom: 1px solid var(--border-light);
+        padding: 1.5rem;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    /* Button Styles */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--rounded-15);
+        font-weight: 600;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: none;
+    }
+
+    .btn-primary {
+        background-color: var(--dr-primary);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #1A237E;
         transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     }
-    
+
+    .btn-outline {
+        background: transparent;
+        border: 1px solid currentColor;
+    }
+
+    .btn-outline-danger {
+        color: #EF4444;
+        border-color: #EF4444;
+    }
+
+    .btn-outline-danger:hover {
+        background-color: #EF4444;
+        color: white;
+    }
+
+    /* Form Styles */
+    .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border-light);
+        border-radius: var(--rounded-15);
+        transition: all 0.3s ease;
+        background-color: white;
+    }
+
+    .form-control:focus {
+        border-color: var(--dr-primary);
+        box-shadow: 0 0 0 3px rgba(38, 49, 137, 0.1);
+        outline: none;
+    }
+
+    /* Responsive Grid */
+    .grid-responsive {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    @media (max-width: 640px) {
+        .grid-responsive {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Modal Styles */
+    .modal {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1050;
+        display: none;
+        overflow: hidden;
+        outline: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-dialog {
+        position: relative;
+        width: auto;
+        margin: 0.5rem;
+        pointer-events: none;
+    }
+
+    .modal-content {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        pointer-events: auto;
+        background-color: white;
+        background-clip: padding-box;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        border-radius: var(--rounded-20);
+        outline: 0;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    @media (min-width: 576px) {
+        .modal-dialog {
+            max-width: 500px;
+            margin: 1.75rem auto;
+        }
+    }
+
+    /* Utility Classes */
+    .flex-center {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .text-ellipsis {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
+    /* Enhanced Layout */
+    .main-container {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background: var(--bg-gradiant);
+    }
+
+    .content-wrapper {
+        flex: 1;
+        padding: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .content-wrapper {
+            padding: 1rem;
+        }
+    }
+
+    /* Header Section */
+    .header-card {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .header-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--dr-primary), var(--dr-secondary));
+    }
+
+    /* Status Badge */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+
+    .status-badge.active {
+        background-color: rgba(74, 222, 128, 0.1);
+        color: #22C55E;
+    }
+
+    .status-badge.inactive {
+        background-color: rgba(248, 113, 113, 0.1);
+        color: #EF4444;
+    }
+
+    /* Time Slot Styles */
     .time-slot {
-        transition: all 0.2s;
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        margin: 0.25rem;
+        border-radius: var(--rounded-10);
+        border: 1px solid var(--border-light);
+        transition: all 0.2s ease;
+        cursor: pointer;
     }
-    
+
     .time-slot:hover {
         background-color: #EFF6FF;
+        border-color: #93C5FD;
     }
-    
+
     .time-slot.selected {
         background-color: #DBEAFE;
         border-color: #3B82F6;
     }
-    
-    /* Calendar view styles */
-    .calendar {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 8px;
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        border-radius: var(--rounded-20);
+        background-color: rgba(241, 245, 249, 0.5);
+        border: 1px dashed var(--border-light);
     }
-    
-    .calendar-day {
-        padding: 12px;
-        border-radius: 8px;
-        transition: all 0.2s;
-        cursor: pointer;
+
+    .empty-state-icon {
+        width: 4rem;
+        height: 4rem;
+        margin: 0 auto 1rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
-    
-    .calendar-day:hover {
-        background-color: #EFF6FF;
+
+    /* Animation */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
-    
-    .calendar-day.has-slots {
-        background-color: #DBEAFE;
-        border: 1px solid #3B82F6;
+
+    .animate-fadeIn {
+        animation: fadeIn 0.3s ease-out forwards;
     }
-    
-    .calendar-day.today {
-        box-shadow: 0 0 0 2px #3B82F6;
+
+    /* Responsive Table */
+    .responsive-table {
+        width: 100%;
+        border-collapse: collapse;
     }
-    
-    .calendar-day.past {
-        opacity: 0.5;
+
+    .responsive-table th,
+    .responsive-table td {
+        padding: 0.75rem 1rem;
+        text-align: right;
+        border-bottom: 1px solid var(--border-light);
     }
-    
-    /* RTL specific styles */
-    .rtl .space-x-4 {
-        margin-right: 0;
-        margin-left: 1rem;
+
+    @media (max-width: 640px) {
+        .responsive-table {
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
     }
-    
-    .rtl .space-x-3 {
-        margin-right: 0;
-        margin-left: 0.75rem;
+
+    /* Tooltip */
+    .tooltip {
+        position: relative;
     }
-    
-    .rtl .space-x-2 {
-        margin-right: 0;
-        margin-left: 0.5rem;
-    }
-    
-    .rtl .justify-end {
-        justify-content: flex-start;
-    }
-    
-    .rtl .text-right {
-        text-align: left;
-    }
-    
-    .rtl .border-r {
-        border-right: none;
-        border-left: 1px solid;
-    }
-    
-    .rtl .tooltip .tooltip-text {
+
+    .tooltip .tooltip-text {
+        visibility: hidden;
+        width: 120px;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
         right: 50%;
-        left: auto;
-        margin-right: -100px;
-        margin-left: 0;
+        margin-right: -60px;
+        opacity: 0;
+        transition: opacity 0.3s;
     }
-    
-    .rtl .ml-3 {
-        margin-left: 0;
-        margin-right: 0.75rem;
+
+    .tooltip:hover .tooltip-text {
+        visibility: visible;
+        opacity: 1;
     }
-    
-    .rtl .mr-2 {
-        margin-right: 0;
-        margin-left: 0.5rem;
+
+    /* Loading Spinner */
+    .spinner {
+        width: 24px;
+        height: 24px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
     }
-    
-    .rtl .border-r-4 {
-        border-right: none;
-        border-left: 4px solid;
-    }
-    
-    .rtl .items-start {
-        align-items: flex-start;
-    }
-    
-    /* Mobile sidebar toggle */
-    .mobile-sidebar-toggle {
-        display: none;
-    }
-    
-    @media (max-width: 768px) {
-        .mobile-sidebar-toggle {
-            display: block;
-        }
-        
-        .sidebar {
-            display: none;
-        }
-        
-        .sidebar.active {
-            display: block;
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 100%;
-            height: 100vh;
-            z-index: 50;
-        }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-{#    TO DO : The possibility of activating and deactivating special days by the doctor.#}
-<div class="max-w-7xl mx-auto rtl">
-    <!-- Sidebar -->
-    <div class="flex flex-col md:flex-row gap-6">
-        <div class="w-full md:w-64 flex-shrink-0">
-            <div class="bg-white rounded-lg shadow-sm p-6">
-                <div class="flex items-center space-x-4 mb-6">
-                    {% if doctor.profile_image %}
-                        <img src="{{ doctor.profile_image.url }}" alt="{{ doctor.user.get_full_name }}" 
-                             class="h-16 w-16 rounded-full object-cover">
-                    {% else %}
-                        <div class="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center">
-                            <heroicon-outline-user class="h-8 w-8 text-gray-400" />
-                        </div>
-                    {% endif %}
+<div class="main-container rtl">
+    <div class="content-wrapper">
+        <!-- Header Section -->
+        <div class="card header-card animate-fadeIn mb-6">
+            <div class="card-body">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-900">دکتر {{ doctor.user.get_full_name }}</h3>
-                        <p class="text-sm text-gray-500">{{ doctor.specialization.name }}</p>
+                        <h1 class="text-2xl md:text-3xl font-bold text_dr mb-1">مدیریت زمان‌های حضور</h1>
+                        <p class="text_dr_3 text-sm md:text-base">تنظیم برنامه کاری و مدیریت نوبت‌ها</p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row items-center gap-4">
+                        <div class="text-center">
+                            <div class="status-badge {% if doctor.is_available %}active{% else %}inactive{% endif %}">
+                                {% if doctor.is_available %}فعال{% else %}غیرفعال{% endif %}
+                            </div>
+                            <div class="text-xs text-secondary mt-1">وضعیت حضور</div>
+                        </div>
+                        <form method="post" action="{% url 'doctors:toggle_availability' %}" class="w-full sm:w-auto">
+                            {% csrf_token %}
+                            <button type="submit" class="btn {% if doctor.is_available %}btn-outline-danger{% else %}btn-primary{% endif %} w-full">
+                                {% if doctor.is_available %}
+                                    غیرفعال کردن حضور
+                                {% else %}
+                                    فعال کردن حضور
+                                {% endif %}
+                            </button>
+                        </form>
                     </div>
                 </div>
-                
-                <nav class="space-y-2">
-                    <a href="{% url 'doctors:doctor_dashboard' %}" 
-                       class="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                        <heroicon-outline-home class="h-5 w-5" />
-                        <span>داشبورد</span>
-                    </a>
-                    <a href="{% url 'doctors:doctor_appointments' %}" 
-                       class="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                        <heroicon-outline-calendar class="h-5 w-5" />
-                        <span>نوبت‌ها</span>
-                    </a>
-                    <a href="{% url 'doctors:doctor_availability' %}" 
-                       class="flex items-center space-x-3 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg">
-                        <heroicon-outline-clock class="h-5 w-5" />
-                        <span>زمان‌های حضور</span>
-                    </a>
-                    <a href="{% url 'doctors:doctor_earnings' %}" 
-                       class="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                        <heroicon-outline-currency-dollar class="h-5 w-5" />
-                        <span>درآمد</span>
-                    </a>
-                    <a href="{% url 'doctors:doctor_detail' doctor.pk %}" 
-                       class="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                        <heroicon-outline-user class="h-5 w-5" />
-                        <span>مشاهده پروفایل</span>
-                    </a>
-                </nav>
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="flex-1">
-            <!-- Toggle Availability -->
-            <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h2 class="text-xl font-semibold text-gray-900">وضعیت حضور</h2>
-                        <p class="text-sm text-gray-500 mt-1">برای دریافت نوبت جدید، وضعیت حضور خود را فعال کنید.</p>
+        <!-- Add New Days Section -->
+        <div class="card animate-fadeIn mb-6" style="animation-delay: 0.1s;">
+            <div class="card-body">
+                <div class="flex items-center mb-4">
+                    <div class="w-10 h-10 bg-green-100 rounded-full flex-center ml-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
                     </div>
-                    <form method="post" action="{% url 'doctors:toggle_availability' %}">
-                        {% csrf_token %}
-                        <button type="submit" 
-                                class="px-4 py-2 rounded-lg {% if doctor.is_available %}bg-green-600 hover:bg-green-700{% else %}bg-red-600 hover:bg-red-700{% endif %} text-white transition-colors">
-                            {% if doctor.is_available %}
-                                غیرفعال کردن حضور
-                            {% else %}
-                                فعال کردن حضور
-                            {% endif %}
-                        </button>
-                    </form>
+                    <div>
+                        <h2 class="text-xl font-bold text_dr">افزودن روز جدید</h2>
+                        <p class="text-secondary text-sm">تعریف زمان‌های حضور جدید</p>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Add New Days -->
-            <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">افزودن روز جدید</h2>
-                <form method="post" action="{% url 'doctors:add_availability_day' %}" class="space-y-4">
+                <form method="post" action="{% url 'doctors:add_availability_day' %}">
                     {% csrf_token %}
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <label for="day_of_week" class="block text-sm font-medium text-gray-700 mb-1">روز هفته</label>
-                            <select name="day_of_week" id="day_of_week" required
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            <label for="day_of_week" class="block text-sm font-medium text_dr mb-1">روز هفته</label>
+                            <select name="day_of_week" id="day_of_week" required class="form-control " style="height: auto">
                                 <option value="">انتخاب کنید</option>
                                 <option value="0">شنبه</option>
                                 <option value="1">یکشنبه</option>
@@ -250,103 +515,384 @@
                             </select>
                         </div>
                         <div>
-                            <label for="start_time" class="block text-sm font-medium text-gray-700 mb-1">ساعت شروع</label>
-                            <input type="time" name="start_time" id="start_time" required
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            <label for="start_time" class="block text-sm font-medium text_dr mb-1">ساعت شروع</label>
+                            <input type="time" name="start_time" id="start_time" required class="form-control">
                         </div>
                         <div>
-                            <label for="end_time" class="block text-sm font-medium text-gray-700 mb-1">ساعت پایان</label>
-                            <input type="time" name="end_time" id="end_time" required
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            <label for="end_time" class="block text-sm font-medium text_dr mb-1">ساعت پایان</label>
+                            <input type="time" name="end_time" id="end_time" required class="form-control">
                         </div>
                     </div>
-                    <div class="flex justify-end">
-                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                            افزودن
+                    <div class="flex justify-end mt-4">
+                        <button type="submit" class="btn btn-primary px-6">
+                            افزودن روز حضور
                         </button>
                     </div>
                 </form>
             </div>
+        </div>
 
-            <!-- Update Settings -->
-            <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">تنظیمات ویزیت</h2>
-                <form method="post" action="{% url 'doctors:update_settings' %}" class="space-y-4">
+        <!-- Update Settings Section -->
+        <div class="card animate-fadeIn mb-6" style="animation-delay: 0.2s;">
+            <div class="card-body">
+                <div class="flex items-center mb-4">
+                    <div class="w-10 h-10 bg-blue-100 rounded-full flex-center ml-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text_dr">تنظیمات ویزیت</h2>
+                        <p class="text-secondary text-sm">مدیریت هزینه و مدت زمان ویزیت</p>
+                    </div>
+                </div>
+
+                <form method="post" action="{% url 'doctors:update_settings' %}">
                     {% csrf_token %}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label for="consultation_fee" class="block text-sm font-medium text-gray-700 mb-1">هزینه ویزیت (تومان)</label>
-                            <input type="number" name="consultation_fee" id="consultation_fee" 
-                                   value="{{ doctor.consultation_fee }}" required
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            <label for="consultation_fee" class="block text-sm font-medium text_dr mb-1">هزینه ویزیت (تومان)</label>
+                            <input type="number" name="consultation_fee" id="consultation_fee"
+                                   value="{{ doctor.consultation_fee }}" required class="form-control">
                         </div>
                         <div>
-                            <label for="consultation_duration" class="block text-sm font-medium text-gray-700 mb-1">مدت زمان ویزیت (دقیقه)</label>
-                            <input type="number" name="consultation_duration" id="consultation_duration" 
-                                   value="{{ doctor.consultation_duration }}" required
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            <label for="consultation_duration" class="block text-sm font-medium text_dr mb-1">مدت زمان ویزیت (دقیقه)</label>
+                            <input type="number" name="consultation_duration" id="consultation_duration"
+                                   value="{{ doctor.consultation_duration }}" required class="form-control">
                         </div>
                     </div>
-                    <div class="flex justify-end">
-                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                    <div class="flex justify-end mt-4">
+                        <button type="submit" class="btn btn-primary px-6">
                             ذخیره تغییرات
                         </button>
                     </div>
                 </form>
             </div>
+        </div>
 
-            <!-- Available Days -->
-            <div class="bg-white rounded-lg shadow-sm p-6">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">روزهای حضور</h2>
-                <div class="space-y-4">
-                    {% for availability in doctor.availabilities.all %}
-                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                            <div>
-                                <p class="font-medium text-gray-900">{{ availability.get_day_of_week_display }}</p>
-                                <p class="text-sm text-gray-600">{{ availability.start_time|time:"H:i" }} - {{ availability.end_time|time:"H:i" }}</p>
-                            </div>
-                            <div class="flex space-x-2">
-                                <a href="{% url 'doctors:edit_availability_day' availability.pk %}" 
-                                   class="px-3 py-1 text-sm text-blue-600 hover:text-blue-700">
-                                    ویرایش
-                                </a>
-                                <form method="post" action="{% url 'doctors:delete_availability_day' availability.pk %}" 
-                                      class="inline" onsubmit="return confirm('آیا از حذف این زمان حضور اطمینان دارید؟');">
+        <!-- Blocked Days Section -->
+        <div class="card animate-fadeIn mb-6" style="animation-delay: 0.3s;">
+            <div class="card-body">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-4">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-red-100 rounded-full flex-center ml-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text_dr">مدیریت روزهای مسدود</h2>
+                            <p class="text-secondary text-sm">روزهای خاص را برای رزرو نوبت مسدود کنید</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleBlockDayModal()" class="btn btn-outline-danger px-4 sm:px-6 self-start sm:self-auto">
+                        <svg class="w-4 h-4 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        مسدود کردن روز
+                    </button>
+                </div>
+
+                {% if doctor.blocked_days.all %}
+                    <div class="grid-responsive">
+                        {% for blocked_day in doctor.blocked_days.all %}
+                            <div class="p-4 bg-red-50 border border-red-200 rounded-lg flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-red-100 rounded-full flex-center ml-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <span class="font-medium text-red-600">{{ blocked_day.date|date:"Y/m/d" }}</span>
+                                        {% if blocked_day.reason %}
+                                            <p class="text-red-500 text-xs mt-1">{{ blocked_day.reason }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <form method="post" action="{% url 'doctors:remove_blocked_day' blocked_day.pk %}"
+                                      onsubmit="return confirm('آیا از برداشتن مسدودیت این روز اطمینان دارید؟');">
                                     {% csrf_token %}
-                                    <button type="submit" class="px-3 py-1 text-sm text-red-600 hover:text-red-700">
-                                        حذف
+                                    <button type="submit" class="text-xs text-red-600 hover:text-red-800">
+                                        برداشتن مسدودیت
                                     </button>
                                 </form>
                             </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon bg-green-100 text-green-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
                         </div>
-                    {% empty %}
-                        <p class="text-gray-600">هیچ زمان حضور تعریف نشده است.</p>
-                    {% endfor %}
+                        <h3 class="text-lg font-medium text_dr mb-1">هیچ روز مسدودی تعریف نشده</h3>
+                        <p class="text-secondary text-sm mb-3">همه روزها برای رزرو نوبت در دسترس هستند</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Available Days Section -->
+        <div class="card animate-fadeIn" style="animation-delay: 0.4s;">
+            <div class="card-body">
+                <div class="flex items-center mb-4">
+                    <div class="w-10 h-10 bg-yellow-100 rounded-full flex-center ml-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text_dr">روزهای حضور</h2>
+                        <p class="text-secondary text-sm">لیست زمان‌های تعریف شده برای نوبت‌دهی</p>
+                    </div>
                 </div>
+
+                {% if doctor.availabilities.all %}
+                    <div class="grid-responsive">
+                        {% for availability in doctor.availabilities.all %}
+                            <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-lg flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-yellow-100 rounded-full flex-center ml-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-yellow-700">{{ availability.get_day_of_week_display }}</p>
+                                        <p class="text-yellow-600 text-xs mt-1">{{ availability.start_time|time:"H:i" }} - {{ availability.end_time|time:"H:i" }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <a href="{% url 'doctors:edit_availability_day' availability.pk %}"
+                                       class="text-xs text-blue-600 hover:text-blue-800">
+                                        ویرایش
+                                    </a>
+                                    <form method="post" action="{% url 'doctors:delete_availability_day' availability.pk %}"
+                                          onsubmit="return confirm('آیا از حذف این زمان حضور اطمینان دارید؟');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="text-xs text-red-600 hover:text-red-800">
+                                            حذف
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon bg-yellow-100 text-yellow-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium text_dr mb-1">هیچ زمان حضور تعریف نشده</h3>
+                        <p class="text-secondary text-sm mb-3">برای شروع نوبت‌دهی، زمان‌های حضور خود را تعریف کنید</p>
+                        <button onclick="document.getElementById('day_of_week').focus();" class="btn btn-primary px-4 py-2 text-sm">
+                            افزودن اولین زمان حضور
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Block Day Modal -->
+<div id="modalBackdrop" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+
+<div id="blockDayModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="card-header flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-red-100 rounded-full flex-center ml-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text_dr">مسدود کردن روز</h3>
+                        <p class="text-secondary text-xs">انتخاب روز برای مسدود کردن</p>
+                    </div>
+                </div>
+                <button onclick="toggleBlockDayModal()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="card-body">
+                <form method="post" action="{% url 'doctors:add_blocked_day' %}" id="blockDayForm" onsubmit="return validateBlockDayForm()">
+                    {% csrf_token %}
+                    <div class="space-y-4">
+                        <div>
+                            <label for="block_date" class="block text-sm font-medium text_dr mb-1">تاریخ</label>
+                            <input type="text" name="date_display" id="block_date" required readonly
+                                   placeholder="انتخاب تاریخ..."
+                                   class="form-control cursor-pointer">
+                            <input type="hidden" name="date" id="block_date_hidden">
+                            <p class="text-xs text-yellow-700 mt-1 bg-yellow-50 p-2 rounded">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                فقط روزهای آینده قابل انتخاب هستند
+                            </p>
+                        </div>
+
+                        <div>
+                            <label for="block_reason" class="block text-sm font-medium text_dr mb-1">دلیل (اختیاری)</label>
+                            <input type="text" name="reason" id="block_reason"
+                                   placeholder="مرخصی، تعطیلات، کنفرانس، ..."
+                                   class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 mt-6">
+                        <button type="submit" class="btn btn-primary flex-1">
+                            مسدود کردن
+                        </button>
+                        <button type="button" onclick="toggleBlockDayModal()"
+                                class="btn btn-outline flex-1 border-gray-300 text-gray-700">
+                            لغو
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
 
 {% block extra_js %}
+<!-- Jalali Calendar JavaScript -->
+<script src="{% static 'js/jalali-calendar.js' %}"></script>
+
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Time validation
         const startTime = document.getElementById('start_time');
         const endTime = document.getElementById('end_time');
-        
-        startTime.addEventListener('change', function() {
-            if (endTime.value && this.value >= endTime.value) {
-                endTime.value = '';
+
+        if (startTime) {
+            startTime.addEventListener('change', function() {
+                if (endTime.value && this.value >= endTime.value) {
+                    endTime.value = '';
+                }
+            });
+        }
+
+        if (endTime) {
+            endTime.addEventListener('change', function() {
+                if (startTime.value && this.value <= startTime.value) {
+                    alert('ساعت پایان باید بعد از ساعت شروع باشد.');
+                    this.value = '';
+                }
+            });
+        }
+
+        // Initialize Persian DatePicker for block_date input
+        $("#block_date").persianDatepicker({
+            format: 'YYYY/MM/DD',
+            autoClose: true,
+            initialValueType: 'persian',
+            onlySelectOnDate: true,
+            minDate: new Date(),
+            calendar: {
+                persian: {
+                    locale: 'fa'
+                }
+            },
+            onSelect: function(unix) {
+                // Additional validation to ensure future dates only
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                if (new Date(unix) <= today) {
+                    alert('فقط می‌توانید روزهای آینده را مسدود کنید.');
+                    $("#block_date").val('');
+                    $("#block_date_hidden").val('');
+                    return false;
+                }
+
+                // Convert to Gregorian date format for backend (YYYY-MM-DD)
+                const selectedDate = new Date(unix);
+                const year = selectedDate.getFullYear();
+                const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+                const day = String(selectedDate.getDate()).padStart(2, '0');
+                const formattedDate = `${year}-${month}-${day}`;
+
+                // Set hidden input value with the formatted Gregorian date
+                $("#block_date_hidden").val(formattedDate);
+
+                console.log('Selected date for display:', $("#block_date").val());
+                console.log('Selected date for backend:', formattedDate);
             }
         });
-        
-        endTime.addEventListener('change', function() {
-            if (startTime.value && this.value <= startTime.value) {
-                alert('ساعت پایان باید بعد از ساعت شروع باشد.');
-                this.value = '';
-            }
-        });
+
+        // Add calendar icon for better UX
+        if ($("#block_date").parent().css('position') !== 'relative') {
+            $("#block_date").parent().css('position', 'relative');
+            $("#block_date").after('<i class="icon-calendar text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"></i>');
+        }
     });
+
+    // Block Day Modal Functions
+    function toggleBlockDayModal() {
+        const modal = document.getElementById('blockDayModal');
+        if (modal.classList.contains('hidden')) {
+            modal.classList.remove('hidden');
+            // Reset form and prepare input
+            const blockDateInput = document.getElementById('block_date');
+            if (blockDateInput) {
+                blockDateInput.value = '';
+                setTimeout(() => blockDateInput.focus(), 300);
+            }
+        } else {
+            modal.classList.add('hidden');
+            // Reset form
+            const form = modal.querySelector('form');
+            if (form) {
+                form.reset();
+            }
+        }
+    }
+
+    // Close modal when clicking outside
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('blockDayModal');
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    toggleBlockDayModal();
+                }
+            });
+        }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('blockDayModal');
+            if (!modal.classList.contains('hidden')) {
+                toggleBlockDayModal();
+            }
+        }
+    });
+
+    // Form validation to ensure date is properly set
+    function validateBlockDayForm() {
+        const dateHidden = document.getElementById('block_date_hidden');
+        if (!dateHidden.value) {
+            alert('لطفا یک تاریخ معتبر انتخاب کنید.');
+            return false;
+        }
+        return true;
+    }
 </script>
 {% endblock %}
-{% endblock %} 
+
+{% endblock %}

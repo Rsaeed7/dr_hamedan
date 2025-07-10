@@ -5,7 +5,7 @@ from django.db import transaction
 from django.utils import timezone
 from datetime import datetime, timedelta
 from .models import Reservation, ReservationDay
-from doctors.models import Doctor
+from doctors.models import Doctor, DoctorBlockedDay
 from patients.models import PatientsFile
 from wallet.models import Transaction
 import jdatetime
@@ -34,11 +34,21 @@ class BookingService:
         except Doctor.DoesNotExist:
             return []
 
+        # Get blocked days for this doctor
+        blocked_dates = set(
+            DoctorBlockedDay.objects.filter(doctor=doctor)
+            .values_list('date', flat=True)
+        )
+
         available_days = []
         today = datetime.now().date()
 
         for i in range(days_ahead):
             date = today + timedelta(days=i)
+
+            # Skip if this date is blocked by the doctor
+            if date in blocked_dates:
+                continue
 
             try:
                 # بررسی انتشار روز
@@ -86,6 +96,12 @@ class BookingService:
         except Doctor.DoesNotExist:
             return {}
         
+        # Get blocked days for this doctor
+        blocked_dates = set(
+            DoctorBlockedDay.objects.filter(doctor=doctor)
+            .values_list('date', flat=True)
+        )
+        
         # محاسبه روزهای ماه
         if jalali_month <= 6:
             days_in_month = 31
@@ -107,6 +123,10 @@ class BookingService:
                 
                 # فقط روزهای آینده را بررسی کن
                 if gregorian_date < datetime.now().date():
+                    continue
+                
+                # Skip if this date is blocked by the doctor
+                if gregorian_date in blocked_dates:
                     continue
                 
                 # بررسی وجود روز منتشر شده
@@ -155,6 +175,10 @@ class BookingService:
             year, month, day = map(int, jalali_date_str.split('/'))
             jalali_date = jdatetime.date(year, month, day)
             gregorian_date = jalali_date.togregorian()
+            
+            # Check if this date is blocked by the doctor
+            if DoctorBlockedDay.objects.filter(doctor=doctor, date=gregorian_date).exists():
+                return []
             
             # بررسی روز منتشر شده
             reservation_day = ReservationDay.objects.get(

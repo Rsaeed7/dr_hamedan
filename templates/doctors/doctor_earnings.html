@@ -9,27 +9,27 @@
     .sidebar {
         height: calc(100vh - 4rem);
     }
-    
+
     .main-content {
         height: calc(100vh - 4rem);
         overflow-y: auto;
     }
-    
+
     @media (max-width: 768px) {
         .sidebar, .main-content {
             height: auto;
         }
     }
-    
+
     .stat-card {
         transition: all 0.2s;
     }
-    
+
     .stat-card:hover {
         transform: translateY(-2px);
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     }
-    
+
     .tab-button.active {
         border-bottom-width: 2px;
         border-color: #3B82F6;
@@ -41,70 +41,14 @@
 
 {% block content %}
 <div class="flex flex-col md:flex-row">
-    <!-- Sidebar -->
-    <div class="w-full md:w-64 bg-white shadow-md sidebar">
-        <div class="p-6 border-b border-gray-200">
-            <div class="flex items-center">
-                {% if doctor.profile_image %}
-                    <img src="{{ doctor.profile_image.url }}" alt="{{ doctor }}" class="w-10 h-10 rounded-full object-cover ml-3">
-                {% else %}
-                    <div class="w-10 h-10 rounded-full bg-blue-200 flex items-center justify-center ml-3">
-                        <span class="text-blue-600 text-lg font-bold">{{ doctor.user.first_name|first }}{{ doctor.user.last_name|first }}</span>
-                    </div>
-                {% endif %}
-                <div>
-                    <h2 class="text-lg font-medium text-gray-800">دکتر {{ doctor.user.last_name }}</h2>
-                    <p class="text-sm text-gray-600">{{ doctor.specialization }}</p>
-                </div>
-            </div>
-        </div>
-        
-        <nav class="mt-4">
-            <a href="{% url 'doctors:doctor_dashboard' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
-                داشبورد
-            </a>
-            <a href="{% url 'doctors:doctor_appointments' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
-                نوبت‌ها
-            </a>
-            <a href="{% url 'doctors:doctor_availability' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
-                مدیریت زمان‌های حضور
-            </a>
-            <a href="{% url 'doctors:doctor_earnings' %}" class="block px-6 py-3 text-blue-600 border-r-4 border-blue-600 bg-blue-50 font-medium">
-                درآمد
-            </a>
-            <a href="{% url 'docpages:doctor_posts' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
-                پست‌های من
-            </a>
-            <a href="{% url 'home:doctor_detail' doctor.id %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
-                مشاهده پروفایل عمومی
-            </a>
-        </nav>
-        
-        <div class="mt-auto p-6">
-            <div class="flex items-center">
-                <div class="flex-shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                    </svg>
-                </div>
-                <p class="mr-2 text-sm text-gray-600">
-                    {% if doctor.is_available %}
-                        <span class="text-green-600 font-medium">قابل رزرو</span>
-                    {% else %}
-                        <span class="text-red-600 font-medium">غیرقابل رزرو</span>
-                    {% endif %}
-                </p>
-            </div>
-        </div>
-    </div>
-    
+
     <!-- Main Content -->
-    <div class="flex-1 p-6 bg-gray-50 main-content">
+    <div class="flex-1 p-6 bg-gray-50 ">
         <div class="mb-6">
             <h1 class="text-2xl font-bold text-gray-800">درآمد من</h1>
             <p class="text-gray-600 mt-1">پیگیری درآمد و معیارهای مالی</p>
         </div>
-        
+
         <!-- Earnings Summary Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <!-- Current Month Earnings -->
@@ -142,7 +86,7 @@
                     {% endif %}
                 </div>
             </div>
-            
+
             <!-- Last Month Earnings -->
             <div class="bg-white p-6 rounded-lg shadow-sm stat-card">
                 <div class="flex justify-between items-start">
@@ -162,7 +106,7 @@
                     </span>
                 </div>
             </div>
-            
+
             <!-- Total Earnings -->
             <div class="bg-white p-6 rounded-lg shadow-sm stat-card">
                 <div class="flex justify-between items-start">
@@ -182,7 +126,7 @@
                     </span>
                 </div>
             </div>
-            
+
             <!-- Average Per Appointment -->
             <div class="bg-white p-6 rounded-lg shadow-sm stat-card">
                 <div class="flex justify-between items-start">
@@ -203,7 +147,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Period Selection and Chart -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
             <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6">
@@ -220,20 +164,20 @@
                     </button>
                 </div>
             </div>
-            
+
             <!-- Chart Container -->
             <div class="h-64 chart-container">
                 <canvas id="earningsChart"></canvas>
             </div>
         </div>
-        
+
         <!-- Recent Payments -->
         <div class="bg-white rounded-lg shadow-md p-6">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-lg font-medium text-gray-800">پرداخت‌های اخیر</h2>
                 <a href="#" class="text-sm font-medium text-blue-600 hover:text-blue-800">مشاهده همه</a>
             </div>
-            
+
             {% if recent_payments %}
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
@@ -308,7 +252,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Earnings period button functionality
         const periodButtons = document.querySelectorAll('.earnings-period-btn');
-        
+
         periodButtons.forEach(button => {
             button.addEventListener('click', function() {
                 // Remove active class from all buttons
@@ -319,20 +263,20 @@
                     btn.classList.add('bg-white');
                     btn.classList.add('text-gray-700');
                 });
-                
+
                 // Add active class to clicked button
                 this.classList.add('active-period');
                 this.classList.add('bg-blue-50');
                 this.classList.add('text-blue-700');
                 this.classList.remove('bg-white');
                 this.classList.remove('text-gray-700');
-                
+
                 // Update chart based on period
                 const period = this.getAttribute('data-period');
                 updateChart(period);
             });
         });
-        
+
         // Initialize chart
         const ctx = document.getElementById('earningsChart').getContext('2d');
         const earningsChart = new Chart(ctx, {
@@ -371,11 +315,11 @@
                 }
             }
         });
-        
+
         // Function to update chart based on period
         function updateChart(period) {
             let labels, data;
-            
+
             if (period === 'week') {
                 labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
                 data = [12, 19, 3, 5, 2, 3, 7];
@@ -386,11 +330,11 @@
                 labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
                 data = [100, 120, 150, 170, 160, 140, 180, 190, 210, 230, 200, 250];
             }
-            
+
             earningsChart.data.labels = labels;
             earningsChart.data.datasets[0].data = data;
             earningsChart.update();
-            
+
             // In a real application, you would fetch this data from the server based on the period
             // For example:
             // fetch(`/api/doctors/earnings?period=${period}`)
@@ -403,4 +347,4 @@
         }
     });
 </script>
-{% endblock %} 
+{% endblock %}

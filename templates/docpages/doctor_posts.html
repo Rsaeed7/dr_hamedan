@@ -3,176 +3,110 @@
 {% block title %}مدیریت پست‌ها - دکتر همدان{% endblock %}
 {% load persian_date %}
 {% block extra_css %}
-{#    TO DO: Video support #}
 <style>
     /* RTL specific styles */
     .rtl .space-x-4 {
         margin-right: 0;
         margin-left: 1rem;
     }
-    
+
     .rtl .mr-3 {
         margin-right: 0;
         margin-left: 0.75rem;
     }
-    
+
     .rtl .border-l-4 {
         border-left: 0;
         border-right: 4px solid;
     }
-    
+
     .rtl .mx-2 {
         margin-left: 0.5rem;
         margin-right: 0.5rem;
     }
-    
+
     .rtl .mr-1 {
         margin-right: 0;
         margin-left: 0.25rem;
     }
-    
+
     .rtl .right-2 {
         right: auto;
         left: 0.5rem;
     }
-    
+
     .rtl .space-x-3 {
         margin-right: 0;
         margin-left: 0.75rem;
     }
-    
+
     .rtl .text-right {
         text-align: left;
     }
-    
+
     .rtl .flex-row {
         flex-direction: row-reverse;
     }
-    
+
     .rtl .flex-col {
         flex-direction: column;
     }
-    
+
     .rtl .gap-6 {
         gap: 1.5rem;
     }
-    
+
     /* Original styles */
     .sidebar {
         height: calc(100vh - 4rem);
     }
-    
+
     .main-content {
         height: calc(100vh - 4rem);
         overflow-y: auto;
     }
-    
+
     @media (max-width: 768px) {
         .sidebar, .main-content {
             height: auto;
         }
     }
-    
-    /* Mobile sidebar toggle */
-    .mobile-sidebar-toggle {
-        display: none;
+
+
+
+
+    /* Video styling */
+    video {
+        border-radius: 0.5rem;
     }
-    
-    @media (max-width: 768px) {
-        .mobile-sidebar-toggle {
-            display: block;
-        }
-        
-        .sidebar {
-            display: none;
-        }
-        
-        .sidebar.active {
-            display: block;
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 100%;
-            height: 100vh;
-            z-index: 50;
-        }
+
+    video::-webkit-media-controls-panel {
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    /* Video thumbnail styling for hover effects */
+    .post-card video:hover {
+        opacity: 0.9;
+        transition: opacity 0.3s ease;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- Mobile sidebar toggle -->
-<div class="mobile-sidebar-toggle p-4 bg-gray-50 md:hidden">
-    <button id="sidebarToggle" type="button" class="text-gray-600 hover:text-gray-900">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-    </button>
-</div>
 
 <div class="flex flex-col md:flex-row rtl">
-    <!-- Sidebar -->
-    <div class="w-full md:w-64 bg-white shadow-md sidebar" id="sidebar">
-        <div class="p-6 border-b border-gray-200">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center">
-                    {% if doctor.profile_image %}
-                        <img src="{{ doctor.profile_image.url }}" alt="{{ doctor }}" class="w-10 h-10 rounded-full object-cover mr-3">
-                    {% else %}
-                        <div class="w-10 h-10 rounded-full bg-blue-200 flex items-center justify-center mr-3">
-                            <span class="text-blue-600 text-lg font-bold">{{ doctor.user.first_name|first }}{{ doctor.user.last_name|first }}</span>
-                        </div>
-                    {% endif %}
-                    <div>
-                        <h2 class="text-lg font-medium text-gray-800">دکتر {{ doctor.user.last_name }}</h2>
-                        <p class="text-sm text-gray-600">{{ doctor.specialization }}</p>
-                    </div>
-                </div>
-                <button id="closeSidebar" class="md:hidden text-gray-600 hover:text-gray-900">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-        
-        <nav class="mt-4">
-            <a href="{% url 'doctors:doctor_dashboard' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
-                داشبورد
-            </a>
-            <a href="{% url 'doctors:doctor_appointments' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
-                نوبت‌ها
-            </a>
-            <a href="{% url 'doctors:doctor_availability' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
-                مدیریت زمان حضور
-            </a>
-            <a href="{% url 'doctors:doctor_earnings' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
-                درآمد
-            </a>
-            <a href="{% url 'docpages:doctor_posts' %}" class="block px-6 py-3 text-blue-600 border-l-4 border-blue-600 bg-blue-50 font-medium">
-                پست‌های من
-            </a>
-            <a href="{% url 'docpages:manage_comments' %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
-                مدیریت نظرات
-            </a>
-            <a href="{% url 'doctors:doctor_detail' doctor.id %}" class="block px-6 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-600">
-                مشاهده پروفایل عمومی
-            </a>
-        </nav>
-    </div>
-    
     <!-- Main Content -->
-    <div class="flex-1 p-6 bg-gray-50 main-content">
+    <div class="flex-1 p-6 bg-gray-50 ">
         <!-- Breadcrumbs -->
         <div class="mb-6 text-sm text-gray-500">
             <a href="{% url 'doctors:doctor_dashboard' %}" class="hover:text-blue-600">داشبورد</a>
             <span class="mx-2">›</span>
             <span class="text-gray-700">پست‌های من</span>
         </div>
-        
+
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
             <h1 class="text-2xl font-bold text-gray-800 mb-3 md:mb-0">پست‌های من</h1>
-            
+
             <a href="{% url 'docpages:create_post' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150 inline-flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -180,7 +114,7 @@
                 ایجاد پست جدید
             </a>
         </div>
-        
+
         {% if messages %}
             <div class="mb-6">
                 {% for message in messages %}
@@ -190,7 +124,7 @@
                 {% endfor %}
             </div>
         {% endif %}
-        
+
         {% if posts %}
             <!-- Filter tabs -->
             <div class="bg-white rounded-lg shadow-md p-4 mb-6">
@@ -200,33 +134,44 @@
                     <button id="show-drafts" class="pb-3 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">پیش‌نویس</button>
                 </div>
             </div>
-            
+
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {% for post in posts %}
                     <div class="bg-white rounded-lg shadow-md overflow-hidden post-card" data-status="{{ post.status }}">
                         <div class="relative">
-                            {% if post.image %}
+                            {% if post.media_type == 'image' and post.image %}
                                 <img src="{{ post.image.url }}" alt="{{ post.title }}" class="w-full h-48 object-cover">
-                            {% endif %}
-                            {% if post.video %}
-
-                                 <video src="{{ post.video.url }}"   class="img-fluid rounded w-100 bg-dark"  style="max-height: 150px;min-height: 150px"></video>
+                            {% elif post.media_type == 'video' and post.video %}
+                                <div class="w-full h-48 bg-black rounded-t-lg overflow-hidden">
+                                    <video
+                                        src="{{ post.video.url }}"
+                                        class="w-full h-full object-cover"
+                                        controls
+                                        preload="metadata"
+                                        poster=""
+                                    >
+                                        مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
+                                    </video>
+                                </div>
                             {% else %}
                                 <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
-                                    <span class="text-gray-500">بدون تصویر</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <span class="text-gray-500">بدون رسانه</span>
                                 </div>
                             {% endif %}
-                            
+
                             <!-- Status Badge -->
                             <div class="absolute top-2 right-2 px-2 py-1 {% if post.status == 'published' %}bg-green-500 text-white{% else %}bg-yellow-500 text-white{% endif %} text-xs font-medium rounded-full">
                                 {% if post.status == 'published' %}منتشر شده{% else %}پیش‌نویس{% endif %}
                             </div>
                         </div>
-                        
+
                         <div class="p-4">
                             <h3 class="text-lg font-bold text-gray-800 mb-2">{{ post.title }}</h3>
                             <p class="text-gray-600 mb-4">{{ post.content|truncatewords:30 }}</p>
-                            
+
                             <div class="flex justify-between items-center">
                                 <div class="text-sm text-gray-500">
                                     <span>{{ post.created_at|persian_date_info }}</span>
@@ -236,13 +181,13 @@
                                     <span>{{ post.comments.count }} نظر</span>
                                 </div>
                                 <div class="flex space-x-3">
-                                    <a href="{% url 'docpages:post_detail' post.id %}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                    <a href="{% url 'docpages:post_detail' post.id %}" class="text-blue-600 bg-blue-100 p-l-2 p-r-2 m-1 rounded-10 hover:text-blue-800 text-sm font-medium">
                                         مشاهده
                                     </a>
-                                    <a href="{% url 'docpages:edit_post' post.id %}" class="text-gray-600 hover:text-gray-800 text-sm font-medium">
+                                    <a href="{% url 'docpages:edit_post' post.id %}" class="text-gray-600 bg-yellow-100 m-1 p-l-2 p-r-2 rounded-10 hover:text-gray-800 text-sm font-medium">
                                         ویرایش
                                     </a>
-                                    <a href="{% url 'docpages:delete_post' post.id %}" class="text-red-600 hover:text-red-800 text-sm font-medium">
+                                    <a href="{% url 'docpages:delete_post' post.id %}" class="text-red-600 bg-red-100 m-1 p-l-2 p-r-2 rounded-10 hover:text-red-800 text-sm font-medium">
                                         حذف
                                     </a>
                                 </div>
@@ -275,7 +220,7 @@
         const showPublishedBtn = document.getElementById('show-published');
         const showDraftsBtn = document.getElementById('show-drafts');
         const posts = document.querySelectorAll('.post-card');
-        
+
         if (showAllBtn && showPublishedBtn && showDraftsBtn) {
             showAllBtn.addEventListener('click', function() {
                 setActiveFilter(this);
@@ -283,7 +228,7 @@
                     post.style.display = 'block';
                 });
             });
-            
+
             showPublishedBtn.addEventListener('click', function() {
                 setActiveFilter(this);
                 posts.forEach(post => {
@@ -294,7 +239,7 @@
                     }
                 });
             });
-            
+
             showDraftsBtn.addEventListener('click', function() {
                 setActiveFilter(this);
                 posts.forEach(post => {
@@ -306,34 +251,34 @@
                 });
             });
         }
-        
+
         function setActiveFilter(activeBtn) {
             const buttons = [showAllBtn, showPublishedBtn, showDraftsBtn];
             buttons.forEach(btn => {
                 btn.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
                 btn.classList.add('text-gray-500', 'hover:text-gray-700');
             });
-            
+
             activeBtn.classList.remove('text-gray-500', 'hover:text-gray-700');
             activeBtn.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
         }
     });
-    
+
     // Mobile sidebar toggle
     document.addEventListener('DOMContentLoaded', function() {
         const sidebarToggle = document.getElementById('sidebarToggle');
         const closeSidebar = document.getElementById('closeSidebar');
         const sidebar = document.getElementById('sidebar');
-        
+
         if (sidebarToggle && closeSidebar && sidebar) {
             sidebarToggle.addEventListener('click', function() {
                 sidebar.classList.add('active');
             });
-            
+
             closeSidebar.addEventListener('click', function() {
                 sidebar.classList.remove('active');
             });
         }
     });
 </script>
-{% endblock %} 
+{% endblock %}

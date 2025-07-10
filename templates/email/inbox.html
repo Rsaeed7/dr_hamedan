@@ -1,110 +1,101 @@
 {% extends 'base.html' %}
+{% load persian_date %}
 
 {% block title %}صندوق ورودی{% endblock %}
-{% load persian_date %}
+
 {% block content %}
-<div class="bg-white rounded-lg shadow-md p-6">
-    <div class="flex justify-between items-center mb-6">
+<div class="bg-white rounded-lg shadow-md p-4 md:p-6">
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <h2 class="text-2xl font-bold text-gray-800">صندوق ورودی</h2>
-        <a class="bg-blue-100 rounded hover:bg-blue-600" href="{% url 'doctors:sent' %}">نامه های ارسال شده</a>
-        <a class="bg-green-300 rounded hover:bg-blue-600" href="{% url 'doctors:email_template_list' %}">قالب های آماده نامه</a>
-        <div class="flex items-center space-x-4 space-x-reverse">
-            <form method="get" class="flex items-center">
-                <input
-                    type="text"
-                    name="search"
-                    value="{{ search_query }}"
-                    placeholder="جستجو با شماره نامه، موضوع یا فرستنده..."
-                    class="w-64 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                <button type="submit" class="mr-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-                    </svg>
-                </button>
-            </form>
-            <a href="{% url 'doctors:send' %}" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+        <div class="flex flex-wrap gap-2">
+            <a class="bg-blue-100 text-blue-800 px-3 py-1 rounded hover:bg-blue-600 hover:text-white transition" href="{% url 'doctors:sent_messages' %}">نامه‌های ارسال شده</a>
+            <a class="bg-green-100 text-green-900 px-3 py-1 rounded hover:bg-green-600 hover:text-white transition" href="{% url 'doctors:email_template_list' %}">قالب‌های آماده</a>
+            <a href="{% url 'doctors:send_message' %}" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M10 2a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0V6H8a1 1 0 110-2h1V3a1 1 0 011-1z" />
                     <path fill-rule="evenodd" d="M2 9.5A3.5 3.5 0 005.5 13H9v2.586l-1.293-1.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 15.586V13h2.5a4.5 4.5 0 10-.616-8.958 4.002 4.002 0 10-7.753 1.977A3.5 3.5 0 002 9.5zm9 3.5H9V8a1 1 0 012 0v5z" clip-rule="evenodd" />
                 </svg>
-                نامه جدید
+               ارسال نامه جدید
             </a>
         </div>
     </div>
 
-    <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+    <!-- Search Bar -->
+    <form method="get" class="mb-6 w-full flex flex-col sm:flex-row gap-2 sm:items-center">
+        <input
+            type="text"
+            name="search"
+            value="{{ search_query }}"
+            placeholder="جستجو با شماره نامه، موضوع یا فرستنده..."
+            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition">
+            جستجو
+        </button>
+    </form>
+
+    <!-- Table -->
+    <div class="overflow-x-auto rounded-lg border border-gray-200">
+        <table class="min-w-full divide-y divide-gray-200 text-sm text-right">
+            <thead class="bg-gray-100">
                 <tr>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">شماره نامه</th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">فرستنده</th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">موضوع</th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاریخ</th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">عملیات</th>
+                    <th class="px-4 py-3 font-semibold text-gray-600">شماره نامه</th>
+                    <th class="px-4 py-3 font-semibold text-gray-600">فرستنده</th>
+                    <th class="px-4 py-3 font-semibold text-gray-600">موضوع</th>
+                    <th class="px-4 py-3 font-semibold text-gray-600">تاریخ</th>
+                    <th class="px-4 py-3 font-semibold text-gray-600">عملیات</th>
                 </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                {% for message in messages %}
-                <tr class="{% if not message.is_read %}bg-blue-50{% endif %} hover:bg-gray-50">
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-mono text-gray-900">{{ message.tracking_number }}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 h-10 w-10">
-                                {% if message.sender.profile_image %}
-                                <img class="h-10 w-10 rounded-full" src="{{ message.sender.profile_image.url }}" alt="">
-                                {% else %}
-                                <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                                    <span class="text-gray-600">{{ message.sender.user.get_full_name|first }}</span>
-                                </div>
-                                {% endif %}
+            <tbody class="bg-white divide-y divide-gray-100">
+                {% for message in emails %}
+                <tr class="{% if not message.is_read %}bg-blue-50{% endif %} hover:bg-gray-50 transition">
+                    <td class="px-4 py-3 font-mono">{{ message.tracking_number }}</td>
+                    <td class="px-4 py-3">
+                        <div class="flex items-center gap-2">
+                            {% if message.sender.profile_image %}
+                            <img src="{{ message.sender.profile_image.url }}" alt="" class="h-10 w-10 rounded-full object-cover">
+                            {% else %}
+                            <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600">
+                                {{ message.sender.user.get_full_name|first }}
                             </div>
-                            <div class="mr-4">
-                                <div class="text-sm font-medium text-gray-900">{{ message.sender.user.get_full_name }}</div>
-                                <div class="text-sm text-gray-500">{{ message.sender.specialization.title }}</div>
+                            {% endif %}
+                            <div>
+                                <div class="font-medium">{{ message.sender.user.get_full_name }}</div>
+                                <div class="text-gray-500 text-xs">{{ message.sender.specialization.title }}</div>
                             </div>
                         </div>
                     </td>
-                    <td class="px-6 py-4">
-                        <div class="text-sm font-medium text-gray-900">
-                            <a href="{% url 'doctors:detail' message.pk %}" class="hover:text-blue-600">
-                                {{ message.subject }}
-                                {% if not message.is_read %}
-                                <span class="inline-block bg-blue-500 text-white text-xs px-2 py-1 rounded-full mr-2">جدید</span>
-                                {% endif %}
-                                {% if message.is_important %}
-                                <span class="inline-block text-yellow-500">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                    </svg>
-                                </span>
-                                {% endif %}
-                            </a>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-500">{{ message.sent_at|persian_date_info }}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div class="flex space-x-2 space-x-reverse">
-                            <a href="{% url 'doctors:reply' message.pk %}" class="text-blue-600 hover:text-blue-900" title="پاسخ">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v1a1 1 0 11-2 0v-1a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 11-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    <td class="px-4 py-3">
+                        <a href="{% url 'doctors:message_detail' message.pk %}" class="text-blue-700 hover:underline">
+                            {{ message.subject }}
+                            {% if not message.is_read %}
+                            <span class="ml-1 bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">جدید</span>
+                            {% endif %}
+                            {% if message.is_important %}
+                            <span class="ml-1 text-yellow-500" title="مهم">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                 </svg>
+                            </span>
+                            {% endif %}
+                        </a>
+                    </td>
+                    <td class="px-4 py-3 text-gray-600">{{ message.sent_at|persian_date_info }}</td>
+                    <td class="px-4 py-3">
+                        <div class="flex gap-2 justify-end">
+                            <a href="{% url 'doctors:reply_message' message.pk %}" class="text-blue-600 hover:text-blue-800" title="پاسخ">
+                                ✉️
                             </a>
-                            <a href="{% url 'doctors:delete' message.pk %}" class="text-red-600 hover:text-red-900" title="حذف">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                </svg>
+                            <a href="{% url 'doctors:delete_message' message.pk %}" class="text-red-600 hover:text-red-800" title="حذف">
+                                🗑️
                             </a>
                         </div>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                    <td colspan="5" class="px-4 py-6 text-center text-gray-500">
                         هیچ نامه‌ای دریافت نکرده‌اید.
                     </td>
                 </tr>
@@ -113,37 +104,22 @@
         </table>
     </div>
 
+    <!-- Pagination -->
     {% if is_paginated %}
     <div class="mt-6 flex justify-center">
-        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+        <nav class="inline-flex rounded-md shadow-sm" aria-label="Pagination">
             {% if page_obj.has_previous %}
-            <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                <span class="sr-only">قبلی</span>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
-                </svg>
-            </a>
+            <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" class="px-3 py-1 border rounded-r-md bg-white hover:bg-gray-100 text-sm text-gray-700">قبلی</a>
             {% endif %}
-
             {% for num in page_obj.paginator.page_range %}
                 {% if page_obj.number == num %}
-                <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}" class="relative inline-flex items-center px-4 py-2 border border-blue-500 bg-blue-50 text-sm font-medium text-blue-600">
-                    {{ num }}
-                </a>
+                <span class="px-4 py-1 border bg-blue-500 text-white rounded">{{ num }}</span>
                 {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                    {{ num }}
-                </a>
+                <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}" class="px-4 py-1 border bg-white hover:bg-gray-100 text-sm">{{ num }}</a>
                 {% endif %}
             {% endfor %}
-
             {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                <span class="sr-only">بعدی</span>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                </svg>
-            </a>
+            <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" class="px-3 py-1 border rounded-l-md bg-white hover:bg-gray-100 text-sm text-gray-700">بعدی</a>
             {% endif %}
         </nav>
     </div>

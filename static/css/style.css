@@ -944,12 +944,13 @@ ul#additional_links li:after {
 }
 @media (max-width: 991px) {
   #custom-search-input {
-
     width: auto;
+  }
+  #custom-search-input .search-query{
+    width: 32%!important;
   }
 }
 #custom-search-input .search-query {
-  width: 100%;
   height: 50px;
   padding-right: 20px;
   border: 0;
@@ -958,13 +959,15 @@ ul#additional_links li:after {
   -ms-border-radius: 3px;
   border-radius: 50px;
   font-weight: 500;
-  font-size: 16px;
-  font-size: 1rem;
+  font-size: 10px;
   color: #333;
   border: solid 1px rgb(170, 184, 246);
+  border-radius: 0 50px 50px 0;
+  width: 18%;
 }
 #custom-search-input .search-query:focus {
-  outline: solid rgba(170, 184, 246, 0.6);
+  outline: none;
+  font-weight: bold;
 }
 @media (max-width: 575px) {
   #custom-search-input .search-query {
@@ -3459,11 +3462,6 @@ ul.treatments.checkout li.total {
     border: none;
   }
 }
-
-
-
-
-
 /*-------- 3.2 List --------*/
 ul.bullets {
   line-height: 1.8;
@@ -3641,6 +3639,37 @@ ul.bullets li:before {
 #toTop:hover {
   background-color: rgba(26, 186, 211, 0.28);
 }
+
+
+
+
+#online_visit {
+  width: 250px;
+  height: 40px;
+  background: #1e4460;
+  text-align: center;
+  padding: 10px;
+  line-height: 20px;
+  position: fixed;
+  bottom: 85px;
+  right: 15px;
+  cursor: pointer;
+  display: none;
+  color: #ffffff;
+  font-size: 15px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  border-radius: 50px;
+  z-index: 99;
+}
+#online_visit:before {
+  font-family: "fontello";
+  content: "\e935";
+  color: #81c88f;
+  margin-left: 5px;
+}
+
 
 /*-------- badges --------*/
 

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تست فونت‌های IRANSansWeb</title>
+    <link href="{% static 'css/fonts.css' %}" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .font-test {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .font-info {
+            background-color: #f5f5f5;
+            padding: 5px 10px;
+            margin-bottom: 10px;
+            border-radius: 3px;
+            font-size: 14px;
+            color: #666;
+        }
+        .sample-text {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>تست فونت‌های محلی IRANSansWeb</h1>
+    
+    <div class="font-test">
+        <div class="font-info">Ultra Light (font-weight: 200)</div>
+        <div class="sample-text font-ultra-light">
+            این متن با وزن Ultra Light نمایش داده می‌شود. ۱۲۳۴۵۶۷۸۹۰
+        </div>
+    </div>
+
+    <div class="font-test">
+        <div class="font-info">Light (font-weight: 300)</div>
+        <div class="sample-text font-light">
+            این متن با وزن Light نمایش داده می‌شود. ۱۲۳۴۵۶۷۸۹۰
+        </div>
+    </div>
+
+    <div class="font-test">
+        <div class="font-info">Regular (font-weight: 400)</div>
+        <div class="sample-text font-regular">
+            این متن با وزن Regular نمایش داده می‌شود. ۱۲۳۴۵۶۷۸۹۰
+        </div>
+    </div>
+
+    <div class="font-test">
+        <div class="font-info">Medium (font-weight: 500)</div>
+        <div class="sample-text font-medium">
+            این متن با وزن Medium نمایش داده می‌شود. ۱۲۳۴۵۶۷۸۹۰
+        </div>
+    </div>
+
+    <div class="font-test">
+        <div class="font-info">Bold (font-weight: 700)</div>
+        <div class="sample-text font-bold">
+            این متن با وزن Bold نمایش داده می‌شود. ۱۲۳۴۵۶۷۸۹۰
+        </div>
+    </div>
+
+    <h2>تست عناوین</h2>
+    <h1>عنوان H1 - سیستم رزرو نوبت پزشک</h1>
+    <h2>عنوان H2 - دکترها و کلینیک‌ها</h2>
+    <h3>عنوان H3 - تخصص‌های پزشکی</h3>
+    <h4>عنوان H4 - خدمات درمانی</h4>
+    <h5>عنوان H5 - اطلاعات بیشتر</h5>
+    <h6>عنوان H6 - جزئیات</h6>
+
+    <div class="font-test">
+        <div class="font-info">متن با کلاس persian-text</div>
+        <div class="persian-text">
+            <p>این متن با کلاس persian-text نمایش داده می‌شود و باید کاملاً راست‌چین و با فونت IRANSansWeb باشد.</p>
+            <p>تاریخ: ۱۴۰۳/۰۱/۰۱ - ساعت: ۱۰:۳۰</p>
+        </div>
+    </div>
+
+    <p style="background-color: #e8f5e8; padding: 15px; border-radius: 5px;">
+        <strong>راهنما:</strong> اگر فونت‌ها به درستی بارگذاری شده باشند، تمام متون فوق باید با فونت IRANSansWeb نمایش داده شوند. 
+        در صورتی که فونت‌ها بارگذاری نشده باشند، متن با فونت Tahoma یا Arial نمایش داده خواهد شد.
+    </p>
+
+    <script>
+        // بررسی بارگذاری فونت‌ها با JavaScript
+        document.fonts.ready.then(function() {
+            const fontTests = [
+                'IRANSansWeb 200',
+                'IRANSansWeb 300', 
+                'IRANSansWeb 400',
+                'IRANSansWeb 500',
+                'IRANSansWeb 700'
+            ];
+            
+            console.log('=== نتایج تست فونت‌ها ===');
+            fontTests.forEach(font => {
+                const isLoaded = document.fonts.check(`16px ${font}`);
+                console.log(`${font}: ${isLoaded ? '✅ بارگذاری شده' : '❌ بارگذاری نشده'}`);
+            });
+        });
+    </script>
+</body>
+</html> 

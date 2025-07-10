@@ -1,4 +1,12 @@
+@media (min-width: 1550px) {
+    .header-d-container{
+        min-width: 1450px!important;
+    }
+    .p-r-150-lg{
+        padding-right: 150px!important;
+    }
 
+}
 @media (min-width: 768px) {
     .btn_search {
         background: none !important;
@@ -12,6 +20,9 @@
     }
 }
 
+.border-light-2 {
+  border-color: rgba(168, 168, 168, 0.26) !important;
+}
 
 .hero_home .content h4 {
     margin: 0 0 0 0;
@@ -94,7 +105,8 @@
     right: 0;
     display: flex;
     justify-content: space-around;
-    background-color: rgba(255, 255, 255, 0.89);
+    font-weight: lighter;
+    background-color: rgba(255, 255, 255, 0.97);
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
     padding: 10px 0;
     z-index: 1000;
@@ -116,6 +128,7 @@
     display: block;
 }
 
+
 .bottom-nav .nav-item:hover {
     color: #007bff;
 }
@@ -128,6 +141,13 @@
 .text-dr {
     color: rgba(0, 0, 0, 0.59);
 }
+.text-red {
+    color: rgb(255, 0, 0)!important;
+}
+.text-turquoise {
+    color: rgb(100, 250, 255) !important;
+}
+
 
 
 @media (min-width: 768px) {
@@ -141,7 +161,21 @@
     border-radius: 20px;
 }
 /*---------*/
+.box_dashboard {
+  padding: 10px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  color: #555555;
+  -webkit-box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.05);
+  -moz-box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.05);
+  box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.05);
+  width: 49%;
+  margin-left: 5px;
 
+}
 
 
 .dr_box {
@@ -177,7 +211,31 @@ a.dr_box i {
 }
 
 .bg-bluelight{
-    background: rgba(239, 251, 252, 0.47);
+    background: rgba(239, 251, 252, 0.47) !important;
+}
+
+.bg-light-green{
+    background-color: #e0f9df !important;
+}
+
+.bg-light-blue{
+    background-color: #e5f1f9 !important;
+}
+
+.bg-light-violet{
+    background-color: #f6ecfb !important;
+}
+
+.bg-light-yellow{
+    background-color: #f8ffc7 !important;
+}
+
+.bg-light-blue2{
+    background-color: rgba(187, 231, 243, 0.73) !important;
+}
+
+.bg-light-red{
+    background-color: rgba(253, 154, 154, 0.8) !important;
 }
 
 .text_dr {
@@ -273,17 +331,16 @@ a.dr_box i {
     }
 }
 
-/* مخفی کردن اسکرول بار */
 .scroll-container {
-    overflow: auto;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+    overflow-x: auto; /* مخفی کردن اسکرول افقی */
+    overflow-y: auto;   /* فعال کردن اسکرول عمودی */
+    -ms-overflow-style: none;  /* مخفی کردن در IE و Edge */
+    scrollbar-width: none;     /* مخفی کردن در Firefox */
 }
 
 .scroll-container::-webkit-scrollbar {
-    display: none;
+    display: none; /* مخفی کردن در Chrome, Safari و Opera */
 }
-
 
 .flex {
     display: flex;
@@ -743,7 +800,7 @@ input:checked + .slider:before {
 
 .status-indicator {
     position: absolute;
-    top: 0;
+    top: 0; /* تغییر از bottom به top */
     right: 1px;
     width: 12px;
     height: 12px;
@@ -883,12 +940,27 @@ input#female-option:checked ~ .custom-slider {
   animation: pulse 1000ms ease-in-out;
 }
 
-
 ::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
-    display: none;
+    width: 8px;
+    height: 10px;
+    overflow-x: hidden;
 }
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1; /* رنگ پس‌زمینه */
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, #2a2a5a, #3a3a6d); /* سرمه‌ای تیره تا روشن */
+    border-radius: 3px;
+    border: 2px solid #fff;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(45deg, #121232, #2a2a5a); /* کمی تیره‌تر هنگام هاور */
+}
+
 
 
 
@@ -914,13 +986,18 @@ input#female-option:checked ~ .custom-slider {
     width: 700px;
     box-shadow: none;
     position: relative;
+
 }
+
+
 @media (max-width: 768px) {
     .modal-content {
         max-height: 80vh; /* حداکثر ارتفاع مودال 80% از ارتفاع صفحه */
         overflow-y: auto; /* اجازه اسکرول در جهت عمودی */
     }
+
 }
+
 .hidden {
     display: none;
 }
@@ -952,4 +1029,11 @@ input#female-option:checked ~ .custom-slider {
 }
 .contact_us.last {
   border-right: 0;
+}
+
+.border-story {
+  border: 2px solid;
+  border-color: #a6329e !important;
+  padding:3px;
+  font-size: 10px;
 }

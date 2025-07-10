@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const formData = new FormData(this);
 
-        fetch('{% url "doctors:update_location" %}', {
+        fetch('{% url "doctors:update_doctor_location" %}', {
             method: 'POST',
             body: formData,
             headers: {
