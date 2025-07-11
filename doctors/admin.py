@@ -1,5 +1,10 @@
 from django.contrib import admin
-from .models import Doctor, DoctorAvailability, Specialization,City,DrServices,DrComment,CommentTips,Email,Supplementary_insurance,DoctorRegistration,EmailTemplate, DoctorBlockedDay
+from .models import (
+    Doctor, Specialization, City, DrServices, DrComment,
+    DoctorAvailability, DoctorBlockedDay, CommentTips,
+    Supplementary_insurance, Email, EmailTemplate,
+    DoctorRegistration, Notification
+)
 
 admin.site.register(Email)
 admin.site.register(City)
@@ -122,3 +127,55 @@ class DoctorBlockedDayAdmin(admin.ModelAdmin):
     search_fields = ('doctor__user__username', 'doctor__user__first_name', 'doctor__user__last_name', 'reason')
     date_hierarchy = 'date'
     ordering = ['-date']
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = [
+        'title', 'user', 'notification_type', 'priority', 
+        'is_read', 'created_at', 'expires_at'
+    ]
+    list_filter = [
+        'notification_type', 'priority', 'is_read', 
+        'created_at', 'expires_at'
+    ]
+    search_fields = [
+        'title', 'message', 'user__first_name', 
+        'user__last_name', 'user__email'
+    ]
+    readonly_fields = ['created_at', 'updated_at', 'read_at']
+    
+    fieldsets = (
+        ('اطلاعات اصلی', {
+            'fields': ('user', 'title', 'message', 'notification_type', 'priority')
+        }),
+        ('وضعیت', {
+            'fields': ('is_read', 'read_at', 'is_visible')
+        }),
+        ('اطلاعات اضافی', {
+            'fields': ('link', 'expires_at', 'metadata'),
+            'classes': ('collapse',)
+        }),
+        ('تاریخ‌ها', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    actions = ['mark_as_read', 'mark_as_unread', 'delete_expired']
+    
+    def mark_as_read(self, request, queryset):
+        for notification in queryset:
+            notification.mark_as_read()
+        self.message_user(request, f'{queryset.count()} اعلان به عنوان خوانده شده علامت‌گذاری شد.')
+    mark_as_read.short_description = 'علامت‌گذاری به عنوان خوانده شده'
+    
+    def mark_as_unread(self, request, queryset):
+        for notification in queryset:
+            notification.mark_as_unread()
+        self.message_user(request, f'{queryset.count()} اعلان به عنوان خوانده نشده علامت‌گذاری شد.')
+    mark_as_unread.short_description = 'علامت‌گذاری به عنوان خوانده نشده'
+    
+    def delete_expired(self, request, queryset):
+        count = Notification.cleanup_expired()
+        self.message_user(request, f'{count} اعلان منقضی شده حذف شد.')
+    delete_expired.short_description = 'حذف اعلان‌های منقضی شده'

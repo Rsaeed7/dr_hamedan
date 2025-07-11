@@ -521,3 +521,229 @@ class DoctorRegistration(models.Model):
         self.save()
 
 
+class Notification(models.Model):
+    """
+    مدل اعلان‌ها برای پزشکان
+    """
+    NOTIFICATION_TYPES = (
+        ('info', 'اطلاعات'),
+        ('success', 'موفقیت'),
+        ('warning', 'هشدار'),
+        ('error', 'خطا'),
+        ('appointment', 'نوبت'),
+        ('message', 'پیام'),
+        ('system', 'سیستم'),
+    )
+    
+    PRIORITY_CHOICES = (
+        ('low', 'کم'),
+        ('medium', 'متوسط'),
+        ('high', 'زیاد'),
+        ('urgent', 'فوری'),
+    )
+    
+    # اطلاعات اصلی
+    user = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        related_name='notifications', 
+        verbose_name=_('کاربر')
+    )
+    title = models.CharField(max_length=200, verbose_name=_('عنوان'))
+    message = models.TextField(verbose_name=_('متن پیام'))
+    notification_type = models.CharField(
+        max_length=20, 
+        choices=NOTIFICATION_TYPES, 
+        default='info',
+        verbose_name=_('نوع اعلان')
+    )
+    priority = models.CharField(
+        max_length=20, 
+        choices=PRIORITY_CHOICES, 
+        default='medium',
+        verbose_name=_('اولویت')
+    )
+    
+    # وضعیت خواندن
+    is_read = models.BooleanField(default=False, verbose_name=_('خوانده شده'))
+    read_at = jmodels.jDateTimeField(null=True, blank=True, verbose_name=_('زمان خواندن'))
+    
+    # لینک اختیاری
+    link = models.URLField(
+        max_length=500, 
+        blank=True, 
+        null=True, 
+        verbose_name=_('لینک مرتبط')
+    )
+    
+    # اطلاعات اضافی
+    metadata = models.JSONField(
+        default=dict, 
+        blank=True, 
+        verbose_name=_('داده‌های اضافی')
+    )
+    
+    # تاریخ‌ها
+    created_at = jmodels.jDateTimeField(auto_now_add=True, verbose_name=_('تاریخ ایجاد'))
+    updated_at = jmodels.jDateTimeField(auto_now=True, verbose_name=_('تاریخ بروزرسانی'))
+    expires_at = jmodels.jDateTimeField(
+        null=True, 
+        blank=True, 
+        verbose_name=_('تاریخ انقضا')
+    )
+    
+    # نمایش
+    is_visible = models.BooleanField(default=True, verbose_name=_('قابل نمایش'))
+    
+    class Meta:
+        verbose_name = _('اعلان')
+        verbose_name_plural = _('اعلان‌ها')
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['user', 'is_read']),
+            models.Index(fields=['notification_type', 'created_at']),
+            models.Index(fields=['priority', 'created_at']),
+        ]
+    
+    def __str__(self):
+        return f"{self.user.get_full_name()} - {self.title}"
+    
+    def mark_as_read(self):
+        """علامت‌گذاری به عنوان خوانده شده"""
+        if not self.is_read:
+            self.is_read = True
+            self.read_at = timezone.now()
+            self.save(update_fields=['is_read', 'read_at'])
+    
+    def mark_as_unread(self):
+        """علامت‌گذاری به عنوان خوانده نشده"""
+        if self.is_read:
+            self.is_read = False
+            self.read_at = None
+            self.save(update_fields=['is_read', 'read_at'])
+    
+    def is_expired(self):
+        """بررسی انقضای اعلان"""
+        if self.expires_at:
+            return timezone.now() > self.expires_at
+        return False
+    
+    def get_priority_class(self):
+        """کلاس CSS برای اولویت"""
+        priority_classes = {
+            'low': 'text-secondary',
+            'medium': 'text-primary',
+            'high': 'text-warning',
+            'urgent': 'text-danger'
+        }
+        return priority_classes.get(self.priority, 'text-primary')
+    
+    def get_type_icon(self):
+        """آیکون بر اساس نوع اعلان"""
+        icons = {
+            'info': 'fa-info-circle',
+            'success': 'fa-check-circle',
+            'warning': 'fa-exclamation-triangle',
+            'error': 'fa-times-circle',
+            'appointment': 'fa-calendar-check',
+            'message': 'fa-envelope',
+            'system': 'fa-cog'
+        }
+        return icons.get(self.notification_type, 'fa-bell')
+    
+    def get_type_color(self):
+        """رنگ بر اساس نوع اعلان"""
+        colors = {
+            'info': 'info',
+            'success': 'success',
+            'warning': 'warning',
+            'error': 'danger',
+            'appointment': 'primary',
+            'message': 'secondary',
+            'system': 'dark'
+        }
+        return colors.get(self.notification_type, 'info')
+    
+    @classmethod
+    def create_notification(cls, user, title, message, notification_type='info', priority='medium', link=None, metadata=None, expires_at=None):
+        """
+        ایجاد اعلان جدید
+        """
+        return cls.objects.create(
+            user=user,
+            title=title,
+            message=message,
+            notification_type=notification_type,
+            priority=priority,
+            link=link,
+            metadata=metadata or {},
+            expires_at=expires_at
+        )
+    
+    @classmethod
+    def get_user_notifications(cls, user, unread_only=False, limit=None):
+        """
+        دریافت اعلان‌های کاربر
+        """
+        notifications = cls.objects.filter(
+            user=user,
+            is_visible=True
+        )
+        
+        if unread_only:
+            notifications = notifications.filter(is_read=False)
+        
+        # حذف اعلان‌های منقضی شده
+        notifications = notifications.filter(
+            models.Q(expires_at__isnull=True) | 
+            models.Q(expires_at__gt=timezone.now())
+        )
+        
+        notifications = notifications.order_by('-created_at')
+        
+        if limit:
+            notifications = notifications[:limit]
+        
+        return notifications
+    
+    @classmethod
+    def get_unread_count(cls, user):
+        """
+        تعداد اعلان‌های خوانده نشده
+        """
+        return cls.objects.filter(
+            user=user,
+            is_read=False,
+            is_visible=True
+        ).filter(
+            models.Q(expires_at__isnull=True) | 
+            models.Q(expires_at__gt=timezone.now())
+        ).count()
+    
+    @classmethod
+    def mark_all_as_read(cls, user):
+        """
+        علامت‌گذاری همه اعلان‌ها به عنوان خوانده شده
+        """
+        cls.objects.filter(
+            user=user,
+            is_read=False,
+            is_visible=True
+        ).update(
+            is_read=True,
+            read_at=timezone.now()
+        )
+    
+    @classmethod
+    def cleanup_expired(cls):
+        """
+        پاک کردن اعلان‌های منقضی شده
+        """
+        expired_notifications = cls.objects.filter(
+            expires_at__lt=timezone.now()
+        )
+        count = expired_notifications.count()
+        expired_notifications.delete()
+        return count
+
+

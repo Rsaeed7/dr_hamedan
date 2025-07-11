@@ -338,12 +338,22 @@ def doctor_dashboard(request):
         status='completed'
     ).aggregate(Sum('amount'))['amount__sum'] or 0
 
+    # دریافت اعلان‌های اخیر
+    from doctors.models import Notification
+    recent_notifications = Notification.get_user_notifications(
+        user=doctor.user,
+        limit=5
+    )
+    unread_notifications_count = Notification.get_unread_count(doctor.user)
+
     context = {
         'doctor': doctor,
         'total_appointments': total_appointments,
         'upcoming_appointments': upcoming_appointments,
         'todays_appointments': todays_appointments,
-        'total_earnings': total_earnings
+        'total_earnings': total_earnings,
+        'recent_notifications': recent_notifications,
+        'unread_notifications_count': unread_notifications_count
     }
 
     return render(request, 'doctors/doctor_dashboard.html', context)
@@ -508,13 +518,13 @@ def doctor_appointments(request):
     ).select_related(
         'patient', 'patient__user', 'day'
     ).prefetch_related(
-        'patient__medicalrecord_set'
+        'patient__records'
     )
     
     # اضافه کردن پرونده پزشکی به هر نوبت
     for appointment in appointments:
         if appointment.patient:
-            record = appointment.patient.medicalrecord_set.filter(doctor=doctor).first()
+            record = appointment.patient.records.filter(doctor=doctor).first()
             appointment.medical_record = record
         else:
             appointment.medical_record = None
@@ -1448,23 +1458,185 @@ def remove_blocked_day(request, pk):
 
 @login_required
 def get_blocked_days_json(request):
-    """دریافت روزهای مسدود شده به فرمت JSON برای تقویم"""
+    """دریافت روزهای مسدود شده در فرمت JSON"""
+    if not hasattr(request.user, 'doctor'):
+        return JsonResponse({'error': 'شما پزشک نیستید'}, status=403)
+    
+    doctor = request.user.doctor
+    blocked_days = DoctorBlockedDay.objects.filter(doctor=doctor).values_list('date', flat=True)
+    
+    # تبدیل تاریخ‌ها به فرمت ISO
+    blocked_dates = []
+    for date in blocked_days:
+        if hasattr(date, 'togregorian'):
+            blocked_dates.append(date.togregorian().isoformat())
+        else:
+            blocked_dates.append(date.isoformat())
+    
+    return JsonResponse({
+        'blocked_days': blocked_dates
+    })
+
+
+# =============================================================================
+# Notification Views
+# =============================================================================
+
+@login_required
+def get_notifications(request):
+    """دریافت اعلان‌های کاربر"""
+    from doctors.models import Notification
+    
+    # پارامترهای درخواست
+    unread_only = request.GET.get('unread_only', 'false').lower() == 'true'
+    limit = request.GET.get('limit', 10)
+    
     try:
-        doctor = request.user.doctor
-    except Doctor.DoesNotExist:
-        return JsonResponse({'blocked_days': []})
+        limit = int(limit)
+    except ValueError:
+        limit = 10
     
-    import jdatetime
+    # دریافت اعلان‌ها
+    notifications = Notification.get_user_notifications(
+        user=request.user,
+        unread_only=unread_only,
+        limit=limit
+    )
     
-    blocked_days = DoctorBlockedDay.objects.filter(doctor=doctor).values_list('date', 'reason')
-    
-    blocked_days_list = []
-    for block_date, reason in blocked_days:
-        jalali_date = jdatetime.date.fromgregorian(date=block_date)
-        blocked_days_list.append({
-            'date': block_date.strftime('%Y-%m-%d'),
-            'jalali_date': jalali_date.strftime('%Y/%m/%d'),
-            'reason': reason or 'مسدود شده'
+    # تبدیل به دیکشنری
+    notifications_data = []
+    for notification in notifications:
+        notifications_data.append({
+            'id': notification.id,
+            'title': notification.title,
+            'message': notification.message,
+            'notification_type': notification.notification_type,
+            'priority': notification.priority,
+            'is_read': notification.is_read,
+            'link': notification.link,
+            'created_at': notification.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'type_icon': notification.get_type_icon(),
+            'type_color': notification.get_type_color(),
+            'priority_class': notification.get_priority_class()
         })
     
-    return JsonResponse({'blocked_days': blocked_days_list})
+    return JsonResponse({
+        'notifications': notifications_data,
+        'unread_count': Notification.get_unread_count(request.user)
+    })
+
+
+@login_required
+def mark_notification_read(request, notification_id):
+    """علامت‌گذاری اعلان به عنوان خوانده شده"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'متد غیرمجاز'}, status=405)
+    
+    from doctors.models import Notification
+    
+    try:
+        notification = Notification.objects.get(
+            id=notification_id,
+            user=request.user
+        )
+        notification.mark_as_read()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'اعلان به عنوان خوانده شده علامت‌گذاری شد'
+        })
+    except Notification.DoesNotExist:
+        return JsonResponse({'error': 'اعلان پیدا نشد'}, status=404)
+
+
+@login_required
+def mark_all_notifications_read(request):
+    """علامت‌گذاری همه اعلان‌ها به عنوان خوانده شده"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'متد غیرمجاز'}, status=405)
+    
+    from doctors.models import Notification
+    
+    Notification.mark_all_as_read(request.user)
+    
+    return JsonResponse({
+        'success': True,
+        'message': 'همه اعلان‌ها به عنوان خوانده شده علامت‌گذاری شدند'
+    })
+
+
+@login_required
+def delete_notification(request, notification_id):
+    """حذف اعلان"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'متد غیرمجاز'}, status=405)
+    
+    from doctors.models import Notification
+    
+    try:
+        notification = Notification.objects.get(
+            id=notification_id,
+            user=request.user
+        )
+        notification.delete()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'اعلان حذف شد'
+        })
+    except Notification.DoesNotExist:
+        return JsonResponse({'error': 'اعلان پیدا نشد'}, status=404)
+
+
+@login_required
+def notifications_page(request):
+    """صفحه اعلان‌ها"""
+    from doctors.models import Notification
+    
+    # دریافت اعلان‌ها با صفحه‌بندی
+    from django.core.paginator import Paginator
+    
+    notifications = Notification.get_user_notifications(
+        user=request.user,
+        unread_only=False
+    )
+    
+    paginator = Paginator(notifications, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'notifications': page_obj,
+        'unread_count': Notification.get_unread_count(request.user)
+    }
+    
+    return render(request, 'doctors/notifications.html', context)
+
+
+@login_required
+def create_test_notification(request):
+    """ایجاد اعلان تست (فقط در محیط توسعه)"""
+    if not request.user.is_superuser:
+        return JsonResponse({'error': 'دسترسی غیرمجاز'}, status=403)
+    
+    from doctors.models import Notification
+    import random
+    
+    notification_types = ['info', 'success', 'warning', 'error', 'appointment', 'message', 'system']
+    priorities = ['low', 'medium', 'high', 'urgent']
+    
+    # ایجاد اعلان تست
+    test_notification = Notification.create_notification(
+        user=request.user,
+        title=f'اعلان تست {random.randint(1, 100)}',
+        message='این یک اعلان تست است که برای بررسی عملکرد سیستم ایجاد شده است.',
+        notification_type=random.choice(notification_types),
+        priority=random.choice(priorities),
+        link='/doctors/dashboard/'
+    )
+    
+    return JsonResponse({
+        'success': True,
+        'notification_id': test_notification.id,
+        'message': 'اعلان تست ایجاد شد'
+    })
