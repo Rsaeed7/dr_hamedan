@@ -153,51 +153,74 @@ def create_appointment_notifications(sender, instance, created, **kwargs):
     """
     ایجاد اعلان‌های مربوط به نوبت‌ها
     """
-    if not created:
-        return
-    
     try:
         from .models import Notification
         from datetime import datetime, timedelta
         
         # اعلان برای پزشک در صورت رزرو نوبت جدید
+        # این اعلان هم برای نوبت‌های جدید و هم برای بروزرسانی نوبت‌های موجود ارسال می‌شود
         if instance.status in ['pending', 'confirmed'] and instance.patient:
-            Notification.create_notification(
+            
+            # بررسی اینکه آیا این اعلان قبلاً برای این نوبت ارسال شده یا نه
+            existing_notification = Notification.objects.filter(
                 user=instance.doctor.user,
-                title='نوبت جدید رزرو شد',
-                message=f'بیمار {instance.patient.user.get_full_name()} نوبت جدیدی در تاریخ {instance.day.date} ساعت {instance.time} رزرو کرد.',
-                notification_type='appointment',
-                priority='medium',
-                link=f'/doctors/appointments/',
-                metadata={
-                    'appointment_id': instance.id,
-                    'patient_name': instance.patient.user.get_full_name(),
-                    'appointment_date': str(instance.day.date),
-                    'appointment_time': str(instance.time)
-                }
-            )
+                metadata__appointment_id=instance.id,
+                notification_type='appointment'
+            ).first()
             
-        # اعلان یادآوری برای پزشک (یک ساعت قبل از نوبت)
-        if instance.status == 'confirmed' and instance.patient:
-            appointment_datetime = datetime.combine(instance.day.date, instance.time)
-            reminder_time = appointment_datetime - timedelta(hours=1)
-            
-            if reminder_time > datetime.now():
+            # فقط اگر اعلان قبلی وجود نداشته باشد، اعلان جدید ایجاد کن
+            if not existing_notification:
                 Notification.create_notification(
                     user=instance.doctor.user,
-                    title='یادآوری نوبت',
-                    message=f'نوبت شما با بیمار {instance.patient.user.get_full_name()} یک ساعت دیگر آغاز می‌شود.',
+                    title='نوبت جدید رزرو شد',
+                    message=f'بیمار {instance.patient.user.get_full_name()} نوبت جدیدی در تاریخ {instance.day.date} ساعت {instance.time} رزرو کرد.',
                     notification_type='appointment',
-                    priority='high',
+                    priority='medium',
                     link=f'/doctors/appointments/',
                     metadata={
                         'appointment_id': instance.id,
                         'patient_name': instance.patient.user.get_full_name(),
                         'appointment_date': str(instance.day.date),
                         'appointment_time': str(instance.time)
-                    },
-                    expires_at=appointment_datetime + timedelta(hours=1)
+                    }
                 )
+            
+        # اعلان یادآوری برای پزشک (یک ساعت قبل از نوبت)
+        if instance.status == 'confirmed' and instance.patient:
+            try:
+                # Use Django timezone-aware datetime
+                from django.utils import timezone
+                import jdatetime
+                
+                # Convert Jalali date to Gregorian datetime
+                jalali_date = instance.day.date
+                if hasattr(jalali_date, 'togregorian'):
+                    gregorian_date = jalali_date.togregorian()
+                else:
+                    gregorian_date = jalali_date
+                    
+                appointment_datetime = datetime.combine(gregorian_date, instance.time)
+                appointment_datetime = timezone.make_aware(appointment_datetime)
+                reminder_time = appointment_datetime - timedelta(hours=1)
+                
+                if reminder_time > timezone.now():
+                    Notification.create_notification(
+                        user=instance.doctor.user,
+                        title='یادآوری نوبت',
+                        message=f'نوبت شما با بیمار {instance.patient.user.get_full_name()} یک ساعت دیگر آغاز می‌شود.',
+                        notification_type='appointment',
+                        priority='high',
+                        link=f'/doctors/appointments/',
+                        metadata={
+                            'appointment_id': instance.id,
+                            'patient_name': instance.patient.user.get_full_name(),
+                            'appointment_date': str(instance.day.date),
+                            'appointment_time': str(instance.time)
+                        },
+                        expires_at=appointment_datetime + timedelta(hours=1)
+                    )
+            except Exception as e:
+                logger.error(f"Error creating reminder notification: {str(e)}")
                 
     except Exception as e:
         logger.error(f"Error creating appointment notifications: {str(e)}")
