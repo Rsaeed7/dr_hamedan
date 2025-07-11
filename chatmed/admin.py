@@ -5,16 +5,34 @@ from django.utils.html import format_html
 
 @admin.register(ChatRequest)
 class ChatRequestAdmin(admin.ModelAdmin):
-    list_display = ('id', 'patient_info', 'doctor_info', 'status', 'created_at', 'updated_at')
-    list_filter = ('status', 'created_at', 'updated_at')
+    list_display = ('id', 'patient_info', 'doctor_info', 'status', 'payment_status', 'amount', 'created_at', 'updated_at')
+    list_filter = ('status', 'payment_status', 'created_at', 'updated_at')
     search_fields = (
         'patient__user__first_name',
         'patient__user__last_name',
         'doctor__user__first_name',
-        'doctor__user__last_name'
+        'doctor__user__last_name',
+        'patient_name',
+        'phone'
     )
     ordering = ('-created_at',)
     list_editable = ('status',)
+    readonly_fields = ('transaction_link', 'created_at', 'updated_at')
+    
+    fieldsets = (
+        ('اطلاعات اصلی', {
+            'fields': ('patient', 'doctor', 'disease_summary', 'status')
+        }),
+        ('اطلاعات پرداخت', {
+            'fields': ('amount', 'payment_status', 'transaction_link')
+        }),
+        ('اطلاعات بیمار', {
+            'fields': ('patient_name', 'patient_national_id', 'phone')
+        }),
+        ('تاریخ‌ها', {
+            'fields': ('created_at', 'updated_at')
+        }),
+    )
 
     def patient_info(self, obj):
         return format_html(
@@ -31,6 +49,20 @@ class ChatRequestAdmin(admin.ModelAdmin):
             f"Dr. {obj.doctor.user.get_full_name()}"
         )
     doctor_info.short_description = 'Doctor'
+    
+    def transaction_link(self, obj):
+        if obj.transaction:
+            return format_html(
+                '<a href="/admin/wallet/transaction/{}/change/">Transaction #{}</a>',
+                obj.transaction.id,
+                obj.transaction.id
+            )
+        return "No Transaction"
+    transaction_link.short_description = 'Transaction'
+    
+    def amount(self, obj):
+        return f"{obj.amount:,} تومان"
+    amount.short_description = 'Amount'
 
 @admin.register(ChatRoom)
 class ChatRoomAdmin(admin.ModelAdmin):

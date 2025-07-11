@@ -1,0 +1,333 @@
+{% extends 'base.html' %}
+
+{% block title %}اعلان‌ها - دکتر {{ user.last_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .notification-item {
+        transition: all 0.2s ease;
+    }
+    
+    .notification-item:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    
+    .notification-unread {
+        border-left: 4px solid #3b82f6;
+    }
+    
+    .notification-read {
+        opacity: 0.8;
+    }
+    
+    .notification-actions {
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+    
+    .notification-item:hover .notification-actions {
+        opacity: 1;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bg-gradiant min-h-screen rtl">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="bg-white rounded-20 shadow-sm p-6 mb-8">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold text_dr">اعلان‌ها</h1>
+                    <p class="text-secondary text-sm mt-1">مدیریت اعلان‌های خود</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    {% if unread_count > 0 %}
+                        <button onclick="markAllNotificationsRead()" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-check-double ml-1"></i>
+                            علامت‌گذاری همه ({{ unread_count }})
+                        </button>
+                    {% endif %}
+                    <a href="{% url 'doctors:doctor_dashboard' %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-arrow-right ml-1"></i>
+                        بازگشت به داشبورد
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications List -->
+        <div class="bg-white rounded-20 shadow-sm">
+            {% if notifications %}
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-lg font-bold text_dr">اعلان‌های شما</h2>
+                        <span class="text-sm text-secondary">{{ notifications.paginator.count }} اعلان</span>
+                    </div>
+                </div>
+                
+                <div class="divide-y divide-gray-200">
+                    {% for notification in notifications %}
+                        <div class="notification-item p-6 {% if not notification.is_read %}notification-unread bg-blue-50{% else %}notification-read{% endif %}" 
+                             data-notification-id="{{ notification.id }}">
+                            <div class="flex items-start">
+                                <!-- Icon -->
+                                <div class="w-12 h-12 rounded-12 flex items-center justify-center ml-4 flex-shrink-0
+                                            {% if notification.notification_type == 'success' %}bg-green-100 text-success
+                                            {% elif notification.notification_type == 'warning' %}bg-yellow-100 text-warning
+                                            {% elif notification.notification_type == 'error' %}bg-red-100 text-danger
+                                            {% elif notification.notification_type == 'appointment' %}bg-blue-100 text_dr
+                                            {% elif notification.notification_type == 'message' %}bg-purple-100 text_dr_3
+                                            {% elif notification.notification_type == 'system' %}bg-gray-100 text-secondary
+                                            {% else %}bg-gray-100 text-secondary{% endif %}">
+                                    <i class="fas {{ notification.get_type_icon }} text-lg"></i>
+                                </div>
+                                
+                                <!-- Content -->
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <div class="flex items-center">
+                                            <h3 class="font-bold text_dr text-lg">{{ notification.title }}</h3>
+                                            {% if not notification.is_read %}
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-2">
+                                                    جدید
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="flex items-center text-sm text-gray-500">
+                                            <i class="fas fa-clock ml-1"></i>
+                                            <span>{{ notification.created_at|timesince }} پیش</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <p class="text-secondary text-sm mb-3 leading-relaxed">{{ notification.message }}</p>
+                                    
+                                    <!-- Priority Badge -->
+                                    {% if notification.priority != 'medium' %}
+                                        <div class="mb-3">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                                        {% if notification.priority == 'urgent' %}bg-red-100 text-red-800
+                                                        {% elif notification.priority == 'high' %}bg-orange-100 text-orange-800
+                                                        {% elif notification.priority == 'low' %}bg-gray-100 text-gray-800
+                                                        {% endif %}">
+                                                {% if notification.priority == 'urgent' %}
+                                                    <i class="fas fa-exclamation-triangle ml-1"></i>
+                                                    فوری
+                                                {% elif notification.priority == 'high' %}
+                                                    <i class="fas fa-exclamation-circle ml-1"></i>
+                                                    اولویت بالا
+                                                {% elif notification.priority == 'low' %}
+                                                    <i class="fas fa-info-circle ml-1"></i>
+                                                    اولویت کم
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <!-- Actions -->
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-3">
+                                            {% if notification.link %}
+                                                <a href="{{ notification.link }}" 
+                                                   class="inline-flex items-center px-3 py-1 rounded-md text-sm font-medium text_dr bg-blue-50 hover:bg-blue-100">
+                                                    <i class="fas fa-external-link-alt ml-1"></i>
+                                                    مشاهده جزئیات
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="notification-actions flex items-center space-x-2">
+                                            {% if not notification.is_read %}
+                                                <button onclick="markNotificationRead({{ notification.id }})" 
+                                                        class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium text_dr hover:bg-blue-50">
+                                                    <i class="fas fa-check ml-1"></i>
+                                                    خوانده شده
+                                                </button>
+                                            {% endif %}
+                                            <button onclick="deleteNotification({{ notification.id }})" 
+                                                    class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium text-red-600 hover:bg-red-50">
+                                                <i class="fas fa-trash ml-1"></i>
+                                                حذف
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Pagination -->
+                {% if notifications.has_other_pages %}
+                    <div class="p-6 border-t border-gray-200">
+                        <div class="flex justify-center">
+                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                                {% if notifications.has_previous %}
+                                    <a href="?page={{ notifications.previous_page_number }}" 
+                                       class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                {% endif %}
+                                
+                                {% for num in notifications.paginator.page_range %}
+                                    {% if notifications.number == num %}
+                                        <span class="relative inline-flex items-center px-4 py-2 border border-blue-500 bg-blue-50 text-sm font-medium text-blue-600">
+                                            {{ num }}
+                                        </span>
+                                    {% else %}
+                                        <a href="?page={{ num }}" 
+                                           class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                            {{ num }}
+                                        </a>
+                                    {% endif %}
+                                {% endfor %}
+                                
+                                {% if notifications.has_next %}
+                                    <a href="?page={{ notifications.next_page_number }}" 
+                                       class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </a>
+                                {% endif %}
+                            </nav>
+                        </div>
+                    </div>
+                {% endif %}
+            {% else %}
+                <!-- Empty State -->
+                <div class="text-center py-12">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-5 5-5-5h5v-5a7.5 7.5 0 01-7.5-7.5"/>
+                    </svg>
+                    <h3 class="text-xl font-bold text_dr mb-2">اعلانی وجود ندارد</h3>
+                    <p class="text-secondary text-sm mb-6">هنوز اعلان جدیدی دریافت نکرده‌اید</p>
+                    <a href="{% url 'doctors:doctor_dashboard' %}" class="btn btn-primary">
+                        <i class="fas fa-arrow-right ml-1"></i>
+                        بازگشت به داشبورد
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+// Notification JavaScript functions (same as dashboard)
+function markNotificationRead(notificationId) {
+    fetch(`{% url 'doctors:mark_notification_read' 0 %}`.replace('0', notificationId), {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const notificationItem = document.querySelector(`[data-notification-id="${notificationId}"]`);
+            if (notificationItem) {
+                notificationItem.classList.remove('notification-unread', 'bg-blue-50');
+                notificationItem.classList.add('notification-read');
+                
+                // Remove "new" badge
+                const newBadge = notificationItem.querySelector('.bg-blue-100');
+                if (newBadge) {
+                    newBadge.remove();
+                }
+                
+                // Remove read button
+                const readButton = notificationItem.querySelector('button[onclick*="markNotificationRead"]');
+                if (readButton) {
+                    readButton.remove();
+                }
+            }
+            
+            // Update counter
+            const counter = document.querySelector('.btn-outline-primary');
+            if (counter) {
+                const currentCount = parseInt(counter.textContent.match(/\d+/)[0]);
+                if (currentCount <= 1) {
+                    counter.style.display = 'none';
+                } else {
+                    counter.innerHTML = `<i class="fas fa-check-double ml-1"></i>علامت‌گذاری همه (${currentCount - 1})`;
+                }
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+function markAllNotificationsRead() {
+    fetch('{% url "doctors:mark_all_notifications_read" %}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update all notifications
+            document.querySelectorAll('.notification-item').forEach(item => {
+                item.classList.remove('notification-unread', 'bg-blue-50');
+                item.classList.add('notification-read');
+                
+                // Remove "new" badges
+                const newBadge = item.querySelector('.bg-blue-100');
+                if (newBadge) {
+                    newBadge.remove();
+                }
+                
+                // Remove read buttons
+                const readButton = item.querySelector('button[onclick*="markNotificationRead"]');
+                if (readButton) {
+                    readButton.remove();
+                }
+            });
+            
+            // Hide mark all button
+            const markAllButton = document.querySelector('.btn-outline-primary');
+            if (markAllButton) {
+                markAllButton.style.display = 'none';
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+function deleteNotification(notificationId) {
+    if (confirm('آیا مطمئن هستید که می‌خواهید این اعلان را حذف کنید؟')) {
+        fetch(`{% url 'doctors:delete_notification' 0 %}`.replace('0', notificationId), {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const notificationItem = document.querySelector(`[data-notification-id="${notificationId}"]`);
+                if (notificationItem) {
+                    notificationItem.remove();
+                }
+                
+                // Check if there are no more notifications
+                const remainingNotifications = document.querySelectorAll('.notification-item');
+                if (remainingNotifications.length === 0) {
+                    window.location.reload();
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+}
+</script>
+{% endblock %} 

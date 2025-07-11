@@ -26,7 +26,7 @@ appointment system (one step before submitting the request is also necessary).
 @require_POST
 def request_chat(request, doctor_id):
     doctor = get_object_or_404(Doctor, id=doctor_id)
-    if  hasattr(request.user, 'doctor'):
+    if hasattr(request.user, 'doctor'):
         messages.error(request, 'فقط بیماران می‌توانند درخواست چت ارسال کنند')
         return redirect('doctors:index')
     else:
@@ -35,21 +35,73 @@ def request_chat(request, doctor_id):
         if existing_active_request:
             messages.info(request, 'شما یک درخواست فعال با پزشک مورد نظر دارید!')
             return redirect('chat:request_status', request_id=existing_active_request.id)
+    
     user = request.user
     patient_name = request.POST.get('patient_name', '').strip()
     patient_last_name = request.POST.get('patient_last_name', '').strip()
     patient_national_id = request.POST.get('patient_national_id', '').strip()
     disease_summary = request.POST.get('disease_summary', '').strip()
+    phone = request.POST.get('phone', user.phone if hasattr(user, 'phone') else '').strip()
+    
+    # Update user information
     user.first_name = patient_name
     user.last_name = patient_last_name
     user.save()
+    
     if patient_national_id:
         user.patient.national_id = patient_national_id
         user.patient.save()
 
-    new_request = ChatRequest.objects.create(patient=patient, doctor=doctor,disease_summary=disease_summary)
-    messages.success(request, 'درخواست چت با موفقیت ثبت شد')
-    return redirect('chat:request_status', request_id=new_request.id)
+    # Create chat request with payment information
+    consultation_fee = doctor.online_visit_fee
+    full_name = f"{patient_name} {patient_last_name}".strip()
+    
+    new_request = ChatRequest.objects.create(
+        patient=patient, 
+        doctor=doctor,
+        disease_summary=disease_summary,
+        amount=consultation_fee,
+        patient_name=full_name,
+        patient_national_id=patient_national_id,
+        phone=phone
+    )
+    
+    # Process payment
+    success, message = new_request.process_payment(user)
+    
+    if success:
+        messages.success(request, f'درخواست چت با موفقیت ثبت شد. {message}')
+        return redirect('chat:request_status', request_id=new_request.id)
+    else:
+        # Delete the request if payment failed
+        new_request.delete()
+        
+        messages.error(request, message)
+        
+        # If insufficient balance, redirect to wallet deposit
+        if "موجودی کیف پول کافی نیست" in message:
+            from wallet.models import Wallet
+            from django.urls import reverse
+            
+            # Calculate required amount for deposit
+            wallet, created = Wallet.objects.get_or_create(user=request.user)
+            needed_amount = max(0, consultation_fee - wallet.balance)
+            
+            # Add 10% extra for safety
+            suggested_amount = int(needed_amount * 1.1)
+            
+            # Round to nearest 10,000 tomans
+            suggested_amount = ((suggested_amount + 9999) // 10000) * 10000
+            
+            # Minimum 10,000 tomans
+            suggested_amount = max(10000, suggested_amount)
+            
+            # Redirect to deposit page with suggested amount
+            deposit_url = f"{reverse('wallet:deposit')}?amount={suggested_amount}&redirect_to={request.path}"
+            messages.warning(request, f'برای درخواست مشاوره آنلاین نیاز به شارژ کیف پول دارید. به صفحه شارژ هدایت می‌شوید.')
+            return redirect(deposit_url)
+        
+        return redirect('chat:list_doctors')
 
 
 @login_required
@@ -69,6 +121,10 @@ def manage_chat_request(request, request_id, action):
     chat_request = get_object_or_404(ChatRequest, id=request_id, doctor__user=request.user)
 
     if action == 'approve':
+        # Check if payment has been made
+        if chat_request.payment_status != 'paid':
+            return JsonResponse({'status': 'error', 'message': 'پرداخت انجام نشده است'}, status=400)
+        
         chat_request.status = ChatRequest.APPROVED
         chat_request.save()
 
@@ -82,6 +138,33 @@ def manage_chat_request(request, request_id, action):
     elif action == 'reject':
         chat_request.status = ChatRequest.REJECTED
         chat_request.save()
+        
+        # Process refund if payment was made
+        if chat_request.payment_status == 'paid' and chat_request.transaction:
+            from wallet.models import Transaction
+            try:
+                Transaction.objects.create(
+                    user=chat_request.transaction.user,
+                    wallet=chat_request.transaction.wallet,
+                    amount=chat_request.amount,
+                    transaction_type='refund',
+                    payment_method='wallet',
+                    status='completed',
+                    description=f'بازپرداخت مشاوره رد شده - دکتر {chat_request.doctor.user.get_full_name()}',
+                    related_transaction=chat_request.transaction,
+                    metadata={
+                        'chat_request_id': chat_request.id,
+                        'refund_reason': 'doctor_rejection'
+                    }
+                )
+                # Update wallet balance
+                chat_request.transaction.wallet.add_balance(chat_request.amount)
+                chat_request.payment_status = 'refunded'
+                chat_request.save()
+            except Exception as e:
+                # Log error but don't prevent rejection
+                pass
+        
         return JsonResponse({'status': 'rejected'})
 
     elif action == "finished":
@@ -245,6 +328,7 @@ class OnDoctorListView(ListView):
     model = Doctor
     template_name = 'chat/online_doctors.html'
     context_object_name = 'doctors'
+    paginate_by = 10  # Show 10 doctors per page
 
 
     def get_queryset(self):
@@ -296,13 +380,20 @@ class OnDoctorListView(ListView):
         context = super().get_context_data(**kwargs)
         params = self.get_filter_params()
 
+        # Get user's wallet balance if authenticated
+        balance = 0
+        if self.request.user.is_authenticated:
+            from wallet.models import Wallet
+            wallet, created = Wallet.objects.get_or_create(user=self.request.user)
+            balance = wallet.balance
+
         context.update({
             'specializations': Specialization.objects.all().order_by('name'),
             'supplementary_list': params['supplementary'],
             'current_filters': params,
             'specialty': params['specialty'],
             'available_doctors': Doctor.objects.filter(availability__is_available=True).select_related('user'),
-
+            'balance': balance,
         })
         return context
 
