@@ -9,7 +9,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('doctors', '0015_doctorblockedday'),
+        ('doctors', '0014_emailtemplate'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
