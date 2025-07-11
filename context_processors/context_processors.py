@@ -3,6 +3,7 @@ from doctors.models import Specialization,City
 from wallet.models import Transaction, Wallet
 
 def context_processors(request):
+
     """
     Context processor to make all specializations available in all templates
     """
@@ -29,11 +30,14 @@ def context_processors(request):
     else:
         transactions = []
 
+
     return {
         'specializations': specializations,
         'contact': contact,
         'cities': cities,
         'balance': balance,
+
         'wallet': wallet,
         'recent_transactions': transactions
+
     }

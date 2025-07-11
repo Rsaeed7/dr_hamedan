@@ -1,0 +1,237 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block body %}
+<div class="container py-5">
+  <div class="text-center mb-5">
+    <h1 class="display-4 mb-3">پرسش‌های متداول</h1>
+    <p class="lead text-muted">سوالات رایج کاربران در دکترهمدان</p>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="mb-4" id="accordion">
+        <h3 class="h5 mb-3 pb-2 border-bottom">سوالات عمومی</h3>
+
+        <div class="card border-0 mb-2 shadow-sm">
+          <div class="card-header bg-white d-flex justify-content-between align-items-center" data-toggle="collapse" data-target="#faq1" style="cursor:pointer;">
+            <span class="font-weight-bold text-right">چگونه در دکترهمدان نوبت بگیرم؟</span>
+            <i class="icon-plus toggle-icon text-muted"></i>
+          </div>
+          <div id="faq1" class="collapse" data-parent="#accordion">
+            <div class="card-body bg-light text-right">
+              <ol class="pr-3">
+                <li>وارد سایت دکترهمدان شوید</li>
+                <li>تخصص یا نام پزشک مورد نظر خود را جستجو کنید</li>
+                <li>روی پزشک مورد نظر کلیک کنید</li>
+                <li>زمان و تاریخ مورد نظر خود را انتخاب نمایید</li>
+                <li>اطلاعات خود را تکمیل و نوبت را نهایی کنید</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        <div class="card border-0 mb-2 shadow-sm">
+          <div class="card-header bg-white d-flex justify-content-between align-items-center" data-toggle="collapse" data-target="#faq2" style="cursor:pointer;">
+            <span class="font-weight-bold text-right">آیا برای دریافت نوبت نیاز به ثبت‌نام دارم؟</span>
+            <i class="icon-plus toggle-icon text-muted"></i>
+          </div>
+          <div id="faq2" class="collapse" data-parent="#accordion">
+            <div class="card-body bg-light text-right">
+              بله، برای دریافت نوبت نیاز دارید یک حساب کاربری در دکترهمدان ایجاد کنید. این فرآیند بسیار ساده است و تنها چند دقیقه زمان می‌برد.
+            </div>
+          </div>
+        </div>
+
+        <div class="card border-0 mb-2 shadow-sm">
+          <div class="card-header bg-white d-flex justify-content-between align-items-center" data-toggle="collapse" data-target="#faq3" style="cursor:pointer;">
+            <span class="font-weight-bold text-right">هزینه دریافت نوبت چقدر است؟</span>
+            <i class="icon-plus toggle-icon text-muted"></i>
+          </div>
+          <div id="faq3" class="collapse" data-parent="#accordion">
+            <div class="card-body bg-light text-right">
+              دریافت نوبت در دکترهمدان کاملاً رایگان است. شما تنها هزینه ویزیت پزشک را در مطب پرداخت خواهید کرد.
+            </div>
+          </div>
+        </div>
+
+        <div class="card border-0 mb-2 shadow-sm">
+          <div class="card-header bg-white d-flex justify-content-between align-items-center" data-toggle="collapse" data-target="#faq4" style="cursor:pointer;">
+            <span class="font-weight-bold text-right">چگونه می‌توانم نوبت خود را لغو کنم؟</span>
+            <i class="icon-plus toggle-icon text-muted"></i>
+          </div>
+          <div id="faq4" class="collapse" data-parent="#accordion">
+            <div class="card-body bg-light text-right">
+              <ol class="pr-3">
+                <li>وارد حساب کاربری خود شوید</li>
+                <li>به بخش "نوبت‌های من" بروید</li>
+                <li>روی نوبت مورد نظر کلیک کنید</li>
+                <li>گزینه "لغو نوبت" را انتخاب نمایید</li>
+              </ol>
+              توجه: لطفاً حداقل 2 ساعت قبل از زمان نوبت، آن را لغو کنید.
+            </div>
+          </div>
+        </div>
+
+        <h3 class="h5 mb-3 pb-2 border-bottom mt-5">سوالات پزشکان</h3>
+
+        <div class="card border-0 mb-2 shadow-sm">
+          <div class="card-header bg-white d-flex justify-content-between align-items-center" data-toggle="collapse" data-target="#faq5" style="cursor:pointer;">
+            <span class="font-weight-bold text-right">چگونه می‌توانم به عنوان پزشک در دکترهمدان ثبت‌نام کنم؟</span>
+            <i class="icon-plus toggle-icon text-muted"></i>
+          </div>
+          <div id="faq5" class="collapse" data-parent="#accordion">
+            <div class="card-body bg-light text-right">
+              پزشکان محترم می‌توانند از طریق لینک "ثبت‌نام پزشکان" در پایین صفحه، فرم مربوطه را پر کنند. پس از تایید مدارک توسط تیم دکترهمدان، پنل پزشک برای شما فعال خواهد شد.
+            </div>
+          </div>
+        </div>
+
+        <div class="card border-0 mb-2 shadow-sm">
+          <div class="card-header bg-white d-flex justify-content-between align-items-center" data-toggle="collapse" data-target="#faq6" style="cursor:pointer;">
+            <span class="font-weight-bold text-right">آیا امکان مدیریت برنامه زمانبندی در پنل پزشک وجود دارد؟</span>
+            <i class="icon-plus toggle-icon text-muted"></i>
+          </div>
+          <div id="faq6" class="collapse" data-parent="#accordion">
+            <div class="card-body bg-light text-right">
+              بله، پزشکان محترم می‌توانند در پنل کاربری خود روزها و ساعات کاری، تعطیلات و زمان‌های مرخصی را مدیریت کنند.
+            </div>
+          </div>
+        </div>
+
+        <h3 class="h5 mb-3 pb-2 border-bottom mt-5">مشکلات فنی</h3>
+
+        <div class="card border-0 mb-2 shadow-sm">
+          <div class="card-header bg-white d-flex justify-content-between align-items-center" data-toggle="collapse" data-target="#faq7" style="cursor:pointer;">
+            <span class="font-weight-bold text-right">پیام "زمان مورد نظر قابل رزرو نیست" را دریافت می‌کنم، چرا؟</span>
+            <i class="icon-plus toggle-icon text-muted"></i>
+          </div>
+          <div id="faq7" class="collapse" data-parent="#accordion">
+            <div class="card-body bg-light text-right">
+              این پیام ممکن است به دلایل زیر نمایش داده شود:
+              <ul class="pr-3">
+                <li>زمان انتخاب شده قبلاً رزرو شده است</li>
+                <li>پزشک در آن زمان تعطیل است</li>
+                <li>مشکل موقتی در ارتباط با سرور وجود دارد</li>
+              </ul>
+              لطفاً زمان دیگری را انتخاب کنید یا صفحه را رفرش نمایید.
+            </div>
+          </div>
+        </div>
+
+        <div class="card border-0 mb-2 shadow-sm">
+          <div class="card-header bg-white d-flex justify-content-between align-items-center" data-toggle="collapse" data-target="#faq8" style="cursor:pointer;">
+            <span class="font-weight-bold text-right">رمز عبورم را فراموش کرده‌ام، چه کار کنم؟</span>
+            <i class="icon-plus toggle-icon text-muted"></i>
+          </div>
+          <div id="faq8" class="collapse" data-parent="#accordion">
+            <div class="card-body bg-light text-right">
+              روی لینک "فراموشی رمز عبور" در صفحه ورود کلیک کنید. ایمیل خود را وارد نمایید تا لینک تغییر رمز برای شما ارسال شود.
+            </div>
+          </div>
+        </div>
+
+        <div class="card border-0 mb-2 shadow-sm">
+          <div class="card-header bg-white d-flex justify-content-between align-items-center" data-toggle="collapse" data-target="#faq9" style="cursor:pointer;">
+            <span class="font-weight-bold text-right">آیا اپلیکیشن موبایل دکترهمدان وجود دارد؟</span>
+            <i class="icon-plus toggle-icon text-muted"></i>
+          </div>
+          <div id="faq9" class="collapse" data-parent="#accordion">
+            <div class="card-body bg-light text-right">
+              بله، اپلیکیشن دکترهمدان برای سیستم‌عامل‌های اندروید و iOS موجود است. می‌توانید آن را از بازار یا کافه‌بازار (برای اندروید) و اپ استور (برای iOS) دانلود کنید.
+            </div>
+          </div>
+        </div>
+
+        <h3 class="h5 mb-3 pb-2 border-bottom mt-5">اطلاعات پرداخت</h3>
+
+        <div class="card border-0 mb-2 shadow-sm">
+          <div class="card-header bg-white d-flex justify-content-between align-items-center" data-toggle="collapse" data-target="#faq10" style="cursor:pointer;">
+            <span class="font-weight-bold text-right">آیا امکان پرداخت آنلاین هزینه ویزیت وجود دارد؟</span>
+            <i class="icon-plus toggle-icon text-muted"></i>
+          </div>
+          <div id="faq10" class="collapse" data-parent="#accordion">
+            <div class="card-body bg-light text-right">
+              در حال حاضر پرداخت هزینه ویزیت به صورت حضوری در مطب پزشک انجام می‌شود. اما به زودی امکان پرداخت آنلاین نیز اضافه خواهد شد.
+            </div>
+          </div>
+        </div>
+
+        <div class="card border-0 mb-2 shadow-sm">
+          <div class="card-header bg-white d-flex justify-content-between align-items-center" data-toggle="collapse" data-target="#faq11" style="cursor:pointer;">
+            <span class="font-weight-bold text-right">آیا هزینه نوبت‌گیری برای بیماران خاص تخفیف دارد؟</span>
+            <i class="icon-plus toggle-icon text-muted"></i>
+          </div>
+          <div id="faq11" class="collapse" data-parent="#accordion">
+            <div class="card-body bg-light text-right">
+              بله، بیماران خاص با ارائه مدارک مربوطه می‌توانند از تخفیف‌های ویژه در برخی مطب‌ها استفاده کنند. لطفاً هنگام رزرو نوبت، این موضوع را با منشی مطب هماهنگ کنید.
+            </div>
+          </div>
+        </div>
+
+        <h3 class="h5 mb-3 pb-2 border-bottom mt-5">سایر سوالات</h3>
+
+        <div class="card border-0 mb-2 shadow-sm">
+          <div class="card-header bg-white d-flex justify-content-between align-items-center" data-toggle="collapse" data-target="#faq12" style="cursor:pointer;">
+            <span class="font-weight-bold text-right">چگونه می‌توانم به پزشک مورد نظر امتیاز بدهم یا نظر ثبت کنم؟</span>
+            <i class="icon-plus toggle-icon text-muted"></i>
+          </div>
+          <div id="faq12" class="collapse" data-parent="#accordion">
+            <div class="card-body bg-light text-right">
+              پس از مراجعه به پزشک، در پنل کاربری شما بخشی به نام "نظرات" فعال می‌شود. می‌توانید در این بخش تجربه خود را با دیگران به اشتراک بگذارید.
+            </div>
+          </div>
+        </div>
+
+        <div class="card border-0 mb-2 shadow-sm">
+          <div class="card-header bg-white d-flex justify-content-between align-items-center" data-toggle="collapse" data-target="#faq13" style="cursor:pointer;">
+            <span class="font-weight-bold text-right">آیا امکان دریافت نوبت اورژانسی وجود دارد؟</span>
+            <i class="icon-plus toggle-icon text-muted"></i>
+          </div>
+          <div id="faq13" class="collapse" data-parent="#accordion">
+            <div class="card-body bg-light text-right">
+              در حال حاضر دکترهمدان خدمات نوبت‌دهی اورژانسی ارائه نمی‌دهد. در موارد اورژانسی لطفاً به مراکز درمانی مراجعه کنید یا با شماره 115 تماس بگیرید.
+            </div>
+          </div>
+        </div>
+
+        <div class="card border-0 mb-2 shadow-sm">
+          <div class="card-header bg-white d-flex justify-content-between align-items-center" data-toggle="collapse" data-target="#faq14" style="cursor:pointer;">
+            <span class="font-weight-bold text-right">چگونه می‌توانم با پشتیبانی دکترهمدان تماس بگیرم؟</span>
+            <i class="icon-plus toggle-icon text-muted"></i>
+          </div>
+          <div id="faq14" class="collapse" data-parent="#accordion">
+            <div class="card-body bg-light text-right">
+              شما می‌توانید از راه‌های زیر با ما در ارتباط باشید:
+              <ul class="pr-3">
+                <li>تلفن پشتیبانی: ۰۸۱-۳۸۴۵۰۰۰۰</li>
+                <li>ایمیل: support@doctorhamedan.ir</li>
+                <li>پیام از طریق فرم تماس در سایت</li>
+                <li>چت آنلاین (در ساعات اداری)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function(){
+    $('#accordion .card-header').click(function(){
+      const icon = $(this).find('.toggle-icon');
+      $('#accordion .toggle-icon').removeClass('fa-minus').addClass('fa-plus');
+      icon.toggleClass('fa-plus fa-minus');
+    });
+
+    $('#accordion .collapse').on('hide.bs.collapse', function () {
+      $(this).prev().find('.toggle-icon').removeClass('fa-minus').addClass('fa-plus');
+    }).on('show.bs.collapse', function () {
+      $(this).prev().find('.toggle-icon').removeClass('fa-plus').addClass('fa-minus');
+    });
+  });
+</script>
+
+{% endblock %}

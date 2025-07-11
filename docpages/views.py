@@ -73,14 +73,12 @@ def post_detail(request, post_id):
     if request.method == 'POST':
         # Handle comment submission
         name = request.POST.get('name')
-        email = request.POST.get('email')
         body = request.POST.get('body')
         
-        if name and email and body:
+        if name and body:
             Comment.objects.create(
                 post=post,
                 name=name,
-                email=email,
                 body=body,
                 user=request.user if request.user.is_authenticated else None,
                 approved=False  # Needs approval first

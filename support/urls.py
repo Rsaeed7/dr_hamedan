@@ -6,6 +6,7 @@ app_name = 'support'
 urlpatterns = [
     path('about_us/', views.about_us, name='about_us'),
     path('for_doctors/', views.for_doctors, name='for_doctors'),
+    path('frequently/', views.frequently, name='frequently'),
     path('contact_us/', views.contact_us, name='contact_us'),
     path('page_not_found/', views.page_not_found, name='404'),
     path('room/<int:room_id>/', views.chat_room, name='chat_room'),

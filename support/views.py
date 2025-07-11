@@ -156,6 +156,9 @@ def about_us(request):
 def for_doctors(request):
     return render(request, 'about_us/for_doctors.html')
 
+def frequently(request):
+    return render(request, 'about_us/frequently.html')
+
 def contact_us(request):
     if request.method == 'POST':
         form = ContactForm(request.POST)
