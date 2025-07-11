@@ -262,7 +262,7 @@
                     </div>
                 {% endif %}
             </div>
-        </div>
+
 
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
@@ -367,7 +367,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+
 
         <!-- Quick Actions -->
         <div class="bg-white rounded-lg shadow p-6 mb-6 animate-fade" style="animation-delay: 0.5s;">
@@ -689,7 +689,8 @@
                         <a href="{% url 'doctors:doctor_availability' %}" class="text-sm text_dr hover:underline">
                             مدیریت زمان‌های حضور
                             </a>
-<!-- 
+                    {% endif %}
+<!--
             {% if todays_appointments %}
                 <div class="divide-y divide-gray-200">
                     {% for appointment in todays_appointments %}
@@ -812,8 +813,7 @@
             {% endif %}
         </div>
 
-    </div>
-</div>
+
 
 
 <script>
@@ -872,13 +872,13 @@ function markAllNotificationsRead() {
                     readButton.remove();
                 }
             });
-            
+
             // Hide the "mark all read" button
             const markAllButton = document.querySelector('button[onclick="markAllNotificationsRead()"]');
             if (markAllButton) {
                 markAllButton.style.display = 'none';
             }
-            
+
             updateNotificationCount();
         }
     })
@@ -904,7 +904,7 @@ function deleteNotification(notificationId) {
                     notificationItem.remove();
                 }
                 updateNotificationCount();
-                
+
                 // Check if there are no more notifications
                 const remainingNotifications = document.querySelectorAll('.notification-item');
                 if (remainingNotifications.length === 0) {
@@ -950,5 +950,4 @@ setInterval(function() {
         });
 }, 30000);
 </script>
-{% endblock %} 
-
+{% endblock %}
