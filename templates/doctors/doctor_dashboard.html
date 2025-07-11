@@ -199,330 +199,200 @@
 {% endblock %}
 
 {% block content %}
-
 <div class="bg-gradiant min-h-screen rtl">
     <div class="flex flex-col md:flex-row">
-        <!-- Simplified Sidebar -->
+        <!-- Sidebar -->
         <div class="w-full md:w-64 sidebar shadow-sm">
             <div class="p-4">
+                <!-- Doctor Profile Card -->
                 <a href="{% url 'doctors:doctor_profile' %}" class="block">
                     <div class="profile-card p-4 text-white">
-                    <div class="flex items-center">
-                        {% if doctor.profile_image %}
-                            <img src="{{ doctor.profile_image.url }}" alt="{{ doctor }}"
+                        <div class="flex items-center">
+                            {% if doctor.profile_image %}
+                                <img src="{{ doctor.profile_image.url }}" alt="{{ doctor }}"
                                      class="w-12 h-12 round50 object-cover ml-3">
-                        {% else %}
+                            {% else %}
                                 <div class="w-12 h-12 round50 bg-white bg-opacity-20 flex items-center justify-center ml-3">
                                     <span class="text-white text-lg font-bold">{{ doctor.user.first_name|first }}{{ doctor.user.last_name|first }}</span>
-                            </div>
-                        {% endif %}
-                        <div>
+                                </div>
+                            {% endif %}
+                            <div>
                                 <h2 class="font-bold">دکتر {{ doctor.user.last_name }}</h2>
                                 <p class="text-white text-opacity-80 text-xs">{{ doctor.specialization }}</p>
                             </div>
                         </div>
                     </div>
                 </a>
-                </div>
-<!--
-<div class="flex">
- 
-    <div class="max-w-7xl w-full">
 
-        <div class="bg-white rounded-lg shadow mb-6 p-6 animate-fade">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div>
-                    <h1 class="text-2xl font-extrabold text_dr_3 mb-2">
-                        سلام دکتر {{ doctor.user.last_name }} 👋
-                    </h1>
-                    <p class="text-gray-500 mb-3">{{ today|date:"l، Y/m/d" }}</p>
-
-                    <div class="flex flex-wrap items-center">
-                        <div class="bg-blue-100 rounded-full px-4 py-2 mr-4 mb-2 flex items-center text-blue-600">
-                            <i class="icon-calendar-8 mr-2"></i>
-                            <span>{{ today_appointments }} نوبت امروز</span>
+                <!-- Navigation Links -->
+                <div class="mt-4 space-y-2">
+                    <a href="{% url 'doctors:doctor_availability' %}" class="nav-item flex items-center px-3 py-2 text-secondary hover:text_dr">
+                        <div class="w-7 h-7 bg-blue-50 rounded-5 flex items-center justify-center ml-2">
+                            <i class="icon-clock-3 text-sm text_dr"></i>
                         </div>
- -->
+                        <span>مدیریت زمان‌ها</span>
+                    </a>
 
-                        <a href="{% url 'doctors:doctor_availability' %}" class="text-green-600 bg-green-50 rounded-md  mb-2 flex items-center">
-                             <i class="icon-cog mr-1" style="margin-left: 2px"></i>
-                             تنظیمات نوبت‌دهی
-                        </a>
-                    </div>
+                    <a href="{% url 'doctors:doctor_appointments' %}" class="nav-item flex items-center px-3 py-2 text-secondary hover:text-success">
+                        <div class="w-7 h-7 bg-green-50 rounded-5 flex items-center justify-center ml-2">
+                            <i class="icon-user-md text-sm text-success"></i>
+                        </div>
+                        <span>نوبت‌ها</span>
+                    </a>
+
+                    <a href="{% url 'doctors:doctor_earnings' %}" class="nav-item flex items-center px-3 py-2 text-secondary hover:text-warning">
+                        <div class="w-7 h-7 bg-yellow-50 rounded-5 flex items-center justify-center ml-2">
+                            <i class="icon-money-2 text-sm text-warning"></i>
+                        </div>
+                        <span>درآمد</span>
+                    </a>
+
+                    <a href="{% url 'docpages:doctor_posts' %}" class="nav-item flex items-center px-3 py-2 text-secondary hover:text-info">
+                        <div class="w-7 h-7 bg-purple-50 rounded-5 flex items-center justify-center ml-2">
+                            <i class="icon-edit text-sm text_dr_3"></i>
+                        </div>
+                        <span>پست‌های من</span>
+                    </a>
+
+                    <a href="{% url 'doctors:inbox' %}" class="nav-item flex items-center px-3 py-2 text-secondary hover:text_dr">
+                        <div class="w-7 h-7 bg-indigo-50 rounded-5 flex items-center justify-center ml-2">
+                            <i class="icon-mail text-sm text-info"></i>
+                        </div>
+                        <span>نامه ها</span>
+                    </a>
+
+                    <a href="{% url 'doctors:notifications' %}" class="nav-item flex items-center px-3 py-2 text-secondary hover:text_dr">
+                        <div class="w-7 h-7 bg-red-50 rounded-5 flex items-center justify-center ml-2">
+                            <i class="icon-bell text-sm text-danger"></i>
+                            {% if unread_notifications_count > 0 %}
+                                <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                                    {{ unread_notifications_count }}
+                                </span>
+                            {% endif %}
+                        </div>
+                        <span>اعلان‌ها</span>
+                    </a>
+
+                    <a href="{% url 'patients:report_list' %}" class="nav-item flex items-center px-3 py-2 text-secondary hover:text-warning">
+                        <div class="w-7 h-7 bg-yellow-50 rounded-5 flex items-center justify-center ml-2">
+                            <i class="icon-doc text-sm text-warning"></i>
+                        </div>
+                        <span>گزارش‌ها</span>
+                    </a>
+
+                    <a href="{% url 'doctors:doctor_profile' %}" class="nav-item flex items-center px-3 py-2 text-secondary hover:text_info">
+                        <div class="w-7 h-7 bg-blue-50 rounded-5 flex items-center justify-center ml-2">
+                            <i class="icon-user text-sm text-info"></i>
+                        </div>
+                        <span>پروفایل</span>
+                    </a>
                 </div>
-
-                {% if doctor.profile_image %}
-                    <img src="{{ doctor.profile_image.url }}" alt="{{ doctor }}"
-                         class="rounded-full mt-4 md:mt-0 w-20 h-20 object-cover">
-                {% else %}
-                    <div class="rounded-full bg-blue-100 flex items-center justify-center mt-4 md:mt-0 w-20 h-20">
-                        <span class="text-blue-600 font-bold text-xl">
-                            {{ doctor.user.first_name|first }}{{ doctor.user.last_name|first }}
-                        </span>
-                    </div>
-                {% endif %}
             </div>
         </div>
 
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-            <div class="bg-white rounded-lg shadow p-4 animate-fade card stat-card appointments " style="animation-delay: 0.1s;">
-                <div class="flex justify-between items-center">
-                    <div class="bg-blue-100 p-3 rounded">
-                        <i class="icon-calendar-5 text-blue-600 text-2xl"></i>
-                    </div>
-                    <div class="text-right">
-                        <h3 class="text-xl font-bold">{{ total_appointments }}</h3>
-                        <small class="text-gray-500">کل نوبت‌ها</small>
-                    </div>
-                </div>
-
-                
-                <a href="{% url 'docpages:doctor_posts' %}" class="nav-item flex items-center px-3 py-2 text-secondary hover:text-info">
-                    <div class="w-7 h-7 bg-purple-50 rounded-5 flex items-center justify-center ml-2">
-                        <i class="icon-edit text-sm text_dr_3"></i>
-                    </div>
-                    <span>پست‌های من</span>
-                </a>
-                <a href="{% url 'doctors:inbox' %}" class="nav-item flex items-center px-3 py-2 text-secondary hover:text_dr">
-                    <div class="w-7 h-7 bg-indigo-50 rounded-5 flex items-center justify-center ml-2">
-                        <i class="icon-mail text-sm text-info"></i>
-                    </div>
-                    <span>نامه ها</span>
-                </a>
-                <a href="{% url 'doctors:notifications' %}" class="nav-item flex items-center px-3 py-2 text-secondary hover:text_dr">
-                    <div class="w-7 h-7 bg-red-50 rounded-5 flex items-center justify-center ml-2">
-                        <i class="icon-bell text-sm text-danger"></i>
-                        {% if unread_notifications_count > 0 %}
-                            <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                                {{ unread_notifications_count }}
-                            </span>
-                        {% endif %}
-                    </div>
-                    <span>اعلان‌ها</span>
-                </a>
-                <a href="{% url 'patients:report_list' %}" class="nav-item flex items-center px-3 py-2 text-secondary hover:text-warning">
-                    <div class="w-7 h-7 bg-yellow-50 rounded-5 flex items-center justify-center ml-2">
-                        <i class="icon-doc text-sm text-warning"></i>
-<!-- 
-            </div>
-
-            <div class="bg-white rounded-lg shadow p-4 animate-fade card stat-card pending" style="animation-delay: 0.2s;">
-                <div class="flex justify-between items-center">
-                    <div class="bg-yellow-100 p-3 rounded">
-                        <i class="icon-clock-alt text-yellow-500 text-2xl"></i>
- -->
-                    </div>
-                    <div class="text-right">
-                        <h3 class="text-xl font-bold">{{ pending_appointments }}</h3>
-                        <small class="text-gray-500">در انتظار</small>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-lg shadow p-4 animate-fade card stat-card today " style="animation-delay: 0.3s;">
-                <div class="flex justify-between items-center">
-
+        <!-- Main Content -->
+        <div class="flex-1 p-6">
+            <!-- Welcome Header -->
+            <div class="bg-white rounded-20 shadow-sm p-6 margin_30_20">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
                     <div>
                         <h1 class="text-2xl font-bold text_dr">
                             سلام دکتر {{ doctor.user.last_name }} 👋
                         </h1>
                         <p class="text-secondary text-sm mt-1">{{ today|date:"l، Y/m/d" }}</p>
-                        
-                        <div class="mt-4 flex items-center">
-                            <div class="flex items-center bg-gray-50 rounded-10 px-4 py-2 ml-4">
+
+                        <div class="mt-4 flex flex-wrap items-center gap-4">
+                            <div class="flex items-center bg-gray-50 rounded-10 px-4 py-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text_dr ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                    </svg>
+                                </svg>
                                 <span class="text-sm">{{ today_appointments }} نوبت امروز</span>
                             </div>
-                            
-                            <a href="{% url 'doctors:doctor_availability' %}" class="text-sm text_dr flex items-center">
+
+                            <a href="{% url 'doctors:doctor_availability' %}" class="text-sm text_dr flex items-center hover:underline">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                                 </svg>
                                 تنظیم نوبت‌دهی
                             </a>
                         </div>
-<!-- 
-                    <div class="bg-green-100 p-3 rounded">
-                        <i class="icon-check text-green-600 text-2xl"></i>
                     </div>
-                    <div class="text-right">
-                        <h3 class="text-xl font-bold">{{ today_appointments }}</h3>
-                        <small class="text-gray-500">نوبت امروز</small>
--->
-                    </div>
+
+                    {% if doctor.profile_image %}
+                        <img src="{{ doctor.profile_image.url }}" alt="{{ doctor }}"
+                             class="rounded-full mt-4 md:mt-0 w-20 h-20 object-cover">
+                    {% else %}
+                        <div class="rounded-full bg-blue-100 flex items-center justify-center mt-4 md:mt-0 w-20 h-20">
+                            <span class="text-blue-600 font-bold text-xl">
+                                {{ doctor.user.first_name|first }}{{ doctor.user.last_name|first }}
+                            </span>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
 
-            <div class="bg-white rounded-lg shadow p-4 animate-fade card stat-card earnings" style="animation-delay: 0.4s;">
-                <div class="flex justify-between items-center">
-                    <div class="bg-teal-100 p-3 rounded">
-                        <i class="icon-wallet text-teal-600 text-2xl"></i>
-                    </div>
-                    <div class="text-right">
-                        <h3 class="text-xl font-bold">{{ current_month_earnings|default:"0" }}</h3>
-                        <small class="text-gray-500">درآمد ماه جاری</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="bg-white rounded-lg shadow p-6 mb-6 animate-fade" style="animation-delay: 0.5s;">
-            <div class="flex justify-between items-center mb-5">
-                <div>
-                    <h2 class="text-lg font-bold mb-1">دسترسی سریع</h2>
-                    <p class="text-gray-500 text-sm">دسترسی آسان به ابزارهای اصلی</p>
-                </div>
-                <div class="hidden lg:block">
-                    <span class="bg-gray-100 text-gray-800 rounded-full px-3 py-1 text-sm flex items-center">
-                        <i class="icon-calendar-outlilne ml-1"></i>
-                        {{ today_appointments }} نوبت امروز
-                    </span>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <a href="{% url 'doctors:doctor_availability' %}" class="block hover:bg-blue-100 rounded-lg p-4 shadow transition h-full">
-                    <div class="flex items-center">
-                        <div class=" p-3 rounded mr-4">
-                            <i class="icon-clock-3 text-blue-600 text-xl"></i>
-                        </div>
-                        <div>
-                            <h5 class="text-blue-900 font-semibold mb-1">مدیریت زمان‌ها</h5>
-                            <small class="text-gray-600">تنظیم زمان‌های نوبت‌دهی</small>
-                        </div>
-                    </div>
-                </a>
-
-                <a href="{% url 'doctors:doctor_appointments' %}" class="block hover:bg-green-100 rounded-lg p-4 shadow transition h-full">
-                    <div class="flex items-center">
-                        <div class=" p-3 rounded mr-4">
-                            <i class="icon-user-md text-green-600 text-xl"></i>
-                        </div>
-                        <div>
-                            <h5 class="text-green-900 font-semibold mb-1">نوبت‌ها</h5>
-                            <small class="text-gray-600">مدیریت نوبت‌های بیماران</small>
-                        </div>
-                    </div>
-                </a>
-
-                <a href="{% url 'doctors:doctor_earnings' %}" class="block hover:bg-yellow-100 rounded-lg p-4 shadow transition h-full">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded mr-4">
-                            <i class="icon-money-2 text-yellow-600 text-xl"></i>
-                        </div>
-                        <div>
-
-                            <h3 class="font-bold text-info mb-1">پروفایل</h3>
-                            <p class="text-xs text-secondary">اطلاعات شخصی</p>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Enhanced Stats Section -->
+            <!-- Stats Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 margin_30_20">
                 <!-- Total Appointments -->
                 <div class="stat-card p-4">
                     <div class="flex items-center justify-between">
                         <div class="w-10 h-10 bg-blue-50 rounded-10 flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text_dr" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                </svg>
-                            </div>
-                            <div class="text-left">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <div class="text-left">
                             <div class="text-xl font-bold text_dr">{{ total_appointments }}</div>
                             <div class="text-xs text-secondary">کل نوبت‌ها</div>
-<!--
-                            <h5 class="text-yellow-900 font-semibold mb-1">درآمد</h5>
-                            <small class="text-gray-600">گزارش‌های مالی</small>
--->
                         </div>
                     </div>
-                </a>
-
+                </div>
 
                 <!-- Pending Appointments -->
                 <div class="stat-card p-4">
                     <div class="flex items-center justify-between">
                         <div class="w-10 h-10 bg-yellow-50 rounded-10 flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                            </div>
-                            <div class="text-left">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div class="text-left">
                             <div class="text-xl font-bold text-warning">{{ pending_appointments }}</div>
                             <div class="text-xs text-secondary">در انتظار</div>
-<!-- 
-                <a href="{% url 'docpages:doctor_posts' %}" class="block hover:bg-gray-100 rounded-lg p-4 shadow transition h-full">
-                    <div class="flex items-center">
-                        <div class=" p-3 rounded mr-4">
-                            <i class="icon-picture-outline text-teal-600 text-xl"></i>
-                        </div>
-                        <div>
-                            <h5 class="text-teal-900 font-semibold mb-1">پست‌ها</h5>
-                            <small class="text-gray-600">محتوای تخصصی</small>
- -->
                         </div>
                     </div>
-                </a>
-
+                </div>
 
                 <!-- Today's Appointments -->
                 <div class="stat-card p-4">
                     <div class="flex items-center justify-between">
                         <div class="w-10 h-10 bg-green-50 rounded-10 flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                            </div>
-                            <div class="text-left">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div class="text-left">
                             <div class="text-xl font-bold text-success">{{ today_appointments }}</div>
                             <div class="text-xs text-secondary">نوبت امروز</div>
-<!-- 
-                <a href="{% url 'chat:chat_room_list' %}" class="block hover:bg-red-100 rounded-lg p-4 shadow transition h-full">
-                    <div class="flex items-center">
-                        <div class="p-3 rounded mr-4">
-                            <i class="icon-comment-3 text-red-600 text-xl"></i>
-                        </div>
-                        <div>
-                            <h5 class="text-red-900 font-semibold mb-1">ویزیت آنلاین</h5>
-                            <small class="text-gray-600">مشاوره آنلاین</small>
- -->
                         </div>
                     </div>
-                </a>
-
+                </div>
 
                 <!-- Monthly Earnings -->
                 <div class="stat-card p-4">
                     <div class="flex items-center justify-between">
                         <div class="w-10 h-10 bg-purple-50 rounded-10 flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text_dr_3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                            </div>
-                            <div class="text-left">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div class="text-left">
                             <div class="text-md font-bold text_dr_3">{{ current_month_earnings|default:"0" }}</div>
                             <div class="text-xs text-secondary">درآمد ماه جاری</div>
-<!-- 
-                <a href="{% url 'doctors:doctor_profile' %}" class="block hover:bg-purple-100 rounded-lg p-4 shadow transition h-full">
-                    <div class="flex items-center">
-                        <div class=" p-3 rounded mr-4">
-                            <i class="icon-cogs text-purple-600 text-xl"></i>
-                        </div>
-                        <div>
-                            <h5 class="text-purple-900 font-semibold mb-1">پروفایل</h5>
-                            <small class="text-gray-600">اطلاعات شخصی</small>
- -->
                         </div>
                     </div>
-                </a>
+                </div>
             </div>
-        </div>
 
             <!-- Recent Notifications -->
             <div class="bg-white rounded-20 shadow-sm p-6 margin_30_20">
@@ -546,7 +416,7 @@
                 {% if recent_notifications %}
                     <div class="space-y-3" id="notifications-container">
                         {% for notification in recent_notifications %}
-                            <div class="notification-item p-4 rounded-10 border border-gray-100 hover:bg-gray-50 transition-colors {% if not notification.is_read %}bg-blue-50{% endif %}" 
+                            <div class="notification-item p-4 rounded-10 border border-gray-100 hover:bg-gray-50 transition-colors {% if not notification.is_read %}bg-blue-50{% endif %}"
                                  data-notification-id="{{ notification.id }}">
                                 <div class="flex items-start">
                                     <div class="w-10 h-10 rounded-10 flex items-center justify-center ml-3
@@ -579,12 +449,12 @@
                                             {% endif %}
                                             <div class="flex items-center space-x-2">
                                                 {% if not notification.is_read %}
-                                                    <button onclick="markNotificationRead({{ notification.id }})" 
+                                                    <button onclick="markNotificationRead({{ notification.id }})"
                                                             class="text-xs text_dr hover:underline">
                                                         خوانده شده
                                                     </button>
                                                 {% endif %}
-                                                <button onclick="deleteNotification({{ notification.id }})" 
+                                                <button onclick="deleteNotification({{ notification.id }})"
                                                         class="text-xs text-red-500 hover:underline">
                                                     حذف
                                                 </button>
@@ -615,206 +485,63 @@
                     </div>
                     <a href="{% url 'doctors:doctor_appointments' %}" class="text-sm text_dr hover:underline">
                         مشاهده همه
-                        </a>
-<!-- 
-        
-        <div class="bg-white rounded-lg shadow p-6 animate-fade" style="animation-delay: 0.6s;">
-            <div class="flex justify-between items-center mb-5">
-                <div>
-                    <h2 class="text-lg font-bold mb-1">نوبت‌های امروز</h2>
-                    <p class="text-gray-500 text-sm">{{ today|date:"l، Y/m/d" }}</p>
- -->
+                    </a>
                 </div>
-                <a href="{% url 'doctors:doctor_appointments_today' %}" class="text-blue-600 hover:underline flex items-center">
-                    مشاهده همه نوبت های امروز <i class="icon-left-open mr-1"></i>
-                </a>
-            </div>
-
 
                 {% if today_appointments_list %}
                     <div class="space-y-3">
                         {% for appointment in today_appointments_list %}
                             <div class="appointment-card p-4 flex justify-between items-center">
-                                    <div class="flex items-center">
-                                        {% if appointment.patient.profile_image %}
-                                            <img src="{{ appointment.patient.profile_image.url }}"
-                                                 alt="{{ appointment.patient }}"
+                                <div class="flex items-center">
+                                    {% if appointment.patient.profile_image %}
+                                        <img src="{{ appointment.patient.profile_image.url }}"
+                                             alt="{{ appointment.patient }}"
                                              class="w-12 h-12 round50 object-cover ml-3 border border-gray-100">
-                                        {% else %}
+                                    {% else %}
                                         <div class="w-12 h-12 round50 bg-blue-100 flex items-center justify-center ml-3">
                                             <span class="text-blue-600 font-bold">{{ appointment.patient.user.first_name|first }}{{ appointment.patient.user.last_name|first }}</span>
-                                            </div>
-                                        {% endif %}
-                                        <div>
+                                        </div>
+                                    {% endif %}
+                                    <div>
                                         <h3 class="font-bold text_dr text-sm">{{ appointment.patient.user.get_full_name }}</h3>
                                         <div class="flex items-center text-secondary text-xs mt-1">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                    </svg>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
                                             <span>{{ appointment.time_slot.time|time:"H:i" }}</span>
                                         </div>
                                     </div>
                                 </div>
-                                <span class="px-3 py-1 rounded-lg text-xs font-medium
-                                            {% if appointment.status == 'confirmed' %}
-                                        bg-blue-50 text_dr
-                                            {% elif appointment.status == 'completed' %}
-                                        bg-green-50 text-success
-                                            {% elif appointment.status == 'cancelled' %}
-                                        bg-red-50 text-danger
-                                            {% else %}
-                                        bg-yellow-50 text-warning
-                                            {% endif %}
-                                        ">
-                                            {% if appointment.status == 'confirmed' %}
-                                                تایید شده
-                                            {% elif appointment.status == 'completed' %}
-                                                تکمیل شده
-                                            {% elif appointment.status == 'cancelled' %}
-                                                لغو شده
-                                            {% else %}
-                                                در انتظار
-                                            {% endif %}
-                                        </span>
+                                <span class="px-3 py-1 rounded-lg text-xs font-medium {% if appointment.status == 'confirmed' %}bg-blue-50 text_dr{% elif appointment.status == 'completed' %}bg-green-50 text-success{% elif appointment.status == 'cancelled' %}bg-red-50 text-danger{% else %}bg-yellow-50 text-warning{% endif %}">
+                                    {% if appointment.status == 'confirmed' %}
+                                        تایید شده
+                                    {% elif appointment.status == 'completed' %}
+                                        تکمیل شده
+                                    {% elif appointment.status == 'cancelled' %}
+                                        لغو شده
+                                    {% else %}
+                                        در انتظار
+                                    {% endif %}
+                                </span>
                             </div>
                         {% endfor %}
                     </div>
                 {% else %}
                     <div class="text-center py-8 bg-gray-50 rounded-10">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto mb-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
                         <h3 class="text-lg font-bold text_dr mb-1">امروز نوبتی ندارید</h3>
                         <p class="text-secondary text-sm mb-4">فرصت مناسبی برای استراحت یا برنامه‌ریزی</p>
                         <a href="{% url 'doctors:doctor_availability' %}" class="text-sm text_dr hover:underline">
                             مدیریت زمان‌های حضور
-                            </a>
-<!-- 
-            {% if todays_appointments %}
-                <div class="divide-y divide-gray-200">
-                    {% for appointment in todays_appointments %}
-                         <div class="p-6 appointment-card">
-                            <div class="flex flex-col md:flex-row md:justify-between">
-                                <!-- Patient Info -->
-                                <div class="flex items-start mb-4 md:mb-0">
-                                    {% if appointment.patient and appointment.patient.user %}
-                                        {% if appointment.patient.profile_image %}
-                                            <img src="{{ appointment.patient.profile_image.url }}"
-                                                 alt="{{ appointment.patient.user.get_full_name }}"
-                                                 class="patient-avatar ml-4">
-                                        {% else %}
-                                            <div class="patient-avatar patient-initials ml-4">
-                                                {% if appointment.patient.user.first_name %}
-                                                    {{ appointment.patient.user.first_name|first }}{{ appointment.patient.user.last_name|first }}
-                                                {% else %}
-                                                    {{ appointment.patient.user.phone|first|upper }}
-                                                {% endif %}
-                                            </div>
-                                        {% endif %}
-                                    {% else %}
-                                        <div class="patient-avatar patient-initials ml-4">م</div>
-                                    {% endif %}
-
-                                    <div class="patient-info">
-                                        <h3 class="text-base font-medium text-gray-800">
-                                            {% if appointment.patient and appointment.patient.user %}
-                                                {{ appointment.patient.user.get_full_name }}
-                                            {% else %}
-                                                بیمار مهمان
-                                            {% endif %}
-                                        </h3>
-                                        <p class="text-sm text-gray-500">{{ appointment.phone }}</p>
-
-                                        {% if appointment.notes %}
-                                            <p class="mt-2 text-sm text-gray-600 bg-gray-50 p-2 rounded">{{ appointment.notes }}</p>
-                                        {% endif %}
-
-                                    </div>
-                                </div>
-
-                                <!-- Appointment Details & Actions -->
-                                <div class="flex flex-col md:items-end">
-                                    <div class="text-left md:text-right mb-3 md:mb-0">
-                                        <p class="text-sm font-medium text-gray-600">
-                                            {{ appointment.day.date|persian_weekday }}
-                                            {{ appointment.day.date|date:'j' }}
-                                            {{ appointment.day.date|persian_month_name }}
-                                        </p>
-                                        <p class="text-lg font-semibold text-gray-800">
-                                            {{ appointment.time|time:"H:i" }}
-                                        </p>
-                                        <span class="status-badge
-                                            {% if appointment.status == 'confirmed' %}status-confirmed
-                                            {% elif appointment.status == 'completed' %}status-completed
-                                            {% elif appointment.status == 'cancelled' %}status-cancelled
-                                            {% else %}status-pending{% endif %} mt-1">
-                                            {% if appointment.status == 'confirmed' %}
-                                                تأیید شده
-                                            {% elif appointment.status == 'completed' %}
-                                                تکمیل شده
-                                            {% elif appointment.status == 'cancelled' %}
-                                                لغو شده
-                                            {% else %}
-                                                در انتظار
-                                            {% endif %}
-                                        </span>
-                                    </div>
-
-                                    <div class="appointment-actions flex flex-wrap gap-2 mt-3 md:mt-2">
-                                        {% if appointment.status == 'pending' %}
-                                            <form method="post" action="{% url 'doctors:confirm_appointment' appointment.id %}">
-                                                {% csrf_token %}
-                                                <button type="submit" class="btn btn-confirm">
-                                                    تأیید نوبت
-                                                </button>
-                                            </form>
-
-                                            <form method="post" action="{% url 'doctors:cancel_appointment' appointment.id %}">
-                                                {% csrf_token %}
-                                                <button type="submit" class="btn btn-cancel" onclick="return confirm('آیا از لغو این نوبت مطمئن هستید؟');">
-                                                    لغو نوبت
-                                                </button>
-                                            </form>
-                                        {% elif appointment.status == 'confirmed' %}
-                                            <form method="post" action="{% url 'doctors:complete_appointment' appointment.id %}">
-                                                {% csrf_token %}
-                                                <button type="submit" class="btn btn-complete">
-                                                    تکمیل نوبت
-                                                </button>
-                                            </form>
-
-                                            <form method="post" action="{% url 'doctors:cancel_appointment' appointment.id %}">
-                                                {% csrf_token %}
-                                                <button type="submit" class="btn btn-cancel" onclick="return confirm('آیا از لغو این نوبت مطمئن هستید؟');">
-                                                    لغو نوبت
-                                                </button>
-                                            </form>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="text-center py-16">
-                    <div class="mb-6 text-gray-400 text-5xl">
-                        <i class="far fa-calendar-check"></i>
- -->
+                        </a>
                     </div>
-                    <h5 class="font-bold mb-3 text-gray-700">امروز نوبتی ندارید</h5>
-                    <p class="text-gray-500 mb-6">فرصت مناسبی برای استراحت یا برنامه‌ریزی</p>
-                    <a href="{% url 'doctors:doctor_availability' %}" class="inline-block border border-blue-600 text-blue-600 rounded px-5 py-2 hover:bg-blue-50 transition">
-                        <i class="fas fa-plus-circle ml-2"></i>
-                        مدیریت زمان‌های حضور
-                    </a>
-                </div>
-            {% endif %}
+                {% endif %}
+            </div>
         </div>
-
     </div>
 </div>
-
 
 <script>
 // Notification JavaScript functions
@@ -872,13 +599,13 @@ function markAllNotificationsRead() {
                     readButton.remove();
                 }
             });
-            
+
             // Hide the "mark all read" button
             const markAllButton = document.querySelector('button[onclick="markAllNotificationsRead()"]');
             if (markAllButton) {
                 markAllButton.style.display = 'none';
             }
-            
+
             updateNotificationCount();
         }
     })
@@ -904,7 +631,7 @@ function deleteNotification(notificationId) {
                     notificationItem.remove();
                 }
                 updateNotificationCount();
-                
+
                 // Check if there are no more notifications
                 const remainingNotifications = document.querySelectorAll('.notification-item');
                 if (remainingNotifications.length === 0) {
@@ -950,5 +677,4 @@ setInterval(function() {
         });
 }, 30000);
 </script>
-{% endblock %} 
-
+{% endblock %}
