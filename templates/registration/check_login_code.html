@@ -133,7 +133,7 @@ function validateCode() {
     const submitBtn = document.getElementById('submit_btn');
     const value = codeInput.value.trim();
 
-    if (value.length !== 4 || !/^\d+$/.test(value)) {
+    if (value.length !== 4 ) {
         codeInput.classList.add('text-alert');
         codeInput.classList.remove('input100');
         codeError.textContent = value.length > 0 ? '!!کد تایید باید 4 رقم باشد' : '';

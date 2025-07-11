@@ -17,11 +17,29 @@ class ChatRequest(models.Model):
         (REJECTED, 'رد شده'),
         (FINISHED, 'پایان یافته'),
     ]
+    
+    PAYMENT_STATUS_CHOICES = (
+        ('pending', 'در انتظار'),
+        ('paid', 'پرداخت شده'),
+        ('failed', 'ناموفق'),
+        ('refunded', 'بازگشت وجه'),
+    )
 
     patient = models.ForeignKey(Patient,unique=False, on_delete=models.CASCADE, related_name='chat_requests', verbose_name='بیمار')
     doctor = models.ForeignKey(Doctor,unique=False, on_delete=models.CASCADE, related_name='chat_requests', verbose_name='پزشک')
     disease_summary = models.TextField(verbose_name='خلاصه بیماری',blank=True,null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=PENDING, verbose_name='وضعیت')
+    
+    # Payment fields
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='pending', verbose_name='وضعیت پرداخت')
+    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='مبلغ', default=0)
+    transaction = models.ForeignKey('wallet.Transaction', on_delete=models.SET_NULL, null=True, blank=True, related_name='chat_requests', verbose_name='تراکنش')
+    
+    # Patient information for payment
+    patient_name = models.CharField(max_length=100, verbose_name='نام بیمار', blank=True)
+    patient_national_id = models.CharField(max_length=20, verbose_name='کد ملی بیمار', blank=True)
+    phone = models.CharField(max_length=20, verbose_name='شماره تلفن', blank=True)
+    
     created_at = jmodels.jDateTimeField(default=timezone.now, verbose_name='تاریخ ایجاد')
     updated_at = jmodels.jDateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
 
@@ -32,6 +50,54 @@ class ChatRequest(models.Model):
 
     def __str__(self):
         return f"درخواست چت {self.id} - بیمار: {getattr(self.patient.user, 'name', 'نامشخص')}"
+    
+    def process_payment(self, user):
+        """پردازش پرداخت برای درخواست چت"""
+        # Import here to avoid circular imports
+        from wallet.models import Wallet, Transaction
+        from django.db import transaction as db_transaction
+        
+        # Get or create user's wallet
+        wallet, created = Wallet.objects.get_or_create(user=user)
+        
+        # Check if user has sufficient balance
+        consultation_fee = self.amount
+        if not wallet.can_withdraw(consultation_fee):
+            available_balance = wallet.balance
+            return False, f"موجودی کیف پول کافی نیست. موجودی فعلی: {available_balance:,} تومان - مبلغ مورد نیاز: {consultation_fee:,} تومان. لطفاً کیف پول خود را شارژ کنید."
+        
+        try:
+            with db_transaction.atomic():
+                # Deduct amount from wallet
+                if not wallet.subtract_balance(consultation_fee):
+                    return False, "خطا در کسر مبلغ از کیف پول. لطفاً دوباره تلاش کنید."
+                
+                # Create payment transaction
+                payment_transaction = Transaction.objects.create(
+                    user=user,
+                    wallet=wallet,
+                    amount=consultation_fee,
+                    transaction_type='payment',
+                    payment_method='wallet',
+                    status='completed',
+                    description=f'پرداخت مشاوره آنلاین دکتر {self.doctor.user.get_full_name()}',
+                    metadata={
+                        'doctor_id': self.doctor.id,
+                        'doctor_name': str(self.doctor),
+                        'chat_request_id': self.id,
+                        'consultation_type': 'online_chat'
+                    }
+                )
+                
+                # Update chat request
+                self.payment_status = 'paid'
+                self.transaction = payment_transaction
+                self.save()
+                
+                return True, f"پرداخت با موفقیت انجام شد. مبلغ {consultation_fee:,} تومان از کیف پول شما کسر گردید."
+                
+        except Exception as e:
+            return False, f"خطا در پردازش پرداخت: {str(e)}"
 
 
 class ChatRoom(models.Model):

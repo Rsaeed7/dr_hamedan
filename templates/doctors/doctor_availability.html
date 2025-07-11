@@ -621,7 +621,7 @@
                 }
             });
         }
-        
+
         // Initialize Persian DatePicker for block_date input
         $("#block_date").persianDatepicker({
             format: 'YYYY/MM/DD',
@@ -635,16 +635,16 @@
                 }
             },
             onSelect: function(unix) {
-                // Additional validation to ensure future dates only
+                    // Additional validation to ensure future dates only
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
                 
                 if (new Date(unix) <= today) {
-                    alert('فقط می‌توانید روزهای آینده را مسدود کنید.');
+                        alert('فقط می‌توانید روزهای آینده را مسدود کنید.');
                     $("#block_date").val('');
                     $("#block_date_hidden").val('');
-                    return false;
-                }
+                        return false;
+                    }
                 
                 // Convert to Gregorian date format for backend (YYYY-MM-DD)
                 const selectedDate = new Date(unix);
@@ -674,11 +674,11 @@
         if (modal.classList.contains('hidden')) {
             modal.classList.remove('hidden');
             // Reset form and prepare input
-            const blockDateInput = document.getElementById('block_date');
-            if (blockDateInput) {
-                blockDateInput.value = '';
+                const blockDateInput = document.getElementById('block_date');
+                if (blockDateInput) {
+                    blockDateInput.value = '';
                 setTimeout(() => blockDateInput.focus(), 300);
-            }
+                }
         } else {
             modal.classList.add('hidden');
             // Reset form

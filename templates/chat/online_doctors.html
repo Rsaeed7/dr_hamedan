@@ -67,6 +67,41 @@
     box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
 }
 
+.wallet-balance {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 15px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.balance-amount {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.payment-info {
+    background: #f8f9fa;
+    border-left: 4px solid #007bff;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+.insufficient-balance {
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    color: #856404;
+}
+
+.sufficient-balance {
+    background: #d4edda;
+    border-left: 4px solid #28a745;
+    color: #155724;
+}
+
 @media (min-width: 992px) {
     .mobile-filter-modal {
         display: none;
@@ -106,6 +141,25 @@
 </div>
     <!-- /Search -->
 
+    <!-- Wallet Balance Display -->
+    {% if user.is_authenticated %}
+    <div class="container">
+        <div class="wallet-balance">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="icon-wallet"></i>
+                    <span>موجودی کیف پول شما</span>
+                    <div class="balance-amount">{{ user.wallet.balance|floatformat:0|default:"0" }} تومان</div>
+                </div>
+                <div>
+                    <a href="{% url 'wallet:deposit' %}" class="btn btn-light btn-sm">
+                        <i class="icon-plus"></i> شارژ کیف پول
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
     <div class="container margin_60_35">
 
@@ -312,6 +366,32 @@
                     رزرو ویزیت آنلاین <br>
                     هزینه ویزیت: <span id="visit-fee">---</span> تومان
                 </div>
+                
+                <!-- Payment Status Display -->
+                <div id="payment-status" class="payment-info" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>موجودی کیف پول:</strong>
+                            <span id="current-balance">{{ user.wallet.balance|floatformat:0|default:"0" }}</span> تومان
+                        </div>
+                        <div>
+                            <span id="balance-status-icon"></span>
+                            <span id="balance-status-text"></span>
+                        </div>
+                    </div>
+                    <div id="insufficient-balance-warning" style="display: none;">
+                        <hr>
+                        <p class="text-warning mb-2">
+                            <i class="icon-attention"></i>
+                            موجودی کیف پول شما برای این مشاوره کافی نیست.
+                        </p>
+                        <p class="mb-2">مبلغ مورد نیاز: <span id="needed-amount"></span> تومان</p>
+                        <a href="#" id="charge-wallet-btn" class="btn btn-warning btn-sm">
+                            <i class="icon-plus"></i> شارژ کیف پول
+                        </a>
+                    </div>
+                </div>
+                
                 <form method="post" id="dynamic-booking-form" action="">
                     {% csrf_token %}
                     <div class="row">
@@ -371,7 +451,7 @@
                         </div>
                                        <button  type="submit" id="submit-btn"
                            class="btn btn-primary w-100">
-                            روزرو ویزیت آنلاین
+                            رزرو ویزیت آنلاین
                         </button>
                 </form>
             </div>
@@ -379,13 +459,63 @@
     </div>
 </div>
 <script>
+    // Get user's current wallet balance
+    const userBalance = {{ user.wallet.balance|default:"0" }};
+    
     function showDynamicForm(doctorId, fee, actionUrl, doctorName) {
         const form = document.getElementById('dynamic-booking-form');
         const feeSpan = document.getElementById('visit-fee');
         const modal = document.getElementById('information-modal');
+        const paymentStatus = document.getElementById('payment-status');
+        const currentBalanceSpan = document.getElementById('current-balance');
+        const balanceStatusIcon = document.getElementById('balance-status-icon');
+        const balanceStatusText = document.getElementById('balance-status-text');
+        const insufficientWarning = document.getElementById('insufficient-balance-warning');
+        const neededAmountSpan = document.getElementById('needed-amount');
+        const chargeWalletBtn = document.getElementById('charge-wallet-btn');
+        const submitBtn = document.getElementById('submit-btn');
 
         form.action = actionUrl;
         feeSpan.textContent = fee;
+        currentBalanceSpan.textContent = userBalance.toLocaleString();
+        
+        // Show payment status
+        paymentStatus.style.display = 'block';
+        
+        const consultationFee = parseFloat(fee);
+        const hasEnoughBalance = userBalance >= consultationFee;
+        
+        if (hasEnoughBalance) {
+            // Sufficient balance
+            paymentStatus.className = 'payment-info sufficient-balance';
+            balanceStatusIcon.innerHTML = '<i class="icon-ok text-success"></i>';
+            balanceStatusText.textContent = 'موجودی کافی است';
+            balanceStatusText.className = 'text-success font-weight-bold';
+            insufficientWarning.style.display = 'none';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'رزرو ویزیت آنلاین';
+        } else {
+            // Insufficient balance
+            paymentStatus.className = 'payment-info insufficient-balance';
+            balanceStatusIcon.innerHTML = '<i class="icon-attention text-warning"></i>';
+            balanceStatusText.textContent = 'موجودی ناکافی';
+            balanceStatusText.className = 'text-warning font-weight-bold';
+            
+            const neededAmount = consultationFee - userBalance;
+            neededAmountSpan.textContent = neededAmount.toLocaleString();
+            insufficientWarning.style.display = 'block';
+            
+            // Calculate suggested deposit amount
+            const suggestedAmount = Math.max(10000, Math.ceil((neededAmount * 1.1) / 10000) * 10000);
+            
+            // Set charge wallet link
+            const currentPath = window.location.pathname;
+            chargeWalletBtn.href = `/wallet/deposit/?amount=${suggestedAmount}&redirect_to=${currentPath}`;
+            
+            // Disable submit button
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'ابتدا کیف پول را شارژ کنید';
+        }
 
         modal.classList.remove('hidden');
     }
@@ -461,8 +591,8 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            var currentPage = {{ page_obj.number }}; // شماره صفحه جاری را از سرور دریافت کنید
-            var totalPages = {{ page_obj.paginator.num_pages }}; // تعداد کل صفحات را از سرور دریافت کنید
+            var currentPage = {% if page_obj %}{{ page_obj.number }}{% else %}1{% endif %}; // شماره صفحه جاری را از سرور دریافت کنید
+            var totalPages = {% if page_obj %}{{ page_obj.paginator.num_pages }}{% else %}1{% endif %}; // تعداد کل صفحات را از سرور دریافت کنید
 
             createPagination(totalPages, currentPage);
 
