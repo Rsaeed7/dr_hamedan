@@ -345,7 +345,7 @@ def doctor_dashboard(request):
         user=doctor.user,
         limit=5
     )
-    unread_notifications_count = Notification.get_unread_count(doctor.user)
+
 
     context = {
         'doctor': doctor,
@@ -354,7 +354,6 @@ def doctor_dashboard(request):
         'todays_appointments': todays_appointments,
         'total_earnings': total_earnings,
         'recent_notifications': recent_notifications,
-        'unread_notifications_count': unread_notifications_count
     }
 
     return render(request, 'doctors/doctor_dashboard.html', context)

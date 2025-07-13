@@ -194,7 +194,22 @@
 
                                 </div>
                             </div>
-
+                            {% if request.user.doctor %}
+                                <a href="{% url 'doctors:notifications' %}"
+                                   class="nav-item d-flex align-items-center px-1 py-1 text-secondary text-decoration-none">
+                                    <div class="position-relative">
+                                        <div class="bg-light rounded-10 d-flex align-items-center justify-content-center"
+                                             style="width: 28px; height: 28px;">
+                                            <i class="icon-bell text-danger fs-12"></i>
+                                        </div>
+                                        {% if unread_notifications_count > 0 %}
+                                            <span class="position-absolute top-0 text-white start-100 translate-middle badge rounded-10 bg-danger m-t-20 m-r-15">
+                {{ unread_notifications_count }}
+            </span>
+                                        {% endif %}
+                                    </div>
+                                </a>
+                            {% endif %}
                         {% else %}
                             <a href="{% url 'account:register' %}">
                                 <div class="btn btn-outline-light">
@@ -209,6 +224,7 @@
                         <li class="d-lg-none">
                             {% if user.is_authenticated %}
                                 <a href="
+
                                         {% if user.doctor %}{% url 'doctors:doctor_dashboard' %} {% elif user.administered_clinics.exists %}{% url 'clinics:clinic_dashboard' %}{% else %}{% url 'patients:patient_profile' %}{% endif %}">
                                 <div class="btn dr_box col-11">
                                     <i class="pe-7s-users"></i>{{ request.user.phone }}
@@ -221,7 +237,8 @@
                             {% endif %}
                             </a>
                         </li>
-                    <li class="p-r-150-lg"><a href="{% url 'support:for_doctors' %}" class="text-turquoise">برای پزشکان</a></li>
+                        <li class="p-r-150-lg"><a href="{% url 'support:for_doctors' %}" class="text-turquoise">برای
+                            پزشکان</a></li>
                         <li>
                             <a href="{% url 'doctors:doctor_list' %}">نوبت دهی آنلاین</a>
                         </li>
@@ -276,8 +293,8 @@
         <span>خانه</span>
     </a>
 
-                                <a href="{% url 'doctors:explore' %}"
-                               class="nav-item {% if request.resolver_match.url_name == 'explore' %}active{% endif %}">
+    <a href="{% url 'doctors:explore' %}"
+       class="nav-item {% if request.resolver_match.url_name == 'explore' %}active{% endif %}">
         <i class="icon-instagramm text-dr"></i>
         <span>لنز</span>
     </a>
@@ -288,11 +305,11 @@
         <span>پزشکان</span>
     </a>
     {% if request.user.is_authenticated %}
-    <a href="{% url 'patients:patient_appointments' %}"
-       class="nav-item {% if request.resolver_match.url_name == 'patient_appointments' %}active{% endif %}">
-        <i class="icon-calendar-7 text-dr"></i>
-        <span>نوبت ها</span>
-    </a>
+        <a href="{% url 'patients:patient_appointments' %}"
+           class="nav-item {% if request.resolver_match.url_name == 'patient_appointments' %}active{% endif %}">
+            <i class="icon-calendar-7 text-dr"></i>
+            <span>نوبت ها</span>
+        </a>
 
         <a href="{% url 'patients:patient_dashboard' %}"
            class="nav-item {% if request.resolver_match.url_name == 'patient_dashboard' %}active{% endif %}">
@@ -305,7 +322,7 @@
             <i class="icon-user-outline text-dr"></i>
             <span>ورود</span>
         </a>
-        
+
         <a href="{% url 'doctors:doctor_registration' %}"
            class="nav-item {% if request.resolver_match.url_name == 'doctor_registration' %}active{% endif %}">
             <i class="icon-user-md text-dr"></i>
@@ -320,10 +337,11 @@
         </a>
     {% endif %}
     {% if user.administered_clinics.exists %}
-        <a  class="nav-item {% if request.resolver_match.url_name == 'clinic_dashboard' %}active{% endif %}" href="{% url 'clinics:clinic_dashboard' %}">
-        <i class="icon-hospital-1 text-dr"></i>
+        <a class="nav-item {% if request.resolver_match.url_name == 'clinic_dashboard' %}active{% endif %}"
+           href="{% url 'clinics:clinic_dashboard' %}">
+            <i class="icon-hospital-1 text-dr"></i>
             <span>کلینیک</span>
-            </a>
+        </a>
     {% endif %}
 </div>
 <!-- /mobile footer -->

@@ -376,11 +376,20 @@ body {
             <a href="{% url 'doctors:index' %}">
                 <img src="{% static 'img/logo_white.png' %}" width="150">
             </a>
-            <a href="{% url 'doctors:doctor_list' %}" class="flex items-center space-x-2">
-                <span class=" font-bold text-white">پنل مدیریت پزشکی </span>
+            <a href="{% url 'doctors:doctor_list' %}" class="flex items-center space-x-2 hidden md:block">
+                <span class=" font-bold text-white ">پنل مدیریت پزشکی </span>
             </a>
-
-
+            <a href="{% url 'doctors:notifications' %}"
+               class="nav-item flex items-center px-3 py-2 text-secondary hover:text_dr">
+                <div class="w-7 h-7 bg-red-50 rounded-5 flex items-center justify-center ml-2" >
+                    <i class="icon-bell text-sm text-danger"></i>
+                    {% if unread_notifications_count > 0 %}
+                        <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center m-t-20 m-r-15">
+                                    {{ unread_notifications_count }}
+                                </span>
+                    {% endif %}
+                </div>
+            </a>
         </div>
     </nav>
 </header>
@@ -523,7 +532,7 @@ body {
 
 <!-- Mobile Sidebar Toggle Button -->
 <button class="sidebar-toggle" id="sidebarToggle">
-    <i class="fas fa-bars"></i>
+    <i class="icon-menu-2"></i>
 </button>
 {% endif %}
 
@@ -589,8 +598,6 @@ body {
     {% block content %}
     {% endblock %}
 </main>
-
-
 
 
 <!-- Bootstrap Bundle with Popper -->
