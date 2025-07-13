@@ -201,6 +201,7 @@ AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend','user.aut
 # SMS Configuration
 SMS_API_KEY = 'wZYwHS1oPJTV5pJ8SJUkdfrZf7Vh2iFzFN84sdUPc9bjE4s8fE6BN8k0KzNm4e1Y'
 SMS_LINE_NUMBER = '30007487130094'
+SMS_OTP_TEMPLATE_ID = 100000  # Template ID for OTP verification in SMS.ir
 
 # SMS Reminder Settings
 SMS_REMINDER_ENABLED = True

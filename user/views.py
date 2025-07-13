@@ -11,14 +11,13 @@ from patients.models import PatientsFile
 from .forms import LoginForm, RegisterForm, Check_CodeForm
 from django.contrib.auth import authenticate, login ,logout
 from django.contrib import messages
-# import ghasedakpack
 from random import randint
 from .models import Otp, User
 from django.utils.crypto import get_random_string
 from uuid import uuid4
 import time
 from datetime import datetime, timedelta
-# sender = ghasedakpack.Ghasedak('2a2134a3503074b682413eb874c5df026b4ed60280b89465a1d3fe80766ce2cc')
+from utils.sms_service import sms_service
 
 import time
 from django.shortcuts import render
@@ -42,22 +41,31 @@ class RegisterView(View):
 
         if form.is_valid():
             cd = form.cleaned_data
-            random = randint(1000,9999)
-            # sender.verification({'receptor': cd["phone"], 'type': '1', 'template': 'Randomcode', 'param1': random})
+            phone = cd["phone"]
+            
+            # Send verification code using centralized SMS service
+            message, status_code, otp_code = sms_service.send_verification_code(phone)
+            
+            if status_code != 200:
+                messages.error(request, message)
+                return render(request, 'registration/login.html', {'form': form})
+            
+            # Create OTP record
             token = str(uuid4())
-
+            Otp.objects.create(phone=phone, code=otp_code, token=token)
+            
+            # Store next URL if provided
             next_url = request.GET.get('next')
             if next_url:
                 request.session['next_after_login'] = next_url
-            if User.objects.filter(phone=cd['phone']):
-                Otp.objects.create(phone=cd["phone"],code=random,token=token)
-                print(random)
+            
+            # Redirect based on whether user exists
+            if User.objects.filter(phone=phone).exists():
+                messages.success(request, message)
                 return redirect(reverse('account:check_code_login') + f'?token={token}')
             else:
-                Otp.objects.create(phone=cd["phone"],code=random,token=token)
-                print(random)
+                messages.success(request, message)
                 return redirect(reverse('account:check_code_signup') + f'?token={token}')
-
 
         else:
             form.add_error('', '• لطفا اطلاعات صحیح وارد کنید!')

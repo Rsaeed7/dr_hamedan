@@ -1,0 +1,5 @@
+# Git credentials test
+# This file is used to test that Git credentials are working correctly
+# You can safely delete this file after testing
+
+TEST_DATE=$(date) 

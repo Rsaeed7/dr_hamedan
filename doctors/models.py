@@ -520,21 +520,11 @@ class DoctorRegistration(models.Model):
         self.reviewed_by = admin_user
         self.reviewed_at = timezone.now()
         self.save()
-
-        # Send welcome notification
-        from utils.utils import send_notification
-        message = f"""درخواست عضویت شما به عنوان پزشک تایید شد.
-        نام کاربری: {username}
-        رمز عبور موقت: {password}
-        لطفاً پس از ورود، رمز عبور خود را تغییر دهید."""
-
-        send_notification(
-            user=user,
-            title='تایید عضویت پزشک',
-            message=message,
-            notification_type='success'
-        )
-
+        
+        # Send approval SMS with credentials using centralized SMS service
+        from utils.sms_service import sms_service
+        sms_service.send_doctor_approval(user, username, password)
+        
         return doctor
 
     def reject(self, admin_user, reason=""):
