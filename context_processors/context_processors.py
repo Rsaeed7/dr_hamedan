@@ -1,7 +1,7 @@
 from support.models import Contact
 from doctors.models import Specialization,City
 from wallet.models import Transaction, Wallet
-
+from doctors.models import Notification
 def context_processors(request):
 
     """
@@ -14,8 +14,14 @@ def context_processors(request):
     
     # Initialize wallet-related variables
     balance = 0
+    doctor = None
     wallet = None
-    
+    unread_notifications_count = None
+
+    if hasattr(request.user, 'doctor'):
+        doctor = request.user.doctor
+        unread_notifications_count = Notification.get_unread_count(doctor.user)
+
     if request.user.is_authenticated:
         # Get or create user's wallet
         try:
@@ -36,6 +42,8 @@ def context_processors(request):
         'contact': contact,
         'cities': cities,
         'balance': balance,
+        'doctor': doctor,
+        'unread_notifications_count': unread_notifications_count,
 
         'wallet': wallet,
         'recent_transactions': transactions
