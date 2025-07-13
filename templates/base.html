@@ -376,11 +376,20 @@ body {
             <a href="{% url 'doctors:index' %}">
                 <img src="{% static 'img/logo_white.png' %}" width="150">
             </a>
-            <a href="{% url 'doctors:doctor_list' %}" class="flex items-center space-x-2">
-                <span class=" font-bold text-white">پنل مدیریت پزشکی </span>
+            <a href="{% url 'doctors:doctor_list' %}" class="flex items-center space-x-2 hidden md:block">
+                <span class=" font-bold text-white ">پنل مدیریت پزشکی </span>
             </a>
-
-
+            <a href="{% url 'doctors:notifications' %}"
+               class="nav-item flex items-center px-3 py-2 text-secondary hover:text_dr">
+                <div class="w-7 h-7 bg-red-50 rounded-5 flex items-center justify-center ml-2" >
+                    <i class="icon-bell text-sm text-danger"></i>
+                    {% if unread_notifications_count > 0 %}
+                        <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center m-t-20 m-r-15">
+                                    {{ unread_notifications_count }}
+                                </span>
+                    {% endif %}
+                </div>
+            </a>
         </div>
     </nav>
 </header>
@@ -523,7 +532,7 @@ body {
 
 <!-- Mobile Sidebar Toggle Button -->
 <button class="sidebar-toggle" id="sidebarToggle">
-    <i class="fas fa-bars"></i>
+    <i class="icon-menu-2"></i>
 </button>
 {% endif %}
 
@@ -589,60 +598,6 @@ body {
     {% block content %}
     {% endblock %}
 </main>
-
-
-<!-- Footer -->
-<footer class="bg-dark text-white py-5 mt-auto">
-    <div class="container">
-        <div class="row g-4">
-            <div class="col-lg-3 col-md-6">
-                <h5 class="text-white mb-3">دکتر</h5>
-                <p class="text-white-50 small">دسترسی به خدمات درمانی را برای همه آسان و راحت می‌کنیم.</p>
-                <div class="mt-4">
-                    <a href="#" class="btn btn-sm btn-outline-light rounded-circle me-2"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#" class="btn btn-sm btn-outline-light rounded-circle me-2"><i class="fa-brands fa-telegram"></i></a>
-                    <a href="#" class="btn btn-sm btn-outline-light rounded-circle"><i class="fa-brands fa-linkedin"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <h5 class="text-white mb-3">خدمات</h5>
-                <ul class="list-unstyled">
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-text-primary">پیدا کردن پزشک</a></li>
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-text-primary">رزرو نوبت</a></li>
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-text-primary">مشاوره آنلاین</a></li>
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-text-primary">خدمات در منزل</a></li>
-                </ul>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <h5 class="text-white mb-3">شرکت</h5>
-                <ul class="list-unstyled">
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-text-primary">درباره ما</a></li>
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-text-primary">فرصت‌های شغلی</a></li>
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-text-primary">بلاگ</a></li>
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-text-primary">همکاری با پزشکان</a></li>
-                </ul>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <h5 class="text-white mb-3">پشتیبانی</h5>
-                <ul class="list-unstyled">
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-text-primary">حریم خصوصی</a></li>
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-text-primary">شرایط استفاده</a></li>
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-text-primary">سوالات متداول</a></li>
-                    <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none hover-text-primary">تماس با ما</a></li>
-                </ul>
-            </div>
-        </div>
-        <hr class="my-4 border-light">
-        <div class="row">
-            <div class="col-md-6 text-center text-md-start">
-                <p class="mb-0 text-white-50">&copy; {% now "Y" %} دکتر. تمامی حقوق محفوظ است.</p>
-            </div>
-            <div class="col-md-6 text-center text-md-end">
-
-            </div>
-        </div>
-    </div>
-</footer>
 
 
 <!-- Bootstrap Bundle with Popper -->
