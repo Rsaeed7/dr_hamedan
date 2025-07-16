@@ -18,7 +18,11 @@
                     <ul>
                         {% for specialization in specializations %}
                             <li><a href="{% url 'doctors:doctor_list' %}?specialty={{ specialization.name }}">
-                                <strong><img width="30" src="{{ specialization.image.url }}"></strong>
+                                <strong>
+                                    {% if specialization.image %}
+                                        <img width="30" src="{{ specialization.image.url }}">
+                                    {% endif %}
+                                </strong>
                                 {{ specialization.name }} </a></li>
                         {% empty %}
                             <li>تخصصی یافت نشد
@@ -36,7 +40,10 @@
                 <div class="list_home">
                     <ul>
                         {% for service in services %}
-                        <li><a href="{% url 'homecare:request_service' service.id %}"><img src="{{ service.icon.url }}" width="15" height="15">
+                        <li><a href="{% url 'homecare:request_service' service.id %}">
+                            {% if service.icon %}
+                                <img src="{{ service.icon.url }}" width="15" height="15">
+                            {% endif %}
                             {{ service.name }}</a></li>
                         {% endfor %}
                     </ul>

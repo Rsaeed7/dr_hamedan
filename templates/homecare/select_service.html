@@ -80,7 +80,9 @@
                                 <div class="card shadow-sm rounded-10">
                                     <div class="card-body d-flex flex-column">
                                         <div class="d-flex justify-content-between mb-2">
-                                            <img src="{{ service.icon.url }}" width="40" height="40">
+                                            {% if service.icon %}
+                                                <img src="{{ service.icon.url }}" width="40" height="40">
+                                            {% endif %}
                                             <h6 class="card-title mb-0 p-r-10">{{ service.name }}</h6>
                                             <span class="fs-9 ">هزینه حدودی از {{ service.estimated_price|floatformat:0 }} تومان</span>
                                         </div>
