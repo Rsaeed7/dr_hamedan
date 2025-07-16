@@ -56,8 +56,10 @@
                         <li class="col-md-3 col-sm-6 col-12 m-b-5 ">
                             <a href="?category={{ category.id }}{% if selected_city %}&city={{ selected_city.id }}{% endif %}"
                                class="d-flex flex-column align-items-center text-center border rounded-10 p-3 bg-white h-100 shadow-sm hover-shadow">
-                                <img src="{{ category.icon.url }}" width="60" height="60" class="mb-2"
-                                     alt="{{ category.name }} icon">
+                                {% if category.icon %}
+                                    <img src="{{ category.icon.url }}" width="60" height="60" class="mb-2"
+                                         alt="{{ category.name }} icon">
+                                {% endif %}
                                 <span class="fw-semibold text-dark">{{ category.name }}</span>
                             </a>
                         </li>

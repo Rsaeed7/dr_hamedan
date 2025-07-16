@@ -118,7 +118,9 @@
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             {% for image in gallery %}
                 <div class="relative aspect-w-1 aspect-h-1">
-                    <img src="{{ image.image.url }}" alt="{{ image.title|default:'تصویر کلینیک' }}" class="w-full h-40 object-cover rounded-lg">
+                    {% if image.image %}
+                        <img src="{{ image.image.url }}" alt="{{ image.title|default:'تصویر کلینیک' }}" class="w-full h-40 object-cover rounded-lg">
+                    {% endif %}
                 </div>
             {% endfor %}
         </div>

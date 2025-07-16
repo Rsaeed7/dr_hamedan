@@ -44,9 +44,11 @@
                         {% for article in articles_last %}
                             <li>
                                 <div class="alignleft">
-                                    <a href="{{ article.get_absolute_url }}"><img
-                                            src="{{ article.image.url }}"
-                                            alt=""></a>
+                                    <a href="{{ article.get_absolute_url }}">
+                                        {% if article.image %}
+                                            <img src="{{ article.image.url }}" alt="">
+                                        {% endif %}
+                                    </a>
                                 </div>
                                 <h3><a href="{{ article.get_absolute_url }}" title="">{{ article.title }}</a></h3>
                                 <small>{{ article.description|truncatechars:60|html_decode|safe }}</small>
@@ -74,9 +76,10 @@
                         <div class="row no-gutters">
                             <div class="col-lg-4">
                                 <figure>
-                                    <a href="{% url 'mag:article' object.slug %}"><img
-                                            src="{{ object.image.url }}"
-                                            alt="">
+                                    <a href="{% url 'mag:article' object.slug %}">
+                                        {% if object.image %}
+                                            <img src="{{ object.image.url }}" alt="">
+                                        {% endif %}
                                         <div class="preview"><span>مطالعه مقاله</span></div>
                                     </a>
                                 </figure>

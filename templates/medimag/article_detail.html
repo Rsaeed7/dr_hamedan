@@ -56,9 +56,11 @@
                         {% for article in articles_last %}
                             <li>
                                 <div class="alignleft">
-                                    <a href="{{ article.get_absolute_url }}"><img
-                                            src="{{ article.image.url }}"
-                                            alt=""></a>
+                                    <a href="{{ article.get_absolute_url }}">
+                                        {% if article.image %}
+                                            <img src="{{ article.image.url }}" alt="">
+                                        {% endif %}
+                                    </a>
                                 </div>
                                 <h3><a href="{{ article.get_absolute_url }}" title="">{{ article.title }}</a></h3>
                                 <small>{{ article.description|truncatechars:60|safe }}</small>
@@ -89,9 +91,11 @@
                     </ul>
                 </div>
                 <div class="bloglist singlepost">
-                    <p><img alt="" class="img-fluid" style="border-radius: 20px; width: 1000px;height: 300px"
-                            src="{{ object.image.url }}">
-                    </p>
+                    {% if object.image %}
+                        <p><img alt="" class="img-fluid" style="border-radius: 20px; width: 1000px;height: 300px"
+                                src="{{ object.image.url }}">
+                        </p>
+                    {% endif %}
                     <h1>{{ object.title }}</h1>
                     <div class="post-content">
                         <div class="article-body">

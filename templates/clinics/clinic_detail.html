@@ -306,9 +306,11 @@
                                             {% for image in gallery %}
                                                 <div class="masonry-item-gallery">
                                                     <div class="m-b-5">
-                                                        <img src="{{ image.image.url }}"
-                                                             alt="{{ image.title|default:'تصویر کلینیک' }}"
-                                                             class="img-fluid rounded w-100">
+                                                        {% if image.image %}
+                                                            <img src="{{ image.image.url }}"
+                                                                 alt="{{ image.title|default:'تصویر کلینیک' }}"
+                                                                 class="img-fluid rounded w-100">
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                                 {% empty %}

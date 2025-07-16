@@ -232,7 +232,9 @@
                         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                             {% for image in gallery %}
                                 <div class="relative">
-                                    <img src="{{ image.image.url }}" alt="{{ image.title|default:'تصویر کلینیک' }}" class="w-full h-32 object-cover rounded-lg">
+                                    {% if image.image %}
+                                        <img src="{{ image.image.url }}" alt="{{ image.title|default:'تصویر کلینیک' }}" class="w-full h-32 object-cover rounded-lg">
+                                    {% endif %}
                                     <div class="absolute inset-0 bg-black bg-opacity-40 opacity-0 hover:opacity-100 flex items-center justify-center transition-opacity duration-200 rounded-lg">
                                         <form method="post" action="{% url 'clinics:delete_gallery_image' image.id %}">
                                             {% csrf_token %}
