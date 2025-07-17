@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'homecare.apps.HomecareConfig',
     'discounts.apps.DiscountsConfig',
     'sms_reminders',
+    'utils',
 
 ]
 

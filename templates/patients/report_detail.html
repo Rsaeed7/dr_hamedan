@@ -141,7 +141,9 @@
             <div class="image-container">
                 {% for image in report.images.all %}
                     <div>
-                        <img src="{{ image.image.url }}" alt="{{ image.caption }}">
+                        {% if image.image %}
+                            <img src="{{ image.image.url }}" alt="{{ image.caption }}">
+                        {% endif %}
                         <p class="text-sm text-gray-600 text-center">{{ image.caption }}</p>
                     </div>
                 {% endfor %}

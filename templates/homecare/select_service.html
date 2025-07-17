@@ -56,8 +56,10 @@
                         <li class="col-md-3 col-sm-6 col-12 m-b-5 ">
                             <a href="?category={{ category.id }}{% if selected_city %}&city={{ selected_city.id }}{% endif %}"
                                class="d-flex flex-column align-items-center text-center border rounded-10 p-3 bg-white h-100 shadow-sm hover-shadow">
-                                <img src="{{ category.icon.url }}" width="60" height="60" class="mb-2"
-                                     alt="{{ category.name }} icon">
+                                {% if category.icon %}
+                                    <img src="{{ category.icon.url }}" width="60" height="60" class="mb-2"
+                                         alt="{{ category.name }} icon">
+                                {% endif %}
                                 <span class="fw-semibold text-dark">{{ category.name }}</span>
                             </a>
                         </li>
@@ -80,7 +82,9 @@
                                 <div class="card shadow-sm rounded-10">
                                     <div class="card-body d-flex flex-column">
                                         <div class="d-flex justify-content-between mb-2">
-                                            <img src="{{ service.icon.url }}" width="40" height="40">
+                                            {% if service.icon %}
+                                                <img src="{{ service.icon.url }}" width="40" height="40">
+                                            {% endif %}
                                             <h6 class="card-title mb-0 p-r-10">{{ service.name }}</h6>
                                             <span class="fs-9 ">هزینه حدودی از {{ service.estimated_price|floatformat:0 }} تومان</span>
                                         </div>

@@ -247,9 +247,13 @@
                             <ul>
                                 {% for specialization in specializations %}
                                     <li>
-                                        <a href="{% url 'doctors:doctor_list' %}?specialty={{ specialization.name }}"><img
-                                                src="{{ specialization.image.url }}" style="margin-left: 10px"
-                                                width="25">{{ specialization.name }}</a></li>
+                                        <a href="{% url 'doctors:doctor_list' %}?specialty={{ specialization.name }}">
+                                            {% if specialization.image %}
+                                                <img src="{{ specialization.image.url }}" style="margin-left: 10px" width="25">
+                                            {% endif %}
+                                            {{ specialization.name }}
+                                        </a>
+                                    </li>
                                 {% empty %}
                                     <li>تخصصی یافت نشد
                                     </li>

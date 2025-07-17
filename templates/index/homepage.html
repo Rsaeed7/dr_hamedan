@@ -99,7 +99,9 @@ video {
                 <div class="col-lg-3 col-md-6">
                     <a href="{% url 'doctors:doctor_list' %}?specialty={{ specialization.name }}" class="box_cat_home">
                         <i class="icon-search-7"></i>
-                        <img src="{{ specialization.image.url }}" width="60" height="60" alt="">
+                        {% if specialization.image %}
+                            <img src="{{ specialization.image.url }}" width="60" height="60" alt="">
+                        {% endif %}
                         <h3>{{ specialization.name }}</h3>
                     </a>
                 </div>
@@ -247,7 +249,9 @@ video {
                     <div class="scroll-wrapper">
                         {% for doctor in online_visit_doctors %}
                         <a href="{% url 'doctors:doctor_detail' doctor.pk %}"  class="box_cat_home dr_box">
-                            <img src="{{ doctor.profile_image.url }}" class="round50" width="80" height="80" alt="">
+                            {% if doctor.profile_image %}
+                                <img src="{{ doctor.profile_image.url }}" class="round50" width="80" height="80" alt="">
+                            {% endif %}
                             <h3>دکتر {{ doctor.user.get_full_name }}</h3>
                             <p>{{ doctor.specialization.name }}</p>
                             <div class="text-right text-info">
@@ -278,7 +282,9 @@ video {
                     <div class="scroll-wrapper">
                         {% for article in articles %}
                             <a href="{{ article.get_absolute_url }}" class="box_cat_home article_box">
-                                <img src="{{ article.image.url }}" class="rounded" width="150" height="100" alt="">
+                                {% if article.image %}
+                                    <img src="{{ article.image.url }}" class="rounded" width="150" height="100" alt="">
+                                {% endif %}
                                 <h3>{{ article.title }}</h3>
                                 <p>{{ article.description|truncatechars:60|html_decode|safe }}
                                 </p>
