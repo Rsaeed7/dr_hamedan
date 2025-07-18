@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -117,7 +118,7 @@ def book_appointment(request, doctor_id):
                     needed_amount = max(0, required_amount - wallet.balance)
                     
                     # اضافه کردن 10% بیشتر برای اطمینان
-                    suggested_amount = int(needed_amount * 1.1)
+                    suggested_amount = int(needed_amount * Decimal('1.1'))
                     
                     # گرد کردن به نزدیکترین 10,000 تومان
                     suggested_amount = ((suggested_amount + 9999) // 10000) * 10000
