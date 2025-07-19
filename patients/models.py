@@ -98,6 +98,12 @@ class VisitEntry(models.Model):
     prescribed_medications = models.TextField(blank=True, null=True, verbose_name='داروهای تجویزی')
     notes = models.TextField(blank=True, null=True, verbose_name='یادداشت تکمیلی')
     attachment = models.FileField(upload_to='visit_attachments/', null=True, blank=True, verbose_name='فایل پیوست')
+    handwritten_image = models.ImageField(
+        upload_to='handwritten_notes/%Y/%m/%d/',
+        null=True,
+        blank=True,
+        verbose_name='یادداشت دستی'
+    )
 
     class Meta:
         verbose_name = 'ویزیت'
