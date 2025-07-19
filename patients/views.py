@@ -180,7 +180,6 @@ def homecare_request_list(request):
     return render(request, 'patients/homecare_request_list.html', context)
 
 
-
 class MedicalRecordDetailView(DetailView):
     model = MedicalRecord
     template_name = 'patients/medical_record_detail.html'
@@ -189,8 +188,29 @@ class MedicalRecordDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['visit_form'] = VisitEntryForm()
-        context['visits'] = self.object.visits.all()
+        context['visits'] = self.object.visits.all().order_by('-visit_date')
         return context
+
+    def post(self, request, *args, **kwargs):
+        form = VisitEntryForm(request.POST, request.FILES)
+        record = self.get_object()
+
+        if form.is_valid():
+            visit = form.save(commit=False)
+            visit.record = record
+            visit.visit_date = timezone.now()  # ثبت خودکار تاریخ فعلی
+
+            # پردازش نقاشی دستی اگر وجود دارد
+            if 'handwritten_notes' in request.POST and request.POST['handwritten_notes']:
+                visit.save_sketch(request.POST['handwritten_notes'])
+
+            visit.save()
+            return redirect('patients:record-detail', pk=record.pk)
+
+        # اگر فرم نامعتبر بود
+        context = self.get_context_data(**kwargs)
+        context['visit_form'] = form
+        return render(request, self.template_name, context)
 
 class CreateMedicalRecordView(CreateView):
     model = MedicalRecord
