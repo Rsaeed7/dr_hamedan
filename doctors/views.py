@@ -24,7 +24,7 @@ from reservations.turn_maker import create_availability_days_for_day_of_week
 from reservations.services import BookingService, AppointmentService
 import random
 from doctors.models import DoctorBlockedDay
-
+from chatmed.models import ChatRequest
 
 def index(request):
     doctors_list = list(Doctor.objects.filter(is_available=True))
@@ -346,8 +346,12 @@ def doctor_dashboard(request):
         limit=5
     )
 
-
+    pending_requests = ChatRequest.objects.filter(
+        doctor=request.user.doctor,
+        status=ChatRequest.PENDING
+    ).select_related('patient__user')
     context = {
+        'pending_requests':pending_requests,
         'doctor': doctor,
         'total_appointments': total_appointments,
         'upcoming_appointments': upcoming_appointments,
