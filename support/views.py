@@ -165,7 +165,7 @@ def contact_us(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'پیام شما با موفقیت برای ما ارسال شد! ممنونیم که وقت گذاشتید :)')
-            return redirect('about:contact_us')
+            return redirect('support:contact_us')
     else:
         form = ContactForm()
     return render(request, 'about_us/contact_us.html', {'form': form})
