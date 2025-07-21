@@ -17,4 +17,6 @@ jobs:
           LIARA_TOKEN: ${{ secrets.LIARA_API_TOKEN }}
         run: |
           npm i -g @liara/cli@7
-          liara deploy --app="dr_hmd" --api-token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI2ODdhNDNiNmQ2MTk3NzdhMzEzMjYyOTgiLCJ0eXBlIjoiYXV0aCIsImlhdCI6MTc1MzEwNTA0NX0.Rvlityj1FRaZHH2Fl6RmrjfCyJ2mqrCg7xuM2TZUJ6U" --no-app-logs
+
+          liara deploy --app="drhmd" --api-token="$LIARA_TOKEN" --no-app-logs
+
