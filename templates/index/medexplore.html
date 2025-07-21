@@ -237,11 +237,14 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                         </svg>
                     </a>
-                    <button class="text-white hover:text-gray-300 transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"/>
-                        </svg>
-                    </button>
+                    {% if request.user.doctor %}
+                        <a href="{% url 'docpages:create_post' %}" class="text-white hover:text-gray-300 transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                      d="M12 4v16m8-8H4"/>
+                            </svg>
+                        </a>
+                    {% endif %}
                     {% if user.is_authenticated %}
                         <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
                             <span class="text-white text-sm font-medium">{{ user.first_name|first|default:"ک"|first }}</span>
@@ -287,11 +290,6 @@
                 </svg>
                 تصاویر
             </button>
-            {% for spec in specializations %}
-                <button class="filter-pill whitespace-nowrap" data-specialty="{{ spec }}">
-                    {{ spec }}
-                </button>
-            {% endfor %}
         </div>
     </div>
 
@@ -300,6 +298,7 @@
         <!-- Instagram-style Grid -->
         <div class="explore-grid" id="postsGrid">
             {% for post in posts %}
+
                 <div class="grid-item" data-post-id="{{ post.id }}" onclick="openPost({{ post.id }})">
                     {% if post.video %}
                         <video src="{{ post.video.url }}" class="w-full h-full object-cover" muted></video>
@@ -309,13 +308,13 @@
                             </svg>
                         </div>
                     {% elif post.image %}
-                        <img src="{{ post.image.url }}" alt="{{ post.title }}" loading="lazy">
+                      <a href="#">  <img src="{{ post.image.url }}" alt="{{ post.title }}" loading="lazy"></a>
                     {% else %}
                         <div class="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center p-6">
                             <h3 class="text-white text-center font-medium line-clamp-3">{{ post.title }}</h3>
                         </div>
                     {% endif %}
-
+                <a href="{% url 'docpages:post_detail' post.id %}">
                     <div class="grid-item-overlay">
                         <div class="overlay-stats">
                             <div class="stat-item">
@@ -331,8 +330,9 @@
                                 <span>{{ post.comments.count|default:0 }}</span>
                             </div>
                         </div>
-                    </div>
+                    </div></a>
                 </div>
+
             {% empty %}
                 <div class="col-span-3 text-center py-20">
                     <p class="text-gray-500 text-lg">هیچ پستی یافت نشد</p>

@@ -14,6 +14,7 @@ class VisitEntryForm(forms.ModelForm):
             'prescribed_medications',
             'notes',
             'attachment',
+            'handwritten_image',
         ]
         widgets = {
             'chief_complaint': forms.Textarea(attrs={'rows': 2 , 'class': 'w-full rounded border'}),

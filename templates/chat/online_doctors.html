@@ -117,7 +117,7 @@
                 <div id="custom-search-input">
                     <div class="input-group">
                         <div style="display: flex; align-items: center; width: 100%;">
-                            <select class="search-query" name="specialty" id="specialty">
+                            <select class="search-query" name="specialty" id="special">
                                 <option value="" > همه تخصص‌ها </option>
                                 {% for spec in specializations %}
                                     <option value="{{ spec.name }}"
@@ -140,25 +140,6 @@
 </div>
     <!-- /Search -->
 
-    <!-- Wallet Balance Display -->
-    {% if user.is_authenticated %}
-    <div class="container">
-        <div class="wallet-balance">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <i class="icon-wallet"></i>
-                    <span>موجودی کیف پول شما</span>
-                    <div class="balance-amount">{{ user.wallet.balance|floatformat:0|default:"0" }} تومان</div>
-                </div>
-                <div>
-                    <a href="{% url 'wallet:deposit' %}" class="btn btn-light btn-sm">
-                        <i class="icon-plus"></i> شارژ کیف پول
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
 
     <div class="container margin_60_35">
 

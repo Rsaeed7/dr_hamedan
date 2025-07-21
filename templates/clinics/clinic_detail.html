@@ -279,7 +279,7 @@
                                                         <small>{{ comment.date|persian_date_info }}</small>
                                                         <div class="rating text-left">
                                                             {% for i in stars_range %}
-                                                                <i class="{% if i < comment.rate %}icon_star voted{% else %}icon_star{% endif %}"></i>
+                                                                <i class="{% if i <= comment.rate %}icon_star voted{% else %}icon_star{% endif %}"></i>
                                                             {% endfor %}
                                                         </div>
                                                     </div>
