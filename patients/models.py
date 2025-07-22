@@ -1,4 +1,8 @@
+import base64
+import uuid
 from datetime import date
+
+from django.core.files.base import ContentFile
 from django.db import models
 from django.utils import timezone
 from django_jalali.db import models as jmodels
@@ -99,11 +103,28 @@ class VisitEntry(models.Model):
     notes = models.TextField(blank=True, null=True, verbose_name='یادداشت تکمیلی')
     attachment = models.FileField(upload_to='visit_attachments/', null=True, blank=True, verbose_name='فایل پیوست')
     handwritten_image = models.ImageField(
-        upload_to='handwritten_notes/%Y/%m/%d/',
+        upload_to='handwritten_notes/%Y/%m/%d/',  # سازماندهی فایل‌ها بر اساس تاریخ
         null=True,
         blank=True,
         verbose_name='یادداشت دستی'
     )
+
+    def save_sketch(self, data_url):
+        """تبدیل داده Base64 به فایل تصویری"""
+        if data_url:
+            # جدا کردن هدر و داده اصلی
+            format, imgstr = data_url.split(';base64,')
+            ext = format.split('/')[-1]  # استخراج پسوند (png/jpeg)
+
+            # ایجاد نام منحصر به فرد
+            filename = f"sketch_{uuid.uuid4().hex[:8]}.{ext}"
+
+            # ذخیره فایل
+            self.handwritten_image.save(
+                filename,
+                ContentFile(base64.b64decode(imgstr)),
+                save=False
+            )
 
     class Meta:
         verbose_name = 'ویزیت'
