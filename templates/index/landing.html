@@ -1,0 +1,594 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block body %}
+{% load persian_date %}
+{% load html_decode %}
+<style>
+:root {
+  --primary-color: #1a73e8; /* آبی ملو */
+  --secondary-color: #34a853; /* سبز یواش */
+  --accent-color: #fbbc05; /* طلایی ملایم */
+  --dark-color: #202124;
+  --light-color: #f8f9fa;
+  --text-color: #3c4043;
+}
+
+/* انیمیشن‌ها */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* استایل کلی */
+body {
+  font-family: 'Vazir', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text-color);
+  overflow-x: hidden;
+}
+
+/* هدر */
+.vip-header {
+  background: linear-gradient(135deg, var(--primary-color) 0%, #4285f4 100%);
+  color: white;
+  padding: 6rem 0 8rem;
+  position: relative;
+  overflow: hidden;
+  clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+}
+
+.vip-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url({% static 'img/wave-pattern.png' %}) repeat;
+  opacity: 0.1;
+}
+
+.header-content {
+  animation: fadeIn 1s ease-out;
+}
+
+/* کارت پزشکان */
+.vip-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  margin-bottom: 2rem;
+  border: none;
+}
+
+.vip-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12);
+}
+
+.vip-card-badge {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: var(--accent-color);
+  color: var(--dark-color);
+  padding: 6px 18px;
+  border-radius: 50px;
+  font-weight: bold;
+  font-size: 0.85rem;
+  box-shadow: 0 4px 12px rgba(251, 188, 5, 0.3);
+}
+
+.vip-doctor-img {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid white;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  margin: -80px auto 1.5rem;
+  display: block;
+  transition: all 0.3s;
+    margin-top: 5px!important;
+}
+
+.vip-card:hover .vip-doctor-img {
+  transform: scale(1.05);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+}
+
+/* دکمه‌ها */
+.vip-btn {
+  background: linear-gradient(45deg, var(--primary-color), #4285f4);
+  border: none;
+  color: white;
+  font-weight: bold;
+  padding: 12px 32px;
+  border-radius: 50px;
+  box-shadow: 0 6px 18px rgba(26, 115, 232, 0.3);
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vip-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(26, 115, 232, 0.4);
+  color: white;
+}
+
+.vip-btn i {
+  margin-right: 8px;
+}
+
+.vip-btn-secondary {
+  background: linear-gradient(45deg, var(--secondary-color), #5bb974);
+  box-shadow: 0 6px 18px rgba(52, 168, 83, 0.3);
+}
+
+.vip-btn-secondary:hover {
+  box-shadow: 0 10px 25px rgba(52, 168, 83, 0.4);
+}
+
+/* بخش‌ها */
+.section {
+  padding: 5rem 0;
+  position: relative;
+}
+
+.section-title {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 3rem;
+  font-weight: 700;
+}
+
+.section-title::after {
+  content: "";
+  position: absolute;
+  bottom: -12px;
+  left: 0;
+  width: 60%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  border-radius: 2px;
+}
+
+/* ویژگی‌ها */
+.feature-box {
+  background: white;
+  border-radius: 12px;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s;
+  height: 100%;
+  text-align: center;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.feature-box:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* فرم نوبت دهی */
+.appointment-form {
+  background: white;
+  border-radius: 16px;
+  padding: 2.5rem;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.form-control {
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  transition: all 0.3s;
+}
+
+.form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+}
+
+/* نظرات */
+.testimonial-card {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  position: relative;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.testimonial-card::before {
+  content: """;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 5rem;
+  color: rgba(66, 133, 244, 0.1);
+  font-family: serif;
+  line-height: 1;
+}
+
+/* فوتر */
+.vip-footer {
+  background: var(--dark-color);
+  color: white;
+  padding: 4rem 0 2rem;
+  position: relative;
+  clip-path: polygon(0 20%, 100% 0, 100% 100%, 0 100%);
+}
+
+.vip-footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url({% static 'img/dot-pattern.png' %}) repeat;
+  opacity: 0.05;
+}
+
+/* ریسپانسیو */
+@media (max-width: 992px) {
+  .vip-header {
+    padding: 4rem 0 6rem;
+    clip-path: polygon(0 0, 100% 0, 100% 95%, 0 100%);
+  }
+
+  .section {
+    padding: 4rem 0;
+  }
+
+  .vip-doctor-img {
+    width: 140px;
+    height: 140px;
+    margin-top: -70px;
+  }
+}
+
+@media (max-width: 768px) {
+  .vip-header {
+    padding: 3rem 0 5rem;
+    clip-path: polygon(0 0, 100% 0, 100% 97%, 0 100%);
+  }
+
+  .section {
+    padding: 3rem 0;
+  }
+
+  .vip-footer {
+    clip-path: polygon(0 10%, 100% 0, 100% 100%, 0 100%);
+  }
+}
+
+@media (max-width: 576px) {
+  .vip-header {
+    padding: 2.5rem 0 4rem;
+    clip-path: none;
+  }
+
+  .vip-doctor-img {
+    width: 120px;
+    height: 120px;
+    margin-top: -60px;
+  }
+
+  .vip-footer {
+    clip-path: none;
+    padding: 3rem 0 2rem;
+  }
+}
+
+/* افکت‌های ویژه */
+.pulse-animation {
+  animation: pulse 2s infinite;
+}
+
+.hover-grow {
+  transition: transform 0.3s;
+}
+
+.hover-grow:hover {
+  transform: scale(1.03);
+}
+
+/* استایل‌های خاص */
+.bg-gradient-light {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.text-gradient {
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.badge-tag {
+  background: rgba(52, 168, 83, 0.1);
+  color: var(--secondary-color);
+  padding: 6px 12px;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+</style>
+
+<!-- هدر صفحه -->
+    <!-- Head -->
+    <section class="hero_home version_2">
+
+        <div class="content text-dark">
+            <h4 class="text-info text-xl-center">نوبت آنلاین در دکتر همدان</h4>
+            <p>
+                برای پیدا کردن پزشک مورد نظر جست و جو کنید
+            </p>
+            <form method="get" action="{% url 'doctors:doctor_list' %}">
+                <div id="custom-search-input">
+                    <div class="input-group">
+                        <div style="display: flex; align-items: center; width: 100%;">
+                            <input type="text" name="query" id="query" value="{{ request.GET.query }}"
+                                   class="search-query" placeholder="نام پزشک یا متخصص...."
+                                   style="flex-grow: 1; border-radius: 50px ; margin-right: -1px;">
+
+                            <input type="submit" class="btn_search" style="border-radius: 50px;" value="جستجو">
+                        </div>
+
+                    </div>
+
+                    <ul class="text-success" style="text-shadow: none">
+                        <li class="border_left p-l-5">
+                            نوبت گیری از مطب
+                        </li>
+                        <li class="border_left p-l-5">
+                            نوبت گیری از بیمارستان ها و درمانگاه
+                        </li>
+                        <li class="border_left p-l-5">
+                            پوشش تمام استان همدان
+                        </li>
+                        <li class="" style="border: none">
+                            صرفه جویی در زمان و حوصله
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+    </section>
+    <!-- /Head -->
+
+<!-- بخش پزشکان -->
+<section id="doctors" class="section">
+  <div class="container">
+    <div class="text-center mb-5">
+       <h3 class="text_dr">پزشکان دکتر همدان</h3>
+      <p class="text-muted">متخصصین مجرب و با سابقه استان همدان</p>
+    </div>
+
+    <div class="row justify-content-center">
+      <!-- پزشک اول -->
+      {% for doctor in doctors %}
+        <div class="col-lg-5 mb-4">
+        <div class="vip-card h-100 hover-grow">
+          <div class="vip-card-badge">پزشک نمونه</div>
+        <a href="{% url 'doctors:doctor_detail' doctor.pk %}" >
+          <img src="{{ doctor.profile_image.url }}" alt="{{ doctor.user.get_full_name }}" class="vip-doctor-img">
+        </a>
+
+          <div class="card-body text-center pt-0">
+          <a href="{% url 'doctors:doctor_detail' doctor.pk %}" >
+            <h3 class="mb-2">دکتر {{ doctor.user.get_full_name }}</h3>
+            <p class="text-muted mb-4">متخصص {{ doctor.specialization.name }}</p>
+          </a>
+
+            <div class="text-right pr-3 mb-4">
+              <p><i class="icon-star text-warning"></i> امتیاز: <strong>{{ doctor.comment_rate }}</strong></p>
+                {% if doctor.get_first_available_day %}
+              <p><i class="icon-calendar-1 text-secondary"></i> اولین نوبت خالی :  <span class="text-success p-r-20">{{ doctor.get_first_available_day|persian_date_info }}</span> </p>
+                {% else %}
+                    <p><i class="icon-calendar-1 text-secondary"></i> اولین نوبت خالی :  <span class="text-danger p-r-20">فعلا نوبت خالی وجود ندارد</span> </p>
+                {% endif %}
+              <p><i class="icon-location text-primary"></i> {{ doctor.address }}</p>
+            <p class="text-dark icon-clock">زمان تقریبی انتظار <span class="text-success p-r-20">{{ doctor.get_most_common_waiting_time }}</span></p>
+            </div>
+
+            <div class="mb-4">
+              <h5 class="mb-3">خدمات تخصصی:</h5>
+              <div class="d-flex flex-wrap justify-content-center">
+                {% for obg in doctor.service.all %}
+                    <span class="badge-tag m-1">{{ obg }}</span>
+                {% endfor %}
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-center mt-4">
+              <a href="{% url 'reservations:book_appointment' doctor.pk %}" class="vip-btn mr-3 m-l-2">
+                <i class="icon-calendar"></i> دریافت نوبت
+              </a>
+              <a href="{% url 'doctors:doctor_detail' doctor.pk %}" class="vip-btn vip-btn-secondary">
+                <i class="icon-info"></i> پروفایل
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+        {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+
+
+
+<!-- نظرات بیماران -->
+<section class="section">
+  <div class="container">
+    <div class="text-center mb-5">
+       <h3 class="text_dr">نظرات کاربران</h3>
+      <p class="text-muted">تجربه بیماران از خدمات دکتر همدان</p>
+    </div>
+
+    <div class="row">
+        {% for comment in comments %}
+      <div class="col-md-6 mb-4">
+        <div class="testimonial-card h-100">
+          <div class="d-flex align-items-center mb-3">
+            <div>
+                {% if comment.user.get_full_name %}
+              <h5 class="mb-0">{{ comment.user.get_full_name}}</h5>
+                {% else %}
+                <h5 class="mb-0">کاربر دکتر همدان</h5>
+                {% endif %}
+              <small class="text-muted">بیمار دکتر {{ comment.doctor.user.get_full_name }}</small>
+            </div>
+          </div>
+          <p class="mb-0">{{ comment.text }}</p>
+          <div class="mt-3 text-warning">
+            <i class="icon-star"></i>
+            <i class="icon-star"></i>
+            <i class="icon-star"></i>
+            <i class="icon-star"></i>
+            <i class="icon-star"></i>
+          </div>
+        </div>
+      </div>
+        {% endfor %}
+
+    </div>
+  </div>
+</section>
+    <!-- Mag -->
+    <section>
+        <div class="container margin_120_95">
+            <h3 class="text-success">مجله سلامت</h3>
+            <div class="scroll-wrapper-box flex article_bg">
+                <button  class="scroll-left left btn-scroll"><i class="icon-right-open-4"></i></button>
+                <div class="scroll-container p-15" id="scrollContainer">
+                    <div class="scroll-wrapper">
+                        {% for article in articles %}
+                            <a href="{{ article.get_absolute_url }}" class="box_cat_home article_box">
+                                {% if article.image %}
+                                    <img src="{{ article.image.url }}" class="rounded" width="150" height="100" alt="">
+                                {% endif %}
+                                <h3>{{ article.title }}</h3>
+                                <p>{{ article.description|truncatechars:60|html_decode|safe }}
+                                </p>
+                            </a>
+                        {% endfor %}
+                    </div>
+
+                </div>
+
+                <button  class="scroll-right right btn-scroll"><i class="icon-left-open-4"></i></button>
+            </div>
+                        <p class="text-left"><a href="{% url 'mag:list' %}" class="text-success">مشاهده همه مقاله ها <i class="icon-left-dir"></i></a>
+            {#            </p>#}
+        </div>
+    </section>
+    <!-- /Mag -->
+<!-- اپلیکیشن موبایل -->
+<section id="app_section">
+    <div class="container">
+        <div class="row justify-content-around">
+            <div class="col-md-6">
+                <h5>اپلیکیشن <strong>دکتر همدان</strong>!</h5>
+                <p class="lead">با استفاده از خدمات سلامت دیجیتال دکتر همدان، تجربه سریع و راحت از خدمات پزشکی داشته
+                    باشید. نوبت‌دهی آنلاین، دریافت مشاوره به صورت تلفنی و استفاده از خدمات کلینیک‌ها و مراکز درمانی
+                    از جمله خدمات ما هستند. همچنین برای تجربه بهتر در استفاده از خدمات ما بر روی تلفن همراه،
+                    می‌توانید نرم‌افزار ما برای گوشی‌های اندروید را دریافت و نصب کنید.</p>
+                <div class="app_buttons wow m-b-20" data-wow-offset="100">
+                    <a href="#0" class="fadeIn"><img class="rounded-5" src="{% static 'img/bazar.png' %}"
+                                                     alt="" width="150"
+                                                     height="50" data-retina="true"></a>
+                    <a href="#0" class="fadeIn"><img class="rounded-5" src="{% static 'img/google_play_app.png' %}"
+                                                     alt="" width="150"
+                                                     height="50" data-retina="true"></a>
+                </div>
+            </div>
+            <div class="col-md-6 parent-container">
+                <img src="{% static 'img/pins/mobile2.png' %}" alt=""
+                     class="img-fluid floating-animation"
+                     width="250"
+                     height="333"
+                     style="filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));">
+            </div>
+        </div>
+
+        <!-- بقیه بخش‌ها بدون تغییر -->
+        <div class="row p-t-25 border_top2">
+            <div class="col-md-6">
+                    <div class="box_faq">
+                        <img src="{% static 'img/pic/headphones_4936044.png' %}" alt="" class="img-fluid" width="50"
+                             height="433">
+                        <h4>پشتیبانی آنلاین 24 ساعته 7 روز هفته</h4>
+                        <p>در هر ساعت از شبانه روز که به مشکل خوردید نگران نباشید ما کنار شما هستیم!</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="box_faq">
+                        <img src="{% static 'img/pic/message_11255939.png' %}" alt="" class="img-fluid flex" width="50"
+                             height="433">
+                        <h4>پاسخ با سوالات شما</h4>
+                        <p>تمام سوالاتی کع احتمال دادیم شما داشته باشید رو پاسخ دادیم!</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="box_faq">
+                        <img src="{% static 'img/pic/calendar_4814579.png' %}" alt="" class="img-fluid flex" width="50"
+                             height="433">
+                        <h4>دریافت نوبت آسان</h4>
+                        <p>نوبت گیری توی همدان راحت تر از همیشه در دسترس شماست!</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="box_faq">
+                        <img src="{% static 'img/pic/rating_12765539.png' %}" alt="" class="img-fluid rounded flex"
+                             width="50" height="433">
+                        <h4 class="p-t-5">نظرات و امتیاز</h4>
+                        <p>با دیدن نظرات و امتیازها انتخاب پزشک لذت بخش تر و راحت تره</p>
+                    </div>
+                </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    /* انیمیشن شناور ملایم */
+    .floating-animation {
+        animation: floating 3s ease-in-out infinite;
+    }
+
+    @keyframes floating {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-15px); }
+        100% { transform: translateY(0px); }
+    }
+</style>
+{% endblock %}
