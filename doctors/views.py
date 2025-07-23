@@ -35,15 +35,17 @@ def index(request):
     clinics = Clinic.objects.all()
     specializations = Specialization.objects.all().order_by('name')
     articles = MagArticle.objects.all()
+    comment = DrComment.objects.filter(rate=5)[:2]
     context = {
         'doctors': doctors,
         'clinics': clinics,
         'specializations': specializations,
         'articles': articles,
         'online_visit_doctors': online_visit_doctors,
-        'posts' : Post.objects.filter(status='published')[:13]
+        'posts' : Post.objects.filter(status='published')[:13],
+        'comments' : comment
     }
-    return render(request, 'index/homepage.html', context)
+    return render(request, 'index/landing.html', context)
 
 
 def specializations(request):
