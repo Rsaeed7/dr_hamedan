@@ -27,9 +27,64 @@ SECRET_KEY = 'django-insecure-mgzuw-1o1@qa2!rt0xz2k9*gn$_4ozw2i$+lat#gfgc@1ridgw
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+SERVERE = False
+if SERVERE:
+    CSRF_TRUSTED_ORIGINS = [
+        'https://drhmd.ir',
+    ]
 
-ALLOWED_HOSTS = ["*"]
-REDIS_HOST = 'localhost'
+    ALLOWED_HOSTS = [
+        'drhmd.ir',
+        'www.drhmd.ir',
+        'drhmd.chbk.app', 
+    ]
+    REDIS_HOST = 'drhmd.ir'  # بدون https://
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [("127.0.0.1", 6379)],
+            },
+        },
+    }
+
+    # Database
+    # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'drhmd302_marisa',
+            'USER':'drhmd302_marisa',
+            'PASSWORD':'ts18dvorFu23',
+            'HOST':'services.irn2.chabokan.net',
+            'PORT':'11482',
+        }
+    }
+
+else:
+    ALLOWED_HOSTS = ["*"]
+
+    REDIS_HOST = 'localhost'
+    CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",  # برای لوکال
+        # برای محیط هاست اصلی اینو فعال کن:
+        #  "BACKEND": "channels_redis.core.RedisChannelLayer",
+        #  "CONFIG": {"hosts": [("127.0.0.1", 6379)]},
+    },
+    }
+
+    # Database
+    # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
 REDIS_PORT = 6379
 REDIS_DB = 1
 
@@ -70,6 +125,7 @@ INSTALLED_APPS = [
     'discounts.apps.DiscountsConfig',
     'sms_reminders',
     'utils',
+
 
 ]
 
@@ -126,24 +182,6 @@ WSGI_APPLICATION = 'dr_turn.wsgi.application'
 ASGI_APPLICATION = "dr_turn.asgi.application"
 
 
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",  # برای لوکال
-        # برای محیط هاست اصلی اینو فعال کن:
-        #  "BACKEND": "channels_redis.core.RedisChannelLayer",
-        #  "CONFIG": {"hosts": [("127.0.0.1", 6379)]},
-    },
-}
-
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 
 
 # Password validation

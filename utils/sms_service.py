@@ -191,6 +191,14 @@ class SMSService:
             Dict: Response containing success status and message
         """
         try:
+            # Get phone number from patient
+            phone_number = reservation.patient.phone if reservation.patient else None
+            if not phone_number:
+                return {
+                    'success': False,
+                    'message': 'Patient phone number not found'
+                }
+            
             # Prepare reminder message
             if hours_before == 24:
                 message = self._get_24_hour_reminder_message(reservation)
@@ -200,7 +208,7 @@ class SMSService:
                 message = self._get_general_reminder_message(reservation, hours_before)
             
             # Send SMS
-            return self.send_sms(reservation.phone, message)
+            return self.send_sms(phone_number, message)
             
         except Exception as e:
             logger.error(f"Failed to send reminder for reservation {reservation.id}: {str(e)}")
@@ -220,8 +228,16 @@ class SMSService:
             Dict: Response containing success status and message
         """
         try:
+            # Get phone number from patient
+            phone_number = reservation.patient.phone if reservation.patient else None
+            if not phone_number:
+                return {
+                    'success': False,
+                    'message': 'Patient phone number not found'
+                }
+            
             message = self._get_confirmation_message(reservation)
-            return self.send_sms(reservation.phone, message)
+            return self.send_sms(phone_number, message)
             
         except Exception as e:
             logger.error(f"Failed to send confirmation for reservation {reservation.id}: {str(e)}")
@@ -241,8 +257,16 @@ class SMSService:
             Dict: Response containing success status and message
         """
         try:
+            # Get phone number from patient
+            phone_number = reservation.patient.phone if reservation.patient else None
+            if not phone_number:
+                return {
+                    'success': False,
+                    'message': 'Patient phone number not found'
+                }
+            
             message = self._get_cancellation_message(reservation)
-            return self.send_sms(reservation.phone, message)
+            return self.send_sms(phone_number, message)
             
         except Exception as e:
             logger.error(f"Failed to send cancellation for reservation {reservation.id}: {str(e)}")

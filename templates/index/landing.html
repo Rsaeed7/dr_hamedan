@@ -233,25 +233,6 @@ body {
   line-height: 1;
 }
 
-/* فوتر */
-.vip-footer {
-  background: var(--dark-color);
-  color: white;
-  padding: 4rem 0 2rem;
-  position: relative;
-  clip-path: polygon(0 20%, 100% 0, 100% 100%, 0 100%);
-}
-
-.vip-footer::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: url({% static 'img/dot-pattern.png' %}) repeat;
-  opacity: 0.05;
-}
 
 /* ریسپانسیو */
 @media (max-width: 992px) {
@@ -426,7 +407,7 @@ body {
             </div>
 
             <div class="d-flex justify-content-center mt-4">
-              <a href="{% url 'reservations:book_appointment' doctor.pk %}" class="vip-btn mr-3 m-l-2">
+              <a href="{% url 'doctors:doctor_detail' doctor.pk %}" class="vip-btn mr-3 m-l-2">
                 <i class="icon-calendar"></i> دریافت نوبت
               </a>
               <a href="{% url 'doctors:doctor_detail' doctor.pk %}" class="vip-btn vip-btn-secondary">
