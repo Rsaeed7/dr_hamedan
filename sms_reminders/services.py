@@ -81,12 +81,18 @@ class SMSReminderService:
             return None
         
         try:
+            # Get phone number from patient
+            phone_number = reservation.patient.phone if reservation.patient else None
+            if not phone_number:
+                logger.error(f"No phone number found for reservation {reservation.id}")
+                return None
+            
             # Create confirmation reminder
             reminder = SMSReminder.objects.create(
                 reservation=reservation,
                 user=reservation.patient.user if reservation.patient else reservation.user,
                 reminder_type='confirmation',
-                phone_number=reservation.phone,
+                phone_number=phone_number,
                 message=self._generate_message(reservation, 'confirmation'),
                 scheduled_time=timezone.now(),
                 max_attempts=self.settings.max_retry_attempts
@@ -117,12 +123,18 @@ class SMSReminderService:
             return None
         
         try:
+            # Get phone number from patient
+            phone_number = reservation.patient.phone if reservation.patient else None
+            if not phone_number:
+                logger.error(f"No phone number found for reservation {reservation.id}")
+                return None
+            
             # Create cancellation reminder
             reminder = SMSReminder.objects.create(
                 reservation=reservation,
                 user=reservation.patient.user if reservation.patient else reservation.user,
                 reminder_type='cancellation',
-                phone_number=reservation.phone,
+                phone_number=phone_number,
                 message=self._generate_message(reservation, 'cancellation'),
                 scheduled_time=timezone.now(),
                 max_attempts=self.settings.max_retry_attempts
@@ -269,12 +281,18 @@ class SMSReminderService:
                 logger.info(f"Reminder {reminder_type} already exists for reservation {reservation.id}")
                 return existing
             
+            # Get phone number from patient
+            phone_number = reservation.patient.phone if reservation.patient else None
+            if not phone_number:
+                logger.error(f"No phone number found for reservation {reservation.id}")
+                return None
+            
             # Create the reminder
             reminder = SMSReminder.objects.create(
                 reservation=reservation,
                 user=reservation.patient.user if reservation.patient else reservation.user,
                 reminder_type=reminder_type,
-                phone_number=reservation.phone,
+                phone_number=phone_number,
                 message=self._generate_message(reservation, reminder_type),
                 scheduled_time=scheduled_time,
                 max_attempts=self.settings.max_retry_attempts

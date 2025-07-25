@@ -1,220 +1,94 @@
-<!-- - ارسال نظیر به نظیر -->
-این متد برای ارسال به گروهی از موبایل‌ها با متن‌های متفاوت برای هر کدام، مورد استفاده قرار می‌گیرد. همچنین شما می‌توانید با مقداردهی به پارامتر زمان ارسال، از قابلیت ارسال پیامک زمانبندی شده نیز استفاده نمایید.
+pip install smsir-python
 
-URL
+How to use
 
-https://api.sms.ir/v1/send/likeToLike
-Request Method
-POST
-حداکثر تعداد مجاز شماره‌های مقصد 100 می‌باشد.
+Create an instance:
 
-برای ارسال زمانبندی شده، انتخاب زمان گذشته نامعتبر می‌باشد.
+from sms_ir import SmsIr
+sms_ir = SmsIr(
+api_key,
+linenumber,
+)
+Send message to a specific mobile number:
 
-برای ارسال زمانبندی شده، زمان معتبر می‎‌تواند در بازه یک ساعت آینده تا حداکثر 365 روز آینده در نظر گرفته شود.
+sms_ir.send_sms(
+number,
+message,
+linenumber,
+)
+Send message to multiple mobile numbers:
 
-تعداد شماره موبایل‌ها و متن‌های پیامک باید برابر باشند.
+sms_ir.send_bulk_sms(
+numbers,
+message,
+linenumber,
+)
+Send multiple messages to multiple mobile numbers one-to-one:
 
-پارامترهای بدنه درخواست
+sms_ir.send_like_to_like(
+numbers,
+messages,
+linenumber,
+send_date_time,
+)
+Delete scheduled message:
 
-مشخصه	ارسال	نوع	توضیح
-lineNumber	اجباری	Long	شماره خط ارسالی
-MessageTexts	اجباری	Array of String	متن های پیام کوتاه
-Mobiles	اجباری	Array of String	شماره موبایل‌ها
-SendDateTime	اختیاری	UnixTime	زمان ارسال پیامک (در صورت خالی بودن، ارسال در لحظه انجام می‌شود)
-مدل دیتای بازگشتی
+sms_ir.delete_scheduled(
+pack_id,
+)
+Send verification code with predefined template:
 
-مشخصه	نوع	توضیح
-PackId	Guid	شناسه یکتای مجموعه ارسال
-MessageIds	Array of Integer	آرایه ای از شناسه های یکتای هر پیامک
-Cost	Decimal	اعتبار مصرفی مجموعه ارسال
-Request Body
-{
-    "lineNumber": "30004505000017",
-    "messageTexts": [
-        "سرویس پیامکی ایده پردازان با بیش از یک دهه سابقه همراه شماست",
-        "ipdemy.ir  پلتفرم آموزش آنلاین، آکادمی ایده پردازان"
-    ],
-    "mobiles": [
-        "912xxxx677",
-        "+98919xxxx904"
-    ]
-}
-Response Body
-{
-    "status": 1,
-    "message": "موفق",
-    "data": {
-        "packId": "2b99e63c-9bf8-4a21-9bfe-3f72dc1b46f1",
-        "messageIds": [
-            86522023,
-            86522024
-        ],
-        "cost": 2.0
-    }
-}
+sms_ir.send_verify_code(
+number,
+template_id,
+parameters,
+)
+Get report of sent message:
 
+sms_ir.report_message(
+message_id,
+)
+Get report of sent message pack:
 
+sms_ir.report_pack(
+pack_id,
+))
+Get report of messages sent today:
 
-<!-- نمونه کد -->
+sms_ir.report_today(
+page_size,
+page_number,
+))
+Get report from archived messages:
 
-conn = http.client.HTTPSConnection("api.sms.ir")
-payload = json.dumps({
-"lineNumber": 300000000000,
-"messageTexts": [
-    "Your Text 1",
-    "Your Text 2"
-],
-"mobiles": [
-    "Your Mobile 1",
-    "Your Mobile 1"
-],
-"senddatetime": None
-})
-headers = {
-'Content-Type': 'application/json',
-'Accept': 'text/plain',
-'X-API-KEY': 'YOURAPIKEY'
-}
-conn.request("POST", "/v1/send/likeToLike", payload, headers)
-res = conn.getresponse()
-data = res.read()
-print(data.decode("utf-8"))
-    
+sms_ir.report_archived(
+from_date,
+to_date,
+page_size,
+page_number,
+))
+Get report of latest received messages:
 
--------------------------
-<!-- - ارسال گروهی -->
-این متد برای ارسال یک متن پیامک به گروهی از شماره موبایل ها مورد استفاده قرار میگیرد. همچنین شما می‌توانید با مقداردهی به پارامتر زمان ارسال، از قابلیت ارسال پیامک زمانبندی شده نیز استفاده نمایید.
+sms_ir.report_latest_received(
+count,
+)
+Get report of messages received today:
 
-URL
+sms_ir.report_today_received(
+page_size,
+page_number,
+)
+Get report of messages received today:
 
-https://api.sms.ir/v1/send/bulk
-Request Method
-POST
-حداکثر تعداد مجاز شماره‌های مقصد 100 می‌باشد.
+sms_ir.report_archived_received(
+from_date,
+to_date,
+page_size,
+page_number,
+)
+Get account credit:
 
-برای ارسال زمانبندی شده، انتخاب زمان گذشته نامعتبر می‌باشد.
+sms_ir.get_credit()
+Get account line numbers:
 
-برای ارسال زمانبندی شده، زمان معتبر می‎‌تواند در بازه یک ساعت آینده تا حداکثر 365 روز آینده در نظر گرفته شود.
-
-پارامترهای بدنه درخواست
-
-مشخصه	ارسال	نوع	توضیح
-lineNumber	اجباری	Long	شماره خط ارسالی
-MessageText	اجباری	String	متن پیام کوتاه
-Mobiles	اجباری	Array of String	شماره موبایل‌ها
-SendDateTime	اختیاری	UnixTime	زمان ارسال پیامک (در صورت خالی بودن، ارسال در لحظه انجام می‌شود)
-مدل دیتای بازگشتی
-
-مشخصه	نوع	توضیح
-PackId	Guid	شناسه یکتای مجموعه ارسال
-MessageIds	Array of Integer	آرایه ای از شناسه های یکتای هر پیامک
-Cost	Decimal	اعتبار مصرفی مجموعه ارسال
-Request Body
-{
-    "lineNumber": 30004505000017,
-    "messageText": "سرویس پیامکی ایده پردازان با بیش از یک دهه سابقه همراه شماست",
-    "mobiles": [
-        "00912xxxx677",
-          "0919xxxx904"
-    ]
-}
-Response Body
-{
-    "status": 1,
-    "message": "موفق",
-    "data": {
-        "packId": "2b99e63c-9bf8-4a21-9bfe-3f72dc1b46f1",
-        "messageIds": [
-            86522023,
-            86522024
-        ],
-        "cost": 2.0
-    }
-}
-نمونه کد
-
-
-
-
-      conn = http.client.HTTPSConnection("api.sms.ir")
-      payload = json.dumps({
-        "lineNumber": 300000000000,
-        "messageText": "Your Text",
-        "mobiles": [
-          "Your Mobile 1",
-          "Your Mobile 2"
-        ],
-        "sendDateTime": None
-      })
-      headers = {
-        'X-API-KEY': 'YOURAPIKEY',
-        'Content-Type': 'application/json'
-      }
-      conn.request("POST", "/v1/send/bulk", payload, headers)
-      res = conn.getresponse()
-      data = res.read()
-      print(data.decode("utf-8"))
-
-----------------
-
-<!-- - ارسال VERIFY -->
-با استفاده از این متد شما قادر به ارسال پیامک به منظور ارسال کد اعتبارسنجی (verification code)، کد تایید، فاکتور خرید و به طور کلی پیامک‌هایی با اولویت بالا و پارامترهای پویا می‌باشید. از آنجایی که این نوع از ارسال با خطوط خدماتی ارسال میشود امکان دریافت آن توسط افرادی که پیامک‌های تبلیغاتی خود را مسدود کرده‌اند نیز وجود دارد و با اولویت بالایی ارسال خواهد شد.برای استفاده از این نوع ارسال ابتدا قالب پیامک خود را در پنل (بخش ارسال سریع) مشخص نمایید.
-
-URL
-
-https://api.sms.ir/v1/send/verify
-Request Method
-POST
-پارامترهای بدنه درخواست
-
-مشخصه	ارسال	نوع	توضیح
-Mobile	اجباری	String	شماره موبایل
-TemplateId	اجباری	Integer	شناسه قالب (قالب ها از طریق پنل قابل تعریف و مدیریت می‌باشند)
-Parameters	اجباری	Array of Parameter Model	آرایه ای از مدل parameter برای تعیین مقادیر جایگزین شونده در قالب تعریف شده (ساختار مدل parameter در جدول زیر ذکر شده است)
-مدل Parameter
-
-مشخصه	ارسال	نوع	توضیح
-Name	اجباری	String	کلید تعیین شده در قالب (بدون در نظر گرفتن # در ابتدا و انتهای آن)
-Value	اجباری	String	مقدار کلید تعیین شده برای جایگزینی در قالب پیامک (حداکثر 25 کاراکتر)
-مدل دیتای بازگشتی
-
-مشخصه	نوع	توضیح
-MessageId	Integer	شناسه یکتای پیامک
-Cost	Decimal	اعتبار مصرفی ارسال
-Request Body
-{
-    "mobile": "919xxxx904",
-    "templateId": 123456,
-    "parameters": [
-      {
-        "name": "Code",
-        "value": "12345"
-      }
-    ]
-}
-Response Body
-{
-    "status": 1,
-    "message": "موفق",
-    "data": {
-        "messageId": 89545112,
-        "cost": 1.0
-    }
-}
-
-
-
-نمونه کد
-conn = http.client.HTTPSConnection("api.sms.ir")
-payload = "{\n  \"mobile\": \"Your Mobile\",\n  \"templateId\": YourTemplateID,\n
-\"parameters\": [\n    {\n      \"name\": \"PARAMETER1\",\n      \"value\": \"000000\"\n    },
-\n    {\n        \"name\":\"PARAMETER2\",\n        \"value\":\"000000\"\n    }\n  ]\n}"
-headers = {
-'Content-Type': 'application/json',
-'Accept': 'text/plain',
-'x-api-key': 'YOURAPIKEY'
-}
-conn.request("POST", "/v1/send/verify", payload, headers)
-res = conn.getresponse()
-data = res.read()
-print(data.decode("utf-8"))
+sms_ir.get_line_numbers()
