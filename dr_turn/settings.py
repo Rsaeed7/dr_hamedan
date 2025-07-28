@@ -18,6 +18,12 @@ from decouple import config
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://drhmd.ir',
+    'https://www.drhmd.ir',
+    'https://*.drhmd.ir',  
+]
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
