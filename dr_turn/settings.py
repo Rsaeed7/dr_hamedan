@@ -129,6 +129,7 @@ INSTALLED_APPS = [
     'clinics',
     'patients',
     'wallet',
+    'payments',
     'docpages',
     'medimag.apps.MedimagConfig',
     'support.apps.AboutUsConfig',

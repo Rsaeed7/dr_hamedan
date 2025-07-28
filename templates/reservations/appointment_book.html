@@ -347,8 +347,14 @@
                         <div class="col-lg-12 col-md-4">
                             <figure>
                                 <a class="dr_box2">
-                                    <img src="{{ doctor.profile_image.url }}" alt="{{ doctor.user.get_full_name }}"
-                                         class="dr_img">
+                                    {% if doctor.profile_image.name %}
+                                        <img src="{{ doctor.profile_image.url }}" alt="{{ doctor.user.get_full_name }}"
+                                             class="dr_img">
+                                    {% else %}
+                                        <div class="dr_img" style="background-color: #e5e7eb; display: flex; align-items: center; justify-content: center;">
+                                            <i class="icon-user" style="font-size: 48px; color: #9ca3af;"></i>
+                                        </div>
+                                    {% endif %}
                                     <i class="icon-star-5 text-primary"><small>{{ doctor.comment_rate }}</small></i>
                                 </a>
                             </figure>
