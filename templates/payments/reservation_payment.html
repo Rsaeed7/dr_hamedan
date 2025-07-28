@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load jformat %}
+
+{% block title %}پرداخت نوبت{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-2xl font-bold text-gray-900 mb-6 text-center">پرداخت نوبت</h1>
+        
+        {% if messages %}
+        <div class="mb-6">
+            {% for message in messages %}
+            <div class="p-4 rounded-md {% if message.tags == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <!-- Reservation Details -->
+        <div class="mb-6 p-4 bg-blue-50 rounded-lg">
+            <h3 class="font-semibold text-gray-800 mb-2">جزئیات نوبت</h3>
+            <div class="space-y-1 text-sm text-gray-600">
+                <p><strong>دکتر:</strong> {{ reservation.doctor }}</p>
+                <p><strong>تاریخ:</strong> {{ reservation.day.date|jformat:"%Y/%m/%d" }}</p>
+                <p><strong>ساعت:</strong> {{ reservation.time }}</p>
+                <p><strong>مبلغ اصلی:</strong> {{ reservation.amount|floatformat:0 }} تومان</p>
+                
+                {% if discount_info %}
+                <div class="mt-2 p-2 bg-green-100 rounded">
+                    <p><strong>تخفیف:</strong> {{ discount_info.discount_title }}</p>
+                    <p><strong>مبلغ تخفیف:</strong> {{ discount_info.discount_amount|floatformat:0 }} تومان</p>
+                    <p><strong>مبلغ نهایی:</strong> <span class="font-bold text-green-700">{{ discount_info.final_amount|floatformat:0 }} تومان</span></p>
+                </div>
+                {% else %}
+                <p><strong>مبلغ نهایی:</strong> <span class="font-bold">{{ final_amount|floatformat:0 }} تومان</span></p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">درگاه پرداخت</label>
+                {% for gateway in active_gateways %}
+                <label class="flex items-center mb-2">
+                    <input 
+                        type="radio" 
+                        name="gateway_type" 
+                        value="{{ gateway.gateway_type }}" 
+                        class="mr-2"
+                        {% if forloop.first %}checked{% endif %}
+                    >
+                    <span>{{ gateway.name }}</span>
+                </label>
+                {% empty %}
+                <p class="text-sm text-gray-500">هیچ درگاه پرداختی فعال نیست</p>
+                {% endfor %}
+            </div>
+            
+            <button 
+                type="submit" 
+                class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
+                {% if not active_gateways %}disabled{% endif %}
+            >
+                پرداخت {{ final_amount|floatformat:0 }} تومان
+            </button>
+        </form>
+        
+        <div class="mt-6 text-center">
+            <a href="{% url 'reservations:appointment_status' pk=reservation.id %}" class="text-blue-600 hover:text-blue-800">
+                بازگشت به جزئیات نوبت
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %} 

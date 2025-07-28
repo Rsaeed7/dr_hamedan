@@ -1,0 +1,148 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نتیجه پرداخت - دکتر همدان</title>
+
+    <style>
+        * {
+            margin: 0%;
+            padding: 0%;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Vazir', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .statuse {
+            height: 100vh;
+            background: #616161;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .bx-statuse {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: #ffffff90 1px solid;
+            border-radius: 10px;
+            margin: 60px;
+            height: 80%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+        }
+
+        .bx-statuse-h {
+            color: #ffbf00;
+            margin: 70px 0;
+            font-size: 25px;
+            text-align: center;
+        }
+
+        .bx-statuse-ico img {
+            width: 80px;
+            height: 80px;
+            margin: 10px;
+        }
+
+        .bx-statuse-id,
+        .bx-statuse-p {
+            margin: 15px;
+            font-size: 20px;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .bx-statuse-tx p {
+            margin: 2px;
+            color: #ffffff;
+        }
+
+        .bx-statuse-a a {
+            text-decoration: none;
+            color: #ffbf00;
+            padding: 10px 20px;
+            border: 2px solid #ffbf00;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .bx-statuse-a a:hover {
+            background: #ffbf00;
+            color: #616161;
+        }
+
+        .success {
+            color: #00ff00;
+        }
+
+        .error {
+            color: #ff4444;
+        }
+
+        .info {
+            color: #00feff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="statuse">
+        <div class="bx-statuse">
+            <div class="bx-statuse-h">
+                <h3>{{ message|default:"نتیجه پرداخت" }}</h3>
+            </div>
+            <div class="bx-statuse-ico">
+                {% if payment_request.status == "completed" %}
+                    <img src="{% static 'img/checked_green.png' %}" alt="پرداخت موفق">
+                {% else %}
+                    <img src="{% static 'img/checked_red.png' %}" alt="پرداخت ناموفق">
+                {% endif %}
+            </div>
+            <div class="bx-statuse-p bx-statuse-tx">
+                <p>وضعیت: {{ payment_request.get_status_display }}</p>
+                <p>مبلغ: {{ payment_request.amount|floatformat:0 }} تومان</p>
+                {% if payment_request.ref_id %}
+                    <p>شماره پیگیری: {{ payment_request.ref_id }}</p>
+                {% endif %}
+                {% if payment_request.authority %}
+                    <p>کد مرجع: {{ payment_request.authority }}</p>
+                {% endif %}
+                <p>تاریخ: {{ payment_request.created_at|date:"Y/m/d H:i" }}</p>
+            </div>
+            <div class="bx-statuse-p info">
+                {% if payment_request.status == "completed" %}
+                    <p>سپاس از پرداخت شما</p>
+                    <p>پرداخت با موفقیت انجام شد</p>
+                {% elif payment_request.status == "failed" %}
+                    <p>پرداخت ناموفق بود</p>
+                    <p>لطفاً دوباره تلاش کنید</p>
+                {% elif payment_request.status == "cancelled" %}
+                    <p>پرداخت لغو شد</p>
+                {% else %}
+                    <p>در حال پردازش...</p>
+                {% endif %}
+            </div>
+            <div class="bx-statuse-a">
+                {% if payment_request.status == "completed" %}
+                    <a href="{% url 'wallet:wallet_dashboard' %}">بازگشت به کیف پول</a>
+                {% else %}
+                    <a href="{% url 'wallet:deposit' %}">تلاش مجدد</a>
+                {% endif %}
+                <br><br>
+                <a href="{% url 'home' %}">بازگشت به صفحه اصلی</a>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html> 

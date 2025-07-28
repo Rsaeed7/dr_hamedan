@@ -377,7 +377,13 @@ body {
         <div class="vip-card h-100 hover-grow">
           <div class="vip-card-badge">پزشک نمونه</div>
         <a href="{% url 'doctors:doctor_detail' doctor.pk %}" >
-          <img src="{{ doctor.profile_image.url }}" alt="{{ doctor.user.get_full_name }}" class="vip-doctor-img">
+          {% if doctor.profile_image.name %}
+            <img src="{{ doctor.profile_image.url }}" alt="{{ doctor.user.get_full_name }}" class="vip-doctor-img">
+          {% else %}
+            <div class="vip-doctor-img" style="background-color: #e5e7eb; display: flex; align-items: center; justify-content: center; border: 4px solid white; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);">
+              <i class="icon-user" style="font-size: 48px; color: #9ca3af;"></i>
+            </div>
+          {% endif %}
         </a>
 
           <div class="card-body text-center pt-0">
