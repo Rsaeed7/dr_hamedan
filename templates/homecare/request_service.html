@@ -31,7 +31,7 @@
     </section>
     <section class="container mt-4 m-b-10 box_general">
         <h3 class="mb-4">درخواست خدمت: {{ service.name }}</h3>
-        <p class="text-muted">هزینه حدودی: {{ service.estimated_price|floatformat:0 }} تومان</p>
+        <p class="text-muted">هزینه حدودی: {{ service.estimated_price }} تومان</p>
 
         <form method="post" enctype="multipart/form-data" class="mt-4">
             {% csrf_token %}

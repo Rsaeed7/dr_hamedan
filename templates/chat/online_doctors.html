@@ -356,7 +356,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <strong>موجودی کیف پول:</strong>
-                            <span id="current-balance">{{ user.wallet.balance|floatformat:0|default:"0" }}</span> تومان
+                            <span id="current-balance">{{ user.wallet.balance|default:"0" }}</span> تومان
                         </div>
                         <div>
                             <span id="balance-status-icon"></span>

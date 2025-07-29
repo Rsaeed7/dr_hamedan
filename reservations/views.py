@@ -122,31 +122,31 @@ def book_appointment(request, doctor_id):
                     patient_data=patient_data,
                     user=request.user
                 )
-            
-            user.first_name = patient_name
-            user.last_name = patient_last_name
-            user.patient.national_id = patient_national_id
-            user.patient.save()
-            user.save()
-            
-            if success:
-                messages.success(request, message)
-                return redirect('reservations:view_appointment', pk=reservation.id)
-            else:
-                messages.error(request, message)
-                if "موجودی کیف پول کافی نیست" in message:
-                    # Store form data in session for payment choice
-                    request.session['pending_booking_data'] = {
-                        'doctor_id': doctor_id,
-                        'date': date_str,
-                        'time': time_str,
-                        'patient_data': patient_data,
-                        'reservation_id': reservation.id
-                    }
-                    
-                    # Redirect to payment choice page
-                    return redirect('reservations:payment_choice', reservation_id=reservation.id)
-                return redirect('reservations:book_appointment', doctor_id=doctor_id)
+
+                user.first_name = patient_name
+                user.last_name = patient_last_name
+                user.patient.national_id = patient_national_id
+                user.patient.save()
+                user.save()
+                
+                if success:
+                    messages.success(request, message)
+                    return redirect('reservations:view_appointment', pk=reservation.id)
+                else:
+                    messages.error(request, message)
+                    if "موجودی کیف پول کافی نیست" in message:
+                        # Store form data in session for payment choice
+                        request.session['pending_booking_data'] = {
+                            'doctor_id': doctor_id,
+                            'date': date_str,
+                            'time': time_str,
+                            'patient_data': patient_data,
+                            'reservation_id': reservation.id
+                        }
+                        
+                        # Redirect to payment choice page
+                        return redirect('reservations:payment_choice', reservation_id=reservation.id)
+                    return redirect('reservations:book_appointment', doctor_id=doctor_id)
             
         except Exception as e:
             logger.error(f"خطا در رزرو نوبت: {str(e)}")

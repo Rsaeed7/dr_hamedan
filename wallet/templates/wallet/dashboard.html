@@ -23,12 +23,12 @@
                 <div class="flex justify-between items-center">
                     <div>
                         <h2 class="text-lg font-semibold mb-2">موجودی کیف پول</h2>
-                        <p class="text-3xl font-bold">{{ wallet.balance|floatformat:0 }} تومان</p>
+                        <p class="text-3xl font-bold">{{ wallet.balance }} تومان</p>
                         {% if wallet.pending_balance > 0 %}
-                            <p class="text-sm opacity-90 mt-1">در انتظار تایید: {{ wallet.pending_balance|floatformat:0 }} تومان</p>
+                            <p class="text-sm opacity-90 mt-1">در انتظار تایید: {{ wallet.pending_balance }} تومان</p>
                         {% endif %}
                         {% if wallet.frozen_balance > 0 %}
-                            <p class="text-sm opacity-90 mt-1">مسدود شده: {{ wallet.frozen_balance|floatformat:0 }} تومان</p>
+                            <p class="text-sm opacity-90 mt-1">مسدود شده: {{ wallet.frozen_balance }} تومان</p>
                         {% endif %}
                     </div>
                     <div class="text-right">
@@ -96,7 +96,7 @@
                                         {% elif transaction.transaction_type == 'withdraw' %}text-red-600
                                         {% else %}text-gray-600{% endif %}">
                                         {% if transaction.transaction_type == 'withdraw' %}-{% endif %}
-                                        {{ transaction.amount|floatformat:0 }} تومان
+                                        {{ transaction.amount }} تومان
                                     </p>
                                     <p class="text-xs text-gray-500">{{ transaction.get_status_display }}</p>
                                 </div>

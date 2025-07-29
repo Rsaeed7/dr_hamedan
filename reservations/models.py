@@ -118,7 +118,7 @@ class Reservation(models.Model):
                     self.status = 'confirmed'  # Directly confirmed since payment is made
                     self.payment_status = 'paid'
                     self.transaction = payment_transaction
-                    
+                        
                 elif payment_method == 'direct':
                     # For direct payment, set status to pending and payment_status to pending
                     self.patient_name = patient_data['name']

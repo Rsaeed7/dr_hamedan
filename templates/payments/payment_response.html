@@ -108,7 +108,7 @@
             </div>
             <div class="bx-statuse-p bx-statuse-tx">
                 <p>وضعیت: {{ payment_request.get_status_display }}</p>
-                <p>مبلغ: {{ payment_request.amount|floatformat:0 }} تومان</p>
+                <p>مبلغ: {{ payment_request.amount }} تومان</p>
                 {% if payment_request.ref_id %}
                     <p>شماره پیگیری: {{ payment_request.ref_id }}</p>
                 {% endif %}

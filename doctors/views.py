@@ -856,8 +856,8 @@ def update_settings(request):
         if consultation_fee and consultation_duration:
             doctor.consultation_fee = int(consultation_fee)
             doctor.consultation_duration = int(consultation_duration)
-            
-            if online_visit_fee:
+
+        if online_visit_fee:
                 doctor.online_visit_fee = int(online_visit_fee)
 
         doctor.save()

@@ -16,11 +16,11 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h2 class="text-lg font-semibold text-gray-800">موجودی کل</h2>
-                        <p class="text-3xl font-bold text-blue-600">{{ wallet.balance|floatformat:0 }} تومان</p>
+                        <p class="text-3xl font-bold text-blue-600">{{ wallet.balance }} تومان</p>
                     </div>
                     <div class="text-right">
                         <h3 class="text-sm font-medium text-gray-600">موجودی مسدود</h3>
-                        <p class="text-xl font-semibold text-red-500">{{ wallet.frozen_balance|floatformat:0 }} تومان</p>
+                        <p class="text-xl font-semibold text-red-500">{{ wallet.frozen_balance }} تومان</p>
                     </div>
                 </div>
             </div>
@@ -60,7 +60,7 @@
                         </div>
                         <div class="text-right">
                             <p class="font-semibold {% if transaction.transaction_type == 'deposit' %}text-green-600{% else %}text-red-600{% endif %}">
-                                {% if transaction.transaction_type == 'deposit' %}+{% else %}-{% endif %}{{ transaction.amount|floatformat:0 }} تومان
+                                {% if transaction.transaction_type == 'deposit' %}+{% else %}-{% endif %}{{ transaction.amount }} تومان
                             </p>
                             <span class="text-xs px-2 py-1 rounded-full {% if transaction.status == 'completed' %}bg-green-100 text-green-800{% elif transaction.status == 'pending' %}bg-yellow-100 text-yellow-800{% else %}bg-red-100 text-red-800{% endif %}">
                                 {{ transaction.get_status_display }}

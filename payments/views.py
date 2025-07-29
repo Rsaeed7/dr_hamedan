@@ -16,7 +16,7 @@ from user.models import User
 from .models import PaymentRequest, PaymentGateway
 from wallet.models import Wallet, Transaction
 from reservations.models import Reservation
-from .services import PaymentService
+from .services import PaymentService, CurrencyConverter
 
 
 @login_required
@@ -111,7 +111,7 @@ def create_payment(request):
     """ایجاد پرداخت جدید"""
     if request.method == 'POST':
         try:
-            amount = Decimal(request.POST.get('amount', '0'))
+            amount = request.POST.get('amount', '0')
             description = request.POST.get('description', '').strip()
             gateway_type = request.POST.get('gateway_type', 'zarinpal')
             callback_url = request.POST.get('callback_url', '')
@@ -164,18 +164,19 @@ def wallet_deposit_payment(request):
     
     if request.method == 'POST':
         try:
-            amount = Decimal(request.POST.get('amount', '0'))
+
+            amount = int(request.POST.get('amount', '0'))
             gateway_type = request.POST.get('gateway_type', 'zarinpal')
             
             # اعتبارسنجی مبلغ
-            if amount < Decimal('1000'):
+            if amount < int('1000'):
                 messages.error(request, 'حداقل مبلغ واریز ۱۰۰۰ تومان است.')
                 return render(request, 'payments/wallet_deposit.html', {
                     'suggested_amount': suggested_amount, 
                     'redirect_to': redirect_to
                 })
             
-            if amount > Decimal('50000000'):
+            if amount > int('50000000'):
                 messages.error(request, 'حداکثر مبلغ واریز ۵۰ میلیون تومان است.')
                 return render(request, 'payments/wallet_deposit.html', {
                     'suggested_amount': suggested_amount, 
@@ -241,10 +242,12 @@ def reservation_payment(request, reservation_id):
         messages.error(request, 'شما مجاز به مشاهده این صفحه نیستید.')
         return redirect('home')
     
-    # محاسبه مبلغ نهایی (با تخفیف)
-    final_amount = reservation.amount
+    # محاسبه مبلغ نهایی بر اساس تعرفه پزشک (به جای مبلغ ذخیره شده در رزرو)
+    original_amount = reservation.doctor.consultation_fee
+    final_amount = original_amount
     discount_info = None
     
+    # بررسی تخفیف اعمال شده
     if hasattr(reservation, 'discount_usage'):
         discount_usage = reservation.discount_usage
         final_amount = discount_usage.final_amount
@@ -254,6 +257,11 @@ def reservation_payment(request, reservation_id):
             'final_amount': discount_usage.final_amount,
             'discount_title': discount_usage.discount.title
         }
+    
+    # بروزرسانی مبلغ رزرو اگر اشتباه باشد
+    if reservation.amount != original_amount:
+        reservation.amount = original_amount
+        reservation.save()
     
     if request.method == 'POST':
         gateway_type = request.POST.get('gateway_type', 'zarinpal')
@@ -406,7 +414,8 @@ def api_payment_status(request, payment_id):
         return JsonResponse({
             'success': True,
             'status': payment_request.status,
-            'amount': float(payment_request.amount),
+            # مبلغ به تومان
+            'amount': payment_request.amount,
             'authority': payment_request.authority,
             'ref_id': payment_request.ref_id,
             'created_at': payment_request.created_at.isoformat(),
@@ -426,7 +435,8 @@ def api_create_payment(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            amount = Decimal(data.get('amount', '0'))
+            # مبلغ به تومان
+            amount = int(data.get('amount', '0'))
             description = data.get('description', '').strip()
             gateway_type = data.get('gateway_type', 'zarinpal')
             callback_url = data.get('callback_url', '')
@@ -497,7 +507,7 @@ def api_verify_payment(request):
         try:
             data = json.loads(request.body)
             authority = data.get('authority')
-            amount = Decimal(data.get('amount', '0'))
+            amount = int(data.get('amount', '0'))
             
             if not authority:
                 return JsonResponse({
