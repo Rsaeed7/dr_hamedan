@@ -32,7 +32,7 @@ class ChatRequest(models.Model):
     
     # Payment fields
     payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='pending', verbose_name='وضعیت پرداخت')
-    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='مبلغ', default=0)
+    amount = models.IntegerField(verbose_name='مبلغ', default=0)
     transaction = models.ForeignKey('wallet.Transaction', on_delete=models.SET_NULL, null=True, blank=True, related_name='chat_requests', verbose_name='تراکنش')
     
     # Patient information for payment

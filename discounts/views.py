@@ -1,19 +1,22 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
 from django.contrib import messages
+from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
-from django.views.generic import ListView, DetailView
-from django.db.models import Q, Sum, Count
 from django.utils import timezone
-from decimal import Decimal
-import json
-
+from django.db import transaction
+from django.utils.translation import gettext_lazy as _
+from django_jalali.db import models as jmodels
+from django.core.paginator import Paginator
+from django.utils import timezone
+from django.views.generic import ListView, DetailView
+from django.utils.decorators import method_decorator
+from django.db.models import Q, Sum, Count
+from user.models import User
+from doctors.models import Doctor
 from .models import Discount, CouponCode, DiscountUsage, AutomaticDiscount
 from reservations.models import Reservation
-from user.models import User
 
 
 class DiscountListView(ListView):

@@ -40,7 +40,7 @@ class Reservation(models.Model):
     phone = models.CharField(max_length=20, verbose_name='شماره تلفن', blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='available', verbose_name='وضعیت')
     payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='pending', verbose_name='وضعیت پرداخت')
-    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='مبلغ')
+    amount = models.IntegerField(verbose_name='مبلغ')
     created_at = jmodels.jDateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
     updated_at = jmodels.jDateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
     transaction = models.ForeignKey('wallet.Transaction', on_delete=models.SET_NULL, null=True, blank=True, related_name='reservations', verbose_name='تراکنش')

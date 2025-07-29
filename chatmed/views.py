@@ -1,4 +1,3 @@
-from decimal import Decimal
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, get_object_or_404, redirect
@@ -89,7 +88,7 @@ def request_chat(request, doctor_id):
             needed_amount = max(0, consultation_fee - wallet.balance)
             
             # Add 10% extra for safety
-            suggested_amount = int(needed_amount * Decimal('1.1'))
+            suggested_amount = int(needed_amount * 1.1)
             
             # Round to nearest 10,000 tomans
             suggested_amount = ((suggested_amount + 9999) // 10000) * 10000

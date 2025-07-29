@@ -6,7 +6,7 @@ Usage: python manage.py create_sample_data
 
 import random
 import jdatetime
-from decimal import Decimal
+from datetime import datetime, timedelta
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
@@ -280,7 +280,7 @@ class Command(BaseCommand):
                     'license_number': f'DR{i+1:04d}',
                     'city': random.choice(cities),
                     'bio': f'دکتر {user.last_name} با بیش از {random.randint(5, 20)} سال سابقه در زمینه {user.last_name}',
-                    'consultation_fee': Decimal(random.randint(100000, 500000)),
+                    'consultation_fee': random.randint(100000, 500000),
                     'consultation_duration': random.choice([30, 45, 60]),
                     'is_independent': random.choice([True, False]),
                     'is_available': True,
@@ -289,7 +289,7 @@ class Command(BaseCommand):
                     'phone': user.phone,
                     'gender': random.choice(['male', 'female']),
                     'online_visit': True,
-                    'online_visit_fee': Decimal(random.randint(80000, 300000)),
+                    'online_visit_fee': random.randint(80000, 300000),
                     'national_id': f'{random.randint(1000000000, 9999999999)}'
                 }
             )
@@ -342,9 +342,9 @@ class Command(BaseCommand):
             wallet, created = Wallet.objects.get_or_create(
                 user=user,
                 defaults={
-                    'balance': Decimal(random.randint(0, 1000000)),
-                    'pending_balance': Decimal(random.randint(0, 500000)),
-                    'frozen_balance': Decimal(0)
+                    'balance': random.randint(0, 1000000),
+                    'pending_balance': random.randint(0, 500000),
+                    'frozen_balance': 0
                 }
             )
             self.wallets.append(wallet)
@@ -529,7 +529,7 @@ class Command(BaseCommand):
                 defaults={
                     'category': random.choice(self.service_categories),
                     'description': f'خدمت {service_name} در منزل',
-                    'price': Decimal(random.randint(50000, 300000))
+                    'price': random.randint(50000, 300000)
                 }
             )
             self.services.append(service)
@@ -583,13 +583,13 @@ class Command(BaseCommand):
                 defaults={
                     'description': f'توضیحات تخفیف {i+1}',
                     'discount_type': discount_type,
-                    'percentage': Decimal(random.randint(10, 50)) if discount_type.name == 'درصدی' else None,
-                    'fixed_amount': Decimal(random.randint(50000, 200000)) if discount_type.name == 'مبلغ ثابت' else None,
+                    'percentage': random.randint(10, 50) if discount_type.name == 'درصدی' else None,
+                    'fixed_amount': random.randint(50000, 200000) if discount_type.name == 'مبلغ ثابت' else None,
                     'applicable_to': random.choice(['all', 'doctor', 'specialization', 'clinic']),
-                    'min_amount': Decimal(random.randint(100000, 500000)),
-                    'max_discount_amount': Decimal(random.randint(100000, 300000)),
-                    'start_date': jdatetime.datetime.now(),
-                    'end_date': jdatetime.datetime.now() + jdatetime.timedelta(days=30),
+                    'min_amount': random.randint(100000, 500000),
+                    'max_discount_amount': random.randint(100000, 300000),
+                    'start_date': datetime.now(),
+                    'end_date': datetime.now() + timedelta(days=30),
                     'usage_limit': random.randint(50, 200),
                     'usage_limit_per_user': random.randint(1, 3),
                     'status': 'active'
@@ -661,7 +661,7 @@ class Command(BaseCommand):
                         'reminder_type': random.choice(['confirmation', 'reminder_24h', 'reminder_2h']),
                         'phone_number': reservation.phone,
                         'message': f'یادآوری نوبت دکتر {reservation.doctor.user.get_full_name()}',
-                        'scheduled_time': jdatetime.datetime.now() + jdatetime.timedelta(hours=random.randint(1, 24)),
+                        'scheduled_time': datetime.now() + timedelta(hours=random.randint(1, 24)),
                         'status': random.choice(['pending', 'sent', 'failed'])
                     }
                 )

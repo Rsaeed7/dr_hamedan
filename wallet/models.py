@@ -2,7 +2,6 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from django.utils.translation import gettext_lazy as _
 from django_jalali.db import models as jmodels
-from decimal import Decimal
 from django.utils import timezone
 # from django.contrib.auth.models import User
 from user.models import User
@@ -11,23 +10,23 @@ from user.models import User
 class Wallet(models.Model):
     """کیف پول کاربر"""
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='wallet', verbose_name=_('کاربر'))
-    balance = models.DecimalField(
-        max_digits=12, decimal_places=2, default=Decimal('0.00'),
-        validators=[MinValueValidator(Decimal('0.00'))],
+    balance = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(0)],
         verbose_name=_('موجودی')
     )
     
     # موجودی در انتظار (برای پزشکان)
-    pending_balance = models.DecimalField(
-        max_digits=12, decimal_places=2, default=Decimal('0.00'),
-        validators=[MinValueValidator(Decimal('0.00'))],
+    pending_balance = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(0)],
         verbose_name=_('موجودی در انتظار')
     )
     
     # موجودی مسدود شده
-    frozen_balance = models.DecimalField(
-        max_digits=12, decimal_places=2, default=Decimal('0.00'),
-        validators=[MinValueValidator(Decimal('0.00'))],
+    frozen_balance = models.IntegerField(
+        default=0,
+        validators=[MinValueValidator(0)],
         verbose_name=_('موجودی مسدود')
     )
     
@@ -117,17 +116,18 @@ class PaymentGateway(models.Model):
     verify_url = models.URLField(verbose_name=_('آدرس تایید'))
     
     is_active = models.BooleanField(default=True, verbose_name=_('فعال'))
-    min_amount = models.DecimalField(
-        max_digits=10, decimal_places=2, default=Decimal('1000'),
+    # Limits
+    min_amount = models.IntegerField(
+        default=1000,
         verbose_name=_('حداقل مبلغ')
     )
-    max_amount = models.DecimalField(
-        max_digits=12, decimal_places=2, default=Decimal('50000000'),
+    max_amount = models.IntegerField(
+        default=50000000,
         verbose_name=_('حداکثر مبلغ')
     )
     
     commission_percentage = models.DecimalField(
-        max_digits=5, decimal_places=2, default=Decimal('0.00'),
+        max_digits=5, decimal_places=2, default=0.00,
         verbose_name=_('درصد کمیسیون')
     )
     
@@ -142,7 +142,7 @@ class PaymentGateway(models.Model):
     
     def calculate_commission(self, amount):
         """محاسبه کمیسیون"""
-        return amount * (self.commission_percentage / Decimal('100'))
+        return int(amount * (self.commission_percentage / 100))
 
 
 class Transaction(models.Model):
@@ -179,7 +179,7 @@ class Transaction(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='transactions', verbose_name=_('کاربر'))
     wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='transactions', verbose_name=_('کیف پول'))
     
-    amount = models.DecimalField(max_digits=12, decimal_places=2, verbose_name=_('مبلغ'))
+    amount = models.IntegerField(verbose_name=_('مبلغ'))
     transaction_type = models.CharField(max_length=20, choices=TRANSACTION_TYPES, verbose_name=_('نوع تراکنش'))
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name=_('وضعیت'))
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS, default='gateway', verbose_name=_('روش پرداخت'))
@@ -191,16 +191,16 @@ class Transaction(models.Model):
     authority = models.CharField(max_length=100, blank=True, verbose_name=_('کد Authority'))
     
     # کمیسیون و هزینه‌ها
-    commission_amount = models.DecimalField(
-        max_digits=10, decimal_places=2, default=Decimal('0.00'),
+    commission_amount = models.IntegerField(
+        default=0,
         verbose_name=_('مبلغ کمیسیون')
     )
-    fee_amount = models.DecimalField(
-        max_digits=10, decimal_places=2, default=Decimal('0.00'),
+    fee_amount = models.IntegerField(
+        default=0,
         verbose_name=_('هزینه تراکنش')
     )
-    net_amount = models.DecimalField(
-        max_digits=12, decimal_places=2, null=True, blank=True,
+    net_amount = models.IntegerField(
+        null=True, blank=True,
         verbose_name=_('مبلغ خالص')
     )
     

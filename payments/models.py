@@ -1,6 +1,5 @@
 import os
 import uuid
-from decimal import Decimal
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django_jalali.db import models as jmodels
@@ -35,22 +34,22 @@ class PaymentGateway(models.Model):
     is_sandbox = models.BooleanField(default=True, verbose_name=_('محیط تست'))
     
     # Limits
-    min_amount = models.DecimalField(
-        max_digits=12, decimal_places=2, default=Decimal('1000'),
+    min_amount = models.IntegerField(
+        default=1000,
         verbose_name=_('حداقل مبلغ')
     )
-    max_amount = models.DecimalField(
-        max_digits=12, decimal_places=2, default=Decimal('50000000'),
+    max_amount = models.IntegerField(
+        default=50000000,
         verbose_name=_('حداکثر مبلغ')
     )
     
     # Commission
     commission_percentage = models.DecimalField(
-        max_digits=5, decimal_places=2, default=Decimal('0.00'),
+        max_digits=5, decimal_places=2, default=0.00,
         verbose_name=_('درصد کمیسیون')
     )
     fixed_commission = models.DecimalField(
-        max_digits=10, decimal_places=2, default=Decimal('0.00'),
+        max_digits=10, decimal_places=2, default=0.00,
         verbose_name=_('کمیسیون ثابت')
     )
     
@@ -85,8 +84,8 @@ class PaymentGateway(models.Model):
     def calculate_commission(self, amount):
         """محاسبه کمیسیون"""
         commission = self.fixed_commission
-        commission += amount * (self.commission_percentage / Decimal('100'))
-        return commission
+        commission += amount * (self.commission_percentage / 100)
+        return int(commission)
 
 
 class PaymentRequest(models.Model):
@@ -105,7 +104,7 @@ class PaymentRequest(models.Model):
     wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='payment_requests', verbose_name=_('کیف پول'))
     
     # اطلاعات پرداخت
-    amount = models.DecimalField(max_digits=12, decimal_places=2, verbose_name=_('مبلغ'))
+    amount = models.IntegerField(verbose_name=_('مبلغ'))
     description = models.TextField(verbose_name=_('توضیحات'))
     
     # درگاه پرداخت

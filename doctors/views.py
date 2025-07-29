@@ -854,12 +854,11 @@ def update_settings(request):
             redirect_url = 'chat:chat_room_list'  # مسیر دوم
 
         if consultation_fee and consultation_duration:
-            doctor.consultation_fee = float(consultation_fee)
+            doctor.consultation_fee = int(consultation_fee)
             doctor.consultation_duration = int(consultation_duration)
-
-        if online_visit_fee:
-            doctor.online_visit_fee = float(online_visit_fee)
-            doctor.online_visit = online_visit
+            
+            if online_visit_fee:
+                doctor.online_visit_fee = int(online_visit_fee)
 
         doctor.save()
         messages.success(request, "تنظیمات با موفقیت بروزرسانی شد.")
