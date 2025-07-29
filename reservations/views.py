@@ -93,11 +93,29 @@ def book_appointment(request, doctor_id):
                 'email': patient_email
             }
 
-            success, message = reservation.book_appointment(
-                patient_data=patient_data,
-                user=request.user
-
-            )
+            # Check payment method preference
+            payment_method = request.POST.get('payment_method', 'wallet')
+            
+            if payment_method == 'direct':
+                # Direct payment booking
+                success, message = reservation.book_with_direct_payment(
+                    patient_data=patient_data,
+                    user=request.user
+                )
+                
+                if success:
+                    # Redirect to payment page
+                    return redirect('payments:reservation_payment', reservation_id=reservation.id)
+                else:
+                    messages.error(request, message)
+                    return redirect('reservations:book_appointment', doctor_id=doctor_id)
+            else:
+                # Wallet payment booking
+                success, message = reservation.book_appointment(
+                    patient_data=patient_data,
+                    user=request.user
+                )
+            
             user.first_name = patient_name
             user.last_name = patient_last_name
             user.patient.national_id = patient_national_id
@@ -110,26 +128,17 @@ def book_appointment(request, doctor_id):
             else:
                 messages.error(request, message)
                 if "موجودی کیف پول کافی نیست" in message:
-                    # محاسبه مقدار مورد نیاز برای شارژ
-                    required_amount = reservation.amount
-                    wallet, created = Wallet.objects.get_or_create(user=request.user)
+                    # Store form data in session for payment choice
+                    request.session['pending_booking_data'] = {
+                        'doctor_id': doctor_id,
+                        'date': date_str,
+                        'time': time_str,
+                        'patient_data': patient_data,
+                        'reservation_id': reservation.id
+                    }
                     
-                    # محاسبه مقدار کمبود برای شارژ
-                    needed_amount = max(0, required_amount - wallet.balance)
-                    
-                    # اضافه کردن 10% بیشتر برای اطمینان
-                    suggested_amount = int(needed_amount * Decimal('1.1'))
-                    
-                    # گرد کردن به نزدیکترین 10,000 تومان
-                    suggested_amount = ((suggested_amount + 9999) // 10000) * 10000
-                    
-                    # حداقل مقدار 10,000 تومان
-                    suggested_amount = max(10000, suggested_amount)
-                    
-                    # هدایت مستقیم به صفحه شارژ با پارامتر مقدار پیشنهادی
-                    deposit_url = f"{reverse('wallet:deposit')}?amount={suggested_amount}&redirect_to={request.path}"
-                    messages.warning(request, f'برای انجام رزرو نیاز به شارژ کیف پول دارید. به صفحه شارژ هدایت می‌شوید.')
-                    return redirect(deposit_url)
+                    # Redirect to payment choice page
+                    return redirect('reservations:payment_choice', reservation_id=reservation.id)
                 return redirect('reservations:book_appointment', doctor_id=doctor_id)
             
         except Exception as e:
@@ -434,3 +443,91 @@ def ajax_get_day_slots(request, doctor_id):
     except Exception as e:
         logger.error(f"خطا در دریافت اسلات‌های روز: {str(e)}")
         return JsonResponse({'error': 'خطای سرور'}, status=500)
+
+@login_required
+def payment_choice(request, reservation_id):
+    """انتخاب روش پرداخت برای رزرو نوبت"""
+    try:
+        reservation = Reservation.objects.get(
+            id=reservation_id,
+            status='available',
+            payment_status='pending'
+        )
+    except Reservation.DoesNotExist:
+        messages.error(request, 'رزرو مورد نظر یافت نشد')
+        return redirect('home')
+    
+    # Get user's wallet
+    from wallet.models import Wallet
+    wallet, created = Wallet.objects.get_or_create(user=request.user)
+    
+    # Calculate amounts
+    required_amount = reservation.amount
+    current_balance = wallet.balance
+    needed_amount = max(0, required_amount - current_balance)
+    
+    # Calculate suggested deposit amount
+    suggested_amount = int(needed_amount * Decimal('1.1'))
+    suggested_amount = ((suggested_amount + 9999) // 10000) * 10000
+    suggested_amount = max(10000, suggested_amount)
+    
+    context = {
+        'reservation': reservation,
+        'wallet': wallet,
+        'required_amount': required_amount,
+        'current_balance': current_balance,
+        'needed_amount': needed_amount,
+        'suggested_amount': suggested_amount,
+    }
+    
+    return render(request, 'reservations/payment_choice.html', context)
+
+
+@login_required
+def process_payment_choice(request, reservation_id):
+    """پردازش انتخاب روش پرداخت"""
+    if request.method != 'POST':
+        return redirect('reservations:payment_choice', reservation_id=reservation_id)
+    
+    payment_choice = request.POST.get('payment_choice')
+    
+    if payment_choice == 'wallet_charge':
+        # Redirect to wallet deposit
+        suggested_amount = request.POST.get('suggested_amount', '10000')
+        return redirect(f"{reverse('wallet:deposit')}?amount={suggested_amount}&redirect_to={reverse('reservations:payment_choice', args=[reservation_id])}")
+    
+    elif payment_choice == 'direct_payment':
+        # Get pending booking data from session
+        pending_data = request.session.get('pending_booking_data', {})
+        
+        if not pending_data or pending_data.get('reservation_id') != reservation_id:
+            messages.error(request, 'اطلاعات رزرو یافت نشد. لطفاً دوباره تلاش کنید.')
+            return redirect('reservations:book_appointment', doctor_id=pending_data.get('doctor_id', 1))
+        
+        try:
+            reservation = Reservation.objects.get(id=reservation_id)
+            
+            # Book with direct payment
+            success, message = reservation.book_with_direct_payment(
+                patient_data=pending_data['patient_data'],
+                user=request.user
+            )
+            
+            if success:
+                # Clear session data
+                if 'pending_booking_data' in request.session:
+                    del request.session['pending_booking_data']
+                
+                # Redirect to payment page
+                return redirect('payments:reservation_payment', reservation_id=reservation.id)
+            else:
+                messages.error(request, message)
+                return redirect('reservations:payment_choice', reservation_id=reservation_id)
+                
+        except Reservation.DoesNotExist:
+            messages.error(request, 'رزرو مورد نظر یافت نشد')
+            return redirect('home')
+    
+    else:
+        messages.error(request, 'انتخاب نامعتبر')
+        return redirect('reservations:payment_choice', reservation_id=reservation_id)
