@@ -199,6 +199,105 @@
             background-color: white;
         }
 
+        /* Payment Method Options Styles */
+        .payment-method-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .payment-option {
+            position: relative;
+        }
+
+        .payment-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .payment-option-label {
+            display: block;
+            cursor: pointer;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            transition: all 0.3s ease;
+            background-color: white;
+        }
+
+        .payment-option input[type="radio"]:checked + .payment-option-label {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .payment-option-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .payment-option-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #6b7280;
+            background-color: #f3f4f6;
+            transition: all 0.3s ease;
+        }
+
+        .payment-option input[type="radio"]:checked + .payment-option-label .payment-option-icon {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .payment-option-text {
+            flex: 1;
+        }
+
+        .payment-option-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .payment-option-description {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+
+        .payment-option-balance {
+            font-size: 13px;
+            color: #059669;
+            font-weight: 500;
+        }
+
+        .payment-option input[type="radio"]:checked + .payment-option-label .payment-option-balance {
+            color: #047857;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .payment-option-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 8px;
+            }
+            
+            .payment-option-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+        }
     </style>
     <div class="container margin_60 bg-gradiant">
         <div class="row">
@@ -320,6 +419,49 @@
                                                     </div>
                                                     <input type="hidden" name="date" id="selected_date" required>
                                                     <input type="hidden" name="time" id="selected_time" required>
+                                                    
+                                                    <!-- Payment Method Choice -->
+                                                    <div class="row mt-3">
+                                                        <div class="col-12">
+                                                            <div class="form-group">
+                                                                <label class="form-label">روش پرداخت</label>
+                                                                <div class="payment-method-options">
+                                                                    <div class="payment-option">
+                                                                        <input type="radio" id="wallet-payment" name="payment_method" value="wallet" checked>
+                                                                        <label for="wallet-payment" class="payment-option-label">
+                                                                            <div class="payment-option-content">
+                                                                                <div class="payment-option-icon">
+                                                                                    <i class="fas fa-wallet"></i>
+                                                                                </div>
+                                                                                <div class="payment-option-text">
+                                                                                    <div class="payment-option-title">پرداخت از کیف پول</div>
+                                                                                    <div class="payment-option-description">از موجودی کیف پول استفاده کنید</div>
+                                                                                    <div class="payment-option-balance" id="wallet-balance-display">
+                                                                                        موجودی: <span id="current-balance">{{ balance|default:0|floatformat:0 }}</span> تومان
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </label>
+                                                                    </div>
+                                                                    <div class="payment-option">
+                                                                        <input type="radio" id="direct-payment" name="payment_method" value="direct">
+                                                                        <label for="direct-payment" class="payment-option-label">
+                                                                            <div class="payment-option-content">
+                                                                                <div class="payment-option-icon">
+                                                                                    <i class="fas fa-credit-card"></i>
+                                                                                </div>
+                                                                                <div class="payment-option-text">
+                                                                                    <div class="payment-option-title">پرداخت مستقیم</div>
+                                                                                    <div class="payment-option-description">از طریق درگاه پرداخت</div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
                                                     <button type="submit" id="submit-btn"
                                                             class="btn btn-secondary w-100"
                                                             disabled>
@@ -715,16 +857,22 @@
             const form = {
                 updateSubmitButton() {
                     const hasInsufficientBalance = walletBalance < consultationFee;
+                    const selectedPaymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+                    
                     if (selectedDate && selectedTime) {
-                        if (hasInsufficientBalance) {
+                        if (selectedPaymentMethod === 'wallet' && hasInsufficientBalance) {
                             elements.submitBtn.disabled = false;
                             elements.submitBtn.className = 'btn btn-warning w-100 m-t-10';
                             const neededAmount = consultationFee - walletBalance;
                             elements.submitBtn.textContent = `شارژ کیف پول (${neededAmount.toLocaleString()} تومان کمبود دارید)`;
-                        } else {
+                        } else if (selectedPaymentMethod === 'wallet' && !hasInsufficientBalance) {
                             elements.submitBtn.disabled = false;
                             elements.submitBtn.className = 'btn btn-info dr_bg w-full rounded border-0 m-t-10';
                             elements.submitBtn.textContent = `رزرو و پرداخت خودکار - ${consultationFee.toLocaleString()} تومان`;
+                        } else if (selectedPaymentMethod === 'direct') {
+                            elements.submitBtn.disabled = false;
+                            elements.submitBtn.className = 'btn btn-success w-100 m-t-10';
+                            elements.submitBtn.textContent = `رزرو و پرداخت مستقیم - ${consultationFee.toLocaleString()} تومان`;
                         }
                     } else {
                         elements.submitBtn.disabled = true;
@@ -782,6 +930,11 @@
             $('#phone').on('input', validateForm);
             $('#patient_national_id').on('input', validateForm);
 
+            // اضافه کردن رویداد برای تغییر روش پرداخت
+            $('input[name="payment_method"]').on('change', function() {
+                form.updateSubmitButton();
+            });
+
             // اعتبارسنجی هنگام ارسال فرم
             $('#booking-form').submit(function (e) {
                 if (!validateForm()) {
@@ -817,8 +970,11 @@
                     alert('لطفاً ابتدا تاریخ و زمان را انتخاب کنید');
                     return;
                 }
+                
+                const selectedPaymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
                 const hasInsufficientBalance = walletBalance < consultationFee;
-                if (hasInsufficientBalance) {
+                
+                if (selectedPaymentMethod === 'wallet' && hasInsufficientBalance) {
                     e.preventDefault();
                     // محاسبه مقدار کمبود برای شارژ
                     const neededAmount = consultationFee - walletBalance;
@@ -839,13 +995,20 @@
                     window.location.href = `/wallet/deposit/?amount=${finalAmount}&redirect_to=${encodeURIComponent(currentUrl)}`;
                     return;
                 }
-                const confirmMessage = `آیا از رزرو این نوبت اطمینان دارید؟\n\nتاریخ: ${selectedDate}\nزمان: ${selectedTime}\nهزینه: ${consultationFee.toLocaleString()} تومان\n\nمبلغ به صورت خودکار از کیف پول شما کسر خواهد شد.`;
+                
+                let confirmMessage = '';
+                if (selectedPaymentMethod === 'wallet') {
+                    confirmMessage = `آیا از رزرو این نوبت اطمینان دارید؟\n\nتاریخ: ${selectedDate}\nزمان: ${selectedTime}\nهزینه: ${consultationFee.toLocaleString()} تومان\n\nمبلغ به صورت خودکار از کیف پول شما کسر خواهد شد.`;
+                } else {
+                    confirmMessage = `آیا از رزرو این نوبت اطمینان دارید؟\n\nتاریخ: ${selectedDate}\nزمان: ${selectedTime}\nهزینه: ${consultationFee.toLocaleString()} تومان\n\nپس از رزرو به صفحه پرداخت هدایت خواهید شد.`;
+                }
+                
                 if (!confirm(confirmMessage)) {
                     e.preventDefault();
                     return;
                 }
                 elements.submitBtn.classList.add('loading');
-                elements.submitBtn.textContent = 'در حال پردازش پرداخت...';
+                elements.submitBtn.textContent = 'در حال پردازش...';
             });
 
             // بارگذاری اولیه

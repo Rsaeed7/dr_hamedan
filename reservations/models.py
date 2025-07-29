@@ -62,12 +62,12 @@ class Reservation(models.Model):
         """بررسی آزاد بودن نوبت"""
         return self.status == 'available'
     
-    def book_appointment(self, patient_data, user=None):
+    def book_appointment(self, patient_data, user=None, payment_method='wallet'):
         """رزرو نوبت آزاد"""
         if not self.is_available():
             return False, "این نوبت دیگر آزاد نیست"
         
-        # Check if user is authenticated for automatic wallet payment
+        # Check if user is authenticated
         if not user or not user.is_authenticated:
             return False, "برای رزرو نوبت باید وارد شوید"
         
@@ -78,44 +78,56 @@ class Reservation(models.Model):
         # Get or create user's wallet
         wallet, created = Wallet.objects.get_or_create(user=user)
         
-        # Check if user has sufficient balance
+        # Check if user has sufficient balance for wallet payment
         appointment_fee = self.amount
-        if not wallet.can_withdraw(appointment_fee):
-            available_balance = wallet.balance
-            return False, f"موجودی کیف پول کافی نیست. موجودی فعلی: {available_balance:,} تومان - مبلغ مورد نیاز: {appointment_fee:,} تومان. لطفاً کیف پول خود را شارژ کنید."
+        if payment_method == 'wallet':
+            if not wallet.can_withdraw(appointment_fee):
+                available_balance = wallet.balance
+                return False, f"موجودی کیف پول کافی نیست. موجودی فعلی: {available_balance:,} تومان - مبلغ مورد نیاز: {appointment_fee:,} تومان. لطفاً کیف پول خود را شارژ کنید یا از پرداخت مستقیم استفاده کنید."
         
         try:
             with db_transaction.atomic():
-                # Deduct amount from wallet
-                if not wallet.subtract_balance(appointment_fee):
-                    return False, "خطا در کسر مبلغ از کیف پول. لطفاً دوباره تلاش کنید."
-                
-                # Create payment transaction
-                payment_transaction = Transaction.objects.create(
-                    user=user,
-                    wallet=wallet,
-                    amount=appointment_fee,
-                    transaction_type='payment',
-                    payment_method='wallet',
-                    status='completed',
-                    description=f'پرداخت نوبت پزشک {self.doctor} - {self.day.date} {self.time}',
-                    metadata={
-                        'doctor_id': self.doctor.id,
-                        'doctor_name': str(self.doctor),
-                        'appointment_date': str(self.day.date),
-                        'appointment_time': str(self.time)
-                    }
-                )
-                
-                # Update appointment details
-                self.patient_name = patient_data['name']
-                self.phone = patient_data['phone']
-                self.patient_national_id = patient_data.get('national_id', '')
-                self.patient_email = patient_data.get('email', '')
-                self.notes = patient_data.get('notes', '')
-                self.status = 'confirmed'  # Directly confirmed since payment is made
-                self.payment_status = 'paid'
-                self.transaction = payment_transaction
+                if payment_method == 'wallet':
+                    # Deduct amount from wallet
+                    if not wallet.subtract_balance(appointment_fee):
+                        return False, "خطا در کسر مبلغ از کیف پول. لطفاً دوباره تلاش کنید."
+                    
+                    # Create payment transaction
+                    payment_transaction = Transaction.objects.create(
+                        user=user,
+                        wallet=wallet,
+                        amount=appointment_fee,
+                        transaction_type='payment',
+                        payment_method='wallet',
+                        status='completed',
+                        description=f'پرداخت نوبت پزشک {self.doctor} - {self.day.date} {self.time}',
+                        metadata={
+                            'doctor_id': self.doctor.id,
+                            'doctor_name': str(self.doctor),
+                            'appointment_date': str(self.day.date),
+                            'appointment_time': str(self.time)
+                        }
+                    )
+                    
+                    # Update appointment details
+                    self.patient_name = patient_data['name']
+                    self.phone = patient_data['phone']
+                    self.patient_national_id = patient_data.get('national_id', '')
+                    self.patient_email = patient_data.get('email', '')
+                    self.notes = patient_data.get('notes', '')
+                    self.status = 'confirmed'  # Directly confirmed since payment is made
+                    self.payment_status = 'paid'
+                    self.transaction = payment_transaction
+                    
+                elif payment_method == 'direct':
+                    # For direct payment, set status to pending and payment_status to pending
+                    self.patient_name = patient_data['name']
+                    self.phone = patient_data['phone']
+                    self.patient_national_id = patient_data.get('national_id', '')
+                    self.patient_email = patient_data.get('email', '')
+                    self.notes = patient_data.get('notes', '')
+                    self.status = 'pending'  # Pending until payment is completed
+                    self.payment_status = 'pending'
                 
                 # Create or link patient file
                 from patients.models import PatientsFile
@@ -131,8 +143,8 @@ class Reservation(models.Model):
                 
                 self.save()
                 
-                # Send confirmation notification
-                if self.patient and self.patient.user:
+                # Send confirmation notification only for wallet payments
+                if payment_method == 'wallet' and self.patient and self.patient.user:
                     from utils.utils import send_notification
                     message = f"نوبت شما با دکتر {self.doctor.user.get_full_name()} در تاریخ {self.day.date} ساعت {self.time} تایید شد."
                     send_notification(
@@ -142,10 +154,17 @@ class Reservation(models.Model):
                         notification_type='success'
                     )
                 
-                return True, f"نوبت با موفقیت رزرو و پرداخت شد. مبلغ {appointment_fee:,} تومان از کیف پول شما کسر گردید."
+                if payment_method == 'wallet':
+                    return True, f"نوبت با موفقیت رزرو و پرداخت شد. مبلغ {appointment_fee:,} تومان از کیف پول شما کسر گردید."
+                else:
+                    return True, f"نوبت با موفقیت رزرو شد. لطفاً پرداخت خود را تکمیل کنید."
                 
         except Exception as e:
             return False, f"خطا در پردازش پرداخت: {str(e)}"
+
+    def book_with_direct_payment(self, patient_data, user=None):
+        """رزرو نوبت با پرداخت مستقیم"""
+        return self.book_appointment(patient_data, user, payment_method='direct')
     
     def confirm_appointment(self):
         """Confirm this appointment"""

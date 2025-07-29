@@ -339,10 +339,27 @@ def payment_callback(request):
                             reservation = Reservation.objects.get(id=reservation_id)
                             reservation.payment_status = 'paid'
                             reservation.status = 'confirmed'
+                            
+                            # Link the payment request to the reservation
+                            reservation.payment_request = payment_request
                             reservation.save()
-                            return redirect('reservations:appointment_status', pk=reservation.id)
+                            
+                            # Send confirmation notification
+                            if reservation.patient and reservation.patient.user:
+                                from utils.utils import send_notification
+                                message = f"نوبت شما با دکتر {reservation.doctor.user.get_full_name()} در تاریخ {reservation.day.date} ساعت {reservation.time} تایید شد. پرداخت با موفقیت انجام شد."
+                                send_notification(
+                                    user=reservation.patient.user,
+                                    title='تایید نوبت و پرداخت',
+                                    message=message,
+                                    notification_type='success'
+                                )
+                            
+                            messages.success(request, 'پرداخت با موفقیت انجام شد و نوبت شما تایید گردید.')
+                            return redirect('reservations:view_appointment', pk=reservation.id)
                         except Reservation.DoesNotExist:
-                            pass
+                            messages.error(request, 'رزرو مورد نظر یافت نشد.')
+                            return redirect('home')
                 
                 # نمایش صفحه موفقیت
                 return render(request, 'payments/payment_response.html', {
