@@ -44,6 +44,7 @@ class Reservation(models.Model):
     created_at = jmodels.jDateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
     updated_at = jmodels.jDateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
     transaction = models.ForeignKey('wallet.Transaction', on_delete=models.SET_NULL, null=True, blank=True, related_name='reservations', verbose_name='تراکنش')
+    payment_request = models.ForeignKey('payments.PaymentRequest', on_delete=models.SET_NULL, null=True, blank=True, related_name='reservations', verbose_name='درخواست پرداخت')
     notes = models.TextField(blank=True, null=True, verbose_name='یادداشت‌ها')
     
     # اطلاعات اضافی برای نوبت‌های رزرو شده
