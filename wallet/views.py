@@ -1,23 +1,19 @@
 import jdatetime
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
 from django.contrib import messages
-from django.conf import settings
-from django.urls import reverse
+from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
-from django.db import transaction as db_transaction
-from django.db.models import Q, Sum
 from django.utils import timezone
+from django.db import transaction
+from django.utils.translation import gettext_lazy as _
+from django_jalali.db import models as jmodels
 from django.core.paginator import Paginator
-from decimal import Decimal
-import json
-import uuid
-
-from .models import Transaction, Wallet, PaymentGateway
-from reservations.models import Reservation
-from discounts.models import DiscountUsage
+from django.utils import timezone
+from user.models import User
+from .models import Wallet, Transaction, PaymentGateway
+from payments.models import PaymentRequest
 
 
 @login_required

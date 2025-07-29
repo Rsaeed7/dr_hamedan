@@ -1,17 +1,24 @@
-from decimal import Decimal
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
 from django.contrib import messages
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
+from django.db import transaction
+from django.utils.translation import gettext_lazy as _
+from django_jalali.db import models as jmodels
+from django.core.paginator import Paginator
+from django.utils import timezone
 from django.urls import reverse
-
-import user
-from .models import Reservation, ReservationDay
+from user.models import User
 from doctors.models import Doctor
 from patients.models import PatientsFile
-from wallet.models import Wallet
-# from datetime import datetime
-# from datetime import timedelta
+from .models import Reservation, ReservationDay
+from wallet.models import Wallet, Transaction
+from payments.models import PaymentRequest
+from datetime import datetime
+from datetime import timedelta
 import jdatetime
 from jdatetime import datetime
 from jdatetime import timedelta
@@ -115,31 +122,31 @@ def book_appointment(request, doctor_id):
                     patient_data=patient_data,
                     user=request.user
                 )
-            
-            user.first_name = patient_name
-            user.last_name = patient_last_name
-            user.patient.national_id = patient_national_id
-            user.patient.save()
-            user.save()
-            
-            if success:
-                messages.success(request, message)
-                return redirect('reservations:view_appointment', pk=reservation.id)
-            else:
-                messages.error(request, message)
-                if "موجودی کیف پول کافی نیست" in message:
-                    # Store form data in session for payment choice
-                    request.session['pending_booking_data'] = {
-                        'doctor_id': doctor_id,
-                        'date': date_str,
-                        'time': time_str,
-                        'patient_data': patient_data,
-                        'reservation_id': reservation.id
-                    }
-                    
-                    # Redirect to payment choice page
-                    return redirect('reservations:payment_choice', reservation_id=reservation.id)
-                return redirect('reservations:book_appointment', doctor_id=doctor_id)
+
+                user.first_name = patient_name
+                user.last_name = patient_last_name
+                user.patient.national_id = patient_national_id
+                user.patient.save()
+                user.save()
+                
+                if success:
+                    messages.success(request, message)
+                    return redirect('reservations:view_appointment', pk=reservation.id)
+                else:
+                    messages.error(request, message)
+                    if "موجودی کیف پول کافی نیست" in message:
+                        # Store form data in session for payment choice
+                        request.session['pending_booking_data'] = {
+                            'doctor_id': doctor_id,
+                            'date': date_str,
+                            'time': time_str,
+                            'patient_data': patient_data,
+                            'reservation_id': reservation.id
+                        }
+                        
+                        # Redirect to payment choice page
+                        return redirect('reservations:payment_choice', reservation_id=reservation.id)
+                    return redirect('reservations:book_appointment', doctor_id=doctor_id)
             
         except Exception as e:
             logger.error(f"خطا در رزرو نوبت: {str(e)}")
@@ -467,7 +474,7 @@ def payment_choice(request, reservation_id):
     needed_amount = max(0, required_amount - current_balance)
     
     # Calculate suggested deposit amount
-    suggested_amount = int(needed_amount * Decimal('1.1'))
+    suggested_amount = int(needed_amount * 1.1)
     suggested_amount = ((suggested_amount + 9999) // 10000) * 10000
     suggested_amount = max(10000, suggested_amount)
     

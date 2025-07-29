@@ -18,7 +18,7 @@ class Service(models.Model):
     name = models.CharField(max_length=100, verbose_name="نام خدمت")
     icon = models.ImageField(verbose_name="آیکن", upload_to="services", null=True, blank=True)
     description = models.TextField(blank=True, verbose_name="توضیحات")
-    estimated_price = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="هزینه حدودی (تومان)")
+    estimated_price = models.IntegerField(verbose_name="هزینه حدودی (تومان)")
     requires_prescription = models.BooleanField(default=False, verbose_name="نیاز به نسخه دارد؟")
     available_in_cities = models.ManyToManyField(City, related_name="homecare_services")
 
