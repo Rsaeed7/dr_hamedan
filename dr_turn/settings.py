@@ -68,10 +68,10 @@ else:
     REDIS_HOST = 'localhost'
     CHANNEL_LAYERS = {
     "default": {
-        # "BACKEND": "channels.layers.InMemoryChannelLayer",  # برای لوکال
+        "BACKEND": "channels.layers.InMemoryChannelLayer",  # برای لوکال
         # برای محیط هاست اصلی اینو فعال کن:
-         "BACKEND": "channels_redis.core.RedisChannelLayer",
-         "CONFIG": {"hosts": [("127.0.0.1", 6379)]},
+        #  "BACKEND": "channels_redis.core.RedisChannelLayer",
+        #  "CONFIG": {"hosts": [("127.0.0.1", 6379)]},
     },
     }
 
@@ -84,17 +84,6 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'drhmd302_marisa',
-#         'USER':'drhmd302_marisa',
-#         'PASSWORD':'ts18dvorFu23',
-#         'HOST':'services.irn2.chabokan.net',
-#         'PORT':'11482',
-#     }
-# }
 
 REDIS_PORT = 6379
 REDIS_DB = 1
@@ -110,7 +99,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     # Third-party apps
     'rest_framework',
     'django_jalali',
@@ -120,7 +109,7 @@ INSTALLED_APPS = [
     'ckeditor_uploader',
 
 
-    
+
     # Local apps
     'chatmed',
     'user.apps.UserConfig',
@@ -129,6 +118,7 @@ INSTALLED_APPS = [
     'clinics',
     'patients',
     'wallet',
+    'payments',
     'docpages',
     'medimag.apps.MedimagConfig',
     'support.apps.AboutUsConfig',
@@ -256,4 +246,3 @@ SMS_OTP_TEMPLATE_ID = 100000  # Template ID for OTP verification in SMS.ir
 # SMS Reminder Settings
 SMS_REMINDER_ENABLED = True
 SMS_REMINDER_HOURS = [24, 2]  # Send reminders 24 hours and 2 hours before appointment
-
