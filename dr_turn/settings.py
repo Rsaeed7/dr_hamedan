@@ -78,23 +78,23 @@ else:
     # Database
     # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-    # DATABASES = {
-    #     'default': {
-    #         'ENGINE': 'django.db.backends.sqlite3',
-    #         'NAME': BASE_DIR / 'db.sqlite3',
-    #     }
-    # }
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'drhmd302_marisa',
-        'USER':'drhmd302_marisa',
-        'PASSWORD':'ts18dvorFu23',
-        'HOST':'services.irn2.chabokan.net',
-        'PORT':'11482',
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'drhmd302_marisa',
+#         'USER':'drhmd302_marisa',
+#         'PASSWORD':'ts18dvorFu23',
+#         'HOST':'services.irn2.chabokan.net',
+#         'PORT':'11482',
+#     }
+# }
 
 REDIS_PORT = 6379
 REDIS_DB = 1
