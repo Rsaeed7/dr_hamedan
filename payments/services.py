@@ -7,6 +7,20 @@ from django.utils import timezone
 from .models import PaymentGateway, PaymentRequest, PaymentLog
 
 
+class CurrencyConverter:
+    """تبدیل واحد پول بین تومان و ریال"""
+    
+    @staticmethod
+    def toman_to_rial(toman_amount):
+        """تبدیل تومان به ریال"""
+        return int(toman_amount * 10)
+    
+    @staticmethod
+    def rial_to_toman(rial_amount):
+        """تبدیل ریال به تومان"""
+        return int(rial_amount / 10)
+
+
 class ZarinPalPaymentService:
     """سرویس پرداخت زرین‌پال"""
     
@@ -22,10 +36,13 @@ class ZarinPalPaymentService:
     def create_payment_request(self, user, amount, description, callback_url=None, metadata=None):
         """ایجاد درخواست پرداخت"""
         try:
-            # ایجاد درخواست پرداخت
+            # تبدیل تومان به ریال برای ارسال به درگاه پرداخت
+            rial_amount = CurrencyConverter.toman_to_rial(amount)
+            
+            # ایجاد درخواست پرداخت (مبلغ در دیتابیس به تومان ذخیره می‌شود)
             payment_request = PaymentRequest.objects.create(
                 user=user,
-                amount=amount,
+                amount=amount,  # مبلغ به تومان در دیتابیس
                 description=description,
                 gateway=self.gateway,
                 callback_url=callback_url or self.gateway.callback_url,
@@ -39,10 +56,10 @@ class ZarinPalPaymentService:
             if not request_url:
                 raise ValueError("آدرس API درگاه پرداخت تنظیم نشده است")
             
-            # آماده‌سازی داده‌های درخواست
+            # آماده‌سازی داده‌های درخواست (مبلغ به ریال)
             req_data = {
                 "merchant_id": self.gateway.merchant_id,
-                "amount": int(amount * 10),  # تبدیل به ریال
+                "amount": rial_amount,  # مبلغ به ریال برای درگاه پرداخت
                 "callback_url": payment_request.callback_url,
                 "description": description,
                 "metadata": {
@@ -71,11 +88,13 @@ class ZarinPalPaymentService:
             PaymentLog.objects.create(
                 payment_request=payment_request,
                 log_type='request',
-                message=f"درخواست پرداخت به زرین‌پال ارسال شد",
+                message=f"درخواست پرداخت به زرین‌پال ارسال شد (مبلغ: {amount} تومان = {rial_amount} ریال)",
                 data={
                     'request_data': req_data,
                     'response_data': response_data,
-                    'status_code': response.status_code
+                    'status_code': response.status_code,
+                    'toman_amount': amount,
+                    'rial_amount': rial_amount
                 }
             )
             
@@ -135,13 +154,16 @@ class ZarinPalPaymentService:
                     'error': 'درخواست پرداخت قابل پردازش نیست'
                 }
             
+            # تبدیل تومان به ریال برای تایید
+            rial_amount = CurrencyConverter.toman_to_rial(amount)
+            
             # ارسال درخواست تایید
             api_urls = self.gateway.get_api_urls()
             verify_url = api_urls.get('verify')
             
             req_data = {
                 "merchant_id": self.gateway.merchant_id,
-                "amount": int(amount * 10),  # تبدیل به ریال
+                "amount": rial_amount,  # مبلغ به ریال برای تایید
                 "authority": authority
             }
             
@@ -163,11 +185,13 @@ class ZarinPalPaymentService:
             PaymentLog.objects.create(
                 payment_request=payment_request,
                 log_type='verify',
-                message=f"درخواست تایید پرداخت ارسال شد",
+                message=f"درخواست تایید پرداخت ارسال شد (مبلغ: {amount} تومان = {rial_amount} ریال)",
                 data={
                     'request_data': req_data,
                     'response_data': response_data,
-                    'status_code': response.status_code
+                    'status_code': response.status_code,
+                    'toman_amount': amount,
+                    'rial_amount': rial_amount
                 }
             )
             
@@ -208,8 +232,7 @@ class ZarinPalPaymentService:
                 
                 return {
                     'success': False,
-                    'error': error_message,
-                    'payment_request': payment_request
+                    'error': error_message
                 }
                 
         except PaymentRequest.DoesNotExist:
@@ -252,7 +275,7 @@ class PaymentService:
                     'error': f'درگاه پرداخت {gateway_type} فعال یافت نشد'
                 }
             
-            # بررسی محدودیت‌های مبلغ
+            # بررسی محدودیت‌های مبلغ (مبلغ به تومان)
             if amount < gateway.min_amount:
                 return {
                     'success': False,
@@ -308,7 +331,7 @@ class PaymentService:
             return {
                 'success': True,
                 'status': payment_request.status,
-                'amount': payment_request.amount,
+                'amount': payment_request.amount,  # مبلغ به تومان
                 'authority': payment_request.authority,
                 'ref_id': payment_request.ref_id,
                 'created_at': payment_request.created_at,

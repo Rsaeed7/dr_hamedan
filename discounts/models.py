@@ -2,7 +2,6 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.translation import gettext_lazy as _
 from django_jalali.db import models as jmodels
-from decimal import Decimal
 from django.utils import timezone
 from user.models import User
 from doctors.models import Doctor, Specialization
@@ -60,8 +59,8 @@ class Discount(models.Model):
         validators=[MinValueValidator(0), MaxValueValidator(100)],
         verbose_name=_('درصد تخفیف')
     )
-    fixed_amount = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True,
+    fixed_amount = models.IntegerField(
+        null=True, blank=True,
         validators=[MinValueValidator(0)],
         verbose_name=_('مبلغ ثابت تخفیف')
     )
@@ -73,13 +72,13 @@ class Discount(models.Model):
     clinics = models.ManyToManyField(Clinic, blank=True, verbose_name=_('کلینیک‌ها'))
     
     # محدودیت‌های تخفیف
-    min_amount = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True,
+    min_amount = models.IntegerField(
+        null=True, blank=True,
         validators=[MinValueValidator(0)],
         verbose_name=_('حداقل مبلغ سفارش')
     )
-    max_discount_amount = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True,
+    max_discount_amount = models.IntegerField(
+        null=True, blank=True,
         validators=[MinValueValidator(0)],
         verbose_name=_('حداکثر مبلغ تخفیف')
     )
@@ -136,17 +135,17 @@ class Discount(models.Model):
     def calculate_discount(self, amount):
         """محاسبه مبلغ تخفیف"""
         if not self.is_valid():
-            return Decimal('0')
+            return 0
         
         if self.min_amount and amount < self.min_amount:
-            return Decimal('0')
+            return 0
         
         if self.discount_type.type == 'percentage':
-            discount_amount = amount * (Decimal(str(self.percentage)) / Decimal('100'))
+            discount_amount = amount * (self.percentage / 100)
         elif self.discount_type.type == 'fixed_amount':
             discount_amount = self.fixed_amount
         else:
-            return Decimal('0')
+            return 0
         
         # اعمال حداکثر مبلغ تخفیف
         if self.max_discount_amount and discount_amount > self.max_discount_amount:
@@ -240,9 +239,9 @@ class DiscountUsage(models.Model):
     reservation = models.OneToOneField('reservations.Reservation', on_delete=models.CASCADE, related_name='discount_usage', verbose_name=_('رزرو'))
     coupon_code = models.ForeignKey(CouponCode, on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_('کد تخفیف'))
     
-    original_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('مبلغ اصلی'))
-    discount_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('مبلغ تخفیف'))
-    final_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name=_('مبلغ نهایی'))
+    original_amount = models.IntegerField(verbose_name=_('مبلغ اصلی'))
+    discount_amount = models.IntegerField(verbose_name=_('مبلغ تخفیف'))
+    final_amount = models.IntegerField(verbose_name=_('مبلغ نهایی'))
     
     used_at = jmodels.jDateTimeField(auto_now_add=True, verbose_name=_('تاریخ استفاده'))
     
@@ -352,8 +351,8 @@ class DiscountReport(models.Model):
     period_end = jmodels.jDateField(verbose_name=_('پایان دوره'))
     
     total_usage_count = models.PositiveIntegerField(default=0, verbose_name=_('تعداد کل استفاده'))
-    total_discount_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name=_('مبلغ کل تخفیف'))
-    total_revenue_impact = models.DecimalField(max_digits=12, decimal_places=2, default=0, verbose_name=_('تأثیر بر درآمد'))
+    total_discount_amount = models.IntegerField(default=0, verbose_name=_('مبلغ کل تخفیف'))
+    total_revenue_impact = models.IntegerField(default=0, verbose_name=_('تأثیر بر درآمد'))
     
     generated_at = jmodels.jDateTimeField(auto_now_add=True, verbose_name=_('تاریخ تولید گزارش'))
     

@@ -93,7 +93,7 @@
                         {% for payment in payment_requests %}
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                {{ payment.amount|floatformat:0 }} تومان
+                                {{ payment.amount }} تومان
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 {% if payment.status == 'completed' %}

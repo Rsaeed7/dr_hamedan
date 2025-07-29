@@ -25,16 +25,16 @@
                 <p><strong>دکتر:</strong> {{ reservation.doctor }}</p>
                 <p><strong>تاریخ:</strong> {{ reservation.day.date|jformat:"%Y/%m/%d" }}</p>
                 <p><strong>ساعت:</strong> {{ reservation.time }}</p>
-                <p><strong>مبلغ اصلی:</strong> {{ reservation.amount|floatformat:0 }} تومان</p>
+                <p><strong>مبلغ اصلی:</strong> {{ reservation.amount }} تومان</p>
                 
                 {% if discount_info %}
                 <div class="mt-2 p-2 bg-green-100 rounded">
                     <p><strong>تخفیف:</strong> {{ discount_info.discount_title }}</p>
-                    <p><strong>مبلغ تخفیف:</strong> {{ discount_info.discount_amount|floatformat:0 }} تومان</p>
-                    <p><strong>مبلغ نهایی:</strong> <span class="font-bold text-green-700">{{ discount_info.final_amount|floatformat:0 }} تومان</span></p>
+                    <p><strong>مبلغ تخفیف:</strong> {{ discount_info.discount_amount }} تومان</p>
+                    <p><strong>مبلغ نهایی:</strong> <span class="font-bold text-green-700">{{ discount_info.final_amount }} تومان</span></p>
                 </div>
                 {% else %}
-                <p><strong>مبلغ نهایی:</strong> <span class="font-bold">{{ final_amount|floatformat:0 }} تومان</span></p>
+                <p><strong>مبلغ نهایی:</strong> <span class="font-bold">{{ final_amount }} تومان</span></p>
                 {% endif %}
             </div>
         </div>
@@ -65,7 +65,7 @@
                 class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
                 {% if not active_gateways %}disabled{% endif %}
             >
-                پرداخت {{ final_amount|floatformat:0 }} تومان
+                پرداخت {{ final_amount }} تومان
             </button>
         </form>
         

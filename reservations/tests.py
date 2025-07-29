@@ -2,11 +2,10 @@ from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils import timezone
-from decimal import Decimal
 import jdatetime
 
 from .models import Reservation, ReservationDay
-from doctors.models import Doctor
+from doctors.models import Doctor, Specialization
 from patients.models import PatientsFile
 from wallet.models import Wallet, Transaction
 from payments.models import PaymentRequest, PaymentGateway
@@ -26,6 +25,12 @@ class ReservationPaymentTestCase(TestCase):
             last_name='User'
         )
         
+        # Create specialization
+        self.specialization = Specialization.objects.create(
+            name='Cardiology',
+            description='Heart and cardiovascular diseases'
+        )
+        
         # Create doctor
         self.doctor = Doctor.objects.create(
             user=User.objects.create_user(
@@ -35,8 +40,8 @@ class ReservationPaymentTestCase(TestCase):
                 first_name='Dr.',
                 last_name='Test'
             ),
-            specialization='Cardiology',
-            consultation_fee=Decimal('50000'),
+            specialization=self.specialization,
+            consultation_fee=50000,
             is_available=True
         )
         
@@ -51,7 +56,7 @@ class ReservationPaymentTestCase(TestCase):
         # Create wallet
         self.wallet = Wallet.objects.create(
             user=self.user,
-            balance=Decimal('100000')  # 100,000 tomans
+            balance=100000  # 100,000 tomans
         )
         
         # Create reservation day
@@ -68,7 +73,7 @@ class ReservationPaymentTestCase(TestCase):
             time='09:00:00',
             status='available',
             payment_status='pending',
-            amount=Decimal('50000')  # 50,000 tomans
+            amount=50000  # 50,000 tomans
         )
         
         # Create payment gateway
@@ -111,18 +116,18 @@ class ReservationPaymentTestCase(TestCase):
         
         # Check wallet balance
         self.wallet.refresh_from_db()
-        self.assertEqual(self.wallet.balance, Decimal('50000'))  # 100,000 - 50,000
+        self.assertEqual(self.wallet.balance, 50000)  # 100,000 - 50,000
         
         # Check transaction
         transaction = self.reservation.transaction
-        self.assertEqual(transaction.amount, Decimal('50000'))
+        self.assertEqual(transaction.amount, 50000)
         self.assertEqual(transaction.transaction_type, 'payment')
         self.assertEqual(transaction.status, 'completed')
 
     def test_wallet_payment_insufficient_balance(self):
         """Test wallet payment when user has insufficient balance"""
         # Set low balance
-        self.wallet.balance = Decimal('20000')  # 20,000 tomans
+        self.wallet.balance = 20000  # 20,000 tomans
         self.wallet.save()
         
         patient_data = {
@@ -178,7 +183,7 @@ class ReservationPaymentTestCase(TestCase):
     def test_payment_choice_view(self):
         """Test payment choice view"""
         # Set low balance to trigger payment choice
-        self.wallet.balance = Decimal('20000')
+        self.wallet.balance = 20000
         self.wallet.save()
         
         # Login user
@@ -196,7 +201,7 @@ class ReservationPaymentTestCase(TestCase):
     def test_process_payment_choice_wallet_charge(self):
         """Test processing wallet charge choice"""
         # Set low balance
-        self.wallet.balance = Decimal('20000')
+        self.wallet.balance = 20000
         self.wallet.save()
         
         # Login user
@@ -216,7 +221,7 @@ class ReservationPaymentTestCase(TestCase):
     def test_process_payment_choice_direct_payment(self):
         """Test processing direct payment choice"""
         # Set low balance
-        self.wallet.balance = Decimal('20000')
+        self.wallet.balance = 20000
         self.wallet.save()
         
         # Login user
@@ -316,7 +321,7 @@ class ReservationPaymentTestCase(TestCase):
         payment_request = PaymentRequest.objects.create(
             user=self.user,
             wallet=self.wallet,
-            amount=Decimal('50000'),
+            amount=50000,
             description='Test payment',
             gateway=self.gateway,
             authority='test-authority',
