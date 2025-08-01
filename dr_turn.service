@@ -1,0 +1,25 @@
+[Unit]
+Description=Dr Turn Django Application with WebSocket Support
+After=network.target redis.service
+Wants=redis.service
+
+[Service]
+Type=notify
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/dr_hamedan
+Environment="PATH=/var/www/dr_hamedan/env/bin"
+Environment="DJANGO_SETTINGS_MODULE=dr_turn.settings_production"
+Environment="REDIS_HOST=localhost"
+Environment="REDIS_PORT=6379"
+Environment="REDIS_DB=0"
+ExecStart=/var/www/dr_hamedan/env/bin/gunicorn --config gunicorn.conf.py dr_turn.asgi_production:application
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target 

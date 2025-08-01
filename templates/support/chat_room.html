@@ -58,21 +58,41 @@ const roomId = "{{ chat_room.id }}";
 if (!roomId) {
     console.error("Room ID is missing!");
 } else {
-    const chatSocket = new WebSocket(
-        `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}/ws/chat/${roomId}/`
-    );
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const host = window.location.host;
+    const wsUrl = `${protocol}//${host}/ws/chat/${roomId}/`;
+
+    console.log('Connecting to WebSocket:', wsUrl);
+
+    const chatSocket = new WebSocket(wsUrl);
 
     chatSocket.onopen = () => {
-        console.log("WebSocket connection established.");
+        console.log("✅ WebSocket connection established.");
+        // Add visual indicator for connection status
+        document.getElementById('connection-status').textContent = 'متصل';
+        document.getElementById('connection-status').classList.add('text-green-500');
+        document.getElementById('connection-status').classList.remove('text-red-500');
     };
 
     chatSocket.onclose = (e) => {
         console.error("WebSocket closed:", e);
-        setTimeout(() => location.reload(), 5000);
+        // Add reconnection logic
+        if (e.code !== 1000) {  // Not a normal closure
+            setTimeout(() => {
+                console.log("Attempting to reconnect...");
+                location.reload();
+            }, 5000);
+        }
+        document.getElementById('connection-status').textContent = 'متصل نیست';
+        document.getElementById('connection-status').classList.add('text-red-500');
+        document.getElementById('connection-status').classList.remove('text-green-500');
     };
 
     chatSocket.onerror = (error) => {
         console.error("WebSocket error:", error);
+        document.getElementById('connection-status').textContent = 'خطا';
+        document.getElementById('connection-status').classList.add('text-red-500');
+        document.getElementById('connection-status').classList.remove('text-green-500');
     };
 
     chatSocket.onmessage = (e) => {

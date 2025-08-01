@@ -27,27 +27,37 @@ SECRET_KEY = 'django-insecure-mgzuw-1o1@qa2!rt0xz2k9*gn$_4ozw2i$+lat#gfgc@1ridgw
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-SERVERE = False
+SERVERE = True  # Changed to True for production WebSocket support
 if SERVERE:
+
+    # In the SERVERE block, update:
     CSRF_TRUSTED_ORIGINS = [
         'https://drhmd.ir',
+        'http://localhost',
+        'http://127.0.0.1',
     ]
 
     ALLOWED_HOSTS = [
         'drhmd.ir',
         'www.drhmd.ir',
-        'drhmd.chbk.app', 
+        'drhmd.chbk.app',
+        'localhost',
+        '127.0.0.1',
+        '*',  # Allow all hosts in Docker for development
     ]
-    REDIS_HOST = 'drhmd.ir'  # بدون https://
+
+    REDIS_HOST = '127.0.0.1'  # Local Redis in container
+
     CHANNEL_LAYERS = {
         "default": {
             "BACKEND": "channels_redis.core.RedisChannelLayer",
             "CONFIG": {
                 "hosts": [("127.0.0.1", 6379)],
+                "capacity": 1500,  # Maximum number of messages that can be in a channel layer
+                "expiry": 10,  # Message expiry in seconds
             },
         },
     }
-
     # Database
     # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 

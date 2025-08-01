@@ -1,18 +1,1 @@
-{
-    "app": "drh",
-    "port": 80,
-    "team-id": "6879b343b5395ab90b697543",
-    "build": {
-      "location": "iran"
-    },
-    "disks":[
-        {
-        "name": "sqlite",
-        "mountTo": "data"
-        },
-        {
-            "name": "files",
-            "mountTo": "media"
-            }
-    ]
-  }
+ 
