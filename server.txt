@@ -1,0 +1,4 @@
+server:  services.irn2.chabokan.net
+FTP username:  FTP
+FTP password: lW5DteyUKUc7
+IP: 91.236.168.95
