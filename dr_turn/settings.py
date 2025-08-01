@@ -33,7 +33,7 @@ SECRET_KEY = 'django-insecure-mgzuw-1o1@qa2!rt0xz2k9*gn$_4ozw2i$+lat#gfgc@1ridgw
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-SERVERE = True  # Changed to True for production WebSocket support
+SERVERE = True  # Keep this True for production
 if SERVERE:
 
     # In the SERVERE block, update:
@@ -52,15 +52,24 @@ if SERVERE:
         '*',  # Allow all hosts in Docker for development
     ]
 
-    REDIS_HOST = '127.0.0.1'  # Local Redis in container
+    # Update Redis configuration for container environment
+    REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
+    REDIS_PORT = int(os.environ.get('REDIS_PORT', 6379))
+    REDIS_PASSWORD = os.environ.get('REDIS_PASSWORD', None)
+    REDIS_DB = int(os.environ.get('REDIS_DB', 0))
 
     CHANNEL_LAYERS = {
         "default": {
             "BACKEND": "channels_redis.core.RedisChannelLayer",
             "CONFIG": {
-                "hosts": [("127.0.0.1", 6379)],
-                "capacity": 1500,  # Maximum number of messages that can be in a channel layer
-                "expiry": 10,  # Message expiry in seconds
+                "hosts": [{
+                    "host": REDIS_HOST,
+                    "port": REDIS_PORT,
+                    "password": REDIS_PASSWORD,
+                    "db": REDIS_DB,
+                }],
+                "capacity": 1500,
+                "expiry": 10,
             },
         },
     }
