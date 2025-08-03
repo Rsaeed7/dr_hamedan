@@ -12,6 +12,9 @@ logger = logging.getLogger(__name__)
 
 class MedicalChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        print(f"🔹 Attempting WebSocket connection for room: {self.room_id}")
+        print(f"🔹 User: {self.user}")
+        print(f"🔹 Channel layer: {self.channel_layer}")
         self.room_id = self.scope["url_route"]["kwargs"].get("room_id")
         self.user = self.scope.get("user")
 
@@ -42,6 +45,7 @@ class MedicalChatConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
         await self.accept()
+        print(f"✅ WebSocket connection successful for room: {self.room_id}")
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
