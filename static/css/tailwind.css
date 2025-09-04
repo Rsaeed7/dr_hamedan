@@ -1127,6 +1127,10 @@ body {
   left: 0px;
 }
 
+.left-3 {
+  left: 0.75rem;
+}
+
 .right-0 {
   right: 0px;
 }
@@ -1139,16 +1143,12 @@ body {
   top: 0px;
 }
 
-.top-2 {
-  top: 0.5rem;
-}
-
-.left-3 {
-  left: 0.75rem;
-}
-
 .top-1\/2 {
   top: 50%;
+}
+
+.top-2 {
+  top: 0.5rem;
 }
 
 .z-0 {
