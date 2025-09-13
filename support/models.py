@@ -91,7 +91,7 @@ class AdminChatStatus(models.Model):
         verbose_name_plural = "Admin Chat Statuses"
 
     def __str__(self):
-        return f"{self.admin.user.get_full_name} - {'Available' if self.is_available else 'Unavailable'}"
+        return f"{self.admin} - {'Available' if self.is_available else 'Unavailable'}"
 
 
 

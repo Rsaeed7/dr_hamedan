@@ -33,7 +33,7 @@ SECRET_KEY = 'django-insecure-mgzuw-1o1@qa2!rt0xz2k9*gn$_4ozw2i$+lat#gfgc@1ridgw
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-SERVERE = True  # Keep this True for production
+SERVERE = False  # Keep this True for production
 if SERVERE:
 
     # In the SERVERE block, update:
