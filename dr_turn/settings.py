@@ -84,14 +84,26 @@ if SERVERE:
 else:
     ALLOWED_HOSTS = ["*"]
 
-    REDIS_HOST = 'localhost'
+    # Use Redis channel layer even in non-SERVERE mode on the server
+    REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
+    REDIS_PORT = int(os.environ.get('REDIS_PORT', 6379))
+    REDIS_PASSWORD = os.environ.get('REDIS_PASSWORD', None)
+    REDIS_DB = int(os.environ.get('REDIS_DB', 0))
+
     CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",  # برای لوکال
-        # برای محیط هاست اصلی اینو فعال کن:
-        #  "BACKEND": "channels_redis.core.RedisChannelLayer",
-        #  "CONFIG": {"hosts": [("127.0.0.1", 6379)]},
-    },
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [{
+                    "host": REDIS_HOST,
+                    "port": REDIS_PORT,
+                    "password": REDIS_PASSWORD,
+                    "db": REDIS_DB,
+                }],
+                "capacity": 1500,
+                "expiry": 10,
+            },
+        },
     }
 
     # Database
