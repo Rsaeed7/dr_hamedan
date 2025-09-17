@@ -13,7 +13,7 @@ from django.core.paginator import Paginator
 from django.utils import timezone
 from django.urls import reverse
 from user.models import User
-from .models import PaymentRequest, PaymentGateway
+from .models import PaymentRequest, PaymentGateway, PaymentLog
 from wallet.models import Wallet, Transaction
 from reservations.models import Reservation
 from .services import PaymentService, CurrencyConverter
@@ -111,7 +111,7 @@ def create_payment(request):
     """ایجاد پرداخت جدید"""
     if request.method == 'POST':
         try:
-            amount = request.POST.get('amount', '0')
+            amount = int(request.POST.get('amount', '0'))
             description = request.POST.get('description', '').strip()
             gateway_type = request.POST.get('gateway_type', 'zarinpal')
             callback_url = request.POST.get('callback_url', '')
@@ -222,7 +222,6 @@ def wallet_deposit_payment(request):
         'redirect_to': redirect_to,
         'active_gateways': active_gateways,
     }
-    
     return render(request, 'payments/wallet_deposit.html', context)
 
 
