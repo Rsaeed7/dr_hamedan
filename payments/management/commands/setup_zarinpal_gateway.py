@@ -58,9 +58,9 @@ class Command(BaseCommand):
             gateway.zp_api_verify = 'https://sandbox.zarinpal.com/pg/v4/payment/verify.json'
             gateway.zp_api_startpay = 'https://sandbox.zarinpal.com/pg/StartPay/{authority}'
         else:
-            gateway.zp_api_request = 'https://api.zarinpal.com/pg/v4/payment/request.json'
-            gateway.zp_api_verify = 'https://api.zarinpal.com/pg/v4/payment/verify.json'
-            gateway.zp_api_startpay = 'https://www.zarinpal.com/pg/StartPay/{authority}'
+            gateway.zp_api_request = 'https://payment.zarinpal.com/pg/v4/payment/request.json'
+            gateway.zp_api_verify = 'https://payment.zarinpal.com/pg/v4/payment/verify.json'
+            gateway.zp_api_startpay = 'https://payment.zarinpal.com/pg/StartPay/{authority}'
 
         gateway.save()
 

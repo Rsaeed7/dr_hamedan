@@ -75,9 +75,9 @@ class PaymentGateway(models.Model):
                 }
             else:
                 return {
-                    'request': 'https://api.zarinpal.com/pg/v4/payment/request.json',
-                    'verify': 'https://api.zarinpal.com/pg/v4/payment/verify.json',
-                    'startpay': 'https://www.zarinpal.com/pg/StartPay/{authority}'
+                    'request': 'https://payment.zarinpal.com/pg/v4/payment/request.json',
+                    'verify': 'https://payment.zarinpal.com/pg/v4/payment/verify.json',
+                    'startpay': 'https://payment.zarinpal.com/pg/StartPay/{authority}'
                 }
         return {}
     
@@ -164,9 +164,9 @@ class PaymentRequest(models.Model):
         """بررسی امکان پردازش"""
         return self.status in ['pending', 'processing'] and not self.is_expired()
     
-    def mark_as_completed(self, ref_id=None, card_pan=None):
+    def mark_as_completed(self, ref_id=None, card_pan=None, force=False):
         """تکمیل پرداخت"""
-        if self.can_be_processed():
+        if force or self.can_be_processed():
             self.status = 'completed'
             self.completed_at = timezone.now()
             if ref_id:
@@ -183,7 +183,9 @@ class PaymentRequest(models.Model):
                     amount=self.amount,
                     transaction_type='deposit',
                     payment_method='gateway',
-                    gateway=self.gateway,
+                    # از آنجا که مدل درگاه پرداخت در اپلیکیشن کیف‌پول متفاوت است، این مقدار را ذخیره نمی‌کنیم
+                    # gateway=None,
+                    authority=self.authority,
                     reference_id=ref_id,
                     tracking_code=str(uuid.uuid4())[:12].upper(),
                     description=self.description,
