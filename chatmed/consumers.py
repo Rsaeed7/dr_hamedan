@@ -12,11 +12,11 @@ logger = logging.getLogger(__name__)
 
 class MedicalChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        self.room_id = self.scope["url_route"]["kwargs"].get("room_id")
+        self.user = self.scope.get("user")
         print(f"🔹 Attempting WebSocket connection for room: {self.room_id}")
         print(f"🔹 User: {self.user}")
         print(f"🔹 Channel layer: {self.channel_layer}")
-        self.room_id = self.scope["url_route"]["kwargs"].get("room_id")
-        self.user = self.scope.get("user")
 
         if not self.user or not self.user.is_authenticated:
             await self.close(code=4003)

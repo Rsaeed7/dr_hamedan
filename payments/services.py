@@ -60,11 +60,13 @@ class ZarinPalPaymentService:
             req_data = {
                 "merchant_id": self.gateway.merchant_id,
                 "amount": rial_amount,  # مبلغ به ریال برای درگاه پرداخت
+                "currency": "IRR",  # مطابق مستندات زرین‌پال: واحد پول ریال
                 "callback_url": payment_request.callback_url,
                 "description": description,
                 "metadata": {
                     "mobile": user.phone if hasattr(user, 'phone') else "",
                     "email": user.email,
+                    "order_id": str(payment_request.id),  # مطابق مستندات: شماره سفارش
                     "payment_request_id": payment_request.id
                 }
             }
