@@ -200,9 +200,9 @@
         }
 
         /* Payment Method Options Styles */
-        .payment-method-options {
-            display: flex;
-            flex-direction: column;
+              .payment-method-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 12px;
             margin-top: 10px;
         }
@@ -225,6 +225,7 @@
             padding: 16px;
             transition: all 0.3s ease;
             background-color: white;
+            height: 100%;
         }
 
         .payment-option input[type="radio"]:checked + .payment-option-label {
@@ -286,6 +287,10 @@
 
         /* Responsive adjustments */
         @media (max-width: 768px) {
+            .payment-method-options {
+                grid-template-columns: 1fr;
+            }
+
             .payment-option-content {
                 flex-direction: column;
                 text-align: center;
@@ -346,7 +351,7 @@
 
 
                                 <!-- فرم رزرو -->
-                                <div class="hidden" id="information">
+                                <div class="hidden scroll-wrapper" id="information" >
                                     <div id="formModal" class="modal text-right">
                                         <div class="modal-content">
                                             <span class="close" onclick="closeFormModal()">&times;</span>
@@ -354,7 +359,7 @@
                                                 <div class="alert alert-info mt-3">
                                                     شما در حال رزرو نوبت برای: <strong
                                                         id="appointment-date-time"></strong><br>
-                                                    هزینه ویزیت: {{ doctor.consultation_fee }} تومان
+                                                    هزینه دریافت نوبت: {{ doctor.consultation_fee }} تومان
                                                 </div>
                                                 <form method="post" id="booking-form">
                                                     {% csrf_token %}
@@ -427,11 +432,25 @@
                                                                 <label class="form-label">روش پرداخت</label>
                                                                 <div class="payment-method-options">
                                                                     <div class="payment-option">
-                                                                        <input type="radio" id="wallet-payment" name="payment_method" value="wallet" checked>
+                                                                        <input type="radio" id="direct-payment" name="payment_method" value="direct" checked>
+                                                                        <label for="direct-payment" class="payment-option-label">
+                                                                            <div class="payment-option-content">
+                                                                                <div class="payment-option-icon">
+                                                                                    <i class="icon-credit-card"></i>
+                                                                                </div>
+                                                                                <div class="payment-option-text">
+                                                                                    <div class="payment-option-title">پرداخت مستقیم</div>
+                                                                                    <div class="payment-option-description">از طریق درگاه پرداخت</div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </label>
+                                                                    </div>
+                                                                    <div class="payment-option">
+                                                                        <input type="radio" id="wallet-payment" name="payment_method" value="wallet">
                                                                         <label for="wallet-payment" class="payment-option-label">
                                                                             <div class="payment-option-content">
                                                                                 <div class="payment-option-icon">
-                                                                                    <i class="fas fa-wallet"></i>
+                                                                                    <i class="icon-wallet"></i>
                                                                                 </div>
                                                                                 <div class="payment-option-text">
                                                                                     <div class="payment-option-title">پرداخت از کیف پول</div>
@@ -439,20 +458,6 @@
                                                                                     <div class="payment-option-balance" id="wallet-balance-display">
                                                                                         موجودی: <span id="current-balance">{{ balance|default:0 }}</span> تومان
                                                                                     </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </label>
-                                                                    </div>
-                                                                    <div class="payment-option">
-                                                                        <input type="radio" id="direct-payment" name="payment_method" value="direct">
-                                                                        <label for="direct-payment" class="payment-option-label">
-                                                                            <div class="payment-option-content">
-                                                                                <div class="payment-option-icon">
-                                                                                    <i class="fas fa-credit-card"></i>
-                                                                                </div>
-                                                                                <div class="payment-option-text">
-                                                                                    <div class="payment-option-title">پرداخت مستقیم</div>
-                                                                                    <div class="payment-option-description">از طریق درگاه پرداخت</div>
                                                                                 </div>
                                                                             </div>
                                                                         </label>
@@ -504,9 +509,9 @@
                         <div class="col-lg-12 col-md-12 text-center">
                             <h1>دکتر {{ doctor.user.get_full_name }}</h1>
                             <small>تخصص : {{ doctor.specialization }} </small>
-                            <p class="text-gray-600 fs-12">هزینه ویزیت : {{ doctor.consultation_fee }} </p>
+                            <p class="text-gray-600 fs-12">هزینه دریافت نوبت : {{ doctor.consultation_fee }} </p>
                         </div>
-                        <a class="btn btn-outline-info col-lg-12" href="{% url 'doctors:doctor_detail' doctor.id %}">پروفایل
+                        <a class="btn btn-outline-info col-lg-12 m-b-5" href="{% url 'doctors:doctor_detail' doctor.id %}">پروفایل
                             پزشک</a>
                     </div>
                 </div>
@@ -829,7 +834,7 @@
                     const fragment = document.createDocumentFragment();
                     slots.forEach(slot => {
                         const slotElement = document.createElement('div');
-                        slotElement.className = 'col-6 col-md-3 mb-3';
+                        slotElement.className = 'col-4 col-md-3 mb-3';
                         const btn = document.createElement('button');
                         btn.className = 'btn btn-outline-success w-100';
                         btn.textContent = slot;

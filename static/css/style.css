@@ -474,7 +474,6 @@ header {
   background-color: rgb(36, 67, 132);
   min-height: 55px;
   padding: 10px 0;
-
   border-bottom: 1px solid transparent;
 }
 header.header_sticky {

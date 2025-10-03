@@ -26,7 +26,7 @@
                     <h5 class="border-bottom">اطلاعات نوبت</h5>
                     <p class="p-r-10">تاریخ : {{ appointment.day.date|persian_date_info }}</p>
                     <p class="p-r-10">ساعت: {{ appointment.time|time:"H:i" }}</p>
-                    <p class="p-r-10">هزینه ویزیت: {{ appointment.amount }} تومان</p>
+                    <p class="p-r-10">هزینه دریافت نوبت: {{ appointment.amount }} تومان</p>
                     <p class="p-r-10 ">وضعیت پرداخت:
                         <span class="rounded_pill fs-10 p-l-2 p-r-2 {% if appointment.payment_status == 'paid' %}bg-light-green {% else %}bg-light-yellow{% endif %}">{{ appointment.get_payment_status_display }}</span>
                     </p>

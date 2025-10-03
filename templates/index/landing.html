@@ -233,6 +233,36 @@ body {
   line-height: 1;
 }
 
+/* استایل‌های جدید برای بنر خدمات پزشکی */
+.medical-service-banner {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  color: white;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 12px 32px rgba(26, 115, 232, 0.3);
+  margin-bottom: 3rem;
+  animation: fadeIn 1s ease-out;
+}
+
+.banner-features .feature-item {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 8px 16px;
+  border-radius: 50px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.banner-features .feature-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
 
 /* ریسپانسیو */
 @media (max-width: 992px) {
@@ -264,6 +294,19 @@ body {
 
   .vip-footer {
     clip-path: polygon(0 10%, 100% 0, 100% 100%, 0 100%);
+  }
+
+  .medical-service-banner {
+    padding: 2rem 1rem;
+  }
+
+  .banner-features {
+    flex-direction: column;
+    gap: 1rem !important;
+  }
+
+  .banner-features .feature-item {
+    justify-content: center;
   }
 }
 
@@ -317,6 +360,17 @@ body {
   border-radius: 50px;
   font-size: 0.8rem;
   font-weight: 500;
+}
+
+/* انیمیشن شناور ملایم */
+.floating-animation {
+  animation: floating 3s ease-in-out infinite;
+}
+
+@keyframes floating {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0px); }
 }
 </style>
 
@@ -375,8 +429,8 @@ body {
       {% for doctor in doctors %}
         <div class="col-lg-5 mb-4">
         <div class="vip-card h-100 hover-grow">
-          <div class="vip-card-badge">پزشک نمونه</div>
-        <a href="{% url 'doctors:doctor_detail' doctor.pk %}" >
+          <div class="vip-card-badge">✓</div>
+        <a href="{% url 'doctors:doctor_detail' doctor.slug %}" >
           {% if doctor.profile_image.name %}
             <img src="{{ doctor.profile_image.url }}" alt="{{ doctor.user.get_full_name }}" class="vip-doctor-img">
           {% else %}
@@ -387,7 +441,7 @@ body {
         </a>
 
           <div class="card-body text-center pt-0">
-          <a href="{% url 'doctors:doctor_detail' doctor.pk %}" >
+          <a href="{% url 'doctors:doctor_detail' doctor.slug %}" >
             <h3 class="mb-2">دکتر {{ doctor.user.get_full_name }}</h3>
             <p class="text-muted mb-4">متخصص {{ doctor.specialization.name }}</p>
           </a>
@@ -413,10 +467,10 @@ body {
             </div>
 
             <div class="d-flex justify-content-center mt-4">
-              <a href="{% url 'doctors:doctor_detail' doctor.pk %}" class="vip-btn mr-3 m-l-2">
+              <a href="{% url 'doctors:doctor_detail' doctor.slug %}" class="vip-btn mr-3 m-l-2">
                 <i class="icon-calendar"></i> دریافت نوبت
               </a>
-              <a href="{% url 'doctors:doctor_detail' doctor.pk %}" class="vip-btn vip-btn-secondary">
+              <a href="{% url 'doctors:doctor_detail' doctor.slug %}" class="vip-btn vip-btn-secondary">
                 <i class="icon-info"></i> پروفایل
               </a>
             </div>
@@ -429,46 +483,71 @@ body {
   </div>
 </section>
 
-
-
-
 <!-- نظرات بیماران -->
 <section class="section">
   <div class="container">
-    <div class="text-center mb-5">
-       <h3 class="text_dr">نظرات کاربران</h3>
-      <p class="text-muted">تجربه بیماران از خدمات دکتر همدان</p>
-    </div>
-
-    <div class="row">
-        {% for comment in comments %}
-      <div class="col-md-6 mb-4">
-        <div class="testimonial-card h-100">
-          <div class="d-flex align-items-center mb-3">
-            <div>
-                {% if comment.user.get_full_name %}
-              <h5 class="mb-0">{{ comment.user.get_full_name}}</h5>
-                {% else %}
-                <h5 class="mb-0">کاربر دکتر همدان</h5>
-                {% endif %}
-              <small class="text-muted">بیمار دکتر {{ comment.doctor.user.get_full_name }}</small>
+    <!-- بنر خدمات پزشکی در محل -->
+    <div class="row mb-5">
+      <div class="col-12">
+        <div class="medical-service-banner">
+          <div class="banner-content" style="position: relative; z-index: 2;">
+            <h3 style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">
+              🏥 خدمات پزشکی در محل
+            </h3>
+            <p class="lead" style="font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.9;">
+              پزشکان متخصص ما در سریع‌ترین زمان ممکن در محل حاضر می‌شوند
+            </p>
+            <div class="banner-features" style="display: flex; justify-content: center; flex-wrap: wrap; gap: 2rem; margin-bottom: 2rem;">
+              <div class="feature-item">
+                <span style="font-size: 1.5rem;">⏱️</span>
+                <span>پاسخگویی 24 ساعته</span>
+              </div>
+              <div class="feature-item">
+                <span style="font-size: 1.5rem;">🚑</span>
+                <span>خدمات پزشکی</span>
+              </div>
+              <div class="feature-item">
+                <span style="font-size: 1.5rem;">💊</span>
+                <span>خدمات پرستاری</span>
+              </div>
             </div>
+            <a href="{% url 'homecare:select_service' %}" class="vip-btn pulse-animation" style="
+              background: rgba(255, 255, 255, 0.2);
+              backdrop-filter: blur(10px);
+              border: 2px solid rgba(255, 255, 255, 0.3);
+              font-size: 1.1rem;
+              padding: 12px 40px;
+            ">
+              <i class="icon-phone"></i>
+              درخواست خدمات در محل
+            </a>
           </div>
-          <p class="mb-0">{{ comment.text }}</p>
-          <div class="mt-3 text-warning">
-            <i class="icon-star"></i>
-            <i class="icon-star"></i>
-            <i class="icon-star"></i>
-            <i class="icon-star"></i>
-            <i class="icon-star"></i>
-          </div>
+
+          <!-- دکوریشن‌های بنر -->
+          <div style="
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+          "></div>
+          <div style="
+            position: absolute;
+            bottom: -30px;
+            left: -30px;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+          "></div>
         </div>
       </div>
-        {% endfor %}
-
     </div>
   </div>
 </section>
+
     <!-- Mag -->
     <section>
         <div class="container margin_120_95">
@@ -556,17 +635,4 @@ body {
         </div>
     </div>
 </section>
-
-<style>
-    /* انیمیشن شناور ملایم */
-    .floating-animation {
-        animation: floating 3s ease-in-out infinite;
-    }
-
-    @keyframes floating {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-15px); }
-        100% { transform: translateY(0px); }
-    }
-</style>
 {% endblock %}

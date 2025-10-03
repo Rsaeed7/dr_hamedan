@@ -156,6 +156,7 @@ class SupportWidgetConsumer(AsyncWebsocketConsumer):
             'sender': 'سیستم',
             'sender_is_admin': True,
             'timestamp': str(timezone.now()),
+            'is_welcome': True  # اضافه کردن فلگ
         }))
 
     async def disconnect(self, close_code):

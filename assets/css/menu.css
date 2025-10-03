@@ -111,7 +111,7 @@
         background: rgba(255, 255, 255, 0.56);
         backdrop-filter: blur(7px);
         min-width: 450px;
-        box-decoration-break: clone; /* اضافه کردن این قسمت */
+        box-decoration-break: clone;
         -webkit-box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.175);
         -moz-box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.175);
         box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.175);
@@ -288,7 +288,7 @@
     .main-menu {
         overflow-y: scroll;
         padding-bottom: 60px;
-        transform: translatey(-110%);
+        transform: translatey(-150%);
         top: 57px;
         border-top: 1px solid #ededed;
         left: 0;
