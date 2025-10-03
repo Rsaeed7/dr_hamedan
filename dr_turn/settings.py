@@ -18,12 +18,6 @@ from decouple import config
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://drhmd.ir',
-    'https://www.drhmd.ir',
-    'https://*.drhmd.ir',  
-]
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -33,83 +27,9 @@ SECRET_KEY = 'django-insecure-mgzuw-1o1@qa2!rt0xz2k9*gn$_4ozw2i$+lat#gfgc@1ridgw
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-SERVERE = True  # Keep this True for production
-if SERVERE:
 
-    # In the SERVERE block, update:
-    CSRF_TRUSTED_ORIGINS = [
-        'https://drhmd.ir',
-        'http://localhost',
-        'http://127.0.0.1',
-    ]
-
-    ALLOWED_HOSTS = [
-        'drhmd.ir',
-        'www.drhmd.ir',
-        'drhmd.chbk.app',
-        'localhost',
-        '127.0.0.1',
-        '*',  # Allow all hosts in Docker for development
-    ]
-
-    # Update Redis configuration for container environment
-    REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
-    REDIS_PORT = int(os.environ.get('REDIS_PORT', 6379))
-    REDIS_PASSWORD = os.environ.get('REDIS_PASSWORD', None)
-    REDIS_DB = int(os.environ.get('REDIS_DB', 0))
-
-    CHANNEL_LAYERS = {
-        "default": {
-            "BACKEND": "channels_redis.core.RedisChannelLayer",
-            "CONFIG": {
-                "hosts": [{
-                    "host": REDIS_HOST,
-                    "port": REDIS_PORT,
-                    "password": REDIS_PASSWORD,
-                    "db": REDIS_DB,
-                }],
-                "capacity": 1500,
-                "expiry": 10,
-            },
-        },
-    }
-    # Database
-    # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'drhmd302_marisa',
-            'USER':'drhmd302_marisa',
-            'PASSWORD':'ts18dvorFu23',
-            'HOST':'services.irn2.chabokan.net',
-            'PORT':'11482',
-        }
-    }
-
-else:
-    ALLOWED_HOSTS = ["*"]
-
-    REDIS_HOST = 'localhost'
-    CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",  # برای لوکال
-        # برای محیط هاست اصلی اینو فعال کن:
-        #  "BACKEND": "channels_redis.core.RedisChannelLayer",
-        #  "CONFIG": {"hosts": [("127.0.0.1", 6379)]},
-    },
-    }
-
-    # Database
-    # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-
+ALLOWED_HOSTS = ["*"]
+REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
 REDIS_DB = 1
 
@@ -139,11 +59,11 @@ INSTALLED_APPS = [
     'chatmed',
     'user.apps.UserConfig',
     'doctors',
+    'payments',
     'reservations',
     'clinics',
     'patients',
     'wallet',
-    'payments',
     'docpages',
     'medimag.apps.MedimagConfig',
     'support.apps.AboutUsConfig',
@@ -151,7 +71,6 @@ INSTALLED_APPS = [
     'discounts.apps.DiscountsConfig',
     'sms_reminders',
     'utils',
-
 
 ]
 
@@ -208,6 +127,24 @@ WSGI_APPLICATION = 'dr_turn.wsgi.application'
 ASGI_APPLICATION = "dr_turn.asgi.application"
 
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",  # برای لوکال
+        # برای محیط هاست اصلی اینو فعال کن:
+        #  "BACKEND": "channels_redis.core.RedisChannelLayer",
+        #  "CONFIG": {"hosts": [("127.0.0.1", 6379)]},
+    },
+}
+
+# Database
+# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 
 # Password validation

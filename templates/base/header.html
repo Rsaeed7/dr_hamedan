@@ -145,7 +145,6 @@
         <div class="row">
             <!--Logo-->
             <div class="col-lg-2 col-6">
-
                 <div id="logo_home">
                     <h1><a href="/" title="DrHamedan">DrHamedan</a></h1>
                 </div>
@@ -184,8 +183,10 @@
                                     {% endif %}
                                     <a class="icon-calendar" href="{% url 'patients:patient_appointments' %}">نوبت های
                                         من</a>
+                                    {% if not user.doctor %}
                                     <a class="icon-users-outline"
                                        href="{% url 'patients:patient_profile' %}">پروفایل</a>
+                                     {% endif %}
                                     <a class="icon-wallet" href="{% url 'wallet:wallet_dashboard' %}">کیف پول</a>
                                     {% if user.is_staff %}
                                         <a class="icon-blogger" href="{% url 'admin:index' %}">پنل مدیریت</a>
@@ -222,9 +223,24 @@
                 <div class="main-menu center-content">
                     <ul>
                         <li class="d-lg-none">
+                            {% if request.user.doctor %}
+                                <a href="{% url 'doctors:notifications' %}"
+                                   class="nav-item d-flex align-items-center px-1 py-1 text-secondary text-decoration-none">
+                                    <div class="position-relative">
+                                        <div class="bg-light rounded-10 d-flex align-items-center justify-content-center"
+                                             style="width: 28px; height: 28px;">
+                                            <i class="icon-bell text-danger fs-12"></i>
+                                        </div>
+                                        {% if unread_notifications_count > 0 %}
+                                            <span class="position-absolute top-0 text-white start-100 translate-middle badge rounded-10 bg-danger m-t-20 m-r-15">
+                {{ unread_notifications_count }}
+            </span>
+                                        {% endif %}
+                                    </div>
+                                </a>
+                            {% endif %}
                             {% if user.is_authenticated %}
                                 <a href="
-
                                         {% if user.doctor %}{% url 'doctors:doctor_dashboard' %} {% elif user.administered_clinics.exists %}{% url 'clinics:clinic_dashboard' %}{% else %}{% url 'patients:patient_profile' %}{% endif %}">
                                 <div class="btn dr_box col-11">
                                     <i class="pe-7s-users"></i>{{ request.user.phone }}
@@ -249,7 +265,8 @@
                                     <li>
                                         <a href="{% url 'doctors:doctor_list' %}?specialty={{ specialization.name }}">
                                             {% if specialization.image %}
-                                                <img src="{{ specialization.image.url }}" style="margin-left: 10px" width="25">
+                                                <img src="{{ specialization.image.url }}" style="margin-left: 10px"
+                                                     width="25">
                                             {% endif %}
                                             {{ specialization.name }}
                                         </a>
@@ -303,41 +320,36 @@
         <span>لنز</span>
     </a>
 
-    <a href="{% url 'doctors:specializations' %}"
-       class="nav-item {% if request.resolver_match.url_name == 'specializations' %}active{% endif %}">
-        <i class="icon-medkit text-dr"></i>
-        <span>پزشکان</span>
-    </a>
     {% if request.user.is_authenticated %}
+        {% if not user.doctor %}
         <a href="{% url 'patients:patient_appointments' %}"
            class="nav-item {% if request.resolver_match.url_name == 'patient_appointments' %}active{% endif %}">
             <i class="icon-calendar-7 text-dr"></i>
             <span>نوبت ها</span>
         </a>
-
         <a href="{% url 'patients:patient_dashboard' %}"
            class="nav-item {% if request.resolver_match.url_name == 'patient_dashboard' %}active{% endif %}">
             <i class="icon-user-outline text-dr"></i>
             <span>پروفایل</span>
         </a>
+     {% endif %}
     {% else %}
         <a href="{% url 'account:register' %}"
            class="nav-item">
             <i class="icon-user-outline text-dr"></i>
             <span>ورود</span>
         </a>
-
-        <a href="{% url 'doctors:doctor_registration' %}"
-           class="nav-item {% if request.resolver_match.url_name == 'doctor_registration' %}active{% endif %}">
-            <i class="icon-user-md text-dr"></i>
-            <span class="fs-12">عضویت پزشک</span>
-        </a>
     {% endif %}
     {% if request.user.doctor %}
+        <a href="{% url 'doctors:doctor_appointments_today' %}"
+           class="nav-item {% if request.resolver_match.url_name == 'doctor_appointments_today' %}active{% endif %}">
+            <i class="icon-calendar-2 text-dr"></i>
+            <span class="fs-12">نوبت های امروز</span>
+        </a>
         <a href="{% url 'doctors:doctor_dashboard' %}"
            class="nav-item {% if request.resolver_match.url_name == 'doctor_dashboard' %}active{% endif %}">
             <i class="icon-user-md text-dr"></i>
-            <span class="fs-12">پزشک</span>
+            <span class="fs-12">پنل پزشک</span>
         </a>
     {% endif %}
     {% if user.administered_clinics.exists %}

@@ -84,6 +84,8 @@ class Doctor(models.Model):
                                     verbose_name=_('طول جغرافیایی'))
     national_id = models.CharField(max_length=10, verbose_name=_('کد ملی'), blank=True, null=True)
 
+    slug = models.SlugField(max_length=100, unique=True, verbose_name=_('اسلاگ') , blank=True, null=True)
+
     def get_first_available_day(self, max_days=30):
         """
         برگرداندن تاریخ شمسی اولین روزی که دکتر نوبت خالی دارد.

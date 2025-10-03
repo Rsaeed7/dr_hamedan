@@ -106,6 +106,9 @@ class DoctorAdmin(admin.ModelAdmin):
         ('تنظیمات ویزیت آنلاین', {
             'fields': ('online_visit', 'online_visit_fee')
         }),
+        ('آدرس صفحه', {
+            'fields': ('slug', )
+        }),
     )
     
     def has_location(self, obj):

@@ -153,7 +153,7 @@
                         {% for doctor in available_doctors %}
                             <li class="online-status">
                                 <div title="دکتر {{ doctor.user.get_full_name}} | {{ doctor.specialization }}">
-                                    <a href="{% url 'doctors:doctor_detail' doctor.pk %}">
+                                    <a href="{% url 'doctors:doctor_detail' doctor.slug %}">
                                         {% if doctor.profile_image %}
                                             <img class="rounded50 border border-info" width="50" height="50"
                                                  src="{{ doctor.profile_image.url }}">
@@ -251,7 +251,7 @@
                                 <i href="#0" class="rate icon-star-5"><span
                                         class="text-dark">{{ doctor.comment_rate }}</span></i>
                                 <figure>
-                                    <a href="{% url 'doctors:doctor_detail' doctor.pk %}">
+                                    <a href="{% url 'doctors:doctor_detail' doctor.slug %}">
                                         {% if doctor.profile_image %}
                                             <img src="{{ doctor.profile_image.url }}"
                                                  class="img-fluid"
@@ -264,7 +264,7 @@
                                     <h3>{{ doctor.user.get_full_name }}</h3>
                                     <p class="text-capitalize border-light">{{ doctor.specialization }}</p>
                                     <div class="m-t-10">
-                                        <a href="{% url 'doctors:doctor_detail' doctor.pk %}"
+                                        <a href="{% url 'doctors:doctor_detail' doctor.slug %}"
                                            class="text-secondary fs-12">مشاهده پروفایل پزشک</a>
                                         <button onclick="showDynamicForm({{ doctor.id }}, '{{ doctor.online_visit_fee }}', '{% url 'chat:request_chat' doctor.id %}', '{{ doctor.user.get_full_name }}')"
                                            class="btn btn-info col-12 m-t-10">مشاوره متنی آنلاین</button>

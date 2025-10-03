@@ -106,19 +106,28 @@ document.addEventListener('DOMContentLoaded', function () {
     chatContent.style.display = 'none';
 
     // تابع اضافه کردن پیام به چت
-    function appendMessage(data) {
-        const messageEl = document.createElement('div');
-        messageEl.classList.add('p-2', 'rounded', 'mb-2');
-        if (data.sender_is_admin) {
-            messageEl.classList.add('bg-light-green', 'text-end');
-            messageEl.innerHTML = `<strong>ادمین:</strong> ${data.message || data.content}`;
-        } else {
-            messageEl.classList.add('bg-light-blue', 'text-start');
-            messageEl.innerHTML = `<strong>شما:</strong> ${data.message || data.content}`;
-        }
-        chatMessages.appendChild(messageEl);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+    // تابع اضافه کردن پیام به چت
+function appendMessage(data) {
+    const messageEl = document.createElement('div');
+    messageEl.classList.add('p-2', 'rounded', 'mb-2');
+    if (data.sender_is_admin) {
+        messageEl.classList.add('bg-light-green', 'text-end');
+        messageEl.innerHTML = `<strong>ادمین:</strong> ${data.message || data.content}`;
+    } else {
+        messageEl.classList.add('bg-light-blue', 'text-start');
+        messageEl.innerHTML = `<strong>شما:</strong> ${data.message || data.content}`;
     }
+
+    if (data.is_welcome) {
+        // 👈 پیام خوشامد همیشه بالای لیست
+        chatMessages.insertBefore(messageEl, chatMessages.firstChild);
+    } else {
+        chatMessages.appendChild(messageEl);
+    }
+
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
 
     // باز کردن چت با کلیک روی آیکون
     chatToggle.addEventListener('click', function () {
