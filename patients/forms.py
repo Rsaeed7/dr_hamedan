@@ -66,6 +66,7 @@ class MultipleFileField(forms.FileField):
             result = single_file_clean(data, initial)
         return result
 
+
 class ReportForm(forms.ModelForm):
     name = forms.CharField(
         label="نام بیمار",
@@ -110,11 +111,11 @@ class ReportForm(forms.ModelForm):
         })
     )
 
-    images = forms.FileField(
+    # 🔥 تغییر اینجا - استفاده از MultipleFileField به جای FileField
+    images = MultipleFileField(
         label="تصاویر پیوست",
         required=False,
         widget=MultipleFileInput(attrs={
-            'multiple': True,
             'class': 'w-full px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500',
             'accept': 'image/*'
         })
@@ -143,6 +144,10 @@ class ReportForm(forms.ModelForm):
         report = super().save(commit=commit)
         images = self.cleaned_data.get('images')
         if images:
+            # اطمینان از اینکه images یک لیست است
+            if not isinstance(images, (list, tuple)):
+                images = [images]
+
             for image in images:
                 ReportImage.objects.create(
                     report=report,
