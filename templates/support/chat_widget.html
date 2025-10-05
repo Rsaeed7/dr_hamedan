@@ -77,6 +77,7 @@
                 <p id="chat-toggle-icon p-r-50"><i class="m-t-15 pe-7s-headphones"></i> پشتیبانی دکترهمدان </p>
 
             </div>
+            {% if request.user.is_authenticated %}
             <div id="chat-container" class="card-body p-0" style="height: 400px;width: 300px">
                 <div id="chat-messages" class="p-3" style="height: calc(100% - 62px); background-color: #f8f9fa;overflow: auto!important;"></div>
                 <div class="border-top p-2">
@@ -86,6 +87,13 @@
                     </form>
                 </div>
             </div>
+            {% else %}
+                <div id="chat-container" class="card-body p-0" style="height: 250px;width: 300px">
+                <div class="border-top p-2">
+                    <input disabled type="text"  placeholder="برای ارتباط با پشتیبانی وارد حساب خود شوید" class="form-control rounded_pill ">
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -105,7 +113,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // ابتدا چت مخفی است
     chatContent.style.display = 'none';
 
-    // تابع اضافه کردن پیام به چت
     // تابع اضافه کردن پیام به چت
 function appendMessage(data) {
     const messageEl = document.createElement('div');

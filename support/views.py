@@ -1,3 +1,4 @@
+from django.db.models import Max
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib import messages
@@ -20,15 +21,13 @@ def chat_room_list(request):
     - مهمان: چت موجود در سشن
     """
     if is_user_admin(request.user):
-        chats = SupportChatRoom.objects.filter(is_active=True).select_related('customer').order_by('-last_activity')
-    elif request.user.is_authenticated:
-        chats = SupportChatRoom.objects.filter(customer=request.user, is_active=True).select_related('customer').order_by('-last_activity')
+        chats = SupportChatRoom.objects.filter(
+            is_active=True
+        ).select_related('customer').annotate(
+            last_message_time=Max('messages__created_at')
+        ).order_by('-last_message_time')
     else:
-        chat_room_id = request.session.get('chat_room_id')
-        if chat_room_id:
-            chats = SupportChatRoom.objects.filter(id=chat_room_id, is_active=True)
-        else:
-            chats = SupportChatRoom.objects.none()
+        return redirect('/')
 
     return render(request, 'support/room_list.html', {
         'chats': chats,

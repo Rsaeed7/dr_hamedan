@@ -2806,7 +2806,7 @@ ul.treatments li {
 
 #login-2 {
   width: 500px;
-  margin: 60px auto;
+  margin: 10px auto;
   color: #fff;
 }
 #login-2 .box_form {
@@ -2823,8 +2823,9 @@ ul.treatments li {
 }
 @media (max-width: 767px) {
   #login-2 {
-    width: 100%;
-    margin: 100px;
+    width: 98%;
+    margin-top: 100px;
+
   }
 }
 #login-2 h1 {
@@ -3316,11 +3317,11 @@ ul.treatments.checkout li.total {
 }
 
 .bg_color_2 {
-  background:  url(../img/bg/seamless-pattern-doodle-drawings-medical-equipment-first-aid-items-doodle-seamless-pattern_947681-1551.jpg) repeat;
+  background: rgb(198, 198, 198);
 }
 
 .bg_pic {
-  background:  url(../img/bg/grey-medical-icons-vector-abstract-pattern-design_88343-2117.jpg) repeat;
+  background:  url(../img/bg/grey-medical-icons-vector-abstract-pattern-design_88343-2117.jpg)  repeat;
 }
 
 .form-control {
