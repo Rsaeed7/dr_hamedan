@@ -24,6 +24,10 @@
             background-color: #000;
         }
 
+        .explore-grid {
+            grid-auto-flow: dense;
+        }
+
         /* Instagram-like Grid */
         .explore-grid {
             display: grid;
@@ -68,7 +72,7 @@
             top: 8px;
             right: 8px;
             color: white;
-            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
         }
 
         /* Hover overlay */
@@ -163,8 +167,12 @@
         }
 
         @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
         }
 
         /* Modal styles */
@@ -210,286 +218,295 @@
 </head>
 
 <body class="bg-black text-white min-h-screen">
-    <!-- Instagram-style Header -->
-    <header class="instagram-header">
-        <nav class="max-w-[975px] mx-auto px-5">
-            <div class="flex justify-between items-center h-[60px]">
-                <!-- Logo -->
+<!-- Instagram-style Header -->
+<header class="instagram-header">
+    <nav class="max-w-[975px] mx-auto px-5">
+        <div class="flex justify-between items-center h-[60px]">
+            <!-- Logo -->
             <a href="{% url 'doctors:index' %}">
                 <img src="{% static 'img/logo_white.png' %}" width="150">
             </a>
 
-                <!-- Search Bar (Desktop) -->
-                <div class="hidden md:block">
-                    <input
+            <!-- Search Bar (Desktop) -->
+            <div class="hidden md:block">
+                <input
                         type="text"
                         id="searchInput"
                         placeholder="جستجو"
                         value="{{ search_query }}"
                         class="search-bar"
-                    >
-                </div>
+                >
+            </div>
 
-                <!-- Navigation Icons -->
-                <div class="flex items-center gap-5">
-                    <a href="{% url 'doctors:doctor_list' %}" class="text-white hover:text-gray-300 transition-colors">
+            <!-- Navigation Icons -->
+            <div class="flex items-center gap-5">
+                <a href="{% url 'doctors:doctor_list' %}" class="text-white hover:text-gray-300 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                </a>
+                {% if request.user.doctor %}
+                    <a href="{% url 'docpages:create_post' %}" class="text-white hover:text-gray-300 transition-colors">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                  d="M12 4v16m8-8H4"/>
                         </svg>
                     </a>
-                    {% if request.user.doctor %}
-                        <a href="{% url 'docpages:create_post' %}" class="text-white hover:text-gray-300 transition-colors">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                      d="M12 4v16m8-8H4"/>
-                            </svg>
-                        </a>
-                    {% endif %}
-                    {% if user.is_authenticated %}
-                        <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                            <span class="text-white text-sm font-medium">{{ user.first_name|first|default:"ک"|first }}</span>
-                        </div>
-                    {% else %}
-                        <a href="{% url 'account:register' %}" class="text-white hover:text-gray-300 transition-colors">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                            </svg>
-                        </a>
-                    {% endif %}
-                </div>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                        <span class="text-white text-sm font-medium">{{ user.first_name|first|default:"ک"|first }}</span>
+                    </div>
+                {% else %}
+                    <a href="{% url 'account:register' %}" class="text-white hover:text-gray-300 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                    </a>
+                {% endif %}
             </div>
-        </nav>
-    </header>
+        </div>
+    </nav>
+</header>
 
-    <!-- Mobile Search Bar -->
-    <div class="md:hidden px-4 py-3 border-b border-gray-800">
-        <input
+<!-- Mobile Search Bar -->
+<div class="md:hidden px-4 py-3 border-b border-gray-800">
+    <input
             type="text"
             id="mobileSearchInput"
             placeholder="جستجو"
             value="{{ search_query }}"
             class="search-bar w-full"
-        >
+    >
+</div>
+
+<!-- Filter Pills -->
+<div class="max-w-[975px] mx-auto px-5 py-4">
+    <div class="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
+        <button class="filter-pill whitespace-nowrap active" data-filter="all">
+            همه
+        </button>
+        <button class="filter-pill whitespace-nowrap" data-filter="video">
+            <svg class="w-4 h-4 inline-block ml-1" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
+            </svg>
+            ویدیوها
+        </button>
+        <button class="filter-pill whitespace-nowrap" data-filter="image">
+            <svg class="w-4 h-4 inline-block ml-1" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                      d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                      clip-rule="evenodd"/>
+            </svg>
+            تصاویر
+        </button>
     </div>
+</div>
 
-    <!-- Filter Pills -->
-    <div class="max-w-[975px] mx-auto px-5 py-4">
-        <div class="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
-            <button class="filter-pill whitespace-nowrap active" data-filter="all">
-                همه
-            </button>
-            <button class="filter-pill whitespace-nowrap" data-filter="video">
-                <svg class="w-4 h-4 inline-block ml-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
-                </svg>
-                ویدیوها
-            </button>
-            <button class="filter-pill whitespace-nowrap" data-filter="image">
-                <svg class="w-4 h-4 inline-block ml-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
-                </svg>
-                تصاویر
-            </button>
-        </div>
-    </div>
+<!-- Main Content -->
+<main class="max-w-[975px] mx-auto">
+    <!-- Instagram-style Grid -->
+    <div class="explore-grid" id="postsGrid">
+        {% for post in posts %}
 
-    <!-- Main Content -->
-    <main class="max-w-[975px] mx-auto">
-        <!-- Instagram-style Grid -->
-        <div class="explore-grid" id="postsGrid">
-            {% for post in posts %}
-
-                <div class="grid-item" data-post-id="{{ post.id }}" onclick="openPost({{ post.id }})">
-                    {% if post.video %}
-                        <video src="{{ post.video.url }}" class="w-full h-full object-cover" muted></video>
-                        <div class="video-indicator">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
-                            </svg>
-                        </div>
-                    {% elif post.image %}
-                      <a href="#">  <img src="{{ post.image.url }}" alt="{{ post.title }}" loading="lazy"></a>
-                    {% else %}
-                        <div class="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center p-6">
-                            <h3 class="text-white text-center font-medium line-clamp-3">{{ post.title }}</h3>
-                        </div>
-                    {% endif %}
+            <div class="grid-item" data-post-id="{{ post.id }}" onclick="openPost({{ post.id }})">
+                {% if post.video %}
+                    <video src="{{ post.video.url }}" class="w-full h-full object-cover" muted></video>
+                    <div class="video-indicator">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
+                        </svg>
+                    </div>
+                {% elif post.image %}
+                    <a href="#"> <img src="{{ post.image.url }}" alt="{{ post.title }}" loading="lazy"></a>
+                {% else %}
+                    <div class="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center p-6">
+                        <h3 class="text-white text-center font-medium line-clamp-3">{{ post.title }}</h3>
+                    </div>
+                {% endif %}
                 <a href="{% url 'docpages:post_detail' post.id %}">
                     <div class="grid-item-overlay">
                         <div class="overlay-stats">
                             <div class="stat-item">
                                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                                    <path fill-rule="evenodd"
+                                          d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                                          clip-rule="evenodd"/>
                                 </svg>
                                 <span>{{ post.likes|default:0 }}</span>
                             </div>
                             <div class="stat-item">
                                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clip-rule="evenodd"/>
+                                    <path fill-rule="evenodd"
+                                          d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z"
+                                          clip-rule="evenodd"/>
                                 </svg>
                                 <span>{{ post.comments.count|default:0 }}</span>
                             </div>
                         </div>
-                    </div></a>
-                </div>
+                    </div>
+                </a>
+            </div>
 
-            {% empty %}
-                <div class="col-span-3 text-center py-20">
-                    <p class="text-gray-500 text-lg">هیچ پستی یافت نشد</p>
-                </div>
-            {% endfor %}
-        </div>
+        {% empty %}
+            <div class="col-span-3 text-center py-20">
+                <p class="text-gray-500 text-lg">هیچ پستی یافت نشد</p>
+            </div>
+        {% endfor %}
+    </div>
 
-        <!-- Loading Skeleton -->
-        <div id="loadingSkeleton" class="explore-grid hidden">
-            {% for i in "123456789" %}
-                <div class="grid-item skeleton"></div>
-            {% endfor %}
-        </div>
+    <!-- Loading Skeleton -->
+    <div id="loadingSkeleton" class="explore-grid hidden">
+        {% for i in "123456789" %}
+            <div class="grid-item skeleton"></div>
+        {% endfor %}
+    </div>
 
-        <!-- Load More -->
-        {% if posts.has_next %}
+    <!-- Load More -->
+    {% if posts.has_next %}
         <div class="text-center py-8">
             <button
-                id="loadMoreBtn"
-                class="text-blue-500 font-medium hover:text-blue-400 transition-colors"
-                data-next-page="{{ posts.next_page_number }}"
+                    id="loadMoreBtn"
+                    class="text-blue-500 font-medium hover:text-blue-400 transition-colors"
+                    data-next-page="{{ posts.next_page_number }}"
             >
                 موارد بیشتر
             </button>
         </div>
-        {% endif %}
-    </main>
+    {% endif %}
+</main>
 
-    <!-- Post Modal (Instagram-style) -->
-    <div id="postModal" class="fixed inset-0 z-50 hidden">
-        <div class="modal-backdrop absolute inset-0" onclick="closeModal()"></div>
-        <div class="relative flex items-center justify-center min-h-screen p-4">
-            <div id="modalContent" class="relative bg-black rounded-lg max-w-5xl w-full max-h-[90vh] overflow-hidden">
-                <!-- Modal content will be loaded here -->
-            </div>
+<!-- Post Modal (Instagram-style) -->
+<div id="postModal" class="fixed inset-0 z-50 hidden">
+    <div class="modal-backdrop absolute inset-0" onclick="closeModal()"></div>
+    <div class="relative flex items-center justify-center min-h-screen p-4">
+        <div id="modalContent" class="relative bg-black rounded-lg max-w-5xl w-full max-h-[90vh] overflow-hidden">
+            <!-- Modal content will be loaded here -->
         </div>
     </div>
+</div>
 
-    <!-- JavaScript -->
-    <script>
-        let currentPage = {{ posts.number }};
-        let hasNextPage = {{ posts.has_next|yesno:"true,false" }};
-        let isLoading = false;
-        let searchTimeout;
-        let currentFilter = 'all';
-        let currentSpecialty = '';
+<!-- JavaScript -->
+<script>
+    let currentPage = {{ posts.number }};
+    let hasNextPage = {{ posts.has_next|yesno:"true,false" }};
+    let isLoading = false;
+    let searchTimeout;
+    let currentFilter = 'all';
+    let currentSpecialty = '';
 
-        // DOM Elements
-        const searchInput = document.getElementById('searchInput');
-        const mobileSearchInput = document.getElementById('mobileSearchInput');
-        const postsGrid = document.getElementById('postsGrid');
-        const loadMoreBtn = document.getElementById('loadMoreBtn');
-        const loadingSkeleton = document.getElementById('loadingSkeleton');
-        const filterPills = document.querySelectorAll('.filter-pill');
-        const postModal = document.getElementById('postModal');
-        const modalContent = document.getElementById('modalContent');
+    // DOM Elements
+    const searchInput = document.getElementById('searchInput');
+    const mobileSearchInput = document.getElementById('mobileSearchInput');
+    const postsGrid = document.getElementById('postsGrid');
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    const loadingSkeleton = document.getElementById('loadingSkeleton');
+    const filterPills = document.querySelectorAll('.filter-pill');
+    const postModal = document.getElementById('postModal');
+    const modalContent = document.getElementById('modalContent');
 
-        // Search functionality
-        [searchInput, mobileSearchInput].forEach(input => {
-            if (input) {
-                input.addEventListener('input', function() {
-                    clearTimeout(searchTimeout);
-                    searchTimeout = setTimeout(() => {
-                        performSearch();
-                    }, 500);
-                });
-            }
-        });
-
-        // Filter pills
-        filterPills.forEach(pill => {
-            pill.addEventListener('click', function() {
-                // Remove active from all pills
-                filterPills.forEach(p => p.classList.remove('active'));
-                this.classList.add('active');
-
-                // Get filter type
-                const filter = this.dataset.filter;
-                const specialty = this.dataset.specialty;
-
-                if (filter) {
-                    currentFilter = filter;
-                    currentSpecialty = '';
-                } else if (specialty) {
-                    currentFilter = 'all';
-                    currentSpecialty = specialty;
-                }
-
-                performSearch();
+    // Search functionality
+    [searchInput, mobileSearchInput].forEach(input => {
+        if (input) {
+            input.addEventListener('input', function () {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    performSearch();
+                }, 500);
             });
-        });
-
-        // Load more button
-        if (loadMoreBtn) {
-            loadMoreBtn.addEventListener('click', loadMorePosts);
         }
+    });
 
-        // Infinite scroll
-        window.addEventListener('scroll', () => {
-            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 1000) {
-                if (!isLoading && hasNextPage) {
-                    loadMorePosts();
-                }
+    // Filter pills
+    filterPills.forEach(pill => {
+        pill.addEventListener('click', function () {
+            // Remove active from all pills
+            filterPills.forEach(p => p.classList.remove('active'));
+            this.classList.add('active');
+
+            // Get filter type
+            const filter = this.dataset.filter;
+            const specialty = this.dataset.specialty;
+
+            if (filter) {
+                currentFilter = filter;
+                currentSpecialty = '';
+            } else if (specialty) {
+                currentFilter = 'all';
+                currentSpecialty = specialty;
             }
+
+            performSearch();
+        });
+    });
+
+    // Load more button
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', loadMorePosts);
+    }
+
+    // Infinite scroll
+    window.addEventListener('scroll', () => {
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 1000) {
+            if (!isLoading && hasNextPage) {
+                loadMorePosts();
+            }
+        }
+    });
+
+    // Perform search/filter
+    function performSearch() {
+        if (isLoading) return;
+
+        const searchQuery = (searchInput?.value || mobileSearchInput?.value || '').trim();
+
+        // Reset pagination
+        currentPage = 1;
+
+        // Update URL
+        const url = new URL(window.location);
+        url.searchParams.set('search', searchQuery);
+        url.searchParams.set('media_type', currentFilter);
+        url.searchParams.set('specialty', currentSpecialty);
+        url.searchParams.delete('page');
+        window.history.pushState({}, '', url);
+
+        loadPosts(true);
+    }
+
+    // Load more posts
+    function loadMorePosts() {
+        if (isLoading || !hasNextPage) return;
+
+        currentPage++;
+        loadPosts(false);
+    }
+
+    // Load posts via AJAX
+    function loadPosts(resetGrid = false) {
+        if (isLoading) return;
+
+        isLoading = true;
+        showLoading();
+
+        const searchQuery = (searchInput?.value || mobileSearchInput?.value || '').trim();
+
+        const params = new URLSearchParams({
+            search: searchQuery,
+            media_type: currentFilter,
+            specialty: currentSpecialty,
+            page: currentPage
         });
 
-        // Perform search/filter
-        function performSearch() {
-            if (isLoading) return;
-
-            const searchQuery = (searchInput?.value || mobileSearchInput?.value || '').trim();
-
-            // Reset pagination
-            currentPage = 1;
-
-            // Update URL
-            const url = new URL(window.location);
-            url.searchParams.set('search', searchQuery);
-            url.searchParams.set('media_type', currentFilter);
-            url.searchParams.set('specialty', currentSpecialty);
-            url.searchParams.delete('page');
-            window.history.pushState({}, '', url);
-
-            loadPosts(true);
-        }
-
-        // Load more posts
-        function loadMorePosts() {
-            if (isLoading || !hasNextPage) return;
-
-            currentPage++;
-            loadPosts(false);
-        }
-
-        // Load posts via AJAX
-        function loadPosts(resetGrid = false) {
-            if (isLoading) return;
-
-            isLoading = true;
-            showLoading();
-
-            const searchQuery = (searchInput?.value || mobileSearchInput?.value || '').trim();
-
-            const params = new URLSearchParams({
-                search: searchQuery,
-                media_type: currentFilter,
-                specialty: currentSpecialty,
-                page: currentPage
-            });
-
-            fetch(`{% url 'doctors:explore' %}?${params}`, {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Content-Type': 'application/json',
-                }
-            })
+        fetch(`{% url 'doctors:explore' %}?${params}`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/json',
+            }
+        })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
@@ -519,62 +536,62 @@
                 isLoading = false;
                 hideLoading();
             });
+    }
+
+    // UI Helper Functions
+    function showLoading() {
+        loadingSkeleton.classList.remove('hidden');
+        if (loadMoreBtn) {
+            loadMoreBtn.disabled = true;
+            loadMoreBtn.textContent = 'در حال بارگیری...';
         }
+    }
 
-        // UI Helper Functions
-        function showLoading() {
-            loadingSkeleton.classList.remove('hidden');
-            if (loadMoreBtn) {
-                loadMoreBtn.disabled = true;
-                loadMoreBtn.textContent = 'در حال بارگیری...';
-            }
+    function hideLoading() {
+        loadingSkeleton.classList.add('hidden');
+    }
+
+    function updateLoadMoreButton() {
+        if (!loadMoreBtn) return;
+
+        if (hasNextPage) {
+            loadMoreBtn.parentElement.classList.remove('hidden');
+            loadMoreBtn.disabled = false;
+            loadMoreBtn.textContent = 'موارد بیشتر';
+        } else {
+            loadMoreBtn.parentElement.classList.add('hidden');
         }
+    }
 
-        function hideLoading() {
-            loadingSkeleton.classList.add('hidden');
-        }
+    // Open post modal
+    function openPost(postId) {
+        // Fetch post details and show in modal
+        fetch(`/api/posts/${postId}/`)
+            .then(response => response.json())
+            .then(data => {
+                // Show modal with post content
+                showPostModal(data);
+            })
+            .catch(error => {
+                console.error('Error loading post:', error);
+            });
+    }
 
-        function updateLoadMoreButton() {
-            if (!loadMoreBtn) return;
-
-            if (hasNextPage) {
-                loadMoreBtn.parentElement.classList.remove('hidden');
-                loadMoreBtn.disabled = false;
-                loadMoreBtn.textContent = 'موارد بیشتر';
-            } else {
-                loadMoreBtn.parentElement.classList.add('hidden');
-            }
-        }
-
-        // Open post modal
-        function openPost(postId) {
-            // Fetch post details and show in modal
-            fetch(`/api/posts/${postId}/`)
-                .then(response => response.json())
-                .then(data => {
-                    // Show modal with post content
-                    showPostModal(data);
-                })
-                .catch(error => {
-                    console.error('Error loading post:', error);
-                });
-        }
-
-        function showPostModal(post) {
-            // Create Instagram-style modal content
-            const modalHTML = `
+    function showPostModal(post) {
+        // Create Instagram-style modal content
+        const modalHTML = `
                 <div class="flex flex-col md:flex-row h-full">
                     <!-- Media Section -->
                     <div class="md:w-3/5 bg-black flex items-center justify-center">
                         ${post.video ?
-                            `<video src="${post.video}" controls class="max-w-full max-h-full"></video>` :
-                            post.image ?
-                            `<img src="${post.image}" alt="${post.title}" class="max-w-full max-h-full object-contain">` :
-                            `<div class="p-8 text-center">
+            `<video src="${post.video}" controls class="max-w-full max-h-full"></video>` :
+            post.image ?
+                `<img src="${post.image}" alt="${post.title}" class="max-w-full max-h-full object-contain">` :
+                `<div class="p-8 text-center">
                                 <h2 class="text-2xl font-bold mb-4">${post.title}</h2>
                                 <p class="text-gray-300">${post.content}</p>
                             </div>`
-                        }
+        }
                     </div>
 
                     <!-- Details Section -->
@@ -622,47 +639,47 @@
                 </div>
             `;
 
-            modalContent.innerHTML = modalHTML;
-            postModal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
+        modalContent.innerHTML = modalHTML;
+        postModal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
 
-        function closeModal() {
-            postModal.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-            modalContent.innerHTML = '';
-        }
+    function closeModal() {
+        postModal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        modalContent.innerHTML = '';
+    }
 
-        // Keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeModal();
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            closeModal();
+        }
+    });
+
+    // Hover preview on desktop
+    if (window.innerWidth > 768) {
+        postsGrid.addEventListener('mouseover', function (e) {
+            const gridItem = e.target.closest('.grid-item');
+            if (gridItem) {
+                const video = gridItem.querySelector('video');
+                if (video) {
+                    video.play();
+                }
             }
         });
 
-        // Hover preview on desktop
-        if (window.innerWidth > 768) {
-            postsGrid.addEventListener('mouseover', function(e) {
-                const gridItem = e.target.closest('.grid-item');
-                if (gridItem) {
-                    const video = gridItem.querySelector('video');
-                    if (video) {
-                        video.play();
-                    }
+        postsGrid.addEventListener('mouseout', function (e) {
+            const gridItem = e.target.closest('.grid-item');
+            if (gridItem) {
+                const video = gridItem.querySelector('video');
+                if (video) {
+                    video.pause();
+                    video.currentTime = 0;
                 }
-            });
-
-            postsGrid.addEventListener('mouseout', function(e) {
-                const gridItem = e.target.closest('.grid-item');
-                if (gridItem) {
-                    const video = gridItem.querySelector('video');
-                    if (video) {
-                        video.pause();
-                        video.currentTime = 0;
-                    }
-                }
-            });
-        }
-    </script>
+            }
+        });
+    }
+</script>
 </body>
 </html>
