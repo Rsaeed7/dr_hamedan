@@ -128,23 +128,13 @@ class SupportWidgetConsumer(AsyncWebsocketConsumer):
             await self.close()
             return
 
-        chat_room_id = session.get("chat_room_id")
-        chat_room = None
+        # فقط کاربران لاگین شده می‌توانند وصل شوند
+        if not self.user.is_authenticated:
+            await self.close()
+            return
 
-        if self.user.is_authenticated:
-            # کاربر لاگین شده: گرفتن یا ساختن چت‌روم
-            chat_room = await database_sync_to_async(self.get_or_create_chat_room_for_user)(self.user)
-        else:
-            # کاربر مهمان
-            if chat_room_id:
-                chat_room = await database_sync_to_async(self.get_chat_room_by_id)(chat_room_id)
-
-            if not chat_room:
-                chat_room = await database_sync_to_async(self.create_guest_chat_room)()
-                session["chat_room_id"] = chat_room.id
-                await database_sync_to_async(session.save)()
-
-        self.chat_room = chat_room
+        # برای کاربر لاگین شده: گرفتن یا ساختن چت‌روم
+        self.chat_room = await database_sync_to_async(self.get_or_create_chat_room_for_user)(self.user)
         self.room_group_name = f"chat_{self.chat_room.id}"
 
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
@@ -156,11 +146,12 @@ class SupportWidgetConsumer(AsyncWebsocketConsumer):
             'sender': 'سیستم',
             'sender_is_admin': True,
             'timestamp': str(timezone.now()),
-            'is_welcome': True  # اضافه کردن فلگ
+            'is_welcome': True
         }))
 
     async def disconnect(self, close_code):
-        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+        if hasattr(self, 'room_group_name'):
+            await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
     async def receive(self, text_data):
         try:
@@ -179,8 +170,8 @@ class SupportWidgetConsumer(AsyncWebsocketConsumer):
                 {
                     'type': 'chat_message',
                     'message': message_content,
-                    'sender': self.user.get_full_name() if self.user.is_authenticated else "مهمان",
-                    'sender_is_admin': getattr(self.user, 'is_admin', False) if self.user.is_authenticated else False,
+                    'sender': self.user.get_full_name(),
+                    'sender_is_admin': getattr(self.user, 'is_admin', False),
                     'timestamp': str(timezone.now()),
                 }
             )
@@ -203,21 +194,10 @@ class SupportWidgetConsumer(AsyncWebsocketConsumer):
         )
         return room
 
-    @staticmethod
-    def get_chat_room_by_id(room_id):
-        try:
-            return SupportChatRoom.objects.get(id=room_id)
-        except SupportChatRoom.DoesNotExist:
-            return None
-
-    @staticmethod
-    def create_guest_chat_room():
-        return SupportChatRoom.objects.create(title="مهمان", admin_id=1)
-
     @database_sync_to_async
     def save_message(self, content):
         SupportMessage.objects.create(
             chat_room=self.chat_room,
-            sender=self.user if self.user.is_authenticated else None,
+            sender=self.user,
             content=content
         )

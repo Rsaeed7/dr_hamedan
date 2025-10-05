@@ -286,7 +286,7 @@
                                     <div class="m-t-10">
                                         <a href="{% url 'doctors:doctor_detail' doctor.slug %}"
                                            class="btn btn-outline-info">مشاهده پروفایل پزشک</a>
-                                        <a href="{% url 'reservations:book_appointment' doctor.slug %}"
+                                        <a href="{% url 'reservations:book_appointment' doctor.id %}"
                                            class="btn btn-success">دریافت نوبت</a>
                                     </div>
                                 </div>

@@ -26,20 +26,13 @@
     <link href="{% static 'css/util.css' %}" rel="stylesheet">
 </head>
 
-<body class="bg_color_2">
-
-	<div class="layer"></div>
-	<!-- Mobile menu overlay mask -->
-
-	<div id="preloader">
-		<div data-loader="circle-side"></div>
-	</div>
+<body class="bg_pic">
 
 	<main>
-		<div class="bg_color_2">
+		<div class="bg_pic">
 			<div class="margin_60_35">
 				<div id="login-2">
-					<form method="post" id="phone_form">
+					<form class="bg_pic" method="post" id="phone_form">
                         {% csrf_token %}
 						<div class="box_form border-0-m clearfix p-2">
                             <h6 class="text_dr_3 text-center"><img src="{% static 'img/logo_small.png' %}"><hr>ورود یا ثبت نام</h6>
@@ -49,14 +42,14 @@
 									{{ form.phone}}
                                     <p id="phone_error" class="text-danger fs-9">{{ form.phone.errors }}</p>
                                     <small>برای ادامه لطفا شماره موبایل خود را وارد کنید</small>
-                                    
+
 								</div>
 								<div class="form-group">
                                     <button id="submit_btn" class="btn btn-info col-lg-12" type="submit" disabled>دریافت کد تایید</button>
 								</div>
 							</div>
 						</div>
-                        
+
 					</form>
 				</div>
 				<!-- /login -->

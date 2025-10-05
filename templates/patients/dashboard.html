@@ -34,7 +34,7 @@
                             <li class="list-group-item {% if request.resolver_match.app_name == 'wallet' %} item-active {% endif %}">
                                 <i class="icon-wallet m-l-5"></i><a href="{% url 'wallet:wallet_dashboard' %}">کیف پول
                                 <span
-                                        class="m-r-70"> {{ balance|floatformat:2 }} تومان  </span></a>
+                                        class="m-r-70"> {{ balance}} تومان  </span></a>
                             </li>
                             <li class="list-group-item {% if request.resolver_match.url_name == 'comments' %}item-active{% endif %}">
                                 <i class="icon-comment-empty m-l-5"></i><a href="{% url 'patients:comments' %}">نظرات
