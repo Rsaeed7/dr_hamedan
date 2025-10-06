@@ -176,18 +176,23 @@
                                     {% if user.doctor %}
                                         <a class="icon-medkit" href="{% url 'doctors:doctor_dashboard' %}">داشبورد
                                             پزشک </a>
+                                        <a class="icon-calendar" href="{% url 'doctors:doctor_appointments_today' %}">
+                                            نوبت های امروز</a>
                                     {% endif %}
                                     {% if user.administered_clinics.exists %}
                                         <a class="icon-hospital" href="{% url 'clinics:clinic_dashboard' %}">داشبورد
                                             کلینیک</a>
                                     {% endif %}
-                                    <a class="icon-calendar" href="{% url 'patients:patient_appointments' %}">نوبت های
-                                        من</a>
+
                                     {% if not user.doctor %}
+                                        <a class="icon-calendar" href="{% url 'patients:patient_appointments' %}">نوبت
+                                            های
+                                            من</a>
                                     <a class="icon-users-outline"
                                        href="{% url 'patients:patient_profile' %}">پروفایل</a>
-                                     {% endif %}
                                     <a class="icon-wallet" href="{% url 'wallet:wallet_dashboard' %}">کیف پول</a>
+                                     {% endif %}
+
                                     {% if user.is_staff %}
                                         <a class="icon-blogger" href="{% url 'admin:index' %}">پنل مدیریت</a>
                                     {% endif %}
@@ -333,6 +338,20 @@
             <span>پروفایل</span>
         </a>
      {% endif %}
+        {% if request.user.is_staff or request.user.is_superuser %}
+            <a href="{% url 'homecare:admin_requests_list' %}"
+               class="nav-item">
+                <i class="icon-medkit text-dr"></i>
+                <span>مدیریت خدمات</span>
+            </a>
+        {% endif %}
+        {% if request.user.is_admin_chat %}
+            <a href="{% url 'support:chat_room_list' %}"
+               class="nav-item">
+                <i class="icon-chat text-dr"></i>
+                <span>پشتیبانی</span>
+            </a>
+        {% endif %}
     {% else %}
         <a href="{% url 'account:register' %}"
            class="nav-item">
