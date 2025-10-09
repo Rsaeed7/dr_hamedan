@@ -74,7 +74,7 @@
                         {% if appointment.doctor.address %}
                             <p><i class="icon-location"></i> {{ appointment.doctor.address }}</p>
                         {% endif %}
-                        <a href="{% url 'doctors:doctor_detail' appointment.doctor.id %}"
+                        <a href="{% url 'doctors:doctor_detail' appointment.doctor.slug %}"
                            class="text-info">
                             مشاهده پروفایل پزشک
                         </a>
