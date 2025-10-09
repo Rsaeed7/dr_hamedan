@@ -30,7 +30,7 @@
           action="{% url 'support:send_message' chat_room.id %}"
           class="mt-4">
         {% csrf_token %}
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 m-b-60">
             <input
                 type="text"
                 name="content"

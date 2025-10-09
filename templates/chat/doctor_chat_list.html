@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-50 rtl">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- هدر صفحه -->
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-800">پنل مدیریت چت‌های پزشکی</h1>
-            <div class="flex items-center mt-4 md:mt-0">وضعیت :
-                <span id="availability-status" class="ml-2 text-sm md:text-base">
+    <div class="min-h-screen bg-gray-50 rtl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- هدر صفحه -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800">پنل مدیریت چت‌های پزشکی</h1>
+                <div class="flex items-center mt-4 md:mt-0">وضعیت :
+                    <span id="availability-status" class="ml-2 text-sm md:text-base">
                     {% if request.user.doctor.availability.is_available %}
                         <span class="inline-flex items-center text-green-600">
                             <span class="w-2 h-2 rounded-full bg-green-500 mr-1 m-l-2" style="margin-left: 2px"> </span>
@@ -15,363 +15,379 @@
                         </span>
                     {% else %}
                         <span class="inline-flex items-center text-red-600">
-                            <span class="w-2 h-2 rounded-full bg-red-500 mr-1 m-l-2" > </span>
+                            <span class="w-2 h-2 rounded-full bg-red-500 mr-1 m-l-2"> </span>
                             آفلاین
                         </span>
                     {% endif %}
                 </span>
-                <button id="toggle-availability" class="px-4 py-2 rounded-lg text-sm md:text-base font-medium transition-colors
+                    <button id="toggle-availability" class="px-4 py-2 rounded-lg text-sm md:text-base font-medium transition-colors
                     {% if request.user.doctor.availability.is_available %}
                         bg-red-50 text-red-800 hover:bg-red-100
                     {% else %}
                         bg-green-50 text-green-800 hover:bg-green-100
                     {% endif %}">
-                    {% if request.user.doctor.availability.is_available %}
-                        تغییر به آفلاین
-                    {% else %}
-                        تغییر به آنلاین
-                    {% endif %}
-                </button>
-            </div>
-        </div>
-
-        <!-- تنظیمات ویزیت آنلاین -->
-     <div class="bg-white rounded-xl shadow-sm p-6 mb-8 border border-gray-100">
-    <h2 class="text-xl font-semibold text-gray-800 mb-6 pb-2 border-b border-gray-100">
-        تنظیمات ویزیت آنلاین
-    </h2>
-
-    <form method="post" action="{% url 'doctors:update_settings' %}" class="space-y-6">
-        {% csrf_token %}
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-            <!-- Online Visit Fee -->
-            <div>
-                <label for="online_visit_fee" class="block text-sm font-medium text-gray-700 mb-2">
-                    هزینه ویزیت آنلاین
-                </label>
-                <div class="relative">
-                    <input type="number"
-                           name="online_visit_fee"
-                           id="online_visit_fee"
-                           value="{{ doctor.online_visit_fee }}"
-                           required
-                           class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-right">
-                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">تومان</span>
+                        {% if request.user.doctor.availability.is_available %}
+                            تغییر به آفلاین
+                        {% else %}
+                            تغییر به آنلاین
+                        {% endif %}
+                    </button>
                 </div>
             </div>
 
-            <!-- Online Visit Toggle -->
-            <div class="flex items-center space-x-3 justify-start mt-6 md:mt-0">
-                <input type="checkbox"
-                       name="online_visit"
-                       id="online_visit"
-                       class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
-                       {% if doctor.online_visit %}checked{% endif %}>
-                <label for="online_visit" class="text-sm font-medium text-gray-700 cursor-pointer">
-                    {% if doctor.online_visit %}
-                        غیرفعال‌سازی ویزیت آنلاین
-                    {% else %}
-                        فعال‌سازی ویزیت آنلاین
-                    {% endif %}
-                </label>
+            <!-- تنظیمات ویزیت آنلاین -->
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-8 border border-gray-100">
+                <h2 class="text-xl font-semibold text-gray-800 mb-6 pb-2 border-b border-gray-100">
+                    تنظیمات ویزیت آنلاین
+                </h2>
+
+                <form method="post" action="{% url 'doctors:update_settings' %}" class="space-y-6">
+                    {% csrf_token %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                        <!-- Online Visit Fee -->
+                        <div>
+                            <label for="online_visit_fee" class="block text-sm font-medium text-gray-700 mb-2">
+                                هزینه ویزیت آنلاین
+                            </label>
+                            <div class="relative">
+                                <input type="number"
+                                       name="online_visit_fee"
+                                       id="online_visit_fee"
+                                       value="{{ doctor.online_visit_fee }}"
+                                       required
+                                       class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-right">
+                                <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">تومان</span>
+                            </div>
+                        </div>
+
+                        <!-- Online Visit Toggle -->
+                        <div class="flex items-center justify-between rounded-lg px-4 py-1 p-t-20">
+                            <div class="flex items-center space-x-2 space-x-reverse">
+                                <input type="checkbox"
+                                       name="online_visit"
+                                       id="online_visit"
+                                       class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
+                                       {% if doctor.online_visit %}checked{% endif %}>
+                                <label for="online_visit" class="text-sm font-medium text-gray-700">
+                                    ویزیت آنلاین
+                                </label>
+                            </div>
+                            <span class="text-sm {% if doctor.online_visit %}text-green-600{% else %}text-gray-500{% endif %}">
+        {% if doctor.online_visit %}فعال{% else %}غیرفعال{% endif %}
+    </span>
+                        </div>
+
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="flex justify-end pt-4">
+                        <button type="submit"
+                                class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                            ذخیره تغییرات
+                        </button>
+                    </div>
+                </form>
             </div>
 
-        </div>
 
-        <!-- Submit Button -->
-        <div class="flex justify-end pt-4">
-            <button type="submit"
-                    class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
-                ذخیره تغییرات
-            </button>
-        </div>
-    </form>
-</div>
-
-
-        <!-- بخش‌های اصلی -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- درخواست‌های در انتظار -->
-            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                <div class="flex items-center justify-between mb-6 pb-2 border-b border-gray-100">
-                    <h2 class="text-xl font-semibold text-gray-800">درخواست‌های جدید</h2>
-                    {% if pending_requests %}
-                    <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+            <!-- بخش‌های اصلی -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- درخواست‌های در انتظار -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <div class="flex items-center justify-between mb-6 pb-2 border-b border-gray-100">
+                        <h2 class="text-xl font-semibold text-gray-800">درخواست‌های جدید</h2>
+                        {% if pending_requests %}
+                            <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
                         {{ pending_requests|length }} جدید
                     </span>
-                    {% endif %}
-                </div>
+                        {% endif %}
+                    </div>
 
-                {% if pending_requests %}
-                    <div class="space-y-4">
-                        {% for req in pending_requests %}
-                            <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                                <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                                    <div class="flex-1">
-                                        <h3 class="font-medium text-gray-800">{{ req.patient.user.get_full_name }}</h3>
-                                        <p class="text-sm text-gray-500 mt-1">
-                                            <span class="text-gray-600">تاریخ درخواست:</span>
-                                            {{ req.created_at|date:"Y/m/d H:i" }}
-                                        </p>
-                                        <p class="text-sm text-gray-600 mt-2">
-                                            <span class="font-medium">خلاصه بیماری:</span>
-                                            {{ req.disease_summary|truncatechars:60 }}
-                                        </p>
-                                    </div>
-                                    <div class="flex sm:flex-col gap-2 sm:gap-1">
-                                        <button onclick="handleRequest({{ req.id }}, 'approve')"
-                                                class="px-3 py-1.5 bg-green-50 text-green-800 rounded-lg text-sm hover:bg-green-100 transition-colors flex items-center">
-                                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                            </svg>
-                                            تایید
-                                        </button>
-                                        <button onclick="handleRequest({{ req.id }}, 'reject')"
-                                                class="px-3 py-1.5 bg-red-50 text-red-800 rounded-lg text-sm hover:bg-red-100 transition-colors flex items-center">
-                                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                            </svg>
-                                            رد
-                                        </button>
+                    {% if pending_requests %}
+                        <div class="space-y-4">
+                            {% for req in pending_requests %}
+                                <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                                    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                                        <div class="flex-1">
+                                            <h3 class="font-medium text-gray-800">{{ req.patient.user.get_full_name }}</h3>
+                                            <p class="text-sm text-gray-500 mt-1">
+                                                <span class="text-gray-600">تاریخ درخواست:</span>
+                                                {{ req.created_at|date:"Y/m/d H:i" }}
+                                            </p>
+                                            <p class="text-sm text-gray-600 mt-2">
+                                                <span class="font-medium">خلاصه بیماری:</span>
+                                                {{ req.disease_summary|truncatechars:60 }}
+                                            </p>
+                                        </div>
+                                        <div class="flex sm:flex-col gap-2 sm:gap-1">
+                                            <button onclick="handleRequest({{ req.id }}, 'approve')"
+                                                    class="px-3 py-1.5 bg-green-50 text-green-800 rounded-lg text-sm hover:bg-green-100 transition-colors flex items-center">
+                                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor"
+                                                     viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                          stroke-width="2" d="M5 13l4 4L19 7"/>
+                                                </svg>
+                                                تایید
+                                            </button>
+                                            <button onclick="handleRequest({{ req.id }}, 'reject')"
+                                                    class="px-3 py-1.5 bg-red-50 text-red-800 rounded-lg text-sm hover:bg-red-100 transition-colors flex items-center">
+                                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor"
+                                                     viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                          stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                </svg>
+                                                رد
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <div class="text-center py-8">
-                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <p class="mt-2 text-gray-500">درخواست جدیدی وجود ندارد</p>
-                    </div>
-                {% endif %}
-            </div>
-
-            <!-- ویزیت‌های آنلاین فعال -->
-            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                <div class="flex items-center justify-between mb-6 pb-2 border-b border-gray-100">
-                    <h2 class="text-xl font-semibold text-gray-800">ویزیت‌های آنلاین فعال</h2>
-                    {% if chat_rooms %}
-                    <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                        {{ chat_rooms|length }} فعال
-                    </span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-8">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor"
+                                 viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <p class="mt-2 text-gray-500">درخواست جدیدی وجود ندارد</p>
+                        </div>
                     {% endif %}
                 </div>
 
-                {% if chat_rooms %}
-                    <div class="space-y-4">
-                        {% for room in chat_rooms %}
-                            <a href="{% url 'chat:chat_room' room.id %}"
-                               class="block border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors group">
-                                <div class="flex items-start justify-between gap-3">
-                                    <div class="flex-1">
-                                        <div class="flex items-center justify-between">
+                <!-- ویزیت‌های آنلاین فعال -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <div class="flex items-center justify-between mb-6 pb-2 border-b border-gray-100">
+                        <h2 class="text-xl font-semibold text-gray-800">ویزیت‌های آنلاین فعال</h2>
+                        {% if chat_rooms %}
+                            <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                        {{ chat_rooms|length }} فعال
+                    </span>
+                        {% endif %}
+                    </div>
+
+                    {% if chat_rooms %}
+                        <div class="space-y-4">
+                            {% for room in chat_rooms %}
+                                <a href="{% url 'chat:chat_room' room.id %}"
+                                   class="block border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors group">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div class="flex-1">
+                                            <div class="flex items-center justify-between">
+                                                <h3 class="font-medium text-gray-800 group-hover:text-blue-600 transition-colors">
+                                                    {{ room.request.patient.user.get_full_name }}
+                                                </h3>
+                                                {% if room.unread_count > 0 %}
+                                                    <span class="bg-blue-500 text-white text-xs font-medium rounded-full w-5 h-5 flex items-center justify-center">
+                                                    {{ room.unread_count }}
+                                                </span>
+                                                {% endif %}
+                                            </div>
+                                            <p class="text-sm text-gray-500 mt-1">
+                                                <span class="text-gray-600">آخرین فعالیت:</span>
+                                                {{ room.last_activity|date:"Y/m/d H:i" }}
+                                            </p>
+                                            {% if room.last_message %}
+                                                <p class="text-sm text-gray-600 mt-2 truncate">
+                                                    <span class="font-medium">آخرین پیام:</span>
+                                                    {{ room.last_message.content|truncatechars:60 }}
+                                                </p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </a>
+                                <div class="flex justify-end -mt-3">
+                                    <button onclick="handleRequest({{ room.request.id }}, 'finished')"
+                                            class="px-3 py-1.5 bg-gray-100 text-gray-800 rounded-lg text-sm hover:bg-gray-200 transition-colors flex items-center">
+                                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        پایان مکالمه
+                                    </button>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-8">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor"
+                                 viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                            </svg>
+                            <p class="mt-2 text-gray-500">چت فعالی وجود ندارد</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- درخواست‌های رد شده -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6 pb-2 border-b border-gray-100">درخواست‌های رد
+                        شده</h2>
+
+                    {% if reject_requests %}
+                        <div class="space-y-4">
+                            {% for req in reject_requests %}
+                                <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div>
+                                            <h3 class="font-medium text-gray-800">{{ req.patient.user.get_full_name }}</h3>
+                                            <p class="text-sm text-gray-500 mt-1">
+                                                <span class="text-gray-600">تاریخ درخواست:</span>
+                                                {{ req.created_at|date:"Y/m/d H:i" }}
+                                            </p>
+                                        </div>
+                                        <span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                                        رد شده
+                                    </span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-8">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor"
+                                 viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <p class="mt-2 text-gray-500">درخواست رد شده‌ای وجود ندارد</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- ویزیت‌های پایان یافته -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6 pb-2 border-b border-gray-100">ویزیت‌های پایان
+                        یافته</h2>
+
+                    {% if finished_chats %}
+                        <div class="space-y-4">
+                            {% for room in finished_chats %}
+                                <a href="{% url 'chat:chat_room' room.id %}"
+                                   class="block border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors group">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div class="flex-1">
                                             <h3 class="font-medium text-gray-800 group-hover:text-blue-600 transition-colors">
                                                 {{ room.request.patient.user.get_full_name }}
                                             </h3>
-                                            {% if room.unread_count > 0 %}
-                                                <span class="bg-blue-500 text-white text-xs font-medium rounded-full w-5 h-5 flex items-center justify-center">
-                                                    {{ room.unread_count }}
-                                                </span>
+                                            <p class="text-sm text-gray-500 mt-1">
+                                                <span class="text-gray-600">آخرین فعالیت:</span>
+                                                {{ room.last_activity|date:"Y/m/d H:i" }}
+                                            </p>
+                                            {% if room.last_message %}
+                                                <p class="text-sm text-gray-600 mt-2 truncate">
+                                                    <span class="font-medium">آخرین پیام:</span>
+                                                    {{ room.last_message.content|truncatechars:60 }}
+                                                </p>
                                             {% endif %}
                                         </div>
-                                        <p class="text-sm text-gray-500 mt-1">
-                                            <span class="text-gray-600">آخرین فعالیت:</span>
-                                            {{ room.last_activity|date:"Y/m/d H:i" }}
-                                        </p>
-                                        {% if room.last_message %}
-                                            <p class="text-sm text-gray-600 mt-2 truncate">
-                                                <span class="font-medium">آخرین پیام:</span>
-                                                {{ room.last_message.content|truncatechars:60 }}
-                                            </p>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </a>
-                            <div class="flex justify-end -mt-3">
-                                <button onclick="handleRequest({{ room.request.id }}, 'finished')"
-                                        class="px-3 py-1.5 bg-gray-100 text-gray-800 rounded-lg text-sm hover:bg-gray-200 transition-colors flex items-center">
-                                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                    </svg>
-                                    پایان مکالمه
-                                </button>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <div class="text-center py-8">
-                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                        </svg>
-                        <p class="mt-2 text-gray-500">چت فعالی وجود ندارد</p>
-                    </div>
-                {% endif %}
-            </div>
-
-            <!-- درخواست‌های رد شده -->
-            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                <h2 class="text-xl font-semibold text-gray-800 mb-6 pb-2 border-b border-gray-100">درخواست‌های رد شده</h2>
-
-                {% if reject_requests %}
-                    <div class="space-y-4">
-                        {% for req in reject_requests %}
-                            <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                                <div class="flex items-start justify-between gap-3">
-                                    <div>
-                                        <h3 class="font-medium text-gray-800">{{ req.patient.user.get_full_name }}</h3>
-                                        <p class="text-sm text-gray-500 mt-1">
-                                            <span class="text-gray-600">تاریخ درخواست:</span>
-                                            {{ req.created_at|date:"Y/m/d H:i" }}
-                                        </p>
-                                    </div>
-                                    <span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                                        رد شده
-                                    </span>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <div class="text-center py-8">
-                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <p class="mt-2 text-gray-500">درخواست رد شده‌ای وجود ندارد</p>
-                    </div>
-                {% endif %}
-            </div>
-
-            <!-- ویزیت‌های پایان یافته -->
-            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                <h2 class="text-xl font-semibold text-gray-800 mb-6 pb-2 border-b border-gray-100">ویزیت‌های پایان یافته</h2>
-
-                {% if finished_chats %}
-                    <div class="space-y-4">
-                        {% for room in finished_chats %}
-                            <a href="{% url 'chat:chat_room' room.id %}"
-                               class="block border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors group">
-                                <div class="flex items-start justify-between gap-3">
-                                    <div class="flex-1">
-                                        <h3 class="font-medium text-gray-800 group-hover:text-blue-600 transition-colors">
-                                            {{ room.request.patient.user.get_full_name }}
-                                        </h3>
-                                        <p class="text-sm text-gray-500 mt-1">
-                                            <span class="text-gray-600">آخرین فعالیت:</span>
-                                            {{ room.last_activity|date:"Y/m/d H:i" }}
-                                        </p>
-                                        {% if room.last_message %}
-                                            <p class="text-sm text-gray-600 mt-2 truncate">
-                                                <span class="font-medium">آخرین پیام:</span>
-                                                {{ room.last_message.content|truncatechars:60 }}
-                                            </p>
-                                        {% endif %}
-                                    </div>
-                                    <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                                        <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
                                         پایان یافته
                                     </span>
-                                </div>
-                            </a>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <div class="text-center py-8">
-                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                        </svg>
-                        <p class="mt-2 text-gray-500">ویزیت پایان یافته‌ای وجود ندارد</p>
-                    </div>
-                {% endif %}
+                                    </div>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-8">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor"
+                                 viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                            <p class="mt-2 text-gray-500">ویزیت پایان یافته‌ای وجود ندارد</p>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    // تغییر وضعیت آنلاین/آفلاین
-    document.getElementById('toggle-availability').addEventListener('click', function () {
-        fetch("{% url 'chat:toggle_availability' %}", {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}',
-                'Content-Type': 'application/json'
-            },
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    const statusElement = document.getElementById('availability-status');
-                    const button = document.getElementById('toggle-availability');
+    <script>
+        // تغییر وضعیت آنلاین/آفلاین
+        document.getElementById('toggle-availability').addEventListener('click', function () {
+            fetch("{% url 'chat:toggle_availability' %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const statusElement = document.getElementById('availability-status');
+                        const button = document.getElementById('toggle-availability');
 
-                    if (data.is_available) {
-                        statusElement.innerHTML = '<span class="inline-flex items-center text-green-600"><span class="w-2 h-2 rounded-full bg-green-500 mr-1 m-l-2"></span> آنلاین</span>';
-                        button.textContent = 'تغییر به آفلاین';
-                        button.classList.remove('bg-green-50', 'text-green-800', 'hover:bg-green-100');
-                        button.classList.add('bg-red-50', 'text-red-800', 'hover:bg-red-100');
-                    } else {
-                        statusElement.innerHTML = '<span class="inline-flex items-center text-red-600"><span class="w-2 h-2 rounded-full bg-red-500 mr-1 m-l-2"></span> آفلاین</span>';
-                        button.textContent = 'تغییر به آنلاین';
-                        button.classList.remove('bg-red-50', 'text-red-800', 'hover:bg-red-100');
-                        button.classList.add('bg-green-50', 'text-green-800', 'hover:bg-green-100');
+                        if (data.is_available) {
+                            statusElement.innerHTML = '<span class="inline-flex items-center text-green-600"><span class="w-2 h-2 rounded-full bg-green-500 mr-1 m-l-2"></span> آنلاین</span>';
+                            button.textContent = 'تغییر به آفلاین';
+                            button.classList.remove('bg-green-50', 'text-green-800', 'hover:bg-green-100');
+                            button.classList.add('bg-red-50', 'text-red-800', 'hover:bg-red-100');
+                        } else {
+                            statusElement.innerHTML = '<span class="inline-flex items-center text-red-600"><span class="w-2 h-2 rounded-full bg-red-500 mr-1 m-l-2"></span> آفلاین</span>';
+                            button.textContent = 'تغییر به آنلاین';
+                            button.classList.remove('bg-red-50', 'text-red-800', 'hover:bg-red-100');
+                            button.classList.add('bg-green-50', 'text-green-800', 'hover:bg-green-100');
+                        }
                     }
-                }
-            });
-    });
+                });
+        });
 
-    // مدیریت درخواست‌های چت
-    function handleRequest(requestId, action) {
-        if (action === 'finished' && !confirm("آیا مطمئن هستید که می‌خواهید مکالمه را پایان دهید؟")) {
-            return;
+        // مدیریت درخواست‌های چت
+        function handleRequest(requestId, action) {
+            if (action === 'finished' && !confirm("آیا مطمئن هستید که می‌خواهید مکالمه را پایان دهید؟")) {
+                return;
+            }
+
+            fetch(`/chat-visit/requests/${requestId}/${action}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'approved') {
+                        window.location.href = `/chat-visit/room/${data.room_id}/`;
+                    } else if (data.status === 'rejected' || data.status === 'finished') {
+                        // حذف آیتم از لیست
+                        const requestElement = document.querySelector(`[onclick*="${requestId}"]`).closest('.border');
+                        if (requestElement) {
+                            requestElement.style.opacity = '0';
+                            setTimeout(() => requestElement.remove(), 300);
+                        }
+
+                        // نمایش پیام موفقیت
+                        const message = action === 'finished' ? 'مکالمه با موفقیت پایان یافت' :
+                            action === 'approve' ? 'درخواست با موفقیت تایید شد' :
+                                'درخواست با موفقیت رد شد';
+
+                        showToast(message, 'success');
+                    }
+                })
+                .catch(error => {
+                    console.error("خطا در پردازش درخواست:", error);
+                    showToast('خطا در پردازش درخواست', 'error');
+                });
         }
 
-        fetch(`/chat-visit/requests/${requestId}/${action}/`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}',
-                'Content-Type': 'application/json'
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'approved') {
-                window.location.href = `/chat-visit/room/${data.room_id}/`;
-            } else if (data.status === 'rejected' || data.status === 'finished') {
-                // حذف آیتم از لیست
-                const requestElement = document.querySelector(`[onclick*="${requestId}"]`).closest('.border');
-                if (requestElement) {
-                    requestElement.style.opacity = '0';
-                    setTimeout(() => requestElement.remove(), 300);
-                }
+        // نمایش پیام toast
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.className = `fixed top-4 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg shadow-lg text-white font-medium ${
+                type === 'success' ? 'bg-green-500' : 'bg-red-500'
+            }`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
 
-                // نمایش پیام موفقیت
-                const message = action === 'finished' ? 'مکالمه با موفقیت پایان یافت' :
-                              action === 'approve' ? 'درخواست با موفقیت تایید شد' :
-                              'درخواست با موفقیت رد شد';
-
-                showToast(message, 'success');
-            }
-        })
-        .catch(error => {
-            console.error("خطا در پردازش درخواست:", error);
-            showToast('خطا در پردازش درخواست', 'error');
-        });
-    }
-
-    // نمایش پیام toast
-    function showToast(message, type) {
-        const toast = document.createElement('div');
-        toast.className = `fixed top-4 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg shadow-lg text-white font-medium ${
-            type === 'success' ? 'bg-green-500' : 'bg-red-500'
-        }`;
-        toast.textContent = message;
-        document.body.appendChild(toast);
-
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
-    }
-</script>
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
 {% endblock %}

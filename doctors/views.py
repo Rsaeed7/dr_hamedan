@@ -842,23 +842,29 @@ def update_settings(request):
         return redirect('doctors:doctor_availability')
 
     # تعیین مسیر ریدایرکت پیش‌فرض
-    redirect_url = 'doctors:doctor_availability'  # مسیر اول (پیش‌فرض)
+    redirect_url = 'doctors:doctor_availability'
 
     try:
         consultation_fee = request.POST.get('consultation_fee')
         consultation_duration = request.POST.get('consultation_duration')
         online_visit_fee = request.POST.get('online_visit_fee')
-        online_visit = request.POST.get('online_visit') == 'on'
 
-        if online_visit_fee:  # اگر شرط دوم برقرار بود
-            redirect_url = 'chat:chat_room_list'  # مسیر دوم
+
+        online_visit = 'online_visit' in request.POST
+
+
+        if online_visit_fee:
+            redirect_url = 'chat:chat_room_list'
 
         if consultation_fee and consultation_duration:
             doctor.consultation_fee = int(consultation_fee)
             doctor.consultation_duration = int(consultation_duration)
 
         if online_visit_fee:
-                doctor.online_visit_fee = int(online_visit_fee)
+            doctor.online_visit_fee = int(online_visit_fee)
+
+        # ✅ اضافه کردن این خط که فراموش شده بود
+        doctor.online_visit = online_visit
 
         doctor.save()
         messages.success(request, "تنظیمات با موفقیت بروزرسانی شد.")
@@ -869,7 +875,6 @@ def update_settings(request):
         messages.error(request, f"خطا در بروزرسانی تنظیمات: {str(e)}")
 
     return redirect(redirect_url)
-
 
 @login_required
 def delete_availability_day(request, pk):
