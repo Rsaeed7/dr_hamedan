@@ -6,12 +6,41 @@ sshpass -p '06q8t' ssh root@62.60.198.172
 
 create super user:
 timeout 15 sshpass -p '06q8t' ssh -o ConnectTimeout=10 -o ServerAliveInterval=5 
-root@62.60.198.172 "cd /home/dr_turn_project && source env/bin/activate &&
-export DJANGO_SETTINGS_MODULE=dr_turn.settings_local &&
- python manage.py createsuperuser --email admin@drhmd.ir --noinput"
+root@62.60.198.172 "cd /home/dr_turn_project && source env/bin/activate 
+git pull origin main 
 
+#####
+sshpass -p '06q8t' ssh -o ConnectTimeout=10 -o ServerAliveInterval=5 root@62.60.198.172 "cd /home/dr_turn_project && source env/bin/activate && git pull origin main && python manage.py collectstatic --noinput && python manage.py migrate && pkill -f daphne && pkill -f gunicorn && systemctl daemon-reload && systemctl restart drturn-ws && systemctl restart gunicorn && systemctl restart nginx && sleep 3 && echo '=== Service Status ===' && systemctl status drturn-ws --no-pager -l && systemctl status gunicorn --no-pager -l && systemctl status nginx --no-pager -l"
+####
+
+source env/bin/activate && ssh root@62.60.198.172 "pkill -f daphne; systemctl daemon-reload && systemctl start drturn-ws && sleep 3 && systemctl status drturn-ws --no-pager -l"
+"nginx -t && systemctl reload nginx"
 🔐 Admin Credentials:
 Email: admin@drhmd.ir
 Password: admin123
 Phone: 09987654321
 ssh key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDAnjn5Dddytfqmp5dvUVRfywL3uc/5HBeBQ2mKeA+P+saYVNuvME+8K4Iu6q/z0yp6OEe8ZbdayDtiWRCHw0ZQXiYAaZ1LcBsotu0jwSXiZDHlWQILESu3bsfO2cWElhPfDxhJrSe67g6W94GDJ9s4Srcou13+N3mYqyNaPjzyKWn5M87PnuTQWsSjx/GBWSRRWQWucVBscCoFW8yDh8flbYahVUytlanpXucP2u31AkNdKQq99AgOdQ37Q6aCc5axs+iZN23w3e1KzGCqeoXDO52gZT+XgLpjYUiT1SLoPl5QTCFGn+o054//KJpdyw0TK4oR+zprAE072W0MiyGlwvmG4blA4WPKR25WG7KpzLfnxhcnS0IKsxtHWQl2ylmAFxJiF+O1oaahvHF2a78ahCtZQMazJy9loyDccbG78La/O5j1hXv6N47AEpiifFkofMyDQIgdlS9oVisuGGMvFJtcxzZ82WKOFA245N6hVSx0IM+FflfBxamImrDYSXerdr+xqyrmtuOB+RP2l4lzCzCU4dgApd5faj+2j+fxMKzMbC0gKEAivAugQHvfii8aObo1nVPmb6uMS8BHNoaDAN1c9YSt2m8uaOph8FSTfYlCcYWq2GaC9rY0iRK2U89Z9c+eJikwrmyygi8HJJLU4IJeu4gw3XLA7oYBHh/44w== rahimi.f.h@gmail.com
+
+# Deployment Commands:
+
+# Basic deployment (pull + restart):
+sshpass -p '06q8t' ssh -o ConnectTimeout=15 -o ServerAliveInterval=5 -o ServerAliveCountMax=3 root@62.60.198.172 "cd /home/dr_turn_project && source env/bin/activate && git pull origin main && python manage.py collectstatic --noinput && python manage.py migrate"
+
+# Check available services first:
+sshpass -p '06q8t' ssh -o ConnectTimeout=10 root@62.60.198.172 "systemctl list-units --type=service | grep -E '(drturn|gunicorn|nginx)'"
+
+# Restart services (run separately after deployment):
+sshpass -p '06q8t' ssh -o ConnectTimeout=15 -o ServerAliveInterval=5 root@62.60.198.172 "pkill -f daphne; pkill -f gunicorn; systemctl daemon-reload && systemctl restart drturn-ws && systemctl restart nginx"
+
+# Restart services (CORRECT VERSION - with sync worker):
+sshpass -p '06q8t' ssh -o ConnectTimeout=15 -o ServerAliveInterval=5 root@62.60.198.172 "pkill -9 -f 'gunicorn dr_turn.wsgi'; systemctl daemon-reload && systemctl restart drturn-ws && systemctl restart nginx && cd /home/dr_turn_project && source env/bin/activate && gunicorn dr_turn.wsgi:application --bind 127.0.0.1:8000 --workers 3 --worker-class sync --name gunicorn_dr_turn --daemon --access-logfile logs/gunicorn_access.log --error-logfile logs/gunicorn_error.log"
+
+# Check services status:
+sshpass -p '06q8t' ssh -o ConnectTimeout=10 root@62.60.198.172 "systemctl status drturn-ws --no-pager -l && systemctl status nginx --no-pager -l && ps aux | grep gunicorn | grep -v grep"
+
+# Test application response:
+sshpass -p '06q8t' ssh -o ConnectTimeout=10 root@62.60.198.172 "curl -I http://localhost:8000"
+
+# ========== COMPLETE DEPLOYMENT COMMAND ==========
+# This is the main command you should use for deployment:
+sshpass -p '06q8t' ssh -o ConnectTimeout=15 -o ServerAliveInterval=5 root@62.60.198.172 "cd /home/dr_turn_project && source env/bin/activate && git pull origin main && python manage.py collectstatic --noinput && python manage.py migrate && pkill -9 -f 'gunicorn dr_turn.wsgi'; systemctl daemon-reload && systemctl restart drturn-ws && systemctl restart nginx && gunicorn dr_turn.wsgi:application --bind 127.0.0.1:8000 --workers 3 --worker-class sync --name gunicorn_dr_turn --daemon --access-logfile logs/gunicorn_access.log --error-logfile logs/gunicorn_error.log && echo 'Deployment completed successfully!'"

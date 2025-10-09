@@ -153,6 +153,32 @@ class Reservation(models.Model):
                         message=message,
                         notification_type='success'
                     )
+                    
+                    # Send SMS notification to doctor for wallet payments
+                    if self.doctor and self.doctor.user:
+                        from utils.sms_service import sms_service
+                        import logging
+                        logger = logging.getLogger(__name__)
+                        
+                        doctor_phone = self.doctor.user.phone
+                        if doctor_phone:
+                            from jdatetime import datetime as jdatetime_dt
+                            jalali_date = jdatetime_dt.fromgregorian(datetime=self.day.date).strftime('%Y/%m/%d')
+                            
+                            doctor_sms_message = f"""دکتر {self.doctor.user.get_full_name()} عزیز
+نوبت جدیدی برای شما ثبت شد:
+بیمار: {self.patient_name}
+تاریخ: {jalali_date}
+ساعت: {self.time.strftime('%H:%M')}
+مبلغ: {self.amount:,} تومان
+وضعیت پرداخت: پرداخت شده (کیف پول)
+دکتر همدان"""
+                            
+                            try:
+                                sms_service.send_sms(doctor_phone, doctor_sms_message)
+                                logger.info(f"SMS sent to doctor {self.doctor.id} for reservation {self.id}")
+                            except Exception as e:
+                                logger.error(f"Failed to send SMS to doctor: {str(e)}")
                 
                 if payment_method == 'wallet':
                     return True, f"نوبت با موفقیت رزرو و پرداخت شد. مبلغ {appointment_fee:,} تومان از کیف پول شما کسر گردید."

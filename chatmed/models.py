@@ -34,6 +34,7 @@ class ChatRequest(models.Model):
     payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='pending', verbose_name='وضعیت پرداخت')
     amount = models.IntegerField(verbose_name='مبلغ', default=0)
     transaction = models.ForeignKey('wallet.Transaction', on_delete=models.SET_NULL, null=True, blank=True, related_name='chat_requests', verbose_name='تراکنش')
+    payment_request = models.ForeignKey('payments.PaymentRequest', on_delete=models.SET_NULL, null=True, blank=True, related_name='chat_requests', verbose_name='درخواست پرداخت')
     
     # Patient information for payment
     patient_name = models.CharField(max_length=100, verbose_name='نام بیمار', blank=True)
@@ -51,7 +52,7 @@ class ChatRequest(models.Model):
     def __str__(self):
         return f"درخواست چت {self.id} - بیمار: {getattr(self.patient.user, 'name', 'نامشخص')}"
     
-    def process_payment(self, user):
+    def process_payment(self, user, payment_method='wallet'):
         """پردازش پرداخت برای درخواست چت"""
         # Import here to avoid circular imports
         from wallet.models import Wallet, Transaction
@@ -60,44 +61,83 @@ class ChatRequest(models.Model):
         # Get or create user's wallet
         wallet, created = Wallet.objects.get_or_create(user=user)
         
-        # Check if user has sufficient balance
+        # Check if user has sufficient balance for wallet payment
         consultation_fee = self.amount
-        if not wallet.can_withdraw(consultation_fee):
-            available_balance = wallet.balance
-            return False, f"موجودی کیف پول کافی نیست. موجودی فعلی: {available_balance:,} تومان - مبلغ مورد نیاز: {consultation_fee:,} تومان. لطفاً کیف پول خود را شارژ کنید."
+        if payment_method == 'wallet':
+            if not wallet.can_withdraw(consultation_fee):
+                available_balance = wallet.balance
+                return False, f"موجودی کیف پول کافی نیست. موجودی فعلی: {available_balance:,} تومان - مبلغ مورد نیاز: {consultation_fee:,} تومان. لطفاً کیف پول خود را شارژ کنید یا از پرداخت مستقیم استفاده کنید."
         
         try:
             with db_transaction.atomic():
-                # Deduct amount from wallet
-                if not wallet.subtract_balance(consultation_fee):
-                    return False, "خطا در کسر مبلغ از کیف پول. لطفاً دوباره تلاش کنید."
+                if payment_method == 'wallet':
+                    # Deduct amount from wallet
+                    if not wallet.subtract_balance(consultation_fee):
+                        return False, "خطا در کسر مبلغ از کیف پول. لطفاً دوباره تلاش کنید."
+                    
+                    # Create payment transaction
+                    payment_transaction = Transaction.objects.create(
+                        user=user,
+                        wallet=wallet,
+                        amount=consultation_fee,
+                        transaction_type='payment',
+                        payment_method='wallet',
+                        status='completed',
+                        description=f'پرداخت مشاوره آنلاین دکتر {self.doctor.user.get_full_name()}',
+                        metadata={
+                            'doctor_id': self.doctor.id,
+                            'doctor_name': str(self.doctor),
+                            'chat_request_id': self.id,
+                            'consultation_type': 'online_chat'
+                        }
+                    )
+                    
+                    # Update chat request
+                    self.payment_status = 'paid'
+                    self.transaction = payment_transaction
+                    self.save()
+                    
+                    # Send SMS notification to doctor for wallet payments
+                    if self.doctor and self.doctor.user:
+                        from utils.sms_service import sms_service
+                        import logging
+                        logger = logging.getLogger(__name__)
+                        
+                        doctor_phone = self.doctor.user.phone
+                        if doctor_phone:
+                            from jdatetime import datetime as jdatetime_dt
+                            jalali_datetime = jdatetime_dt.now().strftime('%Y/%m/%d %H:%M')
+                            
+                            doctor_sms_message = f"""دکتر {self.doctor.user.get_full_name()} عزیز
+درخواست مشاوره آنلاین جدید:
+بیمار: {self.patient_name}
+تاریخ درخواست: {jalali_datetime}
+مبلغ: {self.amount:,} تومان
+وضعیت پرداخت: پرداخت شده (کیف پول)
+لطفا به پنل مشاوره‌های آنلاین مراجعه کنید.
+دکتر همدان"""
+                            
+                            try:
+                                sms_service.send_sms(doctor_phone, doctor_sms_message)
+                                logger.info(f"SMS sent to doctor {self.doctor.id} for chat request {self.id}")
+                            except Exception as e:
+                                logger.error(f"Failed to send SMS to doctor: {str(e)}")
+                    
+                    return True, f"پرداخت با موفقیت انجام شد. مبلغ {consultation_fee:,} تومان از کیف پول شما کسر گردید."
                 
-                # Create payment transaction
-                payment_transaction = Transaction.objects.create(
-                    user=user,
-                    wallet=wallet,
-                    amount=consultation_fee,
-                    transaction_type='payment',
-                    payment_method='wallet',
-                    status='completed',
-                    description=f'پرداخت مشاوره آنلاین دکتر {self.doctor.user.get_full_name()}',
-                    metadata={
-                        'doctor_id': self.doctor.id,
-                        'doctor_name': str(self.doctor),
-                        'chat_request_id': self.id,
-                        'consultation_type': 'online_chat'
-                    }
-                )
-                
-                # Update chat request
-                self.payment_status = 'paid'
-                self.transaction = payment_transaction
-                self.save()
-                
-                return True, f"پرداخت با موفقیت انجام شد. مبلغ {consultation_fee:,} تومان از کیف پول شما کسر گردید."
-                
+                elif payment_method == 'direct':
+                    # For direct payment, set payment_status to pending
+                    self.payment_status = 'pending'
+                    self.save()
+                    
+                    return True, "درخواست با موفقیت ثبت شد. لطفاً پرداخت خود را تکمیل کنید."
+                    
         except Exception as e:
             return False, f"خطا در پردازش پرداخت: {str(e)}"
+    
+    def request_with_direct_payment(self, user):
+        """ثبت درخواست با پرداخت مستقیم"""
+        return self.process_payment(user, payment_method='direct')
 
 
 class ChatRoom(models.Model):

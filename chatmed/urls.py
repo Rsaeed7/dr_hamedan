@@ -27,4 +27,8 @@ urlpatterns = [
     path('room/<int:room_id>/close/', views.close_chat, name='close_chat'),
 
     path('api/upload-file/', views.upload_file, name='upload_file'),
+    
+    # پرداخت‌ها
+    path('payment-choice/<int:chat_request_id>/', views.payment_choice, name='payment_choice'),
+    path('payment-choice/<int:chat_request_id>/process/', views.process_payment_choice, name='process_payment_choice'),
 ]
