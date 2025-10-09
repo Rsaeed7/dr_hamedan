@@ -511,7 +511,7 @@
                             <small>تخصص : {{ doctor.specialization }} </small>
                             <p class="text-gray-600 fs-12">هزینه دریافت نوبت : {{ doctor.consultation_fee }} </p>
                         </div>
-                        <a class="btn btn-outline-info col-lg-12 m-b-5" href="{% url 'doctors:doctor_detail' doctor.slug %}">پروفایل
+                        <a class="btn btn-outline-info col-lg-12 m-b-5" href="{% url 'doctors:doctor_detail' doctor.pk %}">پروفایل
                             پزشک</a>
                     </div>
                 </div>

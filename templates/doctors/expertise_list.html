@@ -90,7 +90,7 @@
                             {% for doctor in available_doctors %}
                                 <li class="online-status">
                                     <div title="دکتر {{ doctor.user.get_full_name }} | {{ doctor.specialization }}">
-                                        <a href="{% url 'doctors:doctor_detail' doctor.slug %}">
+                                        <a href="{% url 'doctors:doctor_detail' doctor.pk %}">
                                             {% if doctor.profile_image.name %}
                                                 <img class="rounded50 border border-info" width="50" height="50"
                                                      src="{{ doctor.profile_image.url }}">
@@ -260,7 +260,7 @@
                                 <i href="#0" class="rate icon-star-5"><span
                                         class="text-dark">{{ doctor.comment_rate }}</span></i>
                                 <figure>
-                                    <a href="{% url 'doctors:doctor_detail' doctor.slug %}">
+                                    <a href="{% url 'doctors:doctor_detail' doctor.pk %}">
                                         {% if doctor.profile_image.name %}
                                             <img src="{{ doctor.profile_image.url }}"
                                                  class="img-fluid"
@@ -284,7 +284,7 @@
                                         <small class="text-danger">فعلا نوبت خالی وجود ندارد</small>
                                     {% endif %}
                                     <div class="m-t-10">
-                                        <a href="{% url 'doctors:doctor_detail' doctor.slug %}"
+                                        <a href="{% url 'doctors:doctor_detail' doctor.pk %}"
                                            class="btn btn-outline-info">مشاهده پروفایل پزشک</a>
                                         <a href="{% url 'reservations:book_appointment' doctor.id %}"
                                            class="btn btn-success">دریافت نوبت</a>
