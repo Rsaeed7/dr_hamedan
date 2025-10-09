@@ -13,6 +13,7 @@ urlpatterns = [
     path('create/', views.create_payment, name='create_payment'),
     path('wallet-deposit/', views.wallet_deposit_payment, name='wallet_deposit'),
     path('reservation/<int:reservation_id>/', views.reservation_payment, name='reservation_payment'),
+    path('chat/<int:chat_request_id>/', views.chat_payment, name='chat_payment'),
     
     # Payment callback
     path('callback/', views.payment_callback, name='payment_callback'),

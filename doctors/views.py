@@ -299,13 +299,21 @@ def doctor_detail(request, pk):
     # استفاده از سرویس برای دریافت روزهای آزاد
     available_days = BookingService.get_available_days_for_doctor(doctor.id, days_ahead=7)
 
+    # Get user's wallet balance if authenticated
+    balance = 0
+    if request.user.is_authenticated:
+        from wallet.models import Wallet
+        wallet, created = Wallet.objects.get_or_create(user=request.user)
+        balance = wallet.balance
+
     context = {
         'doctor': doctor,
         'available_days': available_days,
         'comments': comments,
         'stars_range':  range(5, 0, -1) ,
         'tips': tips,
-        'posts':posts
+        'posts':posts,
+        'balance': balance,
     }
 
     return render(request, 'doctors/dr_detail.html', context)

@@ -1,4 +1,5 @@
 import json
+import logging
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -17,6 +18,8 @@ from .models import PaymentRequest, PaymentGateway, PaymentLog
 from wallet.models import Wallet, Transaction
 from reservations.models import Reservation
 from .services import PaymentService, CurrencyConverter
+
+logger = logging.getLogger(__name__)
 
 
 @login_required
@@ -312,6 +315,74 @@ def reservation_payment(request, reservation_id):
     return render(request, 'payments/reservation_payment.html', context)
 
 
+@login_required
+def chat_payment(request, chat_request_id):
+    """پرداخت برای مشاوره آنلاین"""
+    from chatmed.models import ChatRequest
+    
+    chat_request = get_object_or_404(
+        ChatRequest, 
+        id=chat_request_id, 
+        payment_status='pending'
+    )
+    
+    # بررسی مالکیت درخواست
+    if not (chat_request.patient.user == request.user or 
+            (hasattr(request.user, 'patient') and chat_request.patient == request.user.patient)):
+        messages.error(request, 'شما مجاز به مشاهده این صفحه نیستید.')
+        return redirect('home')
+    
+    # محاسبه مبلغ نهایی
+    final_amount = chat_request.amount
+    
+    if request.method == 'POST':
+        gateway_type = request.POST.get('gateway_type', 'zarinpal')
+        
+        try:
+            # آدرس بازگشت
+            callback_url = request.build_absolute_uri(
+                reverse('payments:payment_callback')
+            )
+            
+            # ایجاد پرداخت
+            result = PaymentService.create_payment(
+                user=request.user,
+                amount=final_amount,
+                description=f"پرداخت مشاوره آنلاین دکتر {chat_request.doctor}",
+                gateway_type=gateway_type,
+                callback_url=callback_url,
+                metadata={
+                    'type': 'chat_payment',
+                    'chat_request_id': chat_request.id,
+                    'doctor_id': chat_request.doctor.id,
+                }
+            )
+            
+            if result['success']:
+                # ربط درخواست پرداخت به مشاوره
+                chat_request.payment_request = result['payment_request']
+                chat_request.save()
+                
+                # هدایت به درگاه پرداخت
+                return redirect(result['startpay_url'])
+            else:
+                messages.error(request, result['error'])
+                
+        except Exception as e:
+            messages.error(request, f'خطای سیستمی: {str(e)}')
+    
+    # درگاه‌های پرداخت فعال
+    active_gateways = PaymentGateway.objects.filter(is_active=True)
+    
+    context = {
+        'chat_request': chat_request,
+        'final_amount': final_amount,
+        'active_gateways': active_gateways,
+    }
+    
+    return render(request, 'payments/chat_payment.html', context)
+
+
 @csrf_exempt
 def payment_callback(request):
     """پاسخ از درگاه پرداخت"""
@@ -353,7 +424,7 @@ def payment_callback(request):
                             reservation.payment_request = payment_request
                             reservation.save()
                             
-                            # Send confirmation notification
+                            # Send confirmation notification to patient
                             if reservation.patient and reservation.patient.user:
                                 from utils.utils import send_notification
                                 message = f"نوبت شما با دکتر {reservation.doctor.user.get_full_name()} در تاریخ {reservation.day.date} ساعت {reservation.time} تایید شد. پرداخت با موفقیت انجام شد."
@@ -364,11 +435,87 @@ def payment_callback(request):
                                     notification_type='success'
                                 )
                             
+                            # Send SMS notification to doctor
+                            if reservation.doctor and reservation.doctor.user:
+                                from utils.sms_service import sms_service
+                                doctor_phone = reservation.doctor.user.phone
+                                if doctor_phone:
+                                    from jdatetime import datetime as jdatetime_dt
+                                    jalali_date = jdatetime_dt.fromgregorian(datetime=reservation.day.date).strftime('%Y/%m/%d')
+                                    
+                                    doctor_sms_message = f"""دکتر {reservation.doctor.user.get_full_name()} عزیز
+نوبت جدیدی برای شما ثبت شد:
+بیمار: {reservation.patient_name}
+تاریخ: {jalali_date}
+ساعت: {reservation.time.strftime('%H:%M')}
+مبلغ: {reservation.amount:,} تومان
+وضعیت پرداخت: پرداخت شده
+دکتر همدان"""
+                                    
+                                    try:
+                                        sms_service.send_sms(doctor_phone, doctor_sms_message)
+                                        logger.info(f"SMS sent to doctor {reservation.doctor.id} for reservation {reservation.id}")
+                                    except Exception as e:
+                                        logger.error(f"Failed to send SMS to doctor: {str(e)}")
+                            
                             messages.success(request, 'پرداخت با موفقیت انجام شد و نوبت شما تایید گردید.')
                             return redirect('reservations:view_appointment', pk=reservation.id)
                         except Reservation.DoesNotExist:
                             messages.error(request, 'رزرو مورد نظر یافت نشد.')
                             return redirect('home')
+                
+                elif payment_type == 'chat_payment':
+                    # تایید مشاوره آنلاین
+                    from chatmed.models import ChatRequest
+                    chat_request_id = payment_request.metadata.get('chat_request_id')
+                    if chat_request_id:
+                        try:
+                            chat_request = ChatRequest.objects.get(id=chat_request_id)
+                            chat_request.payment_status = 'paid'
+                            
+                            # Link the payment request to the chat request
+                            chat_request.payment_request = payment_request
+                            chat_request.save()
+                            
+                            # Send confirmation notification to patient
+                            if chat_request.patient and chat_request.patient.user:
+                                from utils.utils import send_notification
+                                message = f"درخواست مشاوره آنلاین شما با دکتر {chat_request.doctor.user.get_full_name()} تایید شد. پرداخت با موفقیت انجام شد."
+                                send_notification(
+                                    user=chat_request.patient.user,
+                                    title='تایید مشاوره آنلاین',
+                                    message=message,
+                                    notification_type='success'
+                                )
+                            
+                            # Send SMS notification to doctor
+                            if chat_request.doctor and chat_request.doctor.user:
+                                from utils.sms_service import sms_service
+                                doctor_phone = chat_request.doctor.user.phone
+                                if doctor_phone:
+                                    from jdatetime import datetime as jdatetime_dt
+                                    jalali_datetime = jdatetime_dt.now().strftime('%Y/%m/%d %H:%M')
+                                    
+                                    doctor_sms_message = f"""دکتر {chat_request.doctor.user.get_full_name()} عزیز
+درخواست مشاوره آنلاین جدید:
+بیمار: {chat_request.patient_name}
+تاریخ درخواست: {jalali_datetime}
+مبلغ: {chat_request.amount:,} تومان
+وضعیت پرداخت: پرداخت شده
+لطفا به پنل مشاوره‌های آنلاین مراجعه کنید.
+دکتر همدان"""
+                                    
+                                    try:
+                                        sms_service.send_sms(doctor_phone, doctor_sms_message)
+                                        logger.info(f"SMS sent to doctor {chat_request.doctor.id} for chat request {chat_request.id}")
+                                    except Exception as e:
+                                        logger.error(f"Failed to send SMS to doctor: {str(e)}")
+                            
+                            messages.success(request, 'پرداخت با موفقیت انجام شد و درخواست مشاوره شما ثبت گردید.')
+                            return redirect('chat:request_status', request_id=chat_request.id)
+                        except ChatRequest.DoesNotExist:
+                            messages.error(request, 'درخواست مشاوره یافت نشد.')
+                            return redirect('chat:list_doctors')
                 
                 # نمایش صفحه موفقیت
                 return render(request, 'payments/payment_response.html', {

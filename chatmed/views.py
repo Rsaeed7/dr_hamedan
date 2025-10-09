@@ -66,42 +66,48 @@ def request_chat(request, doctor_id):
         phone=phone
     )
     
-    # Process payment
-    success, message = new_request.process_payment(user)
+    # Check payment method preference
+    payment_method = request.POST.get('payment_method', 'wallet')
     
-    if success:
-        messages.success(request, f'درخواست چت با موفقیت ثبت شد. {message}')
-        return redirect('chat:request_status', request_id=new_request.id)
+    if payment_method == 'direct':
+        # Direct payment booking
+        success, message = new_request.request_with_direct_payment(user)
+        
+        if success:
+            # Redirect to payment page
+            return redirect('payments:chat_payment', chat_request_id=new_request.id)
+        else:
+            new_request.delete()
+            messages.error(request, message)
+            return redirect('chat:list_doctors')
     else:
-        # Delete the request if payment failed
-        new_request.delete()
+        # Wallet payment booking
+        success, message = new_request.process_payment(user)
         
-        messages.error(request, message)
-        
-        # If insufficient balance, redirect to wallet deposit
-        if "موجودی کیف پول کافی نیست" in message:
-            from wallet.models import Wallet
-            from django.urls import reverse
+        if success:
+            messages.success(request, f'درخواست چت با موفقیت ثبت شد. {message}')
+            return redirect('chat:request_status', request_id=new_request.id)
+        else:
+            # Don't delete the request yet - store for payment choice
+            messages.error(request, message)
             
-            # Calculate required amount for deposit
-            wallet, created = Wallet.objects.get_or_create(user=request.user)
-            needed_amount = max(0, consultation_fee - wallet.balance)
+            # If insufficient balance, redirect to payment choice
+            if "موجودی کیف پول کافی نیست" in message:
+                from wallet.models import Wallet
+                from django.urls import reverse
+                
+                # Store request data in session for payment choice
+                request.session['pending_chat_data'] = {
+                    'chat_request_id': new_request.id,
+                    'doctor_id': doctor_id,
+                }
+                
+                # Redirect to payment choice page
+                return redirect('chat:payment_choice', chat_request_id=new_request.id)
             
-            # Add 10% extra for safety
-            suggested_amount = int(needed_amount * 1.1)
-            
-            # Round to nearest 10,000 tomans
-            suggested_amount = ((suggested_amount + 9999) // 10000) * 10000
-            
-            # Minimum 10,000 tomans
-            suggested_amount = max(10000, suggested_amount)
-            
-            # Redirect to deposit page with suggested amount
-            deposit_url = f"{reverse('wallet:deposit')}?amount={suggested_amount}&redirect_to={request.path}"
-            messages.warning(request, f'برای درخواست مشاوره آنلاین نیاز به شارژ کیف پول دارید. به صفحه شارژ هدایت می‌شوید.')
-            return redirect(deposit_url)
-        
-        return redirect('chat:list_doctors')
+            # Delete the request if other error
+            new_request.delete()
+            return redirect('chat:list_doctors')
 
 
 @login_required
@@ -434,3 +440,90 @@ def upload_file(request):
         file_url = default_storage.url(file_path)
         return JsonResponse({'file_url': file_url})
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+
+@login_required
+def payment_choice(request, chat_request_id):
+    """انتخاب روش پرداخت برای مشاوره آنلاین"""
+    try:
+        chat_request = ChatRequest.objects.get(
+            id=chat_request_id,
+            patient=request.user.patient,
+            payment_status='pending'
+        )
+    except ChatRequest.DoesNotExist:
+        messages.error(request, 'درخواست مورد نظر یافت نشد')
+        return redirect('chat:list_doctors')
+    
+    # Get user's wallet
+    from wallet.models import Wallet
+    wallet, created = Wallet.objects.get_or_create(user=request.user)
+    
+    # Calculate amounts
+    required_amount = chat_request.amount
+    current_balance = wallet.balance
+    needed_amount = max(0, required_amount - current_balance)
+    
+    # Calculate suggested deposit amount
+    suggested_amount = int(needed_amount * 1.1)
+    suggested_amount = ((suggested_amount + 9999) // 10000) * 10000
+    suggested_amount = max(10000, suggested_amount)
+    
+    context = {
+        'chat_request': chat_request,
+        'wallet': wallet,
+        'required_amount': required_amount,
+        'current_balance': current_balance,
+        'needed_amount': needed_amount,
+        'suggested_amount': suggested_amount,
+    }
+    
+    return render(request, 'chat/payment_choice.html', context)
+
+
+@login_required
+def process_payment_choice(request, chat_request_id):
+    """پردازش انتخاب روش پرداخت"""
+    if request.method != 'POST':
+        return redirect('chat:payment_choice', chat_request_id=chat_request_id)
+    
+    payment_choice = request.POST.get('payment_choice')
+    
+    if payment_choice == 'wallet_charge':
+        # Redirect to wallet deposit
+        from django.urls import reverse
+        suggested_amount = request.POST.get('suggested_amount', '10000')
+        return redirect(f"{reverse('wallet:deposit')}?amount={suggested_amount}&redirect_to={reverse('chat:payment_choice', args=[chat_request_id])}")
+    
+    elif payment_choice == 'direct_payment':
+        # Get pending chat data from session
+        pending_data = request.session.get('pending_chat_data', {})
+        
+        if not pending_data or pending_data.get('chat_request_id') != int(chat_request_id):
+            messages.error(request, 'اطلاعات درخواست یافت نشد. لطفاً دوباره تلاش کنید.')
+            return redirect('chat:list_doctors')
+        
+        try:
+            chat_request = ChatRequest.objects.get(id=chat_request_id, patient=request.user.patient)
+            
+            # Update to direct payment
+            success, message = chat_request.request_with_direct_payment(request.user)
+            
+            if success:
+                # Clear session data
+                if 'pending_chat_data' in request.session:
+                    del request.session['pending_chat_data']
+                
+                # Redirect to payment page
+                return redirect('payments:chat_payment', chat_request_id=chat_request.id)
+            else:
+                messages.error(request, message)
+                return redirect('chat:payment_choice', chat_request_id=chat_request_id)
+                
+        except ChatRequest.DoesNotExist:
+            messages.error(request, 'درخواست مورد نظر یافت نشد')
+            return redirect('chat:list_doctors')
+    
+    else:
+        messages.error(request, 'انتخاب نامعتبر')
+        return redirect('chat:payment_choice', chat_request_id=chat_request_id)
