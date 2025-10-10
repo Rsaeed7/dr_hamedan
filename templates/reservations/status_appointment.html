@@ -23,7 +23,7 @@
                         <p class="text-success font-weight-bold">نوبت شما رزرو شده است. لطفاً ۱۵ دقیقه قبل از زمان مقرر
                             حضور داشته باشید.</p>
                         <a class="btn btn-light" href="{% url 'doctors:index' %}">صفحه اصلی</a>
-                        <a href="{% url 'doctors:doctor_detail' doctor.slug %}" class="btn btn-success">بازگشت به صفحه
+                        <a href="{% url 'doctors:doctor_detail' doctor.pk %}" class="btn btn-success">بازگشت به صفحه
                             پزشک</a>
                     </div>
                 {% elif reservation.status == 'completed' %}
@@ -60,7 +60,7 @@
                                 لطفاً پرداخت را تکمیل کنید.
                             {% endif %}</p>
                         <a class="btn btn-light" href="{% url 'doctors:index' %}">صفحه اصلی</a>
-                        <a href="{% url 'doctors:doctor_detail' doctor.slug %}" class="btn btn-success">بازگشت به صفحه
+                        <a href="{% url 'doctors:doctor_detail' doctor.pk %}" class="btn btn-success">بازگشت به صفحه
                             پزشک</a>
                     </div>
                 {% endif %}

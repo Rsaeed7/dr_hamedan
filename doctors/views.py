@@ -256,12 +256,12 @@ class DoctorListView(ListView):
         return context
 
 
-def doctor_detail(request, slug):
+def doctor_detail(request, pk):
     """
     The medical page detail should not be with the doctor's ID, it should be based on the name in English or ...
     """
     """نمایش اطلاعات کامل یک پزشک"""
-    doctor = get_object_or_404(Doctor, slug=slug)
+    doctor = get_object_or_404(Doctor, pk=pk)
 
     # دریافت آمار و اطلاعات پزشک
     comments = DrComment.objects.filter(doctor=doctor, status='confirmed')
