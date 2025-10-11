@@ -21,6 +21,7 @@ class Service(models.Model):
     estimated_price = models.IntegerField(verbose_name="هزینه حدودی (تومان)")
     requires_prescription = models.BooleanField(default=False, verbose_name="نیاز به نسخه دارد؟")
     available_in_cities = models.ManyToManyField(City, related_name="homecare_services")
+    slug = models.SlugField(max_length=100, verbose_name="اسلاگ",blank=True,null=True,allow_unicode=True)
 
     def __str__(self):
         return f"{self.name} ({self.category.name})"
@@ -40,11 +41,11 @@ class HomeCareRequest(models.Model):
 
     patient = models.ForeignKey(PatientsFile, on_delete=models.CASCADE, verbose_name="بیمار")
     service = models.ForeignKey(Service, on_delete=models.SET_NULL, null=True, verbose_name="خدمت درخواستی")
-    requested_date = jmodels.jDateField(verbose_name="تاریخ مورد نظر")
-    requested_time = models.TimeField(verbose_name="ساعت مورد نظر")
+    requested_date = jmodels.jDateField(verbose_name="تاریخ مورد نظر",blank=True,null=True)
+    requested_time = models.TimeField(verbose_name="ساعت مورد نظر",blank=True,null=True)
     city = models.ForeignKey(City, on_delete=models.CASCADE)
     address = models.TextField(verbose_name="آدرس دقیق بیمار")
-    extra_notes = models.TextField(blank=True, verbose_name="توضیحات اضافی")
+    extra_notes = models.TextField(blank=True,null=True, verbose_name="توضیحات اضافی")
     prescription_file = models.FileField(upload_to='prescriptions/', blank=True, null=True, verbose_name="فایل نسخه")
     created_at = jmodels.jDateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="وضعیت درخواست")

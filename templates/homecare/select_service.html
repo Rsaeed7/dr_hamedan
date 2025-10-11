@@ -40,8 +40,8 @@
                 <select id="city" name="city" class="form-select form-control" onchange="this.form.submit()">
                     <option value="">همه شهرها</option>
                     {% for city in cities %}
-                        <option value="{{ city.id }}"
-                                {% if selected_city and city.id == selected_city.id %}selected{% endif %}>{{ city.name }}</option>
+                        <option value="{{ city.name }}"
+                                {% if selected_city and city.name == selected_city.name %}selected{% endif %}>{{ city.name }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -54,7 +54,7 @@
                 <ul class="row list-unstyled g-3">
                     {% for category in categories %}
                         <li class="col-md-3 col-sm-6 col-12 m-b-5 ">
-                            <a href="?category={{ category.id }}{% if selected_city %}&city={{ selected_city.id }}{% endif %}"
+                            <a href="?category={{ category.name }}{% if selected_city %}&city={{ selected_city.name }}{% endif %}"
                                class="d-flex flex-column align-items-center text-center border rounded-10 p-3 bg-white h-100 shadow-sm hover-shadow">
                                 {% if category.icon %}
                                     <img src="{{ category.icon.url }}" width="60" height="60" class="mb-2"
@@ -77,7 +77,7 @@
                 <div class="row g-3">
                     {% for service in services %}
                         <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch m-b-5">
-                            <a href="{% url 'homecare:request_service' service.id %}"
+                            <a href="{% url 'homecare:request_service' service.slug %}"
                                class="text-decoration-none w-100">
                                 <div class="card shadow-sm rounded-10">
                                     <div class="card-body d-flex flex-column">
