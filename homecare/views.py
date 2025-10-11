@@ -17,11 +17,11 @@ def select_service_view(request):
     categories = ServiceCategory.objects.all()
     cities = City.objects.all()
 
-    selected_city_id = request.GET.get('city')
-    selected_category_id = request.GET.get('category')
+    selected_city_name = request.GET.get('city')
+    selected_category_name = request.GET.get('category')
 
-    selected_city = City.objects.filter(id=selected_city_id).first() if selected_city_id else None
-    selected_category = ServiceCategory.objects.filter(id=selected_category_id).first() if selected_category_id else None
+    selected_city = City.objects.filter(name=selected_city_name).first() if selected_city_name else None
+    selected_category = ServiceCategory.objects.filter(name=selected_category_name).first() if selected_category_name else None
 
     services = Service.objects.all()
 
@@ -40,20 +40,27 @@ def select_service_view(request):
     }
     return render(request, 'homecare/select_service.html', context)
 
+
 @login_required
-def request_service(request, service_id):
-    service = get_object_or_404(Service, id=service_id)
+def request_service(request, service_slug):
+    service = get_object_or_404(Service, slug=service_slug)
 
     if request.method == 'POST':
         form = HomeCareRequestForm(request.POST, request.FILES, user=request.user, service=service)
-        form.user = request.user
         if form.is_valid():
             instance = form.save(commit=False)
             instance.patient = request.user.patient
             instance.service = service
+
+            # مطمئن شو که فیلدهای تاریخ و زمان مقدار داشته باشند (حتی اگر null باشن)
+            # اینجا لازم نیست مقدار پیش‌فرض بدی چون مدل nullable هست
             instance.save()
+
             messages.success(request, "درخواست شما با موفقیت ثبت شد.")
             return redirect('homecare:success')
+        else:
+            # خطاهای فرم رو چاپ کن برای دیباگ
+            print("Form errors:", form.errors)
     else:
         form = HomeCareRequestForm(user=request.user, service=service)
 
