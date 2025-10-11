@@ -1,0 +1,504 @@
+{% extends 'base.html' %}
+
+{% block title %}مدیریت روزهای مسدود - دکتر همدان{% endblock %}
+
+{% block extra_css %}
+{% load static %}
+<style>
+    :root {
+        --dr-primary: #263189;
+        --dr-secondary: #71DD8A;
+        --dr-tertiary: #3F4079;
+        --text-dr: #2A2B42;
+        --text-dr-2: #4A4B68;
+        --text-dr-3: #6A6B8E;
+        --border-light: #E2E4F0;
+        --bg-gradiant: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+        --bg-gradiant2: #F8FAFC;
+        --shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.08);
+        --rounded-10: 10px;
+        --rounded-15: 15px;
+        --rounded-20: 20px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --text-dr: #E2E8F0;
+            --text-dr-2: #CBD5E1;
+            --text-dr-3: #94A3B8;
+            --border-light: #334155;
+            --bg-gradiant: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+            --bg-gradiant2: #0F172A;
+            --shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .bg-white {
+            background-color: #1E293B !important;
+            color: #E2E8F0;
+        }
+
+        .border_light {
+            border-color: #334155 !important;
+        }
+
+        .text-secondary {
+            color: #94A3B8 !important;
+        }
+    }
+
+    .rtl {
+        direction: rtl;
+        text-align: right;
+    }
+
+    .main-container {
+        min-height: 100vh;
+        background: var(--bg-gradiant);
+        padding: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .main-container {
+            padding: 1rem;
+        }
+    }
+
+    .card {
+        background: white;
+        border-radius: var(--rounded-20);
+        box-shadow: var(--shadow-hover);
+        transition: all 0.3s ease;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+
+    .card-header {
+        border-bottom: 1px solid var(--border-light);
+        padding: 1.5rem;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--rounded-15);
+        font-weight: 600;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: none;
+        text-decoration: none;
+    }
+
+    .btn-primary {
+        background-color: var(--dr-primary);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #1A237E;
+        transform: translateY(-2px);
+    }
+
+    .btn-outline-danger {
+        background: transparent;
+        border: 1px solid #EF4444;
+        color: #EF4444;
+    }
+
+    .btn-outline-danger:hover {
+        background-color: #EF4444;
+        color: white;
+    }
+
+    .btn-outline-secondary {
+        background: transparent;
+        border: 1px solid var(--text-dr-3);
+        color: var(--text-dr-3);
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: var(--text-dr-3);
+        color: white;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border-light);
+        border-radius: var(--rounded-15);
+        transition: all 0.3s ease;
+        background-color: white;
+    }
+
+    .form-control:focus {
+        border-color: var(--dr-primary);
+        box-shadow: 0 0 0 3px rgba(38, 49, 137, 0.1);
+        outline: none;
+    }
+
+    .grid-responsive {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1rem;
+    }
+
+    @media (max-width: 640px) {
+        .grid-responsive {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+
+    .status-badge.active {
+        background-color: rgba(74, 222, 128, 0.1);
+        color: #22C55E;
+    }
+
+    .status-badge.inactive {
+        background-color: rgba(248, 113, 113, 0.1);
+        color: #EF4444;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        border-radius: var(--rounded-20);
+        background-color: rgba(241, 245, 249, 0.5);
+        border: 1px dashed var(--border-light);
+    }
+
+    .empty-state-icon {
+        width: 4rem;
+        height: 4rem;
+        margin: 0 auto 1rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1050;
+        display: none;
+        overflow: hidden;
+        outline: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-dialog {
+        position: relative;
+        width: auto;
+        margin: 1rem;
+        max-width: 500px;
+        width: 100%;
+    }
+
+    .modal-content {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        pointer-events: auto;
+        background-color: white;
+        background-clip: padding-box;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        border-radius: var(--rounded-20);
+        outline: 0;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .blocked-day-item {
+        padding: 1rem;
+        background: #FEF2F2;
+        border: 1px solid #FECACA;
+        border-radius: var(--rounded-15);
+        display: flex;
+        align-items: center;
+        justify-content: between;
+    }
+
+    .blocked-day-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+        background: #FEE2E2;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 1rem;
+    }
+
+    .flex-center {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .text-ellipsis {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-container rtl">
+    <!-- Header Section -->
+    <div class="card">
+        <div class="card-body">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-red-100 rounded-full flex-center ml-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-bold text_dr mb-1">مدیریت روزهای مسدود</h1>
+                        <p class="text_dr_3 text-sm md:text-base">مسدود کردن روزهای خاص برای رزرو نوبت</p>
+                    </div>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button onclick="toggleBlockDayModal()" class="btn btn-outline-danger">
+                        <svg class="w-4 h-4 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        مسدود کردن روز جدید
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Blocked Days List -->
+    <div class="card">
+        <div class="card-header">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-red-100 rounded-full flex-center ml-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text_dr">روزهای مسدود شده</h2>
+                    <p class="text-secondary text-sm">لیست روزهایی که برای رزرو نوبت مسدود شده‌اند</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            {% if doctor.blocked_days.all %}
+                <div class="grid-responsive">
+                    {% for blocked_day in doctor.blocked_days.all %}
+                        <div class="blocked-day-item">
+                            <div class="blocked-day-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="font-bold text-red-700">{{ blocked_day.date|date:"Y/m/d" }}</span>
+                                    <span class="text-xs text-red-600 bg-red-100 px-2 py-1 rounded-full">
+                                        {% if blocked_day.date < today %}
+                                            گذشته
+                                        {% else %}
+                                            آینده
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                {% if blocked_day.reason %}
+                                    <p class="text-red-600 text-sm text-ellipsis">{{ blocked_day.reason }}</p>
+                                {% else %}
+                                    <p class="text-red-400 text-sm">بدون دلیل</p>
+                                {% endif %}
+                                <p class="text-xs text-gray-500 mt-1">
+                                    ایجاد شده در: {{ blocked_day.created_at|date:"Y/m/d - H:i" }}
+                                </p>
+                            </div>
+                            <form method="post" action="{% url 'doctors:remove_blocked_day' blocked_day.pk %}"
+                                  onsubmit="return confirm('آیا از برداشتن مسدودیت این روز اطمینان دارید؟');">
+                                {% csrf_token %}
+                                <button type="submit" class="text-red-600 hover:text-red-800 p-2 rounded-lg hover:bg-red-50 transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon bg-green-100 text-green-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text_dr mb-2">هیچ روز مسدودی وجود ندارد</h3>
+                    <p class="text_dr_3 mb-4">همه روزها برای رزرو نوبت در دسترس هستند</p>
+                    <button onclick="toggleBlockDayModal()" class="btn btn-primary">
+                        مسدود کردن اولین روز
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Block Day Modal -->
+<div id="blockDayModal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="card-header flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-red-100 rounded-full flex-center ml-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text_dr">مسدود کردن روز جدید</h3>
+                        <p class="text-secondary text-xs">انتخاب روز برای مسدود کردن رزرو نوبت</p>
+                    </div>
+                </div>
+                <button onclick="toggleBlockDayModal()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="card-body">
+                <form method="post" action="{% url 'doctors:add_blocked_day' %}" id="blockDayForm">
+                    {% csrf_token %}
+                    <div class="space-y-4">
+                        <div>
+                            <label for="block_date" class="block text-sm font-medium text_dr mb-1">تاریخ مسدودسازی</label>
+                            <input type="text" name="date_display" id="block_date" required readonly
+                                   placeholder="انتخاب تاریخ..."
+                                   class="form-control cursor-pointer">
+                            <input type="hidden" name="date" id="block_date_hidden">
+                            <p class="text-xs text-yellow-700 mt-1 bg-yellow-50 p-2 rounded">
+                                فقط روزهای آینده قابل مسدود شدن هستند
+                            </p>
+                        </div>
+
+                        <div>
+                            <label for="block_reason" class="block text-sm font-medium text_dr mb-1">دلیل مسدودسازی (اختیاری)</label>
+                            <input type="text" name="reason" id="block_reason"
+                                   placeholder="مثال: مرخصی، تعطیلات، کنفرانس، ..."
+                                   class="form-control">
+                            <p class="text-xs text-gray-500 mt-1">این دلیل برای بیماران نمایش داده نمی‌شود</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 mt-6">
+                        <button type="submit" class="btn btn-primary flex-1">
+                            تایید و مسدود کردن
+                        </button>
+                        <button type="button" onclick="toggleBlockDayModal()"
+                                class="btn btn-outline-secondary flex-1">
+                            انصراف
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/jalali-calendar.js' %}"></script>
+<script>
+    function toggleBlockDayModal() {
+        const modal = document.getElementById('blockDayModal');
+        if (modal.classList.contains('active')) {
+            modal.classList.remove('active');
+        } else {
+            modal.classList.add('active');
+            // Reset form
+            document.getElementById('blockDayForm').reset();
+            document.getElementById('block_date_hidden').value = '';
+        }
+    }
+
+    // Initialize Persian DatePicker
+    document.addEventListener('DOMContentLoaded', function() {
+        $("#block_date").persianDatepicker({
+            format: 'YYYY/MM/DD',
+            autoClose: true,
+            initialValueType: 'persian',
+            onlySelectOnDate: true,
+            minDate: new Date(),
+            calendar: {
+                persian: {
+                    locale: 'fa'
+                }
+            },
+            onSelect: function(unix) {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                if (new Date(unix) <= today) {
+                    alert('فقط می‌توانید روزهای آینده را مسدود کنید.');
+                    $("#block_date").val('');
+                    $("#block_date_hidden").val('');
+                    return false;
+                }
+
+                const selectedDate = new Date(unix);
+                const year = selectedDate.getFullYear();
+                const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+                const day = String(selectedDate.getDate()).padStart(2, '0');
+                const formattedDate = `${year}-${month}-${day}`;
+
+                $("#block_date_hidden").val(formattedDate);
+            }
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('blockDayModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                toggleBlockDayModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('blockDayModal');
+                if (modal.classList.contains('active')) {
+                    toggleBlockDayModal();
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
