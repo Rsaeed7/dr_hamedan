@@ -291,7 +291,7 @@ class ReportDetailView(DetailView):
             report = self.get_object()
 
             # دریافت تنظیمات قالب پزشک
-            doctor = request.user.doctor
+            doctor = report.doctor
             template_settings = getattr(doctor, 'template_settings', None)
             background_image = template_settings.background_image.url if template_settings and template_settings.background_image else None
             custom_css = template_settings.custom_css if template_settings else ''

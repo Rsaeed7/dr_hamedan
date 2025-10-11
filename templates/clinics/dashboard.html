@@ -27,20 +27,135 @@
         flex-direction: row-reverse;
     }
     
-    .rtl .grid-cols-1 {
-        grid-template-columns: repeat(1, 1fr);
+    /* Responsive styles for mobile */
+    @media (max-width: 768px) {
+        .rtl .grid-cols-1 {
+            grid-template-columns: 1fr;
+        }
+
+        .rtl .md\:grid-cols-4 {
+            grid-template-columns: 1fr;
+        }
+
+        .rtl .md\:col-span-3 {
+            grid-column: span 1;
+        }
+
+        .rtl .sm\:grid-cols-2 {
+            grid-template-columns: 1fr;
+        }
+
+        .rtl .lg\:grid-cols-3 {
+            grid-template-columns: 1fr;
+        }
+
+        /* Adjust padding and margins for mobile */
+        .rtl .p-6 {
+            padding: 1rem;
+        }
+
+        .rtl .mb-8 {
+            margin-bottom: 1.5rem;
+        }
+
+        .rtl .mb-6 {
+            margin-bottom: 1rem;
+        }
+
+        .rtl .mb-4 {
+            margin-bottom: 0.75rem;
+        }
+
+        /* Adjust text sizes for mobile */
+        .rtl .text-3xl {
+            font-size: 1.5rem;
+        }
+
+        .rtl .text-xl {
+            font-size: 1.25rem;
+        }
+
+        .rtl .text-lg {
+            font-size: 1.125rem;
+        }
+
+        .rtl .text-2xl {
+            font-size: 1.375rem;
+        }
+
+        /* Adjust table for mobile */
+        .rtl .overflow-x-auto {
+            overflow-x: auto;
+        }
+
+        .rtl table {
+            min-width: 600px;
+        }
+
+        .rtl .px-6 {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+
+        .rtl .py-4 {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Adjust navigation items */
+        .rtl nav a {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        /* Adjust doctor cards */
+        .rtl .grid-cols-1.md\:grid-cols-2 {
+            grid-template-columns: 1fr;
+        }
+
+        /* Adjust stats cards */
+        .rtl .p-3 {
+            padding: 0.5rem;
+        }
+
+        .rtl .h-6.w-6 {
+            height: 1.25rem;
+            width: 1.25rem;
+        }
+
+        /* Adjust profile section */
+        .rtl .flex.items-center.mb-6 {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .rtl .flex.items-center.mb-6 .mr-3 {
+            margin-left: 0;
+            margin-bottom: 0.5rem;
+        }
     }
-    
-    .rtl .md\:grid-cols-2 {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .rtl .md\:grid-cols-4 {
-        grid-template-columns: repeat(4, 1fr);
-    }
-    
-    .rtl .lg\:grid-cols-3 {
-        grid-template-columns: repeat(3, 1fr);
+
+    /* Additional responsive adjustments for very small screens */
+    @media (max-width: 480px) {
+        .rtl .gap-6 {
+            gap: 1rem;
+        }
+
+        .rtl .gap-4 {
+            gap: 0.75rem;
+        }
+
+        .rtl .text-sm {
+            font-size: 0.75rem;
+        }
+
+        .rtl .rounded-lg {
+            border-radius: 0.375rem;
+        }
+
+        .rtl .shadow-md {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
     }
 </style>
 {% endblock %}
@@ -48,7 +163,7 @@
 {% block content %}
 <div class="mb-8 rtl">
     <h1 class="text-3xl font-bold text-gray-800 mb-4">داشبورد کلینیک</h1>
-    
+
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
         <!-- Sidebar Navigation -->
         <div class="bg-white rounded-lg shadow-md p-6">
@@ -65,7 +180,7 @@
                     <p class="text-gray-600 text-sm">مدیر کلینیک</p>
                 </div>
             </div>
-            
+
             <nav>
                 <a href="{% url 'clinics:clinic_dashboard' %}" class="block py-2 px-4 rounded-md bg-blue-50 text-blue-600 font-medium">
                     داشبورد
@@ -81,7 +196,7 @@
                 </a>
             </nav>
         </div>
-        
+
         <!-- Main Content -->
         <div class="md:col-span-3">
             <!-- Stats Overview -->
@@ -99,7 +214,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="bg-white rounded-lg shadow-md p-6">
                     <div class="flex items-center">
                         <div class="p-3 rounded-full bg-green-100 mr-4">
@@ -113,7 +228,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="bg-white rounded-lg shadow-md p-6">
                     <div class="flex items-center">
                         <div class="p-3 rounded-full bg-purple-100 mr-4">
@@ -128,11 +243,11 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Upcoming Appointments -->
             <div class="bg-white rounded-lg shadow-md p-6 mb-6">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">نوبت‌های پیش رو</h2>
-                
+
                 {% if upcoming_appointments %}
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
@@ -182,7 +297,7 @@
                             </tbody>
                         </table>
                     </div>
-                    
+
                     <div class="mt-4 text-left">
                         <a href="{% url 'clinics:clinic_appointments' %}" class="text-blue-600 hover:text-blue-800">← مشاهده همه نوبت‌ها</a>
                     </div>
@@ -190,11 +305,11 @@
                     <p class="text-gray-600">هیچ نوبتی در آینده برنامه‌ریزی نشده است.</p>
                 {% endif %}
             </div>
-            
+
             <!-- Affiliated Doctors -->
             <div class="bg-white rounded-lg shadow-md p-6">
                 <h2 class="text-xl font-semibold text-gray-800 mb-4">پزشکان وابسته</h2>
-                
+
                 {% if doctors %}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {% for doctor in doctors %}
@@ -207,7 +322,7 @@
                                             <span class="text-blue-600 text-lg font-bold">{{ doctor.user.first_name|first }}{{ doctor.user.last_name|first }}</span>
                                         </div>
                                     {% endif %}
-                                    
+
                                     <div>
                                         <h3 class="text-md font-semibold text-gray-800">{{ doctor }}</h3>
                                         <p class="text-sm text-blue-600">{{ doctor.specialization }}</p>
@@ -217,7 +332,7 @@
                             </div>
                         {% endfor %}
                     </div>
-                    
+
                     <div class="mt-4 text-left">
                         <a href="{% url 'clinics:clinic_doctors' %}" class="text-blue-600 hover:text-blue-800">← مدیریت پزشکان</a>
                     </div>
@@ -233,4 +348,4 @@
         </div>
     </div>
 </div>
-{% endblock %} 
+{% endblock %}
