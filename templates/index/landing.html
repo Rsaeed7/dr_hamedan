@@ -430,7 +430,7 @@ body {
         <div class="col-lg-5 mb-4">
         <div class="vip-card h-100 hover-grow">
           <div class="vip-card-badge">✓</div>
-        <a href="{% url 'doctors:doctor_detail' doctor.pk %}" >
+        <a href="{% url 'doctors:doctor_detail' doctor.slug %}" >
           {% if doctor.profile_image.name %}
             <img src="{{ doctor.profile_image.url }}" alt="{{ doctor.user.get_full_name }}" class="vip-doctor-img">
           {% else %}
@@ -441,7 +441,7 @@ body {
         </a>
 
           <div class="card-body text-center pt-0">
-          <a href="{% url 'doctors:doctor_detail' doctor.pk %}" >
+          <a href="{% url 'doctors:doctor_detail' doctor.slug %}" >
             <h3 class="mb-2">دکتر {{ doctor.user.get_full_name }}</h3>
             <p class="text-muted mb-4">متخصص {{ doctor.specialization.name }}</p>
           </a>
@@ -468,10 +468,10 @@ body {
 
             <div class="d-flex justify-content-center mt-4">
               <!-- get appointment -->
-              <a href="{% url 'doctors:doctor_detail' doctor.pk %}" class="vip-btn mr-3 m-l-2">
+              <a href="{% url 'doctors:doctor_detail' doctor.slug %}" class="vip-btn mr-3 m-l-2">
                 <i class="icon-calendar"></i> دریافت نوبت
               </a>
-              <a href="{% url 'doctors:doctor_detail' doctor.pk %}" class="vip-btn vip-btn-secondary">
+              <a href="{% url 'doctors:doctor_detail' doctor.slug %}" class="vip-btn vip-btn-secondary">
                 <i class="icon-info"></i> پروفایل
               </a>
             </div>
@@ -492,7 +492,7 @@ body {
       <div class="col-12">
         <div class="medical-service-banner">
           <div class="banner-content" style="position: relative; z-index: 2;">
-            <h3 style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">
+            <h3 style="font-size: 1.2rem; font-weight: bold; margin-bottom: 1rem;">
               🏥 خدمات پزشکی و پرستاری در محل
             </h3>
             <p class="lead" style="font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.9;">

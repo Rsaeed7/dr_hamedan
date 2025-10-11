@@ -40,8 +40,8 @@ class ClinicListView(ListView):
 
 
 
-def clinic_detail(request, pk):
-    clinic = get_object_or_404(Clinic, pk=pk)
+def clinic_detail(request, slug):
+    clinic = get_object_or_404(Clinic, slug=slug)
     doctors = Doctor.objects.filter(clinic=clinic, is_available=True)
     comments = ClinicComment.objects.filter(clinic=clinic, status='confirmed')
     clinic.increment_view_count()
@@ -63,7 +63,7 @@ def clinic_detail(request, pk):
                 text=text,
             )
             messages.success(request, 'نظر شما با موفقیت ثبت شد')
-            return redirect('clinics:clinic_detail', pk=clinic.pk)
+            return redirect('clinics:clinic_detail', slug=clinic.slug)
 
     context = {
         'clinic': clinic,
@@ -84,22 +84,22 @@ def clinic_dashboard(request):
         clinic = Clinic.objects.get(admin=request.user)
     except Clinic.DoesNotExist:
         return redirect('doctors:doctor_list')  # Redirect if user is not a clinic admin
-    
+
     # Get all doctors in this clinic
     doctors = Doctor.objects.filter(clinic=clinic)
-    
+
     # Get upcoming appointments for all doctors
     upcoming_appointments = Reservation.objects.filter(
         doctor__in=doctors,
         status__in=['pending', 'confirmed']
     ).order_by('day__date', 'time')[:10]
-    
+
     context = {
         'clinic': clinic,
         'doctors': doctors,
         'upcoming_appointments': upcoming_appointments,
     }
-    
+
     return render(request, 'clinics/dashboard.html', context)
 
 @login_required

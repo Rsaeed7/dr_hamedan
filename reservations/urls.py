@@ -4,7 +4,7 @@ from . import views
 app_name = 'reservations'
 
 urlpatterns = [
-    path('book/<int:doctor_id>/', views.book_appointment, name='book_appointment'),
+    path('book/<slug:doctor_slug>/', views.book_appointment, name='book_appointment'),
     path('confirm/<int:pk>/', views.confirm_appointment, name='confirm_appointment'),
     path('cancel/<int:pk>/', views.cancel_appointment, name='cancel_appointment'),
     path('complete/<int:pk>/', views.complete_appointment, name='complete_appointment'),

@@ -3,11 +3,11 @@ from . import views
 
 app_name = 'doctors'
 
+
 urlpatterns = [
     path('', views.index, name='index'),
     path('registration/', views.doctor_registration, name='doctor_registration'),
     path('list/', views.DoctorListView.as_view(), name='doctor_list'),
-    path('doctor/<int:pk>/', views.doctor_detail, name='doctor_detail'),
     path('dashboard/', views.doctor_dashboard, name='doctor_dashboard'),
     path('availability/', views.doctor_availability, name='doctor_availability'),
     path('earnings/', views.doctor_earnings, name='doctor_earnings'),
@@ -60,4 +60,5 @@ urlpatterns = [
     path('api/notifications/mark-all-read/', views.mark_all_notifications_read, name='mark_all_notifications_read'),
     path('api/notifications/<int:notification_id>/delete/', views.delete_notification, name='delete_notification'),
     path('api/notifications/test/', views.create_test_notification, name='create_test_notification'),
+    path('doctor/<slug:slug>/', views.doctor_detail, name='doctor_detail'),
 ] 

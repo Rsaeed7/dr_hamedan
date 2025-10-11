@@ -245,7 +245,7 @@ def create_comment_notifications(sender, instance, created, **kwargs):
                 message=f'یک نظر جدید از بیمار {instance.user.get_full_name() if instance.user else "ناشناس"} برای شما ثبت شد.',
                 notification_type='message',
                 priority='medium',
-                link=f'/doctors/doctor/{instance.doctor.id}/',
+                link=f'/doctors/doctor/{instance.doctor.slug}/',
                 metadata={
                     'comment_id': instance.id,
                     'patient_name': instance.user.get_full_name() if instance.user else 'ناشناس',
@@ -261,7 +261,7 @@ def create_comment_notifications(sender, instance, created, **kwargs):
                 message=f'نظر جدید شما با امتیاز {instance.rate} تایید و منتشر شد.',
                 notification_type='success',
                 priority='low',
-                link=f'/doctors/doctor/{instance.doctor.id}/',
+                link=f'/doctors/doctor/{instance.doctor.slug}/',
                 metadata={
                     'comment_id': instance.id,
                     'rating': instance.rate
@@ -290,7 +290,7 @@ def create_email_notifications(sender, instance, created, **kwargs):
             message=f'نامه جدیدی از دکتر {instance.sender.user.get_full_name()} با موضوع "{instance.subject}" دریافت کردید.',
             notification_type='message',
             priority='medium',
-            link=f'/doctors/message/{instance.id}/',
+            link=f'/doctors/message/{instance.slug}/',
             metadata={
                 'email_id': str(instance.id),
                 'sender_name': instance.sender.user.get_full_name(),

@@ -1,139 +1,138 @@
-{% extends 'base.html' %}
+{% extends 'base/base.html' %}
 {% load jformat %}
 
 {% block title %}انتخاب روش پرداخت - دکتر همدان{% endblock %}
 
-{% block content %}
-<div class="container mx-auto px-4 py-8">
-    <div class="max-w-2xl mx-auto">
-        <!-- Header -->
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-4">انتخاب روش پرداخت</h1>
-            <p class="text-gray-600">برای تکمیل درخواست مشاوره آنلاین، یکی از روش‌های پرداخت زیر را انتخاب کنید</p>
-        </div>
-
-        <!-- Chat Request Details -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">جزئیات درخواست مشاوره</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <p class="text-sm text-gray-600">پزشک:</p>
-                    <p class="font-medium text-gray-900">{{ chat_request.doctor.user.get_full_name }}</p>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-600">تخصص:</p>
-                    <p class="font-medium text-gray-900">{{ chat_request.doctor.specialization }}</p>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-600">نوع مشاوره:</p>
-                    <p class="font-medium text-gray-900">مشاوره متنی آنلاین</p>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-600">مدت زمان:</p>
-                    <p class="font-medium text-gray-900">30 دقیقه</p>
-                </div>
-                <div class="md:col-span-2">
-                    <p class="text-sm text-gray-600">مبلغ:</p>
-                    <p class="text-2xl font-bold text-blue-600">{{ required_amount|floatformat:0 }} تومان</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Wallet Status -->
-        <div class="bg-blue-50 rounded-lg p-4 mb-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-gray-600">موجودی فعلی کیف پول:</p>
-                    <p class="text-lg font-semibold text-gray-900">{{ current_balance|floatformat:0 }} تومان</p>
-                </div>
-                <div class="text-right">
-                    <p class="text-sm text-gray-600">مقدار کمبود:</p>
-                    <p class="text-lg font-semibold text-red-600">{{ needed_amount|floatformat:0 }} تومان</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Payment Options -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Option 1: Charge Wallet -->
-            <div class="bg-white rounded-lg shadow-md p-6 border-2 border-gray-200 hover:border-blue-500 transition-colors">
-                <div class="text-center mb-4">
-                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2">شارژ کیف پول</h3>
-                    <p class="text-gray-600 text-sm">کیف پول خود را شارژ کنید و از موجودی آن استفاده کنید</p>
-                </div>
-                
-                <div class="space-y-3 mb-6">
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-600">مبلغ پیشنهادی:</span>
-                        <span class="font-medium text-gray-900">{{ suggested_amount|floatformat:0 }} تومان</span>
-                    </div>
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-600">موجودی بعد از شارژ:</span>
-                        <span class="font-medium text-green-600">{{ current_balance|add:suggested_amount|floatformat:0 }} تومان</span>
-                    </div>
-                </div>
-                
-                <form method="post" action="{% url 'chat:process_payment_choice' chat_request.id %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="payment_choice" value="wallet_charge">
-                    <input type="hidden" name="suggested_amount" value="{{ suggested_amount }}">
-                    <button type="submit" class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium">
-                        شارژ کیف پول
-                    </button>
-                </form>
+{% block body %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="text-center mb-5 m-t-20">
+                <h1 class="h2 mb-3 fw-bold">انتخاب روش پرداخت</h1>
+                <p class="text-muted">برای تکمیل درخواست مشاوره آنلاین، یکی از روش‌های پرداخت زیر را انتخاب کنید</p>
             </div>
 
-            <!-- Option 2: Direct Payment -->
-            <div class="bg-white rounded-lg shadow-md p-6 border-2 border-gray-200 hover:border-green-500 transition-colors">
-                <div class="text-center mb-4">
-                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
+            <!-- Chat Request Details -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">جزئیات درخواست مشاوره</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <small class="text-muted d-block">پزشک:</small>
+                            <span class="fw-bold">{{ chat_request.doctor.user.get_full_name }}</span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <small class="text-muted d-block">تخصص:</small>
+                            <span class="fw-bold">{{ chat_request.doctor.specialization }}</span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <small class="text-muted d-block">نوع مشاوره:</small>
+                            <span class="fw-bold">مشاوره متنی آنلاین</span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <small class="text-muted d-block">مدت زمان:</small>
+                            <span class="fw-bold">تا 24 ساعت</span>
+                        </div>
+                        <div class="col-12">
+                            <small class="text-muted d-block">مبلغ:</small>
+                            <span class="h4 fw-bold text-primary">{{ required_amount|floatformat:0 }} تومان</span>
+                        </div>
                     </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2">پرداخت مستقیم</h3>
-                    <p class="text-gray-600 text-sm">مستقیم از طریق درگاه پرداخت، بدون نیاز به شارژ کیف پول</p>
                 </div>
-                
-                <div class="space-y-3 mb-6">
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-600">مبلغ قابل پرداخت:</span>
-                        <span class="font-medium text-gray-900">{{ required_amount|floatformat:0 }} تومان</span>
-                    </div>
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-600">روش پرداخت:</span>
-                        <span class="font-medium text-green-600">درگاه پرداخت</span>
-                    </div>
-                </div>
-                
-                <form method="post" action="{% url 'chat:process_payment_choice' chat_request.id %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="payment_choice" value="direct_payment">
-                    <button type="submit" class="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors font-medium">
-                        پرداخت مستقیم
-                    </button>
-                </form>
             </div>
-        </div>
 
-        <!-- Back Button -->
-        <div class="text-center mt-8">
-            <a href="{% url 'chat:list_doctors' %}" class="text-blue-600 hover:text-blue-800 font-medium">
-                ← بازگشت به لیست پزشکان
-            </a>
+            <!-- Wallet Status -->
+            <div class="alert alert-info mb-4">
+                <div class="row">
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">موجودی فعلی کیف پول:</small>
+                        <span class="h5 fw-bold">{{ current_balance|floatformat:0 }} تومان</span>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <small class="text-muted d-block">مقدار کمبود:</small>
+                        <span class="h5 fw-bold text-danger">{{ needed_amount|floatformat:0 }} تومان</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Options -->
+            <div class="row">
+                <!-- Option 1: Charge Wallet -->
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 border">
+                        <div class="card-body text-center">
+                            <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                <i class="icon-wallet fs-30 text-white"></i>
+                            </div>
+                            <h5 class="card-title mb-2">شارژ کیف پول</h5>
+                            <p class="card-text text-muted small mb-4">کیف پول خود را شارژ کنید و از موجودی آن استفاده کنید</p>
+
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between small mb-2">
+                                    <span class="text-muted">مبلغ پیشنهادی:</span>
+                                    <span class="fw-bold">{{ suggested_amount|floatformat:0 }} تومان</span>
+                                </div>
+                                <div class="d-flex justify-content-between small">
+                                    <span class="text-muted">موجودی بعد از شارژ:</span>
+                                    <span class="fw-bold text-success">{{ current_balance|add:suggested_amount|floatformat:0 }} تومان</span>
+                                </div>
+                            </div>
+
+
+                            <form method="post" action="{% url 'chat:process_payment_choice' chat_request.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="payment_choice" value="wallet_charge">
+                                <input type="hidden" name="suggested_amount" value="{{ suggested_amount }}">
+                                <button type="submit" class="btn btn-primary w-100 py-3">
+                                    شارژ کیف پول
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Option 2: Direct Payment -->
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 border">
+                        <div class="card-body text-center">
+                            <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                <i class="icon-credit-card fs-30 text-white"></i>
+                            </div>
+                            <h5 class="card-title mb-2">پرداخت مستقیم</h5>
+                            <p class="card-text text-muted small mb-4">مستقیم از طریق درگاه پرداخت، بدون نیاز به شارژ کیف پول</p>
+
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between small mb-2">
+                                    <span class="text-muted">مبلغ قابل پرداخت:</span>
+                                    <span class="fw-bold">{{ required_amount|floatformat:0 }} تومان</span>
+                                </div>
+                                <div class="d-flex justify-content-between small">
+                                    <span class="text-muted">روش پرداخت:</span>
+                                    <span class="fw-bold text-success">درگاه پرداخت</span>
+                                </div>
+                            </div>
+
+                            <form method="post" action="{% url 'chat:process_payment_choice' chat_request.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="payment_choice" value="direct_payment">
+                                <button type="submit" class="btn btn-success w-100 py-3">
+                                    پرداخت مستقیم
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back Button -->
+            <div class="text-center mt-4 m-b-20">
+                <a href="{% url 'chat:list_doctors' %}" class="btn btn-outline-primary">
+                    ← بازگشت به لیست پزشکان
+                </a>
+            </div>
         </div>
     </div>
 </div>
 
-<style>
-    .container {
-        direction: rtl;
-    }
-</style>
 {% endblock %}
-

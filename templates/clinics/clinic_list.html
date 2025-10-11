@@ -33,7 +33,7 @@
                     <div class="strip_list wow fadeIn">
                         <figure>
                             {% if clinic.logo %}
-                                <a href="{% url 'clinics:clinic_detail' clinic.pk %}"><img src="{{ clinic.logo.url }}" alt=""></a>
+                                <a href="{% url 'clinics:clinic_detail' clinic.slug %}"><img src="{{ clinic.logo.url }}" alt=""></a>
                             {% endif %}
                         </figure>
                         <small>  {% for special in clinic.specialties.all %}
@@ -43,9 +43,9 @@
                         <ul>
                             <li>
                             </li>
-                            <li><a class="p-r-10 small" href="{% url 'clinics:clinic_detail' clinic.pk %}">مشاهده
+                            <li><a class="p-r-10 small" href="{% url 'clinics:clinic_detail' clinic.slug %}">مشاهده
                                 پروفایل مرکز</a></li>
-                            <li><a href="{% url 'clinics:clinic_detail' clinic.pk %}">رزرو نوبت</a></li>
+                            <li><a href="{% url 'clinics:clinic_detail' clinic.slug %}">رزرو نوبت</a></li>
                         </ul>
                     </div>
                     {% empty %}

@@ -417,11 +417,11 @@
                                 <div class="doctor-list" data-special-id="{{ special.id }}" {% if not forloop.first %}style="display:none;"{% endif %}>
                                     {% for doctor in special.Doctor.all %}
                                         <div class="row box_general d-flex justify-content-between align-items-center">
-                                            <a href="{% url 'doctors:doctor_detail' doctor.pk %}" class="d-flex align-items-center">
+                                            <a href="{% url 'doctors:doctor_detail' doctor.slug %}" class="d-flex align-items-center">
                                                 <img src="{{ doctor.profile_image.url }}" width="40" height="40" style="border-radius: 50%;border: 1px solid darkslategrey">
                                                 <span class="mr-2 fs-12"> دکتر {{ doctor.user.get_full_name }} </span>
                                             </a>
-                                            <a href="{% url 'doctors:doctor_detail' doctor.pk %}" class="btn btn-success">دریافت نوبت</a>
+                                            <a href="{% url 'doctors:doctor_detail' doctor.slug %}" class="btn btn-success">دریافت نوبت</a>
                                         </div>
                                     {% empty %}
                                     <p class="m-t-10">در حال حاضر پزشکی آماده ارائه این خدمت نیست!</p>

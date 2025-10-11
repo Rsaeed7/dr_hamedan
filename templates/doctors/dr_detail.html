@@ -1,7 +1,9 @@
 {% extends  'base/base.html' %}
 {% load static %}
+
 {% block body %}
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     {% load persian_date %}
     <style>
@@ -184,8 +186,8 @@
         }
 
 
-
     </style>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Search -->
     {% include  'base/search.html' %}
@@ -403,7 +405,8 @@
                                                             <!-- Video play overlay -->
                                                             <div class="video-overlay position-absolute d-flex align-items-center justify-content-center"
                                                                  style="top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3);">
-                                                                <i class="fa fa-play-circle text-white" style="font-size: 2rem;"></i>
+                                                                <i class="fa fa-play-circle text-white"
+                                                                   style="font-size: 2rem;"></i>
                                                             </div>
                                                         </div>
                                                     {% else %}
@@ -421,7 +424,7 @@
 
                                 </div>
                                 <a class="btn_1 col-12 text-center p-10 m-t-5 m-b-5" style="padding: 10px"
-                                   href="{% url 'docpages:doctor_page' doctor.id %}">مشاهده صفحه پزشک</a>
+                                   href="{% url 'docpages:doctor_page' doctor.slug %}">مشاهده صفحه پزشک</a>
                             </div>
                             <!-- /tab-content -->
                         </div>
@@ -558,24 +561,25 @@
                         {% endif %}
                     </div>
 
-                    <a href="{% url 'reservations:book_appointment' doctor.pk %}"
+                    <a href="{% url 'reservations:book_appointment' doctor.slug %}"
                        class="btn btn-success col-lg-12 m-b-10 m-t-15">دریافت نوبت</a>
                 </div>
-               
-            {% if doctor.online_visit %}
-            <!-- online consultation session -->
-                <div class="box_general_3 booking border-0-m">
-                    <div class="m-t-2 m-b-20">
-                        <h6 class="text_dr_3"><i class="icon-user-add-outline"></i>دریافت مشاوره متنی آنلاین</h6>
-                        <small class="text_dr_3"> هزینه مشاوره {{ doctor.online_visit_fee }} هزار تومان </small>
-                    </div>
-                    <small class="rev-info text-sm-right">مشاوره متنی به مدت <span
-                            class="text-info">30 دقیقه</span></small>
-                    <button onclick="showFormChat()" class="btn btn-primary col-lg-12 m-b-10 m-t-15">دریافت
-                        مشاوره متنی</button>
 
-                </div>
-            {% endif %}
+                {% if doctor.online_visit %}
+                    <!-- online consultation session -->
+                    <div class="box_general_3 booking border-0-m">
+                        <div class="m-t-2 m-b-20">
+                            <h6 class="text_dr_3"><i class="icon-user-add-outline"></i>دریافت مشاوره متنی آنلاین</h6>
+                            <small class="text_dr_3"> هزینه مشاوره {{ doctor.online_visit_fee }} هزار تومان </small>
+                        </div>
+                        <small class="rev-info text-sm-right">مشاوره متنی به مدت <span
+                                class="text-info">30 دقیقه</span></small>
+                        <button onclick="showFormChat()" class="btn btn-primary col-lg-12 m-b-10 m-t-15">دریافت
+                            مشاوره متنی
+                        </button>
+
+                    </div>
+                {% endif %}
 
             </aside>
             <!-- /asdide -->
@@ -596,7 +600,8 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="patient_name" class="form-label">نام<span class="text-red">*</span></label>
+                                    <label for="patient_name" class="form-label">نام<span
+                                            class="text-red">*</span></label>
                                     <input type="text" id="patient_name" name="patient_name"
                                            class="form-control"
                                            value="{% if user.first_name %}{{ user.first_name }}{% endif %}"
@@ -617,12 +622,13 @@
                                            id="last_name_alarm"></small>
                                 </div>
                             </div>
-                                                    <div class="col-md-6">
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="patient_national_id" class="form-label">کد ملی</label>
                                     <input type="text" id="patient_national_id" name="patient_national_id"
                                            class="form-control"
-                                           value="{% if user.patient.national_id %}{{ user.patient.national_id }}{% endif %}">
+                                           value="
+                                                   {% if user.patient.national_id %}{{ user.patient.national_id }}{% endif %}">
                                     <small class="text-danger font-weight-light"
                                            id="national_id_alarm"></small>
                                 </div>
@@ -650,20 +656,44 @@
                             <!-- Payment Method Selection -->
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label class="form-label">روش پرداخت<span class="text-red">*</span></label>
-                                    <div class="d-flex flex-column gap-2">
-                                        <div class="custom-control custom-radio">
-                                            <input type="radio" id="payment_wallet" name="payment_method" value="wallet" class="custom-control-input" checked>
-                                            <label class="custom-control-label" for="payment_wallet">
-                                                <i class="icon-wallet"></i> پرداخت از کیف پول
-                                                <small class="d-block text-muted">موجودی کیف پول: {{ balance|floatformat:0 }} تومان</small>
+                                    <label class="form-label">روش پرداخت</label>
+                                    <div class="payment-method-options">
+                                        <div class="payment-option">
+                                            <input type="radio" id="payment_direct" name="payment_method"
+                                                   value="direct" checked>
+                                            <label class="payment-option-label" for="payment_direct">
+                                                <div class="payment-option-content">
+                                                    <div class="payment-option-icon">
+                                                        <i class="icon-credit-card"></i>
+                                                    </div>
+                                                    <div class="payment-option-text">
+                                                        <div class="payment-option-title">پرداخت مستقیم</div>
+                                                        <div class="payment-option-description">پرداخت آنلاین از طریق
+                                                            کارت بانکی
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </label>
                                         </div>
-                                        <div class="custom-control custom-radio">
-                                            <input type="radio" id="payment_direct" name="payment_method" value="direct" class="custom-control-input">
-                                            <label class="custom-control-label" for="payment_direct">
-                                                <i class="icon-credit-card"></i> پرداخت مستقیم (درگاه بانکی)
-                                                <small class="d-block text-muted">پرداخت آنلاین از طریق کارت بانکی</small>
+                                        <div class="payment-option">
+                                            <input type="radio" id="payment_wallet" name="payment_method" value="wallet">
+                                            <label class="payment-option-label" for="payment_wallet">
+                                                <div class="payment-option-content">
+                                                    <div class="payment-option-icon">
+                                                        <i class="icon-wallet"></i>
+                                                    </div>
+                                                    <div class="payment-option-text">
+                                                        <div class="payment-option-title">پرداخت از کیف پول</div>
+                                                        <div class="payment-option-description">از موجودی کیف پول
+                                                            استفاده کنید
+                                                        </div>
+                                                        <div class="payment-option-balance" id="wallet-balance-display">
+                                                            موجودی: <span
+                                                                id="current-balance">{{ balance|floatformat:0 }}</span>
+                                                            تومان
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </label>
                                         </div>
                                     </div>
@@ -671,8 +701,8 @@
                             </div>
 
                         </div>
-                        <button  type="submit" id="submit-btn"
-                           class="btn btn-primary w-100">
+                        <button type="submit" id="submit-btn"
+                                class="btn btn-primary w-100">
                             رزرو ویزیت آنلاین
                         </button>
                     </form>
@@ -719,73 +749,128 @@
     <script>
 
 
-    function validateForm() {
-        const name = document.getElementById('patient_name').value.trim();
-        const last_name = document.getElementById('patient_last_name').value.trim();
-        const phone = document.getElementById('phone').value.trim();
-        const national_code = document.getElementById('patient_national_id').value.trim();
+        function validateForm() {
+            const name = document.getElementById('patient_name').value.trim();
+            const last_name = document.getElementById('patient_last_name').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const national_code = document.getElementById('patient_national_id').value.trim();
 
-        // Reset errors
-        document.getElementById('name_alarm').textContent = '';
-        document.getElementById('last_name_alarm').textContent = '';
-        document.getElementById('phone_alarm').textContent = '';
-        document.getElementById('national_id_alarm').textContent = '';
+            // Reset errors
+            document.getElementById('name_alarm').textContent = '';
+            document.getElementById('last_name_alarm').textContent = '';
+            document.getElementById('phone_alarm').textContent = '';
+            document.getElementById('national_id_alarm').textContent = '';
 
-        document.getElementById('patient_name').classList.remove('border-danger');
-        document.getElementById('patient_last_name').classList.remove('border-danger');
-        document.getElementById('phone').classList.remove('border-danger');
-        document.getElementById('patient_national_id').classList.remove('border-danger');
+            document.getElementById('patient_name').classList.remove('border-danger');
+            document.getElementById('patient_last_name').classList.remove('border-danger');
+            document.getElementById('phone').classList.remove('border-danger');
+            document.getElementById('patient_national_id').classList.remove('border-danger');
 
-        let isValid = true;
+            let isValid = true;
 
-        // Validate name
-        if (name.length < 3) {
-            document.getElementById('patient_name').classList.add('border-danger');
-            document.getElementById('name_alarm').textContent = 'نام باید حداقل ۳ حرف باشد.';
-            isValid = false;
+            // Validate name
+            if (name.length < 3) {
+                document.getElementById('patient_name').classList.add('border-danger');
+                document.getElementById('name_alarm').textContent = 'نام باید حداقل ۳ حرف باشد.';
+                isValid = false;
+            }
+
+            // Validate last name
+            if (last_name.length < 3) {
+                document.getElementById('patient_last_name').classList.add('border-danger');
+                document.getElementById('last_name_alarm').textContent = 'نام خانوادگی باید حداقل ۳ حرف باشد.';
+                isValid = false;
+            }
+
+            // Validate phone (if not disabled)
+            if (!phone.match(/^0\d{10}$/) && !document.getElementById('phone').disabled) {
+                document.getElementById('phone').classList.add('border-danger');
+                document.getElementById('phone_alarm').textContent = 'شماره تلفن باید با ۰ شروع شود و ۱۱ رقم باشد.';
+                isValid = false;
+            }
+
+            // Validate national code (if provided)
+            if (national_code && !national_code.match(/^\d{10}$/)) {
+                document.getElementById('patient_national_id').classList.add('border-danger');
+                document.getElementById('national_id_alarm').textContent = 'کد ملی باید ۱۰ رقم باشد.';
+                isValid = false;
+            }
+
+            return isValid;
         }
 
-        // Validate last name
-        if (last_name.length < 3) {
-            document.getElementById('patient_last_name').classList.add('border-danger');
-            document.getElementById('last_name_alarm').textContent = 'نام خانوادگی باید حداقل ۳ حرف باشد.';
-            isValid = false;
+        // اضافه کردن رویدادهای اعتبارسنجی
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('patient_name').addEventListener('input', validateForm);
+            document.getElementById('patient_last_name').addEventListener('input', validateForm);
+            document.getElementById('phone').addEventListener('input', validateForm);
+            document.getElementById('patient_national_id').addEventListener('input', validateForm);
+
+            document.getElementById('booking-form').addEventListener('submit', function (e) {
+                if (!validateForm()) {
+                    e.preventDefault();
+                    // اسکرول به اولین فیلد دارای خطا
+                    const firstError = document.querySelector('.border-danger');
+                    if (firstError) {
+                        firstError.scrollIntoView({behavior: 'smooth', block: 'center'});
+                    }
+                }
+            });
+        });
+    </script>
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has('open_booking')) return;
+
+    // اگر مقدار fee هم فرستاده شده بگیر
+    const fee = params.get('fee');
+
+    // 1) اگر تو قالب فانکشن‌های باز کننده وجود داره، اول اونها رو امتحان کن
+    try {
+        // اگر فانکشن showDynamicForm تعریف شده و ما می‌تونیم doctor.id و action url را فراهم کنیم، استفاده کن
+        if (typeof showDynamicForm === 'function' && typeof {{ doctor.id|default:"null" }} === 'number') {
+            const doctorId = {{ doctor.id }}; // مقدار از template
+            const actionUrl = "{% url 'chat:request_chat' doctor.id %}";
+            const doctorName = "{{ doctor.user.get_full_name|escapejs }}";
+            // اگر fee خالی نیست از اون استفاده کن، در غیر این صورت از مقدار موجود در صفحه استفاده می‌شود
+            showDynamicForm(doctorId, fee || "{{ doctor.online_visit_fee }}", actionUrl, doctorName);
+            return;
         }
 
-        // Validate phone (if not disabled)
-        if (!phone.match(/^0\d{10}$/) && !document.getElementById('phone').disabled) {
-            document.getElementById('phone').classList.add('border-danger');
-            document.getElementById('phone_alarm').textContent = 'شماره تلفن باید با ۰ شروع شود و ۱۱ رقم باشد.';
-            isValid = false;
+        // اگر فانکشن showFormChat وجود داره (modal ساده باز می‌کنه) صدا بزن
+        if (typeof showFormChat === 'function') {
+            showFormChat();
+            // اگر لازم بود مقدار fee رو هم ست کن:
+            if (fee) {
+                const feeEl = document.getElementById('visit-fee') || document.querySelector('#visit-fee');
+                if (feeEl) feeEl.textContent = fee;
+            }
+            return;
         }
-
-        // Validate national code (if provided)
-        if (national_code && !national_code.match(/^\d{10}$/)) {
-            document.getElementById('patient_national_id').classList.add('border-danger');
-            document.getElementById('national_id_alarm').textContent = 'کد ملی باید ۱۰ رقم باشد.';
-            isValid = false;
-        }
-
-        return isValid;
+    } catch (e) {
+        console.warn('خطا هنگام تلاش برای استفاده از فانکشن‌های بازکننده:', e);
     }
 
-    // اضافه کردن رویدادهای اعتبارسنجی
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('patient_name').addEventListener('input', validateForm);
-        document.getElementById('patient_last_name').addEventListener('input', validateForm);
-        document.getElementById('phone').addEventListener('input', validateForm);
-        document.getElementById('patient_national_id').addEventListener('input', validateForm);
+    // 2) fallback: پاک کردن کلاس مخفی از کانتینرهای مرسوم modal
+    const possibleIds = ['information-modal', 'information', 'formModal', 'booking-form-modal', 'modal-booking'];
+    for (let id of possibleIds) {
+        const el = document.getElementById(id);
+        if (el) {
+            el.classList.remove('hidden');
+            // بعضی استایل‌ها ممکنه از display:none استفاده کنند؛ در این صورت:
+            el.style.display = (el.style.display === 'none' || window.getComputedStyle(el).display === 'none') ? 'block' : el.style.display;
+            // اگر modal نیاز به focus یا scroll داره:
+            el.scrollIntoView({behavior: 'smooth', block: 'center'});
+            break;
+        }
+    }
 
-        document.getElementById('booking-form').addEventListener('submit', function(e) {
-            if (!validateForm()) {
-                e.preventDefault();
-                // اسکرول به اولین فیلد دارای خطا
-                const firstError = document.querySelector('.border-danger');
-                if (firstError) {
-                    firstError.scrollIntoView({behavior: 'smooth', block: 'center'});
-                }
-            }
-        });
-    });
+    // 3) set fee text if present
+    if (fee) {
+        const feeEl = document.getElementById('visit-fee') || document.querySelector('#visit-fee');
+        if (feeEl) feeEl.textContent = fee;
+    }
+});
 </script>
 {% endblock %}
