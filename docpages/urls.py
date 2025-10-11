@@ -4,7 +4,7 @@ from . import views
 app_name = 'docpages'
 
 urlpatterns = [
-    path('doctor/<int:doctor_id>/', views.doctor_page, name='doctor_page'),
+    path('doctor/<slug:doctor_slug>/', views.doctor_page, name='doctor_page'),
     path('post/<int:post_id>/', views.post_detail, name='post_detail'),
     path('my-posts/', views.doctor_posts, name='doctor_posts'),
     path('create-post/', views.create_post, name='create_post'),

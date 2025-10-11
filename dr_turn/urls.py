@@ -19,6 +19,23 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
+from django.urls import register_converter
+
+
+class UnicodeSlugConverter:
+    regex = '[^\n/]+'  # همه کاراکترها به جز / و خط جدید
+
+
+    def to_python(self, value):
+        return value
+
+    def to_url(self, value):
+        return value
+
+
+# ثبت به نام slug
+register_converter(UnicodeSlugConverter, 'slug')
+
 
 urlpatterns = [
     path('cp/', admin.site.urls),

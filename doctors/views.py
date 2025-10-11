@@ -256,12 +256,12 @@ class DoctorListView(ListView):
         return context
 
 
-def doctor_detail(request, pk):
+def doctor_detail(request, slug):
     """
     The medical page detail should not be with the doctor's ID, it should be based on the name in English or ...
     """
     """نمایش اطلاعات کامل یک پزشک"""
-    doctor = get_object_or_404(Doctor, pk=pk)
+    doctor = get_object_or_404(Doctor, slug=slug)
 
     # دریافت آمار و اطلاعات پزشک
     comments = DrComment.objects.filter(doctor=doctor, status='confirmed')
@@ -294,7 +294,7 @@ def doctor_detail(request, pk):
             comment.tips.set(tips_ids)
 
             messages.success(request, 'نظر شما با موفقیت ثبت شد')
-            return redirect('doctors:doctor_detail', pk=doctor.pk)
+            return redirect('doctors:doctor_detail', slug=doctor.slug)
 
     # استفاده از سرویس برای دریافت روزهای آزاد
     available_days = BookingService.get_available_days_for_doctor(doctor.id, days_ahead=7)

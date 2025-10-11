@@ -265,7 +265,7 @@
     </header>
     <header class="bg-black border-b border-gray-800 sticky top-0 z-50 px-4 py-3">
         <div class="max-w-4xl mx-auto flex items-center justify-between">
-            <a href="{% url 'docpages:doctor_page' post.doctor.id %}" class="text-blue-400 hover:text-blue-300 text-sm">
+            <a href="{% url 'docpages:doctor_page' post.doctor.slug %}" class="text-blue-400 hover:text-blue-300 text-sm">
                 ← بازگشت به پست‌های دکتر {{ post.doctor.user.last_name }}
             </a>
             <span class="text-sm text-gray-400">{{ post.created_at|persian_date_info }} ساعت {{ post.created_at|time:"H:i" }}</span>

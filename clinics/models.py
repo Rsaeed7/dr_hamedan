@@ -18,6 +18,7 @@ class Clinic(models.Model):
     created_at = jmodels.jDateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')
     updated_at = jmodels.jDateTimeField(auto_now=True, verbose_name='تاریخ بروزرسانی')
     view_count = models.PositiveIntegerField(default=88, verbose_name='تعداد بازدید')
+    slug = models.SlugField(max_length=255, verbose_name='اسلاگ',null=True,blank=True,unique=True,allow_unicode=True)
 
     def increment_view_count(self):
         """افزایش تعداد بازدیدها"""

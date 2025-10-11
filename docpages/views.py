@@ -10,9 +10,9 @@ from django.http import HttpResponse
 import json
 
 
-def doctor_page(request, doctor_id):
+def doctor_page(request, doctor_slug):
     """Display a doctor's public page with their posts"""
-    doctor = get_object_or_404(Doctor, id=doctor_id)
+    doctor = get_object_or_404(Doctor, slug=doctor_slug)
     
     # Filter by medical lenses if specified
     lens_filter = request.GET.get('lens')
@@ -34,7 +34,7 @@ def doctor_page(request, doctor_id):
             Q(medical_lenses__name__icontains=search_query)
         ).distinct()
     
-    paginator = Paginator(posts_list, 10)  # Show 10 posts per page
+    paginator = Paginator(posts_list, 30)  # Show 10 posts per page
     page = request.GET.get('page', 1)
     
     try:

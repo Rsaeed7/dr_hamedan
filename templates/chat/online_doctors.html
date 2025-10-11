@@ -153,7 +153,7 @@
                         {% for doctor in available_doctors %}
                             <li class="online-status">
                                 <div title="دکتر {{ doctor.user.get_full_name}} | {{ doctor.specialization }}">
-                                    <a href="{% url 'doctors:doctor_detail' doctor.pk %}">
+                                    <a href="{% url 'doctors:doctor_detail' doctor.slug %}">
                                         {% if doctor.profile_image %}
                                             <img class="rounded50 border border-info" width="50" height="50"
                                                  src="{{ doctor.profile_image.url }}">
@@ -251,7 +251,7 @@
                                 <i href="#0" class="rate icon-star-5"><span
                                         class="text-dark">{{ doctor.comment_rate }}</span></i>
                                 <figure>
-                                    <a href="{% url 'doctors:doctor_detail' doctor.pk %}">
+                                    <a href="{% url 'doctors:doctor_detail' doctor.slug %}">
                                         {% if doctor.profile_image %}
                                             <img src="{{ doctor.profile_image.url }}"
                                                  class="img-fluid"
@@ -264,10 +264,13 @@
                                     <h3>{{ doctor.user.get_full_name }}</h3>
                                     <p class="text-capitalize border-light">{{ doctor.specialization }}</p>
                                     <div class="m-t-10">
-                                        <a href="{% url 'doctors:doctor_detail' doctor.pk %}"
+                                        <a href="{% url 'doctors:doctor_detail' doctor.slug %}"
                                            class="text-secondary fs-12">مشاهده پروفایل پزشک</a>
-                                        <button onclick="showDynamicForm({{ doctor.id }}, '{{ doctor.online_visit_fee }}', '{% url 'chat:request_chat' doctor.id %}', '{{ doctor.user.get_full_name }}')"
-                                           class="btn btn-info col-12 m-t-10">مشاوره متنی آنلاین</button>
+                                       <a href="{% url 'doctors:doctor_detail' doctor.slug %}?open_booking=true"
+   class="btn btn-info col-12 m-t-10">
+   مشاوره متنی آنلاین
+</a>
+
                                     </div>
                                 </div>
                             </div>
@@ -350,7 +353,7 @@
                     رزرو ویزیت آنلاین <br>
                     هزینه ویزیت: <span id="visit-fee">---</span> تومان
                 </div>
-                
+
                 <!-- Payment Status Display -->
                 <div id="payment-status" class="payment-info" style="display: none;">
                     <div class="d-flex justify-content-between align-items-center">
@@ -375,7 +378,7 @@
                         </a>
                     </div>
                 </div>
-                
+
                 <form method="post" id="dynamic-booking-form" action="">
                     {% csrf_token %}
                     <div class="row">
@@ -442,72 +445,7 @@
         </div>
     </div>
 </div>
-<script>
-    // Get user's current wallet balance
-    const userBalance = {{ user.wallet.balance|default:"0" }};
-    
-    function showDynamicForm(doctorId, fee, actionUrl, doctorName) {
-        const form = document.getElementById('dynamic-booking-form');
-        const feeSpan = document.getElementById('visit-fee');
-        const modal = document.getElementById('information-modal');
-        const paymentStatus = document.getElementById('payment-status');
-        const currentBalanceSpan = document.getElementById('current-balance');
-        const balanceStatusIcon = document.getElementById('balance-status-icon');
-        const balanceStatusText = document.getElementById('balance-status-text');
-        const insufficientWarning = document.getElementById('insufficient-balance-warning');
-        const neededAmountSpan = document.getElementById('needed-amount');
-        const chargeWalletBtn = document.getElementById('charge-wallet-btn');
-        const submitBtn = document.getElementById('submit-btn');
 
-        form.action = actionUrl;
-        feeSpan.textContent = fee;
-        currentBalanceSpan.textContent = userBalance.toLocaleString();
-        
-        // Show payment status
-        paymentStatus.style.display = 'block';
-        
-        const consultationFee = parseFloat(fee);
-        const hasEnoughBalance = userBalance >= consultationFee;
-        
-        if (hasEnoughBalance) {
-            // Sufficient balance
-            paymentStatus.className = 'payment-info sufficient-balance';
-            balanceStatusIcon.innerHTML = '<i class="icon-ok text-success"></i>';
-            balanceStatusText.textContent = 'موجودی کافی است';
-            balanceStatusText.className = 'text-success font-weight-bold';
-            insufficientWarning.style.display = 'none';
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'رزرو ویزیت آنلاین';
-        } else {
-            // Insufficient balance
-            paymentStatus.className = 'payment-info insufficient-balance';
-            balanceStatusIcon.innerHTML = '<i class="icon-attention text-warning"></i>';
-            balanceStatusText.textContent = 'موجودی ناکافی';
-            balanceStatusText.className = 'text-warning font-weight-bold';
-            
-            const neededAmount = consultationFee - userBalance;
-            neededAmountSpan.textContent = neededAmount.toLocaleString();
-            insufficientWarning.style.display = 'block';
-            
-            // Calculate suggested deposit amount
-            const suggestedAmount = Math.max(10000, Math.ceil((neededAmount * 1.1) / 10000) * 10000);
-            
-            // Set charge wallet link
-            const currentPath = window.location.pathname;
-            chargeWalletBtn.href = `/wallet/deposit/?amount=${suggestedAmount}&redirect_to=${currentPath}`;
-            
-            // Disable submit button
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'ابتدا کیف پول را شارژ کنید';
-        }
-
-        modal.classList.remove('hidden');
-    }
-
-    function closeFormChat() {
-        document.getElementById('information-modal').classList.add('hidden');
-    }
-</script>
 
     <script>
         function createPagination(totalPages, currentPage) {
@@ -698,87 +636,5 @@
                             });
                         });
                     </script>
-    <script>
-    function openMobileFilter() {
-        document.getElementById('mobileFilterModal').classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
 
-    function closeMobileFilter() {
-        document.getElementById('mobileFilterModal').classList.remove('active');
-        document.body.style.overflow = '';
-    }
-</script>
- <script>
-
-
-    function validateForm() {
-        const name = document.getElementById('patient_name').value.trim();
-        const last_name = document.getElementById('patient_last_name').value.trim();
-        const phone = document.getElementById('phone').value.trim();
-        const national_code = document.getElementById('patient_national_id').value.trim();
-
-        // Reset errors
-        document.getElementById('name_alarm').textContent = '';
-        document.getElementById('last_name_alarm').textContent = '';
-        document.getElementById('phone_alarm').textContent = '';
-        document.getElementById('national_id_alarm').textContent = '';
-
-        document.getElementById('patient_name').classList.remove('border-danger');
-        document.getElementById('patient_last_name').classList.remove('border-danger');
-        document.getElementById('phone').classList.remove('border-danger');
-        document.getElementById('patient_national_id').classList.remove('border-danger');
-
-        let isValid = true;
-
-        // Validate name
-        if (name.length < 3) {
-            document.getElementById('patient_name').classList.add('border-danger');
-            document.getElementById('name_alarm').textContent = 'نام باید حداقل ۳ حرف باشد.';
-            isValid = false;
-        }
-
-        // Validate last name
-        if (last_name.length < 3) {
-            document.getElementById('patient_last_name').classList.add('border-danger');
-            document.getElementById('last_name_alarm').textContent = 'نام خانوادگی باید حداقل ۳ حرف باشد.';
-            isValid = false;
-        }
-
-        // Validate phone (if not disabled)
-        if (!phone.match(/^0\d{10}$/) && !document.getElementById('phone').disabled) {
-            document.getElementById('phone').classList.add('border-danger');
-            document.getElementById('phone_alarm').textContent = 'شماره تلفن باید با ۰ شروع شود و ۱۱ رقم باشد.';
-            isValid = false;
-        }
-
-        // Validate national code (if provided)
-        if (national_code && !national_code.match(/^\d{10}$/)) {
-            document.getElementById('patient_national_id').classList.add('border-danger');
-            document.getElementById('national_id_alarm').textContent = 'کد ملی باید ۱۰ رقم باشد.';
-            isValid = false;
-        }
-
-        return isValid;
-    }
-
-    // اضافه کردن رویدادهای اعتبارسنجی
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('patient_name').addEventListener('input', validateForm);
-        document.getElementById('patient_last_name').addEventListener('input', validateForm);
-        document.getElementById('phone').addEventListener('input', validateForm);
-        document.getElementById('patient_national_id').addEventListener('input', validateForm);
-
-        document.getElementById('booking-form').addEventListener('submit', function(e) {
-            if (!validateForm()) {
-                e.preventDefault();
-                // اسکرول به اولین فیلد دارای خطا
-                const firstError = document.querySelector('.border-danger');
-                if (firstError) {
-                    firstError.scrollIntoView({behavior: 'smooth', block: 'center'});
-                }
-            }
-        });
-    });
-</script>
 {% endblock %}
