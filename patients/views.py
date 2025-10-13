@@ -263,14 +263,18 @@ class CreateReportView(LoginRequiredMixin, CreateView):
             patient = get_object_or_404(PatientsFile, id=self.kwargs['patient_id'])
             kwargs['patient_name'] = patient.name
             kwargs['patient_age'] = patient.age
+            kwargs['patient_phone'] = patient.phone  # 🔥 اضافه کردن این خط
         return kwargs
 
     def form_valid(self, form):
         form.instance.doctor = self.request.user.doctor
         if 'patient_id' in self.kwargs:
+            patient = get_object_or_404(PatientsFile, id=self.kwargs['patient_id'])  # گرفتن بیمار
             form.instance.patient_id = self.kwargs['patient_id']
-            form.instance.name = form.instance.patient.name
+            form.instance.name = patient.name
+            form.instance.phone = patient.phone  # 🔥 اضافه کردن این خط
         return super().form_valid(form)
+
 
 class ReportDetailView(DetailView):
     model = MedicalReport

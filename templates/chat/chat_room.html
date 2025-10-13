@@ -108,6 +108,15 @@
             max-width: 100%;
             border-radius: 6px;
             margin-top: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        img.message-image:hover {
+            border-color: #007bff;
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         audio {
@@ -195,10 +204,112 @@
                 margin-right: 280px;
             }
         }
-    </style>
 
+        /* استایل‌های modal تصویر */
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 9999;
+            cursor: pointer;
+        }
+
+        .image-modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: auto;
+            height: auto;
+            max-width: 95vw;
+            max-height: 95vh;
+        }
+
+        .image-modal img {
+            width: auto;
+            height: auto;
+            max-width: 95vw;
+            max-height: 95vh;
+            border-radius: 8px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            object-fit: contain;
+        }
+
+        .image-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.7);
+            border: none;
+            color: white;
+            font-size: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .image-modal-close:hover {
+            background: rgba(255,0,0,0.8);
+            transform: scale(1.1);
+        }
+
+        .image-modal-zoom {
+            position: absolute;
+            bottom: 20px;
+            right: 50%;
+            transform: translateX(50%);
+            background: rgba(0,0,0,0.7);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            z-index: 10000;
+            transition: all 0.3s ease;
+        }
+
+        .image-modal-zoom:hover {
+            background: rgba(0,123,255,0.8);
+        }
+
+        /* حالت زوم */
+        .image-modal.zoomed .image-modal-content {
+            max-width: none;
+            max-height: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        .image-modal.zoomed img {
+            max-width: none;
+            max-height: none;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    </style>
 </head>
 <body>
+<!-- Modal برای نمایش تصویر بزرگ -->
+<div id="imageModal" class="image-modal">
+    <button class="image-modal-close" onclick="closeImageModal()">×</button>
+    <button class="image-modal-zoom" onclick="toggleZoom()">بزرگنمایی</button>
+    <div class="image-modal-content">
+        <img id="modalImage" src="" alt="تصویر بزرگ شده">
+    </div>
+</div>
+
+<!-- سایدبار -->
 <div class="sidebar" id="sidebar">
     <div class="sidebar-header" id="logo_home">
         <img height="28" src="{% static 'img/logo_2x.png' %}">
@@ -206,7 +317,7 @@
     </div>
     <div class="sidebar-content">
         <ul class="nav flex-column">
-                        <li class="nav-item">
+            <li class="nav-item">
                 <a class="nav-link" href="/">
                     <i class="fas fa-home me-2"></i> صفحه اصلی
                 </a>
@@ -243,6 +354,7 @@
     </div>
 </div>
 
+<!-- محتوای اصلی چت -->
 <div class="chat-container">
     <!-- هدر چت -->
     <div class="chat-header d-flex justify-content-between align-items-center">
@@ -259,15 +371,18 @@
                     {% endif %}
                 </h6>
                 <div class="d-flex align-items-center">
-                        <span class="status-badge badge {% if chat_room.request.doctor.availability.is_available %}bg-success{% else %}bg-secondary{% endif %} me-2">
-                            {% if chat_room.request.doctor.availability.is_available %}آنلاین{% else %}آفلاین{% endif %}
-                        </span>
+                {% if not is_doctor %}
+                    <span class="status-badge badge {% if chat_room.request.doctor.availability.is_available %}bg-success{% else %}bg-secondary{% endif %} me-2">
+                        {% if chat_room.request.doctor.availability.is_available %}آنلاین{% else %}آفلاین{% endif %}
+                    </span>
+                {% endif %}
                     <small class="text-light">{{ chat_room.request.doctor.specialty }}</small>
                 </div>
             </div>
         </div>
-        <div class="d-flex d-lg-none"> <i class="fas fa-bars"></i>
-            <button class="btn btn-sm btn-link text-white me-2 " id="sidebar-toggle">
+        <div class="d-flex d-lg-none">
+            <button class="btn btn-sm btn-link text-white me-2" id="sidebar-toggle">
+                <i class="fas fa-bars"></i>
             </button>
         </div>
     </div>
@@ -280,10 +395,10 @@
                     {% if message.message_type == 'text' %}
                         {{ message.content|linebreaksbr }}
                     {% elif message.message_type == 'image' and message.file %}
-                        <a href="{{ message.file.url }}" target="_blank" rel="noopener noreferrer">
-                            <img src="{{ message.file.url }}" alt="تصویر ارسالی" class="message-image"/>
-                        </a>
-
+                        <img src="{{ message.file.url }}"
+                             alt="تصویر ارسالی"
+                             class="message-image"
+                             onclick="openImageModal('{{ message.file.url }}')" />
                     {% elif message.message_type == 'audio' and message.audio %}
                         <audio controls>
                             <source src="{{ message.audio.url }}" type="audio/mpeg"/>
@@ -313,7 +428,6 @@
     <!-- ورودی پیام -->
     {% if chat_room.is_active %}
         <div class="chat-input">
-
             <form id="message-form" class="d-flex align-items-center" enctype="multipart/form-data">
                 {% csrf_token %}
                 <button type="button" class="btn btn-link attachment-btn me-2" id="attachment-button"
@@ -327,10 +441,9 @@
                     <i class="fas fa-paper-plane"></i>
                 </button>
             </form>
-
         </div>
     {% else %}
-        <p class="text-center font-weight-light">ویزیت پایان یافته و قابلیت ارسال پیام وجود ندارد </p>
+        <p class="text-center font-weight-light">ویزیت پایان یافته و قابلیت ارسال پیام وجود ندارد</p>
     {% endif %}
 </div>
 
@@ -351,10 +464,71 @@
     const wsPath = `${wsProtocol}${window.location.host}/ws/medical-chat/${roomId}/`;
     const chatSocket = new WebSocket(wsPath);
 
+    // توابع مدیریت modal تصاویر
+    let isZoomed = false;
+
+    function openImageModal(imageUrl) {
+        const modalImage = document.getElementById('modalImage');
+        const imageModal = document.getElementById('imageModal');
+
+        modalImage.src = imageUrl;
+        imageModal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+
+        // ریست کردن حالت زوم
+        isZoomed = false;
+        imageModal.classList.remove('zoomed');
+    }
+
+    function closeImageModal() {
+        const imageModal = document.getElementById('imageModal');
+        imageModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+
+        // ریست کردن حالت زوم
+        isZoomed = false;
+        imageModal.classList.remove('zoomed');
+    }
+
+    function toggleZoom() {
+        const imageModal = document.getElementById('imageModal');
+        isZoomed = !isZoomed;
+
+        if (isZoomed) {
+            imageModal.classList.add('zoomed');
+        } else {
+            imageModal.classList.remove('zoomed');
+        }
+    }
+
+    // بستن modal با کلیک روی backdrop
+    document.getElementById('imageModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeImageModal();
+        }
+    });
+
+    // بستن modal با کلید Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeImageModal();
+        }
+    });
+
     function scrollToBottom() {
         const container = document.getElementById('chat-messages');
         container.scrollTop = container.scrollHeight;
     }
+
+    // فعال کردن کلیک روی تصاویر موجود
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('img.message-image').forEach(img => {
+            img.addEventListener('click', function() {
+                openImageModal(this.src);
+            });
+        });
+        scrollToBottom();
+    });
 
     chatSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
@@ -368,35 +542,50 @@
         if (data.message_type === 'text') {
             messageContentHtml = data.message.replace(/\n/g, '<br />');
         } else if (data.message_type === 'image' && data.file_url) {
-            messageContentHtml = `<img src="${data.file_url}" alt="تصویر ارسالی" class="message-image" />`;
+            messageContentHtml = `
+                <img src="${data.file_url}"
+                     alt="تصویر ارسالی"
+                     class="message-image"
+                     onclick="openImageModal('${data.file_url}')" />
+            `;
         } else if (data.message_type === 'audio' && data.file_url) {
             messageContentHtml = `
-                    <audio controls>
-                        <source src="${data.file_url}" type="audio/mpeg" />
-                        مرورگر شما از پخش صوت پشتیبانی نمی‌کند.
-                    </audio>
-                `;
+                <audio controls>
+                    <source src="${data.file_url}" type="audio/mpeg" />
+                    مرورگر شما از پخش صوت پشتیبانی نمی‌کند.
+                </audio>
+            `;
         } else if (data.message_type === 'file' && data.file_url) {
             messageContentHtml = `
-                    <a href="${data.file_url}" target="_blank" class="file-link">
-                        دانلود فایل
-                        <i class="fas fa-file-download"></i>
-                    </a>
-                `;
+                <a href="${data.file_url}" target="_blank" class="file-link">
+                    دانلود فایل
+                    <i class="fas fa-file-download"></i>
+                </a>
+            `;
         } else {
             messageContentHtml = '<em>پیام نامشخص</em>';
         }
 
         messageDiv.innerHTML = `
-                <div class="message-content">${messageContentHtml}</div>
-                <div class="message-time">
-                    ${new Date(data.timestamp).toLocaleTimeString('fa-IR', {hour: '2-digit', minute: '2-digit'})}
-                    ${isSentByMe ? '<i class="icon-ok text-success ms-2" style="font-size: 8px;"></i>' : ''}
-                </div>
-            `;
+            <div class="message-content">${messageContentHtml}</div>
+            <div class="message-time">
+                ${new Date(data.timestamp).toLocaleTimeString('fa-IR', {hour: '2-digit', minute: '2-digit'})}
+                ${isSentByMe ? '<i class="icon-ok text-success ms-2" style="font-size: 8px;"></i>' : ''}
+            </div>
+        `;
 
         messagesContainer.appendChild(messageDiv);
         scrollToBottom();
+
+        // فعال کردن کلیک روی تصاویر جدید
+        setTimeout(() => {
+            const newImages = messageDiv.querySelectorAll('img.message-image');
+            newImages.forEach(img => {
+                img.addEventListener('click', function() {
+                    openImageModal(this.src);
+                });
+            });
+        }, 100);
     };
 
     document.getElementById('message-form').addEventListener('submit', function (e) {
@@ -427,7 +616,6 @@
 
         fetch(uploadFileUrl, {
             method: 'POST',
-            // حذف هدر csrf چون @csrf_exempt هست
             body: formData
         })
             .then(response => response.json())
@@ -459,13 +647,10 @@
     chatSocket.onclose = function (e) {
         console.error('اتصال چت بسته شد');
     };
-
-    window.addEventListener('load', scrollToBottom);
-
-
 </script>
+
+<!-- مدیریت سایدبار -->
 <script>
-    // مدیریت سایدبار
     const sidebar = document.getElementById('sidebar');
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const closeSidebar = document.getElementById('close-sidebar');
@@ -484,6 +669,7 @@
             sidebar.classList.remove('active');
         }
     });
+
 </script>
 </body>
 </html>

@@ -2,207 +2,212 @@
 {% load static %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto">
-    <!-- بخش هدر -->
-    <div class="mb-6">
-        <a href="{% url 'doctors:doctor_appointments_today' %}" class="flex items-center text-blue-600 hover:text-blue-800">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-            </svg>
-            بازگشت به نوبت های امروز
-        </a>
-        <h1 class="text-2xl font-bold mt-4">پرونده پزشکی - {{ record.patient.name }}</h1>
-    </div>
-
-    <!-- اطلاعات بیمار -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white shadow rounded-2xl p-4 mb-6">
-        <div>
-            <p><strong>بیمار:</strong> {{ record.patient.name }}</p>
-            <p><strong>تاریخ تولد:</strong> {{ record.patient.birthdate|date:"Y/m/d" }}</p>
+    <div class="max-w-5xl mx-auto">
+        <!-- بخش هدر -->
+        <div class="mb-6">
+            <a href="{% url 'doctors:doctor_appointments_today' %}"
+               class="flex items-center text-blue-600 hover:text-blue-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                </svg>
+                بازگشت به نوبت های امروز
+            </a>
+            <h1 class="text-2xl font-bold mt-4">پرونده پزشکی - {{ record.patient.name }}</h1>
         </div>
-        <div>
-            <p><strong>پزشک:</strong> {{ record.doctor }}</p>
-            <p><strong>تاریخ ایجاد:</strong> {{ record.created_at|date:"Y/m/d - H:i" }}</p>
+
+        <!-- اطلاعات بیمار -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white shadow rounded-2xl p-4 mb-6">
+            <div>
+                <p><strong>بیمار:</strong> {{ record.patient.name }}</p>
+                <p><strong>تاریخ تولد:</strong> {{ record.patient.birthdate|date:"Y/m/d" }}</p>
+            </div>
+            <div>
+                <p><strong>پزشک:</strong> {{ record.doctor }}</p>
+                <p><strong>تاریخ ایجاد:</strong> {{ record.created_at|date:"Y/m/d - H:i" }}</p>
+            </div>
         </div>
-    </div>
 
-    <!-- لیست ویزیت‌ها -->
-    <div class="bg-white shadow rounded-2xl p-4 mb-6">
-        <h2 class="text-xl font-semibold mb-4">سابقه ویزیت‌ها</h2>
+        <!-- لیست ویزیت‌ها -->
+        <div class="bg-white shadow rounded-2xl p-4 mb-6">
+            <h2 class="text-xl font-semibold mb-4">سابقه ویزیت‌ها</h2>
 
-        {% if visits %}
-        <div class="space-y-4">
-            {% for visit in visits %}
-            <div class="border p-4 rounded-lg hover:bg-gray-50 transition">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <span class="font-medium">{{ visit.visit_date|date:"Y/m/d - H:i" }}</span>
-                        <span class="text-sm text-gray-500 mr-3">{{ visit.diagnosis|default:"بدون تشخیص"|truncatechars:30 }}</span>
-                    </div>
+            {% if visits %}
+                <div class="space-y-4">
+                    {% for visit in visits %}
+                        <div class="border p-4 rounded-lg hover:bg-gray-50 transition">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <span class="font-medium">{{ visit.visit_date|date:"Y/m/d - H:i" }}</span>
+                                    <span class="text-sm text-gray-500 mr-3">{{ visit.diagnosis|default:"بدون تشخیص"|truncatechars:30 }}</span>
+                                </div>
 
-                    <button onclick="toggleVisitDetails('visit-{{ visit.id }}')"
-                            class="text-sm text-blue-600 hover:underline">
-                        نمایش جزئیات
-                    </button>
-                </div>
+                                <button onclick="toggleVisitDetails('visit-{{ visit.id }}')"
+                                        class="text-sm text-blue-600 hover:underline">
+                                    نمایش جزئیات
+                                </button>
+                            </div>
 
-                <div id="visit-{{ visit.id }}" class="mt-3 hidden text-sm space-y-2">
-                    <p><strong>شرح حال:</strong> {{ visit.chief_complaint|default:"-" }}</p>
-                    <p><strong>تشخیص:</strong> {{ visit.diagnosis|default:"-" }}</p>
-                                                <p><strong>یادداشت پزشک:</strong> {{ visit.notes|default:"—" }}</p>
+                            <div id="visit-{{ visit.id }}" class="mt-3 hidden text-sm space-y-2">
+                                <p><strong>شرح حال:</strong> {{ visit.chief_complaint|default:"-" }}</p>
+                                <p><strong>تشخیص:</strong> {{ visit.diagnosis|default:"-" }}</p>
+                                <p><strong>یادداشت پزشک:</strong> {{ visit.notes|default:"—" }}</p>
                                 <p><strong>معاینه بالینی:</strong> {{ visit.physical_exam|default:"—" }}</p>
                                 <p><strong>طرح درمان:</strong> {{ visit.treatment_plan|default:"—" }}</p>
-                                <p><strong>داروهای تجویز شده:</strong> {{ visit.prescribed_medications|default:"—" }}</p>
+                                <p><strong>داروهای تجویز شده:</strong> {{ visit.prescribed_medications|default:"—" }}
+                                </p>
 
-                    {% if visit.handwritten_image %}
-                    <div class="mt-3">
-                        <strong>یادداشت دستی:</strong>
-                        <img src="{{ visit.handwritten_image.url }}"
-                             alt="نقاشی پزشک"
-                             class="mt-2 border rounded max-w-full h-40 object-contain cursor-zoom-in"
-                             onclick="openImageModal('{{ visit.handwritten_image.url }}')">
-                    </div>
-                    {% endif %}
+                                {% if visit.handwritten_image %}
+                                    <div class="mt-3">
+                                        <strong>یادداشت دستی:</strong>
+                                        <img src="{{ visit.handwritten_image.url }}"
+                                             alt="نقاشی پزشک"
+                                             class="mt-2 border rounded max-w-full h-40 object-contain cursor-zoom-in"
+                                             onclick="openImageModal('{{ visit.handwritten_image.url }}')">
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
-            </div>
-            {% endfor %}
+            {% else %}
+                <p class="text-gray-500 py-4">هنوز ویزیتی ثبت نشده است.</p>
+            {% endif %}
         </div>
-        {% else %}
-        <p class="text-gray-500 py-4">هنوز ویزیتی ثبت نشده است.</p>
-        {% endif %}
-    </div>
 
-    <!-- فرم ویزیت جدید -->
-    <div class="bg-white shadow rounded-2xl p-4">
-        <h2 class="text-xl font-semibold mb-4">ویزیت جدید</h2>
+        <!-- فرم ویزیت جدید -->
+        <div class="bg-white shadow rounded-2xl p-4">
+            <h2 class="text-xl font-semibold mb-4">ویزیت جدید</h2>
 
-        <form method="post" enctype="multipart/form-data" class="space-y-4">
-            {% csrf_token %}
+            <form method="post" enctype="multipart/form-data" class="space-y-4">
+                {% csrf_token %}
 
-            <!-- فیلدهای اصلی فرم -->
-            {% for field in visit_form %}
-                {% if field.name != 'handwritten_image' %}
-                <div>
-                    <label class="block text-sm font-medium mb-1">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.errors %}
-                        <p class="text-red-500 text-xs mt-1">{{ field.errors|join:", " }}</p>
+                <!-- فیلدهای اصلی فرم -->
+                {% for field in visit_form %}
+                    {% if field.name != 'handwritten_image' %}
+                        <div>
+                            <label class="block text-sm font-medium mb-1">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                                <p class="text-red-500 text-xs mt-1">{{ field.errors|join:", " }}</p>
+                            {% endif %}
+                        </div>
                     {% endif %}
-                </div>
-                {% endif %}
-            {% endfor %}
+                {% endfor %}
 
-            <!-- بخش نقاشی دستی -->
-            <div>
-                <label class="block text-sm font-medium mb-1">یادداشت دستی</label>
-                <div class="border-2 rounded-lg bg-white">
-                    <canvas id="sketchpad" class="w-full h-64 touch-none"></canvas>
+                <!-- بخش نقاشی دستی -->
+                <!-- بخش نقاشی دستی -->
+                <div>
+                    <label class="block text-sm font-medium mb-1">یادداشت دستی</label>
+                    <div class="border-2 border-gray-300 rounded-lg bg-white p-2 shadow-sm">
+                        <canvas id="sketchpad" class="w-full h-64 touch-none border border-gray-200 rounded"></canvas>
+                    </div>
+                    <input type="hidden" id="sketchpadInput" name="handwritten_notes">
+                    <div class="flex gap-2 mt-2">
+                        <button type="button" onclick="clearCanvas()"
+                                class="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-sm transition-colors">
+                            پاک کردن
+                        </button>
+                        <button type="button" onclick="saveCanvas()"
+                                class="bg-blue-100 hover:bg-blue-200 px-3 py-1 rounded text-sm transition-colors">
+                            ذخیره دست نوشته
+                        </button>
+                    </div>
                 </div>
-                <input type="hidden" id="sketchpadInput" name="handwritten_notes">
-                <div class="flex gap-2 mt-2">
-                    <button type="button" onclick="clearCanvas()"
-                            class="bg-gray-200 px-3 py-1 rounded text-sm">
-                        پاک کردن
+
+                <!-- دکمه‌های پایین -->
+                <div class="flex justify-between pt-4">
+                    <button type="submit"
+                            class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-lg">
+                        ثبت ویزیت
                     </button>
-                    <button type="button" onclick="saveCanvas()"
-                            class="bg-blue-100 px-3 py-1 rounded text-sm">
-                        ذخیره دست نوشته
-                    </button>
+                    <a href="{% url 'doctors:doctor_appointments_today' %}"
+                       class="text-blue-600 hover:text-blue-800 py-2 px-4">
+                        انصراف
+                    </a>
                 </div>
-            </div>
-
-            <!-- دکمه‌های پایین -->
-            <div class="flex justify-between pt-4">
-                <button type="submit"
-                        class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-lg">
-                    ثبت ویزیت
-                </button>
-                <a href="{% url 'doctors:doctor_appointments_today' %}"
-                   class="text-blue-600 hover:text-blue-800 py-2 px-4">
-                    انصراف
-                </a>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
-</div>
 
-<!-- Modal برای نمایش عکس بزرگ -->
-<div id="imageModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-75 flex items-center justify-center p-4">
-    <div class="relative max-w-4xl max-h-full">
-        <button onclick="closeImageModal()" class="absolute -top-10 right-0 text-white text-2xl hover:text-gray-300">
-            &times;
-        </button>
-        <img id="modalImage" src="" alt="تصویر بزرگ شده" class="max-w-full max-h-screen">
+    <!-- Modal برای نمایش عکس بزرگ -->
+    <div id="imageModal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-75 flex items-center justify-center p-4">
+        <div class="relative max-w-4xl max-h-full">
+            <button onclick="closeImageModal()"
+                    class="absolute -top-10 right-0 text-white text-2xl hover:text-gray-300">
+                &times;
+            </button>
+            <img id="modalImage" src="" alt="تصویر بزرگ شده" class="max-w-full max-h-screen">
+        </div>
     </div>
-</div>
 
-<!-- اسکریپت‌های ضروری -->
-<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
-<script>
-    // مدیریت نقاشی دستی
-    let signaturePad;
+    <!-- اسکریپت‌های ضروری -->
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+    <script>
+        // مدیریت نقاشی دستی
+        let signaturePad;
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const canvas = document.getElementById('sketchpad');
-        canvas.width = canvas.offsetWidth;
-        canvas.height = canvas.offsetHeight;
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('sketchpad');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
 
-        signaturePad = new SignaturePad(canvas, {
-            backgroundColor: 'rgb(255, 255, 255)',
-            penColor: 'rgb(0, 0, 0)',
-            minWidth: 1,
-            maxWidth: 3,
-            throttle: 16
+            signaturePad = new SignaturePad(canvas, {
+                backgroundColor: 'rgb(255, 255, 255)',
+                penColor: 'rgb(0, 0, 0)',
+                minWidth: 1,
+                maxWidth: 3,
+                throttle: 16
+            });
         });
-    });
 
-    function clearCanvas() {
-        signaturePad.clear();
-        document.getElementById('sketchpadInput').value = '';
-    }
-
-    function saveCanvas() {
-        const input = document.getElementById('sketchpadInput');
-        if (!signaturePad.isEmpty()) {
-            input.value = signaturePad.toDataURL('image/jpeg', 0.8);
-            alert('دست نوشته ذخیره شد!');
-        } else {
-            input.value = '';
+        function clearCanvas() {
+            signaturePad.clear();
+            document.getElementById('sketchpadInput').value = '';
         }
-    }
 
-    // نمایش/مخفی کردن جزئیات ویزیت
-    function toggleVisitDetails(id) {
-        const el = document.getElementById(id);
-        el.classList.toggle('hidden');
-    }
-
-    // جلوگیری از اسکرول هنگام نقاشی روی موبایل
-    document.getElementById('sketchpad').addEventListener('touchmove', (e) => {
-        e.preventDefault();
-    }, { passive: false });
-
-    // توابع جدید برای مدیریت modal عکس
-    function openImageModal(imageUrl) {
-        const modal = document.getElementById('imageModal');
-        const modalImage = document.getElementById('modalImage');
-
-        modalImage.src = imageUrl;
-        modal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden'; // جلوگیری از اسکرول صفحه پس زمینه
-    }
-
-    function closeImageModal() {
-        const modal = document.getElementById('imageModal');
-        modal.classList.add('hidden');
-        document.body.style.overflow = 'auto'; // فعال کردن مجدد اسکرول صفحه
-    }
-
-    // بستن modal با کلیک روی پس زمینه
-    document.getElementById('imageModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeImageModal();
+        function saveCanvas() {
+            const input = document.getElementById('sketchpadInput');
+            if (!signaturePad.isEmpty()) {
+                input.value = signaturePad.toDataURL('image/jpeg', 0.8);
+                alert('دست نوشته ذخیره شد!');
+            } else {
+                input.value = '';
+            }
         }
-    });
-</script>
+
+        // نمایش/مخفی کردن جزئیات ویزیت
+        function toggleVisitDetails(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('hidden');
+        }
+
+        // جلوگیری از اسکرول هنگام نقاشی روی موبایل
+        document.getElementById('sketchpad').addEventListener('touchmove', (e) => {
+            e.preventDefault();
+        }, {passive: false});
+
+        // توابع جدید برای مدیریت modal عکس
+        function openImageModal(imageUrl) {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+
+            modalImage.src = imageUrl;
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // جلوگیری از اسکرول صفحه پس زمینه
+        }
+
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto'; // فعال کردن مجدد اسکرول صفحه
+        }
+
+        // بستن modal با کلیک روی پس زمینه
+        document.getElementById('imageModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeImageModal();
+            }
+        });
+    </script>
 {% endblock %}
