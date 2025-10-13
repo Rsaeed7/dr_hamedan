@@ -74,12 +74,6 @@ class Comment(models.Model):
         verbose_name = "کامنت"
         verbose_name_plural = "کامنت ها"
 
-    # def JaliliDatepublished(self):
-    #     return jdatetime.date.fromgregorian(
-    #         day=self.date.day,
-    #         month=self.date.month,
-    #         year=self.date.year,
-    #     )
 
     def __str__(self):
         repl = "reply" if self.is_reply else "comment"

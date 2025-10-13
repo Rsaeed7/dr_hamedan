@@ -1,14 +1,111 @@
+import json
+from operator import attrgetter
+
+from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Max
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib import messages
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+
 from .forms import ContactForm
 from .models import SupportChatRoom, SupportMessage
 from django.contrib.auth import get_user_model
-
+from doctors.models import DrComment
+from clinics.models import ClinicComment
+from docpages.models import Comment
+from medimag.models import Comment as MagComment
 User = get_user_model()
 
+from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+import json
 
+
+@staff_member_required
+def admin_comment_list(request):
+    # مرتب‌سازی بر اساس تاریخ ایجاد (جدیدترین اول)
+    dr_comments = DrComment.objects.all().order_by('-date')
+    post_comments = Comment.objects.all().order_by('-created_at')
+    clinic_comments = ClinicComment.objects.all().order_by('-date')
+    mag_comments = MagComment.objects.all().order_by('-date')
+
+    return render(request, 'support/admin_comment_list.html', {
+        'dr_comments': dr_comments,
+        'post_comments': post_comments,
+        'clinic_comments': clinic_comments,
+        'mag_comments': mag_comments,
+    })
+
+
+@staff_member_required
+@require_POST
+@csrf_exempt
+def manage_comment_ajax(request):
+    """ویو Ajax برای مدیریت کامنت‌ها"""
+    try:
+        data = json.loads(request.body)
+        comment_type = data.get('type')
+        comment_id = data.get('id')
+        action = data.get('action')
+
+        # تعیین مدل بر اساس نوع
+        if comment_type == 'dr':
+            model = DrComment
+            status_field = 'status'
+            approved_value = 'confirmed'
+        elif comment_type == 'post':
+            model = Comment
+            status_field = 'approved'
+            approved_value = True
+        elif comment_type == 'clinic':
+            model = ClinicComment
+            status_field = 'status'
+            approved_value = 'confirmed'
+        elif comment_type == 'mag':
+            model = MagComment
+            status_field = 'status'
+            approved_value = 'confirmed'
+        else:
+            return JsonResponse({'success': False, 'error': 'نوع کامنت نامعتبر'})
+
+        comment = get_object_or_404(model, id=comment_id)
+
+        if action == 'approve':
+            # تایید کامنت
+            setattr(comment, status_field, approved_value)
+            comment.save()
+            message = 'کامنت با موفقیت تایید شد'
+
+        elif action == 'delete':
+            # حذف کامنت
+            comment.delete()
+            message = 'کامنت با موفقیت حذف شد'
+
+        elif action == 'reject':
+            # رد کامنت
+            if comment_type == 'post':
+                setattr(comment, status_field, False)
+            else:
+                setattr(comment, status_field, 'checking')
+            comment.save()
+            message = 'کامنت رد شد'
+
+        else:
+            return JsonResponse({'success': False, 'error': 'عملیات نامعتبر'})
+
+        return JsonResponse({
+            'success': True,
+            'message': message,
+            'new_status': getattr(comment, status_field) if action != 'delete' else None
+        })
+
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
 def is_user_admin(user):
     return user.is_authenticated and getattr(user, 'is_admin_chat', False)
 
