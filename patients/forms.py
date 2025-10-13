@@ -85,6 +85,15 @@ class ReportForm(forms.ModelForm):
         })
     )
 
+    phone = forms.CharField(
+        label="تلفن بیمار",
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'w-full px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500',
+            'placeholder': 'شماره تلفن بیمار'
+        })
+    )
+
     title = forms.CharField(
         label="عنوان گزارش",
         widget=forms.TextInput(attrs={
@@ -111,7 +120,6 @@ class ReportForm(forms.ModelForm):
         })
     )
 
-    # 🔥 تغییر اینجا - استفاده از MultipleFileField به جای FileField
     images = MultipleFileField(
         label="تصاویر پیوست",
         required=False,
@@ -123,11 +131,12 @@ class ReportForm(forms.ModelForm):
 
     class Meta:
         model = MedicalReport
-        fields = ['name', 'age', 'title', 'dr_requesting', 'content', 'images']
+        fields = ['name', 'age', 'phone', 'title', 'dr_requesting', 'content', 'images']  # اضافه کردن phone به fields
 
     def __init__(self, *args, **kwargs):
         patient_name = kwargs.pop('patient_name', None)
         patient_age = kwargs.pop('patient_age', None)
+        patient_phone = kwargs.pop('patient_phone', None)  # اضافه کردن این خط
         super().__init__(*args, **kwargs)
 
         if patient_name:
@@ -137,14 +146,15 @@ class ReportForm(forms.ModelForm):
 
         if patient_age:
             self.fields['age'].initial = patient_age
-            self.fields['age'].widget.attrs['readonly'] = True
-            self.fields['age'].widget.attrs['class'] += ' bg-gray-100 cursor-not-allowed'
+
+
+        if patient_phone:
+            self.fields['phone'].initial = patient_phone
 
     def save(self, commit=True):
         report = super().save(commit=commit)
         images = self.cleaned_data.get('images')
         if images:
-            # اطمینان از اینکه images یک لیست است
             if not isinstance(images, (list, tuple)):
                 images = [images]
 
@@ -155,6 +165,8 @@ class ReportForm(forms.ModelForm):
                     caption=f"تصویر گزارش {report.title}"
                 )
         return report
+
+
 
 class EditReportForm(forms.ModelForm):
     class Meta:

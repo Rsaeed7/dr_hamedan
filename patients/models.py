@@ -1,7 +1,7 @@
 import base64
 import uuid
 from datetime import date
-
+from django.utils.translation import gettext_lazy as _
 from django.core.files.base import ContentFile
 from django.db import models
 from django.utils import timezone
@@ -140,6 +140,7 @@ class MedicalReport(models.Model):
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='reports')
     patient = models.ForeignKey(PatientsFile, on_delete=models.CASCADE, related_name='reports',blank=True, null=True)
     name = models.CharField(max_length=50, verbose_name='نام بیمار')
+    phone = models.CharField(max_length=20, verbose_name=_('شماره تماس'),blank=True, null=True)
     title = models.CharField(max_length=200,blank=True,null=True,verbose_name="عنوان")
     dr_requesting = models.CharField(max_length=50,blank=True,null=True,verbose_name='پزشک درخواست کننده')
     content = models.TextField(verbose_name='شرح')  # متن گزارش

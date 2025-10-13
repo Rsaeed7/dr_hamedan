@@ -42,7 +42,7 @@
                                                 class="fs-10">دکتر</span> {{ room.request.doctor.user.get_full_name }}
                                         </h3>
                                         <p class="fs-8"> آخرین
-                                            پیام: {{ room.messages.first.content|truncatechars:50 }}</p>
+                                            پیام: {{ room.messages.last.content|truncatechars:50 }}</p>
                                         <small class="text-sm-right"><i
                                                 class="icon-clock-alt"></i>آخرین
                                             فعالیت {{ room.last_activity|date:"Y/m/d H:i" }}</small>

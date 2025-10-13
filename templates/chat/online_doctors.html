@@ -1,173 +1,173 @@
 {% extends  'base/base.html' %}
 {% load static %}
 {% block body %}
-{% block title %}<title>پزشکان برخط | دکتر همدان</title>{% endblock %}
-<style>
-.mobile-filter-modal {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    background: #fff;
-    z-index: 1050;
-    transform: translateY(100%);
-    transition: transform 0.3s ease-in-out;
-    overflow-y: auto;
-    border-radius: 1rem 1rem 0 0;
-    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
-}
+    {% block title %}<title>پزشکان برخط | دکتر همدان</title>{% endblock %}
+    <style>
+        .mobile-filter-modal {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            z-index: 1050;
+            transform: translateY(100%);
+            transition: transform 0.3s ease-in-out;
+            overflow-y: auto;
+            border-radius: 1rem 1rem 0 0;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+        }
 
-.mobile-filter-modal.active {
-    transform: translateY(0%);
-}
+        .mobile-filter-modal.active {
+            transform: translateY(0%);
+        }
 
-.filter-chip {
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 999px;
-    padding: 6px 12px;
-    font-size: 0.875rem;
-    cursor: pointer;
-    background: #f9f9f9;
-    transition: all 0.2s ease-in-out;
-}
+        .filter-chip {
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 999px;
+            padding: 6px 12px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            background: #f9f9f9;
+            transition: all 0.2s ease-in-out;
+        }
 
-.filter-chip input {
-    display: none;
-}
+        .filter-chip input {
+            display: none;
+        }
 
-.filter-chip:has(input:checked) {
-    background: #007bff;
-    color: white;
-    border-color: #007bff;
-}
+        .filter-chip:has(input:checked) {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
 
-.filter-radio {
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    padding: 6px 16px;
-    cursor: pointer;
-    background: #f1f1f1;
-    transition: all 0.2s;
-}
+        .filter-radio {
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 6px 16px;
+            cursor: pointer;
+            background: #f1f1f1;
+            transition: all 0.2s;
+        }
 
-.filter-radio input {
-    display: none;
-}
+        .filter-radio input {
+            display: none;
+        }
 
-.filter-radio:has(input:checked) {
-    background: #007bff;
-    color: white;
-    border-color: #007bff;
-}
+        .filter-radio:has(input:checked) {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
 
-.shadow-top {
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
-}
+        .shadow-top {
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+        }
 
-.wallet-balance {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 15px;
-    padding: 15px 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
+        .wallet-balance {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
 
-.balance-amount {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-top: 5px;
-}
+        .balance-amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 5px;
+        }
 
-.payment-info {
-    background: #f8f9fa;
-    border-left: 4px solid #007bff;
-    padding: 15px;
-    border-radius: 8px;
-    margin: 15px 0;
-}
+        .payment-info {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
 
-.insufficient-balance {
-    background: #fff3cd;
-    border-left: 4px solid #ffc107;
-    color: #856404;
-}
+        .insufficient-balance {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            color: #856404;
+        }
 
-.sufficient-balance {
-    background: #d4edda;
-    border-left: 4px solid #28a745;
-    color: #155724;
-}
+        .sufficient-balance {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            color: #155724;
+        }
 
-@media (min-width: 992px) {
-    .mobile-filter-modal {
-        display: none;
-    }
-}
+        @media (min-width: 992px) {
+            .mobile-filter-modal {
+                display: none;
+            }
+        }
 
-</style>
+    </style>
     <!-- Search -->
-   <div class="filters_listing">
-    <div class="container">
-        <ul class="clearfix">
-            <form method="get" action="{% url 'chat:list_doctors' %}">
-                <div id="custom-search-input">
-                    <div class="input-group">
-                        <div style="display: flex; align-items: center; width: 100%;">
-                            <select class="search-query" name="specialty" id="special">
-                                <option value="" > همه تخصص‌ها </option>
-                                {% for spec in specializations %}
-                                    <option value="{{ spec.name }}"
-                                            {% if request.GET.specialty == spec.name %}selected{% endif %}>
-                                        {{ spec.name }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                            <input type="text" name="query" id="query" value="{{ request.GET.query }}"
-                                   class="search-query" placeholder="نام پزشک یا متخصص برای ویزیت آنلاین...."
-                                   style="flex-grow: 1; border-radius: 50px 0 0 50px; margin-right: -1px;">
+    <div class="filters_listing">
+        <div class="container">
+            <ul class="clearfix">
+                <form method="get" action="{% url 'chat:list_doctors' %}">
+                    <div id="custom-search-input">
+                        <div class="input-group">
+                            <div style="display: flex; align-items: center; width: 100%;">
+                                <select class="search-query" name="specialty" id="special">
+                                    <option value=""> همه تخصص‌ها</option>
+                                    {% for spec in specializations %}
+                                        <option value="{{ spec.name }}"
+                                                {% if request.GET.specialty == spec.name %}selected{% endif %}>
+                                            {{ spec.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <input type="text" name="query" id="query" value="{{ request.GET.query }}"
+                                       class="search-query" placeholder="نام پزشک برای ویزیت آنلاین...."
+                                       style="flex-grow: 1; border-radius: 50px 0 0 50px; margin-right: -1px;">
 
-                            <input type="submit" class="btn_search" style="border-radius: 50px;" value="جستجو">
+                                <input type="submit" class="btn_search" style="border-radius: 50px;" value="جستجو">
+                            </div>
                         </div>
                     </div>
-                </div>
-            </form>
-        </ul>
+                </form>
+            </ul>
+        </div>
     </div>
-</div>
     <!-- /Search -->
 
 
     <div class="container margin_60_35">
 
         <div class="scroll-container">
-        {% if available_doctors %}
-            <div id="breadcrumb">
+            {% if available_doctors %}
+                <div id="breadcrumb">
 
-                <div class="container">
-                    <p>پزشکانی که هم اکنون آنلاین هستند</p>
-                    <ul class="scroll-container scroll-wrapper">
-                        {% for doctor in available_doctors %}
-                            <li class="online-status">
-                                <div title="دکتر {{ doctor.user.get_full_name}} | {{ doctor.specialization }}">
-                                    <a href="{% url 'doctors:doctor_detail' doctor.slug %}">
-                                        {% if doctor.profile_image %}
-                                            <img class="rounded50 border border-info" width="50" height="50"
-                                                 src="{{ doctor.profile_image.url }}">
-                                        {% endif %}
-                                        <span class="status-indicator"></span>
-                                    </a>
-                                </div>
-                            </li>
-                        {% endfor %}
-                    </ul>
+                    <div class="container">
+                        <p>پزشکانی که هم اکنون آنلاین هستند</p>
+                        <ul class="scroll-container scroll-wrapper">
+                            {% for doctor in available_doctors %}
+                                <li class="online-status">
+                                    <div title="دکتر {{ doctor.user.get_full_name }} | {{ doctor.specialization }}">
+                                        <a href="{% url 'doctors:doctor_detail' doctor.slug %}">
+                                            {% if doctor.profile_image %}
+                                                <img class="rounded50 border border-info" width="50" height="50"
+                                                     src="{{ doctor.profile_image.url }}">
+                                            {% endif %}
+                                            <span class="status-indicator"></span>
+                                        </a>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
                 </div>
-
-            </div>
-        {% endif %}
+            {% endif %}
         </div>
 
         <div class="row">
@@ -229,18 +229,18 @@
                     </form>
 
 
-
-
                 </div>
             </aside>
             <div class="col-lg-9">
-            <button class="btn text_dr_3 d-lg-none" onclick="openMobileFilter()">فیلترها <i class="icon-filter-1"></i></button>
+                <button class="btn text_dr_3 d-lg-none" onclick="openMobileFilter()">فیلترها <i
+                        class="icon-filter-1"></i></button>
                 <ul class=" center-content margin-10" role="tablist">
                     <li>
                         <a class="nav-link  active p_1  dr_box2">دریافت مشاوره آنلاین</a>
                     </li>
                     <li>
-                        <a class="nav-link p_1 font-weight-light" href="{% url 'doctors:doctor_list' %}">نوبت ویزیت حضوری در مطب پزشک میخواهید؟<span class="text-info font-weight-bold">دریافت نوبت حضوری</span></a>
+                        <a class="nav-link p_1 font-weight-light" href="{% url 'doctors:doctor_list' %}">نوبت ویزیت
+                            حضوری در مطب پزشک میخواهید؟<span class="text-info font-weight-bold">دریافت نوبت حضوری</span></a>
                     </li>
                 </ul>
                 <div class="row tab-pane fade show active" id="turn" role="tabpanel"
@@ -257,7 +257,8 @@
                                                  class="img-fluid"
                                                  alt="{{ doctor.user.get_full_name }}">
                                         {% endif %}
-                                    </a>{% if doctor.availability.is_available %}<span class="status-indicator"></span>{% endif %}
+                                    </a>{% if doctor.availability.is_available %}
+                                    <span class="status-indicator"></span>{% endif %}
                                 </figure>
                                 <div class="wrapper text-center">
 
@@ -266,10 +267,10 @@
                                     <div class="m-t-10">
                                         <a href="{% url 'doctors:doctor_detail' doctor.slug %}"
                                            class="text-secondary fs-12">مشاهده پروفایل پزشک</a>
-                                       <a href="{% url 'doctors:doctor_detail' doctor.slug %}?open_booking=true"
-   class="btn btn-info col-12 m-t-10">
-   مشاوره متنی آنلاین
-</a>
+                                        <a href="{% url 'doctors:doctor_detail' doctor.slug %}?open_booking=true"
+                                           class="btn btn-info col-12 m-t-10">
+                                            مشاوره متنی آنلاین
+                                        </a>
 
                                     </div>
                                 </div>
@@ -293,98 +294,101 @@
             </div>
         </div>
     </div>
-<!-- Mobile Filter Panel -->
-<div id="mobileFilterModal" class="mobile-filter-modal p-t-60 p-b-140">
-    <div class="filter-header d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
-                <a href="{% url 'chat:list_doctors' %}" class="text-danger font-weight-bold" type="button"> حذف همه
-        </a>
-        <h6 class="mb-0">فیلترها</h6>
-        <button class="btn btn-sm" onclick="closeMobileFilter()">
-            <i class="icon-cancel"></i>
-        </button>
-    </div>
+    <!-- Mobile Filter Panel -->
+    <div id="mobileFilterModal" class="mobile-filter-modal p-t-60 p-b-140">
+        <div class="filter-header d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
+            <a href="{% url 'chat:list_doctors' %}" class="text-danger font-weight-bold" type="button"> حذف همه
+            </a>
+            <h6 class="mb-0">فیلترها</h6>
+            <button class="btn btn-sm" onclick="closeMobileFilter()">
+                <i class="icon-cancel"></i>
+            </button>
+        </div>
 
-    <form method="get" action="{% url 'chat:list_doctors' %}" class="filter-body px-3 pt-3 ">
+        <form method="get" action="{% url 'chat:list_doctors' %}" class="filter-body px-3 pt-3 ">
 
-        <!-- تخصص (چند انتخابی) -->
-        <div class="mb-4">
-            <label class="fw-bold mb-2 d-block">تخصص</label>
-            <div class="d-flex flex-wrap gap-2">
-                {% for special in specializations %}
-                    <label class="filter-chip">
-                        <input type="checkbox" name="specialty" value="{{ special.name }}"
-                               {% if special.name in specialty %}checked{% endif %}>
-                        {{ special.name }}
+            <!-- تخصص (چند انتخابی) -->
+            <div class="mb-4">
+                <label class="fw-bold mb-2 d-block">تخصص</label>
+                <div class="d-flex flex-wrap gap-2">
+                    {% for special in specializations %}
+                        <label class="filter-chip">
+                            <input type="checkbox" name="specialty" value="{{ special.name }}"
+                                   {% if special.name in specialty %}checked{% endif %}>
+                            {{ special.name }}
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- مرتب‌سازی (تک انتخابی) -->
+            <div class="mb-4">
+                <label class="fw-bold mb-2 d-block">مرتب‌سازی</label>
+                <div class="d-flex flex-column gap-2">
+                    <label class="filter-radio">
+                        <input type="radio" name="sort" value="پر بازدیدترین"
+                               {% if request.GET.sort == 'پر بازدیدترین' %}checked{% endif %}>
+                        پر بازدیدترین
                     </label>
-                {% endfor %}
+                    <label class="filter-radio">
+                        <input type="radio" name="sort" value="بالاترین امتیاز"
+                               {% if request.GET.sort == 'بالاترین امتیاز' %}checked{% endif %}>
+                        بالاترین امتیاز
+                    </label>
+                    <label class="filter-radio">
+                        <input type="radio" name="sort" value="پزشکان آنلاین"
+                               {% if request.GET.sort == 'پزشکان آنلاین' %}checked{% endif %}>
+                        پزشکان آنلاین
+                    </label>
+                </div>
             </div>
-        </div>
-
-        <!-- مرتب‌سازی (تک انتخابی) -->
-        <div class="mb-4">
-            <label class="fw-bold mb-2 d-block">مرتب‌سازی</label>
-            <div class="d-flex flex-column gap-2">
-                <label class="filter-radio">
-                    <input type="radio" name="sort" value="پر بازدیدترین" {% if request.GET.sort == 'پر بازدیدترین' %}checked{% endif %}>
-                    پر بازدیدترین
-                </label>
-                <label class="filter-radio">
-                    <input type="radio" name="sort" value="بالاترین امتیاز" {% if request.GET.sort == 'بالاترین امتیاز' %}checked{% endif %}>
-                    بالاترین امتیاز
-                </label>
-                <label class="filter-radio">
-                    <input type="radio" name="sort" value="پزشکان آنلاین"
-                                           {% if request.GET.sort == 'پزشکان آنلاین' %}checked{% endif %}>
-                    پزشکان آنلاین
-                </label>
-            </div>
-        </div>
 
             <button type="submit" class="btn btn-primary w-100">اعمال فیلتر</button>
-    </form>
-</div>
+        </form>
+    </div>
 
     <div class="hidden" id="information-modal">
-    <div class="modal text-right">
-        <div class="modal-content">
-            <span class="close" onclick="closeFormChat()">&times;</span>
-            <div id="booking-form">
-                <div class="alert alert-info mt-3" id="visit-fee-info">
-                    رزرو ویزیت آنلاین <br>
-                    هزینه ویزیت: <span id="visit-fee">---</span> تومان
-                </div>
+        <div class="modal text-right">
+            <div class="modal-content">
+                <span class="close" onclick="closeFormChat()">&times;</span>
+                <div id="booking-form">
+                    <div class="alert alert-info mt-3" id="visit-fee-info">
+                        رزرو ویزیت آنلاین <br>
+                        هزینه ویزیت: <span id="visit-fee">---</span> تومان
+                    </div>
 
-                <!-- Payment Status Display -->
-                <div id="payment-status" class="payment-info" style="display: none;">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>موجودی کیف پول:</strong>
-                            <span id="current-balance">{{ user.wallet.balance|default:"0" }}</span> تومان
+                    <!-- Payment Status Display -->
+                    <div id="payment-status" class="payment-info" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>موجودی کیف پول:</strong>
+                                <span id="current-balance">{{ user.wallet.balance|default:"0" }}</span> تومان
+                            </div>
+                            <div>
+                                <span id="balance-status-icon"></span>
+                                <span id="balance-status-text"></span>
+                            </div>
                         </div>
-                        <div>
-                            <span id="balance-status-icon"></span>
-                            <span id="balance-status-text"></span>
+                        <div id="insufficient-balance-warning" style="display: none;">
+                            <hr>
+                            <p class="text-warning mb-2">
+                                <i class="icon-attention"></i>
+                                موجودی کیف پول شما برای این مشاوره کافی نیست.
+                            </p>
+                            <p class="mb-2">مبلغ مورد نیاز: <span id="needed-amount"></span> تومان</p>
+                            <a href="#" id="charge-wallet-btn" class="btn btn-warning btn-sm">
+                                <i class="icon-plus"></i> شارژ کیف پول
+                            </a>
                         </div>
                     </div>
-                    <div id="insufficient-balance-warning" style="display: none;">
-                        <hr>
-                        <p class="text-warning mb-2">
-                            <i class="icon-attention"></i>
-                            موجودی کیف پول شما برای این مشاوره کافی نیست.
-                        </p>
-                        <p class="mb-2">مبلغ مورد نیاز: <span id="needed-amount"></span> تومان</p>
-                        <a href="#" id="charge-wallet-btn" class="btn btn-warning btn-sm">
-                            <i class="icon-plus"></i> شارژ کیف پول
-                        </a>
-                    </div>
-                </div>
 
-                <form method="post" id="dynamic-booking-form" action="">
-                    {% csrf_token %}
-                    <div class="row">
+                    <form method="post" id="dynamic-booking-form" action="">
+                        {% csrf_token %}
+                        <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="patient_name" class="form-label">نام<span class="text-red">*</span></label>
+                                    <label for="patient_name" class="form-label">نام<span
+                                            class="text-red">*</span></label>
                                     <input type="text" id="patient_name" name="patient_name"
                                            class="form-control"
                                            value="{% if user.first_name %}{{ user.first_name }}{% endif %}"
@@ -405,12 +409,13 @@
                                            id="last_name_alarm"></small>
                                 </div>
                             </div>
-                                                    <div class="col-md-6">
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="patient_national_id" class="form-label">کد ملی</label>
                                     <input type="text" id="patient_national_id" name="patient_national_id"
                                            class="form-control"
-                                           value="{% if user.patient.national_id %}{{ user.patient.national_id }}{% endif %}">
+                                           value="
+                                                   {% if user.patient.national_id %}{{ user.patient.national_id }}{% endif %}">
                                     <small class="text-danger font-weight-light"
                                            id="national_id_alarm"></small>
                                 </div>
@@ -436,15 +441,15 @@
                             </div>
 
                         </div>
-                                       <button  type="submit" id="submit-btn"
-                           class="btn btn-primary w-100">
+                        <button type="submit" id="submit-btn"
+                                class="btn btn-primary w-100">
                             رزرو ویزیت آنلاین
                         </button>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 
     <script>
@@ -594,47 +599,58 @@
         }
 
     </script>
-              <script>
-                        document.addEventListener('DOMContentLoaded', function () {
-                            // اعمال خودکار فرم با تغییر هر فیلتر
-                            const autoSubmitElements = document.querySelectorAll('.auto-submit');
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // اعمال خودکار فرم با تغییر هر فیلتر
+            const autoSubmitElements = document.querySelectorAll('.auto-submit');
 
-                            autoSubmitElements.forEach(element => {
-                                element.addEventListener('change', function () {
-                                    // برای checkbox‌ها و radioها
-                                    if (this.type === 'checkbox' || this.type === 'radio') {
-                                        // اعمال فرم پس از یک تاخیر کوتاه
-                                        setTimeout(() => {
-                                            document.getElementById('filter-form').submit();
-                                        }, 300);
-                                    }
-                                });
-                            });
+            autoSubmitElements.forEach(element => {
+                element.addEventListener('change', function () {
+                    // برای checkbox‌ها و radioها
+                    if (this.type === 'checkbox' || this.type === 'radio') {
+                        // اعمال فرم پس از یک تاخیر کوتاه
+                        setTimeout(() => {
+                            document.getElementById('filter-form').submit();
+                        }, 300);
+                    }
+                });
+            });
 
-                            // بهبود عملکرد dropdownها
-                            function toggleDropdown(id, button) {
-                                const dropdown = document.getElementById(id);
-                                dropdown.classList.toggle('show');
+            // بهبود عملکرد dropdownها
+            function toggleDropdown(id, button) {
+                const dropdown = document.getElementById(id);
+                dropdown.classList.toggle('show');
 
-                                // بستن dropdownهای دیگر
-                                document.querySelectorAll('.filter-dropdown').forEach(item => {
-                                    if (item.id !== id && item.classList.contains('show')) {
-                                        item.classList.remove('show');
-                                    }
-                                });
-                            }
+                // بستن dropdownهای دیگر
+                document.querySelectorAll('.filter-dropdown').forEach(item => {
+                    if (item.id !== id && item.classList.contains('show')) {
+                        item.classList.remove('show');
+                    }
+                });
+            }
 
-                            // بستن dropdownها با کلیک خارج از آنها
-                            window.addEventListener('click', function (event) {
-                                if (!event.target.matches('.btn-filter')) {
-                                    document.querySelectorAll('.filter-dropdown').forEach(dropdown => {
-                                        if (dropdown.classList.contains('show')) {
-                                            dropdown.classList.remove('show');
-                                        }
-                                    });
-                                }
-                            });
-                        });
-                    </script>
+            // بستن dropdownها با کلیک خارج از آنها
+            window.addEventListener('click', function (event) {
+                if (!event.target.matches('.btn-filter')) {
+                    document.querySelectorAll('.filter-dropdown').forEach(dropdown => {
+                        if (dropdown.classList.contains('show')) {
+                            dropdown.classList.remove('show');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 
+    <script>
+        function openMobileFilter() {
+            document.getElementById('mobileFilterModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileFilter() {
+            document.getElementById('mobileFilterModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    </script>
 {% endblock %}

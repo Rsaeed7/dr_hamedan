@@ -33,6 +33,7 @@
         <th class="py-3 px-4 border-b">عنوان گزارش</th>
         <th class="py-3 px-4 border-b">بیمار</th>
         <th class="py-3 px-4 border-b">تاریخ ایجاد</th>
+        <th class="py-3 px-4 border-b">تلفن</th>
         <th class="py-3 px-4 border-b">عملیات</th>
       </tr>
     </thead>
@@ -42,6 +43,7 @@
         <td class="py-3 px-4 border-b break-words max-w-xs">{{ report.title }}</td>
         <td class="py-3 px-4 border-b">{{ report.name }}</td>
         <td class="py-3 px-4 border-b">{{ report.created_at|date:"Y/m/d" }}</td>
+        <td class="py-3 px-4 border-b">{{ report.phone }}</td>
         <td class="py-3 px-4 border-b space-x-1 rtl:space-x-reverse flex justify-center flex-wrap gap-1">
           <a href="{% url 'patients:report_detail' report.pk %}" class="inline-block px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-md transition-colors whitespace-nowrap">مشاهده</a>
           <a href="{% url 'patients:report_detail' report.pk %}?pdf=1" class="inline-block px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white text-xs font-semibold rounded-md transition-colors whitespace-nowrap">دانلود PDF</a>
