@@ -96,15 +96,19 @@ else:
     REDIS_PASSWORD = os.environ.get('REDIS_PASSWORD', None)
     REDIS_DB = int(os.environ.get('REDIS_DB', 0))
 
-    WSGI_APPLICATION = 'dr_turn.wsgi.application'
-    ASGI_APPLICATION = "dr_turn.asgi.application"
-
     CHANNEL_LAYERS = {
         "default": {
-            "BACKEND": "channels.layers.InMemoryChannelLayer",  # برای لوکال
-            # برای محیط هاست اصلی اینو فعال کن:
-            # "BACKEND": "channels_redis.core.RedisChannelLayer",
-            # "CONFIG": {"hosts": [("127.0.0.1", 6379)]},
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [{
+                    "host": REDIS_HOST,
+                    "port": REDIS_PORT,
+                    "password": REDIS_PASSWORD,
+                    "db": REDIS_DB,
+                }],
+                "capacity": 1500,
+                "expiry": 10,
+            },
         },
     }
 
