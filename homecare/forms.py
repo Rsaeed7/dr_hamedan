@@ -2,24 +2,16 @@ from django import forms
 from django_jalali.forms import jDateField
 from .models import HomeCareRequest
 
-
 class HomeCareRequestForm(forms.ModelForm):
     first_name = forms.CharField(label="نام", required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    last_name = forms.CharField(label="نام خانوادگی", required=True,
-                                widget=forms.TextInput(attrs={'class': 'form-control'}))
-    requested_date = forms.DateField(
-        required=False,  # غیراجباری کردن
-        widget=forms.HiddenInput()
-    )
+    last_name = forms.CharField(label="نام خانوادگی", required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    requested_date = forms.HiddenInput()
 
     class Meta:
         model = HomeCareRequest
         fields = ['requested_date', 'requested_time', 'city', 'address', 'extra_notes', 'prescription_file']
         widgets = {
-            'requested_time': forms.TimeInput(attrs={
-                'type': 'time',
-                'class': 'form-control col-6'
-            }),
+            'requested_time': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control col-6'}),
             'city': forms.Select(attrs={'class': 'form-control'}),
             'address': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
             'extra_notes': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
@@ -38,10 +30,6 @@ class HomeCareRequestForm(forms.ModelForm):
         user = kwargs.pop('user', None)
         service = kwargs.pop('service', None)
         super().__init__(*args, **kwargs)
-
-        # غیراجباری کردن فیلدها
-        self.fields['requested_time'].required = False
-        self.fields['requested_date'].required = False
 
         if user:
             self.fields['first_name'].initial = user.first_name

@@ -51,16 +51,12 @@ def request_service(request, service_slug):
             instance = form.save(commit=False)
             instance.patient = request.user.patient
             instance.service = service
-
-            # مطمئن شو که فیلدهای تاریخ و زمان مقدار داشته باشند (حتی اگر null باشن)
-            # اینجا لازم نیست مقدار پیش‌فرض بدی چون مدل nullable هست
             instance.save()
 
             messages.success(request, "درخواست شما با موفقیت ثبت شد.")
             return redirect('homecare:success')
         else:
-            # خطاهای فرم رو چاپ کن برای دیباگ
-            print("Form errors:", form.errors)
+            messages.error(request, 'لطفا اطلاعات صحیح وارد کنید')
     else:
         form = HomeCareRequestForm(user=request.user, service=service)
 
