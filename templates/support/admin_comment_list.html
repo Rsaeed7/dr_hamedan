@@ -1,0 +1,290 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mx-auto p-4">
+  <h2 class="text-2xl font-bold mb-4">مدیریت کامنت‌ها</h2>
+
+  <!-- بخش نظرات دکترها -->
+  <div class="mb-6">
+    <h3 class="text-xl font-semibold mb-3 text-blue-600 border-b pb-2">نظرات دکترها ({{ dr_comments.count }})</h3>
+
+    {% if dr_comments %}
+    <div class="overflow-x-auto bg-white rounded-lg border">
+      <table class="min-w-full">
+        <thead>
+          <tr class="bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase">
+            <th class="p-3">شناسه</th>
+            <th class="p-3">کاربر</th>
+            <th class="p-3">دکتر</th>
+            <th class="p-3">متن نظر</th>
+            <th class="p-3">تاریخ</th>
+            <th class="p-3">وضعیت</th>
+            <th class="p-3">عملیات</th>
+          </tr>
+        </thead>
+        <tbody class="text-sm divide-y divide-gray-200">
+          {% for comment in dr_comments %}
+            <tr id="dr-comment-{{ comment.id }}" class="hover:bg-gray-50">
+              <td class="p-3">{{ comment.id }}</td>
+              <td class="p-3">{{ comment.user.get_full_name|default:comment.user.name }}</td>
+              <td class="p-3">{{ comment.doctor.user.get_full_name|default:comment.doctor.user.name }}</td>
+              <td class="p-3 max-w-xs">{{ comment.text }}</td>
+              <td class="p-3">{{ comment.date|date:"Y/m/d" }}</td>
+              <td class="p-3">
+                <span id="status-dr-{{ comment.id }}" class="{% if comment.status == 'confirmed' %}text-green-600{% else %}text-yellow-600{% endif %}">
+                  {{ comment.get_status_display }}
+                </span>
+              </td>
+              <td class="p-3">
+                <div class="flex gap-2 justify-center">
+                  {% if comment.status != 'confirmed' %}
+                    <button onclick="manageComment('dr', {{ comment.id }}, 'approve')"
+                            class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs transition-colors">
+                      تایید
+                    </button>
+                  {% endif %}
+                  <button onclick="manageComment('dr', {{ comment.id }}, 'delete')"
+                          class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs transition-colors">
+                    حذف
+                  </button>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-center text-gray-500 py-4">نظری برای دکترها وجود ندارد.</p>
+    {% endif %}
+  </div>
+
+  <!-- بخش نظرات پست‌ها -->
+  <div class="mb-6">
+    <h3 class="text-xl font-semibold mb-3 text-green-600 border-b pb-2">نظرات پست‌ها ({{ post_comments.count }})</h3>
+
+    {% if post_comments %}
+    <div class="overflow-x-auto bg-white rounded-lg border">
+      <table class="min-w-full">
+        <thead>
+          <tr class="bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase">
+            <th class="p-3">شناسه</th>
+            <th class="p-3">کاربر</th>
+            <th class="p-3">پست</th>
+            <th class="p-3">متن نظر</th>
+            <th class="p-3">تاریخ</th>
+            <th class="p-3">وضعیت</th>
+            <th class="p-3">عملیات</th>
+          </tr>
+        </thead>
+        <tbody class="text-sm divide-y divide-gray-200">
+          {% for comment in post_comments %}
+            <tr id="post-comment-{{ comment.id }}" class="hover:bg-gray-50">
+              <td class="p-3">{{ comment.id }}</td>
+              <td class="p-3">{{ comment.name }}</td>
+              <td class="p-3">{{ comment.post.title }}</td>
+              <td class="p-3 max-w-xs">{{ comment.body }}</td>
+              <td class="p-3">{{ comment.created_at|date:"Y/m/d" }}</td>
+              <td class="p-3">
+                <span id="status-post-{{ comment.id }}" class="{% if comment.approved %}text-green-600{% else %}text-yellow-600{% endif %}">
+                  {% if comment.approved %}تایید شده{% else %}در انتظار{% endif %}
+                </span>
+              </td>
+              <td class="p-3">
+                <div class="flex gap-2 justify-center">
+                  {% if not comment.approved %}
+                    <button onclick="manageComment('post', {{ comment.id }}, 'approve')"
+                            class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs transition-colors">
+                      تایید
+                    </button>
+                  {% endif %}
+                  <button onclick="manageComment('post', {{ comment.id }}, 'delete')"
+                          class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs transition-colors">
+                    حذف
+                  </button>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-center text-gray-500 py-4">نظری برای پست‌ها وجود ندارد.</p>
+    {% endif %}
+  </div>
+
+  <!-- بخش نظرات کلینیک -->
+  <div class="mb-6">
+    <h3 class="text-xl font-semibold mb-3 text-purple-600 border-b pb-2">نظرات کلینیک ({{ clinic_comments.count }})</h3>
+
+    {% if clinic_comments %}
+    <div class="overflow-x-auto bg-white rounded-lg border">
+      <table class="min-w-full">
+        <thead>
+          <tr class="bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase">
+            <th class="p-3">شناسه</th>
+            <th class="p-3">کاربر</th>
+            <th class="p-3">کلینیک</th>
+            <th class="p-3">متن نظر</th>
+            <th class="p-3">تاریخ</th>
+            <th class="p-3">وضعیت</th>
+            <th class="p-3">عملیات</th>
+          </tr>
+        </thead>
+        <tbody class="text-sm divide-y divide-gray-200">
+          {% for comment in clinic_comments %}
+            <tr id="clinic-comment-{{ comment.id }}" class="hover:bg-gray-50">
+              <td class="p-3">{{ comment.id }}</td>
+              <td class="p-3">{{ comment.user.get_full_name|default:comment.user.name }}</td>
+              <td class="p-3">{{ comment.clinic.name }}</td>
+              <td class="p-3 max-w-xs">{{ comment.text }}</td>
+              <td class="p-3">{{ comment.date|date:"Y/m/d" }}</td>
+              <td class="p-3">
+                <span id="status-clinic-{{ comment.id }}" class="{% if comment.status == 'confirmed' %}text-green-600{% else %}text-yellow-600{% endif %}">
+                  {{ comment.get_status_display }}
+                </span>
+              </td>
+              <td class="p-3">
+                <div class="flex gap-2 justify-center">
+                  {% if comment.status != 'confirmed' %}
+                    <button onclick="manageComment('clinic', {{ comment.id }}, 'approve')"
+                            class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs transition-colors">
+                      تایید
+                    </button>
+                  {% endif %}
+                  <button onclick="manageComment('clinic', {{ comment.id }}, 'delete')"
+                          class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs transition-colors">
+                    حذف
+                  </button>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-center text-gray-500 py-4">نظری برای کلینیک‌ها وجود ندارد.</p>
+    {% endif %}
+  </div>
+
+  <!-- بخش نظرات مقالات -->
+  <div class="mb-6">
+    <h3 class="text-xl font-semibold mb-3 text-orange-600 border-b pb-2">نظرات مقالات ({{ mag_comments.count }})</h3>
+
+    {% if mag_comments %}
+    <div class="overflow-x-auto bg-white rounded-lg border">
+      <table class="min-w-full">
+        <thead>
+          <tr class="bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase">
+            <th class="p-3">شناسه</th>
+            <th class="p-3">کاربر</th>
+            <th class="p-3">مقاله</th>
+            <th class="p-3">متن نظر</th>
+            <th class="p-3">تاریخ</th>
+            <th class="p-3">وضعیت</th>
+            <th class="p-3">عملیات</th>
+          </tr>
+        </thead>
+        <tbody class="text-sm divide-y divide-gray-200">
+          {% for comment in mag_comments %}
+            <tr id="mag-comment-{{ comment.id }}" class="hover:bg-gray-50">
+              <td class="p-3">{{ comment.id }}</td>
+              <td class="p-3">{{ comment.name }}</td>
+              <td class="p-3">{{ comment.article.title }}</td>
+              <td class="p-3 max-w-xs">{{ comment.text }}</td>
+              <td class="p-3">{{ comment.date|date:"Y/m/d" }}</td>
+              <td class="p-3">
+                <span id="status-mag-{{ comment.id }}" class="{% if comment.status == 'confirmed' %}text-green-600{% else %}text-yellow-600{% endif %}">
+                  {{ comment.status_display }}
+                </span>
+              </td>
+              <td class="p-3">
+                <div class="flex gap-2 justify-center">
+                  {% if comment.status != 'confirmed' %}
+                    <button onclick="manageComment('mag', {{ comment.id }}, 'approve')"
+                            class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs transition-colors">
+                      تایید
+                    </button>
+                  {% endif %}
+                  <button onclick="manageComment('mag', {{ comment.id }}, 'delete')"
+                          class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs transition-colors">
+                    حذف
+                  </button>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-center text-gray-500 py-4">نظری برای مقالات وجود ندارد.</p>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- اسکریپت Ajax -->
+<script>
+function manageComment(type, id, action) {
+    const button = event.target;
+    const originalText = button.innerHTML;
+
+    button.innerHTML = '...';
+    button.disabled = true;
+
+    fetch("/admin/comments/ajax/", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            type: type,
+            id: id,
+            action: action
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if (action === 'delete') {
+                document.getElementById(`${type}-comment-${id}`).remove();
+            } else if (action === 'approve') {
+                const statusElement = document.getElementById(`status-${type}-${id}`);
+                statusElement.textContent = 'تایید شده';
+                statusElement.className = 'text-green-600';
+                button.style.display = 'none';
+            }
+        } else {
+            alert('خطا: ' + data.error);
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }
+    })
+    .catch(error => {
+        alert('خطا در ارتباط با سرور');
+        button.innerHTML = originalText;
+        button.disabled = false;
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

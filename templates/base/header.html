@@ -346,6 +346,11 @@
                 <i class="icon-medkit text-dr"></i>
                 <span>مدیریت خدمات</span>
             </a>
+            <a href="{% url 'support:admin_comment_list' %}"
+               class="nav-item">
+                <i class="icon-comment-3 text-dr"></i>
+                <span>کامنت ها</span>
+            </a>
         {% endif %}
         {% if request.user.is_admin_chat %}
             <a href="{% url 'support:chat_room_list' %}"

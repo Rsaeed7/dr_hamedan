@@ -14,5 +14,7 @@ urlpatterns = [
     path('chat_room_list/', views.chat_room_list, name='chat_room_list'),
     path('create_auto/', views.create_auto_chat_room, name='create_auto_chat_room'),
     path('api/chat/messages/', views.get_chat_messages, name='chat_messages'),
+    path('admin/comments/', views.admin_comment_list, name='admin_comment_list'),
+    path('admin/comments/ajax/', views.manage_comment_ajax, name='manage_comment_ajax'),
 ]
 
