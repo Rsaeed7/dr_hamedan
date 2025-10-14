@@ -297,6 +297,87 @@
             height: 100%;
             object-fit: contain;
         }
+
+        /* استایل‌های جدید برای پیش‌نمایش و لودینگ */
+        .file-preview-container {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            animation: slideDown 0.3s ease;
+            display: none;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .upload-progress {
+            width: 100%;
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .upload-progress-bar {
+            height: 100%;
+            background: #4caf50;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .upload-status {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .send-button-loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .preview-file-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .preview-file-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .preview-file-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .preview-action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .preview-action-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .preview-cancel {
+            color: #f44336;
+        }
+
+        .preview-send {
+            color: #4caf50;
+        }
     </style>
 </head>
 <body>
@@ -425,6 +506,25 @@
         {% endfor %}
     </div>
 
+    <!-- پیش‌نمایش فایل قبل از ارسال -->
+    <div id="file-preview-container" class="file-preview-container">
+        <div class="preview-file-info">
+            <span class="preview-file-name" id="preview-file-name"></span>
+            <div class="preview-file-actions">
+                <button class="preview-action-btn preview-send" id="preview-send-btn" title="ارسال فایل">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+                <button class="preview-action-btn preview-cancel" id="preview-cancel-btn" title="لغو ارسال">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="upload-progress">
+            <div class="upload-progress-bar" id="upload-progress-bar"></div>
+        </div>
+        <div class="upload-status" id="upload-status">آماده برای ارسال</div>
+    </div>
+
     <!-- ورودی پیام -->
     {% if chat_room.is_active %}
         <div class="chat-input">
@@ -434,11 +534,19 @@
                         title="ارسال فایل">
                     <i class="fas fa-paperclip"></i>
                 </button>
-                <input type="file" id="file-input" style="display:none"/>
-                <input type="text" name="content" class="form-control rounded_pill border-light-2 m-l-3"
-                       placeholder="پیام خود را بنویسید..." autocomplete="off"/>
-                <button type="submit" class="btn btn-primary rounded-circle ms-2" style="width: 40px; height: 40px;">
-                    <i class="fas fa-paper-plane"></i>
+                <input type="file" id="file-input" style="display:none" accept="image/*,audio/*,.pdf,.doc,.docx,.txt"/>
+
+                <input type="text" name="content" class="form-control rounded-pill border-light-2"
+                       placeholder="پیام خود را بنویسید..." autocomplete="off" id="text-input"/>
+
+                <!-- دکمه ارسال با حالت‌های مختلف -->
+                <button type="submit" class="btn btn-primary rounded-circle ms-2"
+                        style="width: 40px; height: 40px;" id="send-button">
+                    <i class="fas fa-paper-plane" id="send-icon"></i>
+                    <div class="spinner-border spinner-border-sm text-light" role="status"
+                         style="display: none;" id="send-spinner">
+                        <span class="visually-hidden">در حال ارسال...</span>
+                    </div>
                 </button>
             </form>
         </div>
@@ -463,6 +571,24 @@
     const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
     const wsPath = `${wsProtocol}${window.location.host}/ws/medical-chat/${roomId}/`;
     const chatSocket = new WebSocket(wsPath);
+
+    // متغیرهای مدیریت فایل و وضعیت
+    let currentFile = null;
+    let isUploading = false;
+
+    // عناصر DOM
+    const fileInput = document.getElementById('file-input');
+    const filePreviewContainer = document.getElementById('file-preview-container');
+    const previewFileName = document.getElementById('preview-file-name');
+    const previewSendBtn = document.getElementById('preview-send-btn');
+    const previewCancelBtn = document.getElementById('preview-cancel-btn');
+    const uploadProgressBar = document.getElementById('upload-progress-bar');
+    const uploadStatus = document.getElementById('upload-status');
+    const sendButton = document.getElementById('send-button');
+    const sendIcon = document.getElementById('send-icon');
+    const sendSpinner = document.getElementById('send-spinner');
+    const textInput = document.getElementById('text-input');
+    const attachmentButton = document.getElementById('attachment-button');
 
     // توابع مدیریت modal تصاویر
     let isZoomed = false;
@@ -528,8 +654,10 @@
             });
         });
         scrollToBottom();
+        updateSendButtonState();
     });
 
+    // مدیریت WebSocket
     chatSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
         const messagesContainer = document.getElementById('chat-messages');
@@ -588,55 +716,171 @@
         }, 100);
     };
 
-    document.getElementById('message-form').addEventListener('submit', function (e) {
+    // مدیریت ارسال فرم
+    document.getElementById('message-form').addEventListener('submit', async function (e) {
         e.preventDefault();
-        const messageInput = this.querySelector('input[name="content"]');
-        const message = messageInput.value.trim();
 
-        if (message) {
-            chatSocket.send(JSON.stringify({'message_type': 'text', 'message': message}));
-            messageInput.value = '';
+        const messageText = textInput.value.trim();
+
+        if (currentFile) {
+            // اگر فایل وجود دارد، اول فایل را آپلود کن
+            await uploadAndSendFile(currentFile, messageText);
+        } else if (messageText) {
+            // اگر فقط متن وجود دارد
+            sendTextMessage(messageText);
         }
     });
 
-    // مدیریت آپلود فایل با کلیک روی دکمه گیره کاغذ
-    const attachmentButton = document.getElementById('attachment-button');
-    const fileInput = document.getElementById('file-input');
-
+    // کلیک روی دکمه گیره کاغذ
     attachmentButton.addEventListener('click', () => {
         fileInput.click();
     });
 
-    fileInput.addEventListener('change', () => {
-        const file = fileInput.files[0];
-        if (!file) return;
-
-        const formData = new FormData();
-        formData.append('file', file);
-
-        fetch(uploadFileUrl, {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.file_url) {
-                    chatSocket.send(JSON.stringify({
-                        message_type: getMessageTypeFromFile(file),
-                        file_url: data.file_url,
-                        message: ''
-                    }));
-                } else {
-                    alert('خطا در آپلود فایل');
-                }
-                fileInput.value = '';
-            })
-            .catch(() => {
-                alert('خطا در آپلود فایل');
-                fileInput.value = '';
-            });
+    // وقتی کاربر فایل انتخاب کرد
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            currentFile = e.target.files[0];
+            showFilePreview(currentFile);
+        }
     });
 
+    // نمایش پیش‌نمایش فایل
+    function showFilePreview(file) {
+        previewFileName.textContent = file.name;
+        filePreviewContainer.style.display = 'block';
+        uploadProgressBar.style.width = '0%';
+        uploadStatus.textContent = 'آماده برای ارسال';
+        textInput.focus();
+    }
+
+    // ارسال فایل از طریق پیش‌نمایش
+    previewSendBtn.addEventListener('click', async () => {
+        if (currentFile) {
+            const messageText = textInput.value.trim();
+            await uploadAndSendFile(currentFile, messageText);
+        }
+    });
+
+    // لغو آپلود از طریق پیش‌نمایش
+    previewCancelBtn.addEventListener('click', () => {
+        cancelFileUpload();
+    });
+
+    function cancelFileUpload() {
+        currentFile = null;
+        fileInput.value = '';
+        filePreviewContainer.style.display = 'none';
+        isUploading = false;
+        updateSendButtonState();
+    }
+
+    // آپدیت وضعیت دکمه ارسال
+    function updateSendButtonState() {
+        const hasText = textInput.value.trim() !== '';
+        const hasFile = currentFile !== null;
+
+        if (isUploading) {
+            sendButton.disabled = true;
+            sendButton.classList.add('send-button-loading');
+            sendIcon.style.display = 'none';
+            sendSpinner.style.display = 'block';
+        } else {
+            sendButton.disabled = !hasText && !hasFile;
+            sendButton.classList.remove('send-button-loading');
+            sendIcon.style.display = 'block';
+            sendSpinner.style.display = 'none';
+        }
+    }
+
+    // تابع برای آپلود و ارسال فایل
+    async function uploadAndSendFile(file, caption = '') {
+        if (isUploading) return;
+
+        isUploading = true;
+        updateSendButtonState();
+        uploadStatus.textContent = 'در حال آپلود...';
+
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            // شبیه‌سازی پیشرفت آپلود
+            simulateUploadProgress();
+
+            const response = await fetch(uploadFileUrl, {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.file_url) {
+                uploadProgressBar.style.width = '100%';
+                uploadStatus.textContent = 'در حال ارسال پیام...';
+
+                // فایل آپلود شد، حالا از طریق WebSocket ارسال کن
+                chatSocket.send(JSON.stringify({
+                    message_type: getMessageTypeFromFile(file),
+                    file_url: data.file_url,
+                    message: caption
+                }));
+
+                // ریست کردن فرم
+                resetForm();
+                uploadStatus.textContent = 'ارسال شد!';
+
+                // مخفی کردن پیش‌نمایش بعد از تأخیر کوتاه
+                setTimeout(() => {
+                    filePreviewContainer.style.display = 'none';
+                }, 1000);
+            } else {
+                throw new Error('خطا در آپلود فایل');
+            }
+        } catch (error) {
+            uploadStatus.textContent = 'خطا در آپلود فایل';
+            uploadProgressBar.style.backgroundColor = '#f44336';
+            alert('خطا در آپلود فایل: ' + error.message);
+        } finally {
+            isUploading = false;
+            updateSendButtonState();
+        }
+    }
+
+    // شبیه‌سازی پیشرفت آپلود (در محیط واقعی این بخش با real progress events جایگزین می‌شود)
+    function simulateUploadProgress() {
+        let progress = 0;
+        const interval = setInterval(() => {
+            if (progress >= 90 || !isUploading) {
+                clearInterval(interval);
+                return;
+            }
+            progress += Math.random() * 15;
+            if (progress > 90) progress = 90;
+            uploadProgressBar.style.width = progress + '%';
+        }, 200);
+    }
+
+    // تابع برای ارسال پیام متنی
+    function sendTextMessage(message) {
+        chatSocket.send(JSON.stringify({
+            message_type: 'text',
+            message: message
+        }));
+        resetForm();
+    }
+
+    // ریست کردن فرم بعد از ارسال
+    function resetForm() {
+        textInput.value = '';
+        currentFile = null;
+        fileInput.value = '';
+        updateSendButtonState();
+    }
+
+    // آپدیت وضعیت دکمه با هر تغییر در input
+    textInput.addEventListener('input', updateSendButtonState);
+
+    // تابع تشخیص نوع فایل
     function getMessageTypeFromFile(file) {
         const type = file.type;
         if (type.startsWith('image/')) return 'image';
@@ -669,7 +913,6 @@
             sidebar.classList.remove('active');
         }
     });
-
 </script>
 </body>
 </html>
