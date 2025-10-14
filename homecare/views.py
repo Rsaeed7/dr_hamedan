@@ -91,6 +91,7 @@ def cancel_homecare_request(request, request_id):
 def is_staff_user(user):
     return user.is_staff or user.is_superuser
 
+
 @user_passes_test(is_staff_user)
 def admin_homecare_requests(request):
     status_filter = request.GET.get('status', '')
