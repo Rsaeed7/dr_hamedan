@@ -123,18 +123,39 @@
                     <p>پرداخت با موفقیت انجام شد</p>
                 {% elif payment_request.status == "failed" %}
                     <p>پرداخت ناموفق بود</p>
-                    <p>لطفاً دوباره تلاش کنید</p>
+                    {% if error_detail %}
+                        <p class="small">جزئیات: {{ error_detail }}</p>
+                    {% endif %}
+                    {% if is_reservation_payment %}
+                        <p>نوبت برای شما رزرو نشده است</p>
+                        <p>می‌توانید دوباره تلاش کنید</p>
+                    {% else %}
+                        <p>لطفاً دوباره تلاش کنید</p>
+                    {% endif %}
                 {% elif payment_request.status == "cancelled" %}
                     <p>پرداخت لغو شد</p>
+                    {% if is_reservation_payment %}
+                        <p>نوبت برای شما رزرو نشده است</p>
+                    {% endif %}
                 {% else %}
                     <p>در حال پردازش...</p>
                 {% endif %}
             </div>
             <div class="bx-statuse-a">
                 {% if payment_request.status == "completed" %}
-                    <a href="{% url 'wallet:wallet_dashboard' %}">بازگشت به کیف پول</a>
+                    {% if is_reservation_payment %}
+                        <a href="{% url 'reservations:my_appointments' %}">مشاهده نوبت‌های من</a>
+                    {% else %}
+                        <a href="{% url 'wallet:wallet_dashboard' %}">بازگشت به کیف پول</a>
+                    {% endif %}
                 {% else %}
-                    <a href="{% url 'wallet:deposit' %}">تلاش مجدد</a>
+                    {% if show_retry and is_reservation_payment and reservation_id %}
+                        <a href="{% url 'payments:retry_reservation_payment' reservation_id %}">تلاش مجدد برای پرداخت</a>
+                        <br><br>
+                        <a href="{% url 'reservations:book_appointment' doctor_slug %}">انتخاب نوبت دیگر</a>
+                    {% else %}
+                        <a href="{% url 'wallet:deposit' %}">شارژ کیف پول</a>
+                    {% endif %}
                 {% endif %}
                 <br><br>
                 <a href="{% url 'doctors:index' %}">بازگشت به صفحه اصلی</a>

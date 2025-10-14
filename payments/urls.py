@@ -18,6 +18,9 @@ urlpatterns = [
     # Payment callback
     path('callback/', views.payment_callback, name='payment_callback'),
     
+    # Retry payment
+    path('retry-reservation/<int:reservation_id>/', views.retry_reservation_payment, name='retry_reservation_payment'),
+    
     # API endpoints
     path('api/status/<int:payment_id>/', views.api_payment_status, name='api_payment_status'),
     path('api/create/', views.api_create_payment, name='api_create_payment'),

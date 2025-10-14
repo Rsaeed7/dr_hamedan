@@ -76,8 +76,8 @@
                     </form>
 
                     <div class="mt-4 text-center">
-                        <a href="{% url 'reservations:appointment_status' pk=reservation.id %}" class="text-primary">
-                            بازگشت به جزئیات نوبت
+                        <a href="{% url 'reservations:book_appointment' doctor_slug=reservation.doctor.slug %}" class="text-primary">
+                            بازگشت به انتخاب نوبت
                         </a>
                     </div>
                 </div>

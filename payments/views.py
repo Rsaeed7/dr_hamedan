@@ -231,39 +231,34 @@ def wallet_deposit_payment(request):
 @login_required
 def reservation_payment(request, reservation_id):
     """پرداخت برای رزرو نوبت"""
-    reservation = get_object_or_404(
-        Reservation, 
-        id=reservation_id, 
-        status='pending', 
-        payment_status='pending'
-    )
+    # CRITICAL FIX: For direct payment, reservation is still 'available'
+    # Check session for booking intent instead of reservation status
+    booking_data = request.session.get('pending_direct_booking', {})
     
-    # بررسی مالکیت رزرو
-    if not (reservation.patient.user == request.user or 
-            (hasattr(request.user, 'patient') and reservation.patient == request.user.patient)):
-        messages.error(request, 'شما مجاز به مشاهده این صفحه نیستید.')
-        return redirect('home')
+    # Get reservation - it should still be available for direct payment
+    try:
+        reservation = Reservation.objects.get(id=reservation_id)
+    except Reservation.DoesNotExist:
+        messages.error(request, 'رزرو مورد نظر یافت نشد')
+        return redirect('doctors:doctor_list')
     
-    # محاسبه مبلغ نهایی بر اساس تعرفه پزشک (به جای مبلغ ذخیره شده در رزرو)
+    # Check if this is a valid pending direct booking
+    if booking_data.get('reservation_id') != reservation_id:
+        messages.error(request, 'اطلاعات رزرو یافت نشد. لطفاً از ابتدا اقدام کنید')
+        return redirect('reservations:book_appointment', doctor_slug=reservation.doctor.slug)
+    
+    # Check if slot is still available
+    if not reservation.is_available():
+        messages.error(request, 'این نوبت دیگر در دسترس نیست. لطفاً نوبت دیگری انتخاب کنید')
+        return redirect('reservations:book_appointment', doctor_slug=reservation.doctor.slug)
+    
+    # محاسبه مبلغ نهایی بر اساس تعرفه پزشک
     original_amount = reservation.doctor.consultation_fee
     final_amount = original_amount
     discount_info = None
     
-    # بررسی تخفیف اعمال شده
-    if hasattr(reservation, 'discount_usage'):
-        discount_usage = reservation.discount_usage
-        final_amount = discount_usage.final_amount
-        discount_info = {
-            'original_amount': discount_usage.original_amount,
-            'discount_amount': discount_usage.discount_amount,
-            'final_amount': discount_usage.final_amount,
-            'discount_title': discount_usage.discount.title
-        }
-    
-    # بروزرسانی مبلغ رزرو اگر اشتباه باشد
-    if reservation.amount != original_amount:
-        reservation.amount = original_amount
-        reservation.save()
+    # Note: Discount checking removed for direct payment flow since reservation
+    # doesn't have patient data yet. Discounts are applied during wallet payment.
     
     if request.method == 'POST':
         gateway_type = request.POST.get('gateway_type', 'zarinpal')
@@ -290,11 +285,9 @@ def reservation_payment(request, reservation_id):
             )
             
             if result['success']:
-                # ربط درخواست پرداخت به رزرو
-                reservation.payment_request = result['payment_request']
-                reservation.save()
-                
-                # هدایت به درگاه پرداخت
+                # CRITICAL FIX: Don't link payment_request to reservation yet
+                # The reservation is still 'available' and will be locked in payment callback
+                # Just redirect to payment gateway
                 return redirect(result['startpay_url'])
             else:
                 messages.error(request, result['error'])
@@ -305,11 +298,17 @@ def reservation_payment(request, reservation_id):
     # درگاه‌های پرداخت فعال
     active_gateways = PaymentGateway.objects.filter(is_active=True)
     
+    # Get patient data from session for display
+    patient_data = booking_data.get('patient_data', {})
+    
     context = {
         'reservation': reservation,
         'final_amount': final_amount,
         'discount_info': discount_info,
         'active_gateways': active_gateways,
+        'patient_name': patient_data.get('name', ''),
+        'booking_date': booking_data.get('date', ''),
+        'booking_time': booking_data.get('time', ''),
     }
     
     return render(request, 'payments/reservation_payment.html', context)
@@ -412,28 +411,87 @@ def payment_callback(request):
                 payment_type = payment_request.metadata.get('type')
                 
                 if payment_type == 'reservation_payment':
-                    # تایید رزرو
+                    # CRITICAL FIX: Lock reservation ONLY after successful payment
                     reservation_id = payment_request.metadata.get('reservation_id')
                     if reservation_id:
                         try:
-                            reservation = Reservation.objects.get(id=reservation_id)
-                            reservation.payment_status = 'paid'
-                            reservation.status = 'confirmed'
+                            from django.db import transaction as db_transaction
+                            from patients.models import PatientsFile
                             
-                            # Link the payment request to the reservation
-                            reservation.payment_request = payment_request
-                            reservation.save()
+                            # Get booking data from session
+                            booking_data = request.session.get('pending_direct_booking', {})
                             
-                            # Send confirmation notification to patient
-                            if reservation.patient and reservation.patient.user:
-                                from utils.utils import send_notification
-                                message = f"نوبت شما با دکتر {reservation.doctor.user.get_full_name()} در تاریخ {reservation.day.date} ساعت {reservation.time} تایید شد. پرداخت با موفقیت انجام شد."
-                                send_notification(
-                                    user=reservation.patient.user,
-                                    title='تایید نوبت و پرداخت',
-                                    message=message,
-                                    notification_type='success'
-                                )
+                            with db_transaction.atomic():
+                                # Lock the reservation with select_for_update to prevent race conditions
+                                reservation = Reservation.objects.select_for_update().get(id=reservation_id)
+                                
+                                # Check if slot is still available
+                                if not reservation.is_available():
+                                    # Slot was taken by someone else
+                                    payment_request.mark_as_failed('نوبت توسط شخص دیگری رزرو شده است')
+                                    messages.error(request, 'متأسفانه این نوبت توسط شخص دیگری رزرو شده است. مبلغ به کیف پول شما برگشت داده خواهد شد.')
+                                    
+                                    # Refund to wallet
+                                    from wallet.models import Wallet, Transaction as WalletTransaction
+                                    wallet, _ = Wallet.objects.get_or_create(user=request.user)
+                                    wallet.add_balance(payment_request.amount)
+                                    WalletTransaction.objects.create(
+                                        user=request.user,
+                                        wallet=wallet,
+                                        amount=payment_request.amount,
+                                        transaction_type='refund',
+                                        payment_method='wallet',
+                                        status='completed',
+                                        description=f'بازگشت وجه رزرو ناموفق - نوبت {reservation.id}'
+                                    )
+                                    
+                                    return render(request, 'payments/payment_response.html', {
+                                        'message': 'نوبت توسط شخص دیگری رزرو شده است',
+                                        'payment_request': payment_request,
+                                        'show_retry': True,
+                                        'doctor_slug': booking_data.get('doctor_slug')
+                                    })
+                                
+                                # Slot is still available - lock it now
+                                if booking_data:
+                                    patient_data = booking_data.get('patient_data', {})
+                                    reservation.patient_name = patient_data.get('name', '')
+                                    reservation.phone = patient_data.get('phone', '')
+                                    reservation.patient_national_id = patient_data.get('national_id', '')
+                                    reservation.patient_email = patient_data.get('email', '')
+                                    reservation.notes = patient_data.get('notes', '')
+                                    
+                                    # Create or link patient file
+                                    patient, _ = PatientsFile.objects.get_or_create(
+                                        user=request.user,
+                                        defaults={
+                                            'phone': patient_data.get('phone', ''),
+                                            'email': request.user.email,
+                                            'national_id': patient_data.get('national_id', '')
+                                        }
+                                    )
+                                    reservation.patient = patient
+                                
+                                # Now lock the reservation
+                                reservation.payment_status = 'paid'
+                                reservation.status = 'confirmed'
+                                reservation.payment_request = payment_request
+                                reservation.save()
+                                
+                                # Clear session data
+                                if 'pending_direct_booking' in request.session:
+                                    del request.session['pending_direct_booking']
+                                
+                                # Send confirmation notification to patient
+                                if reservation.patient and reservation.patient.user:
+                                    from utils.utils import send_notification
+                                    message = f"نوبت شما با دکتر {reservation.doctor.user.get_full_name()} در تاریخ {reservation.day.date} ساعت {reservation.time} تایید شد. پرداخت با موفقیت انجام شد."
+                                    send_notification(
+                                        user=reservation.patient.user,
+                                        title='تایید نوبت و پرداخت',
+                                        message=message,
+                                        notification_type='success'
+                                    )
                             
                             # Send SMS notification to doctor
                             if reservation.doctor and reservation.doctor.user:
@@ -524,16 +582,47 @@ def payment_callback(request):
                 })
             else:
                 payment_request.mark_as_failed(result.get('error', 'خطای نامشخص'))
-                return render(request, 'payments/payment_response.html', {
+                
+                # Check if this was a reservation payment and provide retry option
+                payment_type = payment_request.metadata.get('type')
+                booking_data = request.session.get('pending_direct_booking', {})
+                
+                context = {
                     'message': 'پرداخت ناموفق بود',
-                    'payment_request': payment_request
-                })
+                    'payment_request': payment_request,
+                    'error_detail': result.get('error', 'خطای نامشخص')
+                }
+                
+                if payment_type == 'reservation_payment' and booking_data:
+                    context.update({
+                        'show_retry': True,
+                        'reservation_id': booking_data.get('reservation_id'),
+                        'doctor_slug': booking_data.get('doctor_slug'),
+                        'is_reservation_payment': True
+                    })
+                
+                return render(request, 'payments/payment_response.html', context)
         else:
             payment_request.mark_as_failed('کاربر پرداخت را لغو کرد')
-            return render(request, 'payments/payment_response.html', {
+            
+            # Check if this was a reservation payment and provide retry option
+            payment_type = payment_request.metadata.get('type')
+            booking_data = request.session.get('pending_direct_booking', {})
+            
+            context = {
                 'message': 'پرداخت لغو شد',
                 'payment_request': payment_request
-            })
+            }
+            
+            if payment_type == 'reservation_payment' and booking_data:
+                context.update({
+                    'show_retry': True,
+                    'reservation_id': booking_data.get('reservation_id'),
+                    'doctor_slug': booking_data.get('doctor_slug'),
+                    'is_reservation_payment': True
+                })
+            
+            return render(request, 'payments/payment_response.html', context)
     
     except PaymentRequest.DoesNotExist:
         return render(request, 'payments/payment_response.html', {
@@ -548,6 +637,38 @@ def payment_callback(request):
 
 
 # API Endpoints
+@login_required
+def retry_reservation_payment(request, reservation_id):
+    """صفحه تلاش مجدد برای پرداخت رزرو نوبت"""
+    try:
+        from reservations.models import Reservation
+        
+        # Get reservation
+        reservation = Reservation.objects.get(id=reservation_id)
+        
+        # Check if reservation is still available
+        if not reservation.is_available():
+            messages.error(request, 'این نوبت دیگر در دسترس نیست')
+            return redirect('doctors:doctor_detail', slug=reservation.doctor.slug)
+        
+        # Check if we have booking data in session
+        booking_data = request.session.get('pending_direct_booking', {})
+        if not booking_data or booking_data.get('reservation_id') != reservation_id:
+            messages.error(request, 'اطلاعات رزرو یافت نشد. لطفاً از ابتدا اقدام کنید')
+            doctor_slug = reservation.doctor.slug if hasattr(reservation, 'doctor') else 'default'
+            return redirect('reservations:book_appointment', doctor_slug=doctor_slug)
+        
+        # Redirect to payment page
+        return redirect('payments:reservation_payment', reservation_id=reservation_id)
+        
+    except Reservation.DoesNotExist:
+        messages.error(request, 'رزرو مورد نظر یافت نشد')
+        return redirect('doctors:doctor_list')
+    except Exception as e:
+        messages.error(request, f'خطا در پردازش درخواست: {str(e)}')
+        return redirect('doctors:doctor_list')
+
+
 @login_required
 def api_payment_status(request, payment_id):
     """API دریافت وضعیت پرداخت"""
