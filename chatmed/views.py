@@ -52,36 +52,43 @@ def request_chat(request, doctor_id):
         user.patient.national_id = patient_national_id
         user.patient.save()
 
-    # Create chat request with payment information
+    # Get consultation fee
     consultation_fee = doctor.online_visit_fee
     full_name = f"{patient_name} {patient_last_name}".strip()
-    
-    new_request = ChatRequest.objects.create(
-        patient=patient, 
-        doctor=doctor,
-        disease_summary=disease_summary,
-        amount=consultation_fee,
-        patient_name=full_name,
-        patient_national_id=patient_national_id,
-        phone=phone
-    )
     
     # Check payment method preference
     payment_method = request.POST.get('payment_method', 'wallet')
     
     if payment_method == 'direct':
-        # Direct payment booking
-        success, message = new_request.request_with_direct_payment(user)
+        # CRITICAL FIX: For direct payment, DON'T create ChatRequest yet!
+        # Store request data in session and only create after payment success
+        request.session['pending_chat_request'] = {
+            'doctor_id': doctor_id,
+            'patient_id': patient.id,
+            'disease_summary': disease_summary,
+            'amount': consultation_fee,
+            'patient_name': full_name,
+            'patient_national_id': patient_national_id,
+            'phone': phone,
+            'payment_method': 'direct'
+        }
         
-        if success:
-            # Redirect to payment page
-            return redirect('payments:chat_payment', chat_request_id=new_request.id)
-        else:
-            new_request.delete()
-            messages.error(request, message)
-            return redirect('chat:list_doctors')
+        # Redirect to payment page (no ChatRequest created yet!)
+        # Use a temporary ID of 0 to indicate session-based request
+        return redirect('payments:chat_payment', chat_request_id=0)
     else:
-        # Wallet payment booking
+        # Wallet payment - create ChatRequest immediately
+        new_request = ChatRequest.objects.create(
+            patient=patient, 
+            doctor=doctor,
+            disease_summary=disease_summary,
+            amount=consultation_fee,
+            patient_name=full_name,
+            patient_national_id=patient_national_id,
+            phone=phone
+        )
+        
+        # Process wallet payment
         success, message = new_request.process_payment(user)
         
         if success:

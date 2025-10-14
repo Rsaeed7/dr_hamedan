@@ -20,6 +20,7 @@ urlpatterns = [
     
     # Retry payment
     path('retry-reservation/<int:reservation_id>/', views.retry_reservation_payment, name='retry_reservation_payment'),
+    path('retry-chat/', views.retry_chat_payment, name='retry_chat_payment'),
     
     # API endpoints
     path('api/status/<int:payment_id>/', views.api_payment_status, name='api_payment_status'),

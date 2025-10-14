@@ -129,6 +129,9 @@
                     {% if is_reservation_payment %}
                         <p>نوبت برای شما رزرو نشده است</p>
                         <p>می‌توانید دوباره تلاش کنید</p>
+                    {% elif is_chat_payment %}
+                        <p>درخواست مشاوره برای شما ثبت نشده است</p>
+                        <p>می‌توانید دوباره تلاش کنید</p>
                     {% else %}
                         <p>لطفاً دوباره تلاش کنید</p>
                     {% endif %}
@@ -136,6 +139,8 @@
                     <p>پرداخت لغو شد</p>
                     {% if is_reservation_payment %}
                         <p>نوبت برای شما رزرو نشده است</p>
+                    {% elif is_chat_payment %}
+                        <p>درخواست مشاوره برای شما ثبت نشده است</p>
                     {% endif %}
                 {% else %}
                     <p>در حال پردازش...</p>
@@ -145,6 +150,8 @@
                 {% if payment_request.status == "completed" %}
                     {% if is_reservation_payment %}
                         <a href="{% url 'reservations:my_appointments' %}">مشاهده نوبت‌های من</a>
+                    {% elif is_chat_payment %}
+                        <a href="{% url 'chat:list_doctors' %}">مشاهده درخواست‌های من</a>
                     {% else %}
                         <a href="{% url 'wallet:wallet_dashboard' %}">بازگشت به کیف پول</a>
                     {% endif %}
@@ -153,6 +160,10 @@
                         <a href="{% url 'payments:retry_reservation_payment' reservation_id %}">تلاش مجدد برای پرداخت</a>
                         <br><br>
                         <a href="{% url 'reservations:book_appointment' doctor_slug %}">انتخاب نوبت دیگر</a>
+                    {% elif show_retry and is_chat_payment %}
+                        <a href="{% url 'payments:retry_chat_payment' %}">تلاش مجدد برای پرداخت</a>
+                        <br><br>
+                        <a href="{% url 'chat:list_doctors' %}">بازگشت به لیست پزشکان</a>
                     {% else %}
                         <a href="{% url 'wallet:deposit' %}">شارژ کیف پول</a>
                     {% endif %}
