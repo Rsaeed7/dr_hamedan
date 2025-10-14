@@ -66,9 +66,15 @@
                     </form>
 
                     <div class="mt-4 text-center">
-                        <a href="{% url 'chat:request_status' request_id=chat_request.id %}" class="text-primary">
-                            بازگشت به جزئیات درخواست
-                        </a>
+                        {% if chat_request.id %}
+                            <a href="{% url 'chat:request_status' request_id=chat_request.id %}" class="text-primary">
+                                بازگشت به جزئیات درخواست
+                            </a>
+                        {% else %}
+                            <a href="{% url 'chat:list_doctors' %}" class="text-primary">
+                                بازگشت به لیست پزشکان
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>

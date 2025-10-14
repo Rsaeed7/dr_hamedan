@@ -120,52 +120,49 @@ class Reservation(models.Model):
                     self.transaction = payment_transaction
                         
                 elif payment_method == 'direct':
-                    # For direct payment, set status to pending and payment_status to pending
-                    self.patient_name = patient_data['name']
-                    self.phone = patient_data['phone']
-                    self.patient_national_id = patient_data.get('national_id', '')
-                    self.patient_email = patient_data.get('email', '')
-                    self.notes = patient_data.get('notes', '')
-                    self.status = 'pending'  # Pending until payment is completed
-                    self.payment_status = 'pending'
+                    # CRITICAL FIX: For direct payment, DON'T lock the slot!
+                    # The booking data is stored in session and slot is locked only after payment success
+                    # This prevents slots from being blocked when payment fails or is abandoned
+                    pass  # Nothing to do here - payment callback will handle locking
                 
-                # Create or link patient file
-                from patients.models import PatientsFile
-                patient, created = PatientsFile.objects.get_or_create(
-                    user=user,
-                    defaults={
-                        'phone': patient_data['phone'],
-                        'email': user.email,
-                        'national_id': patient_data.get('national_id', '')
-                    }
-                )
-                self.patient = patient
-                
-                self.save()
-                
-                # Send confirmation notification only for wallet payments
-                if payment_method == 'wallet' and self.patient and self.patient.user:
-                    from utils.utils import send_notification
-                    message = f"نوبت شما با دکتر {self.doctor.user.get_full_name()} در تاریخ {self.day.date} ساعت {self.time} تایید شد."
-                    send_notification(
-                        user=self.patient.user,
-                        title='تایید نوبت',
-                        message=message,
-                        notification_type='success'
+                # Create or link patient file and save only for wallet payment
+                if payment_method == 'wallet':
+                    from patients.models import PatientsFile
+                    patient, created = PatientsFile.objects.get_or_create(
+                        user=user,
+                        defaults={
+                            'phone': patient_data['phone'],
+                            'email': user.email,
+                            'national_id': patient_data.get('national_id', '')
+                        }
                     )
+                    self.patient = patient
                     
-                    # Send SMS notification to doctor for wallet payments
-                    if self.doctor and self.doctor.user:
-                        from utils.sms_service import sms_service
-                        import logging
-                        logger = logging.getLogger(__name__)
+                    self.save()
+                    
+                    # Send confirmation notification only for wallet payments
+                    if self.patient and self.patient.user:
+                        from utils.utils import send_notification
+                        message = f"نوبت شما با دکتر {self.doctor.user.get_full_name()} در تاریخ {self.day.date} ساعت {self.time} تایید شد."
+                        send_notification(
+                            user=self.patient.user,
+                            title='تایید نوبت',
+                            message=message,
+                            notification_type='success'
+                        )
                         
-                        doctor_phone = self.doctor.user.phone
-                        if doctor_phone:
-                            from jdatetime import datetime as jdatetime_dt
-                            jalali_date = jdatetime_dt.fromgregorian(datetime=self.day.date).strftime('%Y/%m/%d')
+                        # Send SMS notification to doctor for wallet payments
+                        if self.doctor and self.doctor.user:
+                            from utils.sms_service import sms_service
+                            import logging
+                            logger = logging.getLogger(__name__)
                             
-                            doctor_sms_message = f"""دکتر {self.doctor.user.get_full_name()} عزیز
+                            doctor_phone = self.doctor.user.phone
+                            if doctor_phone:
+                                from jdatetime import datetime as jdatetime_dt
+                                jalali_date = jdatetime_dt.fromgregorian(datetime=self.day.date).strftime('%Y/%m/%d')
+                                
+                                doctor_sms_message = f"""دکتر {self.doctor.user.get_full_name()} عزیز
 نوبت جدیدی برای شما ثبت شد:
 بیمار: {self.patient_name}
 تاریخ: {jalali_date}
@@ -173,17 +170,19 @@ class Reservation(models.Model):
 مبلغ: {self.amount:,} تومان
 وضعیت پرداخت: پرداخت شده (کیف پول)
 دکتر همدان"""
-                            
-                            try:
-                                sms_service.send_sms(doctor_phone, doctor_sms_message)
-                                logger.info(f"SMS sent to doctor {self.doctor.id} for reservation {self.id}")
-                            except Exception as e:
-                                logger.error(f"Failed to send SMS to doctor: {str(e)}")
+                                
+                                try:
+                                    sms_service.send_sms(doctor_phone, doctor_sms_message)
+                                    logger.info(f"SMS sent to doctor {self.doctor.id} for reservation {self.id}")
+                                except Exception as e:
+                                    logger.error(f"Failed to send SMS to doctor: {str(e)}")
                 
                 if payment_method == 'wallet':
                     return True, f"نوبت با موفقیت رزرو و پرداخت شد. مبلغ {appointment_fee:,} تومان از کیف پول شما کسر گردید."
                 else:
-                    return True, f"نوبت با موفقیت رزرو شد. لطفاً پرداخت خود را تکمیل کنید."
+                    # For direct payment, return success to proceed to payment gateway
+                    # The reservation ID will be stored in session for payment callback
+                    return True, f"در حال هدایت به درگاه پرداخت..."
                 
         except Exception as e:
             return False, f"خطا در پردازش پرداخت: {str(e)}"

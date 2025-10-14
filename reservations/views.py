@@ -104,18 +104,23 @@ def book_appointment(request, doctor_slug):  # تغییر از doctor_id به do
             payment_method = request.POST.get('payment_method', 'wallet')
 
             if payment_method == 'direct':
-                # Direct payment booking
-                success, message = reservation.book_with_direct_payment(
-                    patient_data=patient_data,
-                    user=request.user
-                )
-
-                if success:
-                    # Redirect to payment page
-                    return redirect('payments:reservation_payment', reservation_id=reservation.id)
-                else:
-                    messages.error(request, message)
-                    return redirect('reservations:book_appointment', doctor_slug=doctor_slug)  # تغییر به slug
+                # CRITICAL FIX: For direct payment, DON'T lock the reservation yet
+                # Store booking intent in session and only lock after payment success
+                
+                # Store all booking data in session
+                request.session['pending_direct_booking'] = {
+                    'doctor_slug': doctor_slug,
+                    'doctor_id': doctor.id,
+                    'reservation_id': reservation.id,
+                    'date': date_str,
+                    'time': time_str,
+                    'patient_data': patient_data,
+                    'appointment_time': appointment_time.strftime('%H:%M'),
+                    'gregorian_date': gregorian_date.strftime('%Y-%m-%d'),
+                }
+                
+                # Redirect to payment WITHOUT locking the reservation
+                return redirect('payments:reservation_payment', reservation_id=reservation.id)
             else:
                 # Wallet payment booking
                 success, message = reservation.book_appointment(
