@@ -166,6 +166,11 @@
                                            class="icon-ambulance">
                                             مدیریت خدمات در منزل
                                         </a>
+                                        <a href="{% url 'support:admin_comment_list' %}"
+                                           class="icon-comment">
+                                            مدیریت کامنت ها
+                                        </a>
+
                                     {% endif %}
                                     {% if request.user.is_admin_chat %}
                                         <a href="{% url 'support:chat_room_list' %}"
