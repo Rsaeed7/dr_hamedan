@@ -244,7 +244,7 @@ def get_chat_messages(request):
 
 
 def page_not_found(request):
-    return render(request, 'about_us/404.html')
+    return render(request, 'about_us/../templates/404.html')
 
 def about_us(request):
     return render(request, 'about_us/about_us.html')
