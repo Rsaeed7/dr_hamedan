@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>سیستم چت پزشکی</title>
+    <title>سیستم چت پزشکی — کامل</title>
 
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet"/>
     <link href="{% static 'css/extra.css' %}" rel="stylesheet"/>
@@ -15,6 +15,8 @@
         body {
             font-family: Vazirmatn, sans-serif;
             background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
         }
 
         .chat-container {
@@ -72,18 +74,51 @@
         }
 
         .chat-input {
-            padding: 15px;
+            padding: 10px 15px;
             background-color: white;
             border-top: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-input form {
+            display: flex;
+            align-items: center;
+            gap: 8px; /* فاصله بین input و دکمه‌ها */
+            width: 100%; /* فرم کل عرض را بگیرد */
+        }
+
+
+        .chat-input input[type="text"] {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            margin: 0 8px;
+        }
+
+
+        .chat-input button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
         }
 
         .attachment-btn {
             color: #7f8c8d;
-            transition: all 0.2s;
+            background: none;
+            border: none;
         }
 
         .attachment-btn:hover {
             color: #2c3e50;
+            transform: scale(1.1);
         }
 
         .file-link {
@@ -104,13 +139,16 @@
             color: #1976d2;
         }
 
+        /* === اصلاح 3: پیش‌نمایش تصاویر کوچک‌تر === */
         img.message-image {
-            max-width: 100%;
+            max-width: 80%; /* تصاویر کوچک‌تر */
+            max-height: 80%;
             border-radius: 6px;
             margin-top: 5px;
             cursor: pointer;
             transition: all 0.3s ease;
             border: 2px solid transparent;
+            object-fit: cover;
         }
 
         img.message-image:hover {
@@ -203,6 +241,12 @@
             .chat-container {
                 margin-right: 280px;
             }
+
+            img.message-image {
+                max-width: 300px; /* در دسکتاپ هم کوچک بماند */
+                max-height: 500px;
+
+            }
         }
 
         /* استایل‌های modal تصویر */
@@ -213,7 +257,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.95);
+            background: rgba(0, 0, 0, 0.95);
             z-index: 9999;
             cursor: pointer;
         }
@@ -235,7 +279,7 @@
             max-width: 95vw;
             max-height: 95vh;
             border-radius: 8px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
             object-fit: contain;
         }
 
@@ -243,7 +287,7 @@
             position: absolute;
             top: 20px;
             right: 20px;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0, 0, 0, 0.7);
             border: none;
             color: white;
             font-size: 30px;
@@ -259,7 +303,7 @@
         }
 
         .image-modal-close:hover {
-            background: rgba(255,0,0,0.8);
+            background: rgba(255, 0, 0, 0.8);
             transform: scale(1.1);
         }
 
@@ -268,7 +312,7 @@
             bottom: 20px;
             right: 50%;
             transform: translateX(50%);
-            background: rgba(0,0,0,0.7);
+            background: rgba(0, 0, 0, 0.7);
             border: none;
             color: white;
             padding: 10px 20px;
@@ -279,7 +323,7 @@
         }
 
         .image-modal-zoom:hover {
-            background: rgba(0,123,255,0.8);
+            background: rgba(0, 123, 255, 0.8);
         }
 
         /* حالت زوم */
@@ -298,20 +342,27 @@
             object-fit: contain;
         }
 
-        /* استایل‌های جدید برای پیش‌نمایش و لودینگ */
+        /* === اصلاح 2: حذف نمایش اسم فایل === */
         .file-preview-container {
             background: #e3f2fd;
             border: 1px solid #bbdefb;
             border-radius: 10px;
             padding: 10px;
-            margin-bottom: 10px;
+            margin: 10px 20px;
             animation: slideDown 0.3s ease;
             display: none;
+            box-sizing: border-box;
         }
 
         @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .upload-progress {
@@ -319,7 +370,7 @@
             height: 4px;
             background: #e0e0e0;
             border-radius: 2px;
-            margin-top: 5px;
+            margin-top: 8px;
             overflow: hidden;
         }
 
@@ -333,7 +384,7 @@
         .upload-status {
             font-size: 12px;
             color: #666;
-            margin-top: 5px;
+            margin-top: 6px;
         }
 
         .send-button-loading {
@@ -341,15 +392,16 @@
             pointer-events: none;
         }
 
+        /* === اصلاح 2: حذف بخش نمایش اسم فایل === */
         .preview-file-info {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-end; /* فقط دکمه‌ها در سمت چپ */
+            margin-bottom: 8px;
         }
 
         .preview-file-name {
-            font-size: 14px;
-            font-weight: 500;
+            display: none; /* مخفی کردن اسم فایل */
         }
 
         .preview-file-actions {
@@ -362,13 +414,13 @@
             border: none;
             cursor: pointer;
             font-size: 14px;
-            padding: 4px;
-            border-radius: 4px;
-            transition: background 0.2s;
+            padding: 6px;
+            border-radius: 6px;
+            transition: background 0.15s;
         }
 
         .preview-action-btn:hover {
-            background: rgba(0, 0, 0, 0.1);
+            background: rgba(0, 0, 0, 0.06);
         }
 
         .preview-cancel {
@@ -378,13 +430,97 @@
         .preview-send {
             color: #4caf50;
         }
+
+        .preview-media {
+            margin-top: 0; /* چون اسم فایل حذف شده */
+        }
+
+        /* پیش‌نمایش ویس */
+        .voice-preview {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border-top: 1px solid #ddd;
+            background: #f0f0f0;
+            flex-direction: row-reverse;
+        }
+
+        .voice-preview.active {
+            display: flex;
+        }
+
+        .voice-preview audio {
+            flex: 1;
+            margin-left: 10px;
+        }
+
+        /* حالت ضبط فعال */
+        .recording {
+            color: red !important;
+            animation: pulse 1s infinite;
+            box-shadow: 0 0 0 6px rgba(244, 67, 54, 0.12);
+            transform: scale(1.03);
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.3);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* موبایل: نمایش عمودی و جلوگیری از به‌هم‌ریختگی */
+        @media (max-width: 576px) {
+            .file-preview-container {
+                word-break: break-all;
+                padding: 8px;
+                display: none;
+                width: calc(100% - 40px);
+                margin: 8px 20px;
+            }
+
+            .preview-file-info {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+                width: 100%;
+            }
+
+            .preview-file-actions {
+                display: flex;
+                justify-content: flex-end;
+                width: 100%;
+            }
+
+            .upload-progress {
+                width: 100%;
+            }
+
+            .voice-preview {
+                flex-direction: column-reverse;
+                align-items: flex-start;
+                gap: 5px;
+            }
+        }
+
+        .status-badge {
+            font-size: 11px;
+            padding: 3px 8px;
+        }
     </style>
 </head>
 <body>
 <!-- Modal برای نمایش تصویر بزرگ -->
 <div id="imageModal" class="image-modal">
     <button class="image-modal-close" onclick="closeImageModal()">×</button>
-    <button class="image-modal-zoom" onclick="toggleZoom()">بزرگنمایی</button>
+    <button class="image-modal-zoom" onclick="toggleZoom()"><i class="icon-zoom-in"></i></button>
     <div class="image-modal-content">
         <img id="modalImage" src="" alt="تصویر بزرگ شده">
     </div>
@@ -400,34 +536,34 @@
         <ul class="nav flex-column">
             <li class="nav-item">
                 <a class="nav-link" href="/">
-                    <i class="fas fa-home me-2"></i> صفحه اصلی
+                    <i class="icon-home"></i> صفحه اصلی
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'chat:chat_home' %}">
-                    <i class="fas fa-comments me-2"></i> گفتگوها
+                    <i class="icon-chat-inv"></i> گفتگوها
                 </a>
             </li>
             {% if request.user.doctor %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'doctors:doctor_appointments' %}">
-                        <i class="fas fa-calendar-alt me-2"></i> نوبت‌ها
+                        <i class="icon-calendar-2"></i> نوبت‌ها
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'doctors:doctor_dashboard' %}">
-                        <i class="fas fa-dashboard me-2"></i> داشبورد
+                        <i class="icon-gauge-2"></i> داشبورد
                     </a>
                 </li>
             {% else %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'patients:patient_appointments' %}">
-                        <i class="fas fa-calendar-alt me-2"></i> نوبت‌ها
+                        <i class="icon-calendar-2"></i> نوبت‌ها
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'patients:patient_dashboard' %}">
-                        <i class="fas fa-user me-2"></i> پروفایل
+                        <i class="icon-user"></i> پروفایل
                     </a>
                 </li>
             {% endif %}
@@ -441,7 +577,7 @@
     <div class="chat-header d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
             <a href="{% url 'chat:chat_room_list' %}" class="text-white me-3">
-                <i class="fas fa-arrow-right p-1"></i>
+                <i class=" icon-right-small"></i>
             </a>
             <div>
                 <h6 class="mb-1 fw-bold text-white">
@@ -452,18 +588,18 @@
                     {% endif %}
                 </h6>
                 <div class="d-flex align-items-center">
-                {% if not is_doctor %}
-                    <span class="status-badge badge {% if chat_room.request.doctor.availability.is_available %}bg-success{% else %}bg-secondary{% endif %} me-2">
+                    {% if not is_doctor %}
+                        <span class="status-badge badge {% if chat_room.request.doctor.availability.is_available %}bg-success{% else %}bg-secondary{% endif %} me-2">
                         {% if chat_room.request.doctor.availability.is_available %}آنلاین{% else %}آفلاین{% endif %}
                     </span>
-                {% endif %}
+                    {% endif %}
                     <small class="text-light">{{ chat_room.request.doctor.specialty }}</small>
                 </div>
             </div>
         </div>
         <div class="d-flex d-lg-none">
-            <button class="btn btn-sm btn-link text-white me-2" id="sidebar-toggle">
-                <i class="fas fa-bars"></i>
+            <button class="btn btn-sm btn-link text-white me-2" >
+                <i class="icon-menu" id="sidebar-toggle"></i>
             </button>
         </div>
     </div>
@@ -479,7 +615,7 @@
                         <img src="{{ message.file.url }}"
                              alt="تصویر ارسالی"
                              class="message-image"
-                             onclick="openImageModal('{{ message.file.url }}')" />
+                             onclick="openImageModal('{{ message.file.url }}')"/>
                     {% elif message.message_type == 'audio' and message.audio %}
                         <audio controls>
                             <source src="{{ message.audio.url }}" type="audio/mpeg"/>
@@ -488,7 +624,7 @@
                     {% elif message.message_type == 'file' and message.file %}
                         <a href="{{ message.file.url }}" target="_blank" class="file-link">
                             دانلود فایل
-                            <i class="fas fa-file-download"></i>
+                            <i class="icon-download-1"></i>
                         </a>
                     {% else %}
                         <em>پیام نامشخص</em>
@@ -507,19 +643,23 @@
     </div>
 
     <!-- پیش‌نمایش فایل قبل از ارسال -->
-    <div id="file-preview-container" class="file-preview-container">
+    <div id="file-preview-container" class="file-preview-container" aria-live="polite">
         <div class="preview-file-info">
-            <span class="preview-file-name" id="preview-file-name"></span>
             <div class="preview-file-actions">
                 <button class="preview-action-btn preview-send" id="preview-send-btn" title="ارسال فایل">
-                    <i class="fas fa-paper-plane"></i>
+                    <i class="icon-paper-plane-1"></i>
                 </button>
                 <button class="preview-action-btn preview-cancel" id="preview-cancel-btn" title="لغو ارسال">
-                    <i class="fas fa-times"></i>
+                    <i class="icon-cancel"></i>
                 </button>
             </div>
         </div>
-        <div class="upload-progress">
+
+        <div class="preview-media" id="preview-media">
+            <!-- اینجا پیش‌نمایش تصویر یا ویس نمایش داده می‌شود -->
+        </div>
+
+        <div class="upload-progress" aria-hidden="true">
             <div class="upload-progress-bar" id="upload-progress-bar"></div>
         </div>
         <div class="upload-status" id="upload-status">آماده برای ارسال</div>
@@ -530,19 +670,23 @@
         <div class="chat-input">
             <form id="message-form" class="d-flex align-items-center" enctype="multipart/form-data">
                 {% csrf_token %}
-                <button type="button" class="btn btn-link attachment-btn me-2" id="attachment-button"
-                        title="ارسال فایل">
-                    <i class="fas fa-paperclip"></i>
+                <button type="button" class="btn btn-link attachment-btn" id="attachment-button" title="ارسال فایل">
+                    <i class="icon-attach-7"></i>
                 </button>
-                <input type="file" id="file-input" style="display:none" accept="image/*,audio/*,.pdf,.doc,.docx,.txt"/>
 
-                <input type="text" name="content" class="form-control rounded-pill border-light-2"
-                       placeholder="پیام خود را بنویسید..." autocomplete="off" id="text-input"/>
+               <input type="file" id="file-input" style="display:none" accept="image/*,audio/*,video/*,.pdf,.doc,.docx,.txt"/>
 
+
+                <!-- دکمه ضبط ویس با دو حالت -->
+                <button type="button" class="btn btn-link attachment-btn" id="voice-button" title="ضبط ویس">
+                    <i class="icon-mic" id="voice-icon"></i>
+                </button>
+
+                <input type="text" name="content" class="form-control " placeholder="پیام خود را بنویسید..."
+                       id="text-input"/>
                 <!-- دکمه ارسال با حالت‌های مختلف -->
-                <button type="submit" class="btn btn-primary rounded-circle ms-2"
-                        style="width: 40px; height: 40px;" id="send-button">
-                    <i class="fas fa-paper-plane" id="send-icon"></i>
+                <button type="submit" class="btn btn-primary" id="send-button">
+                    <i class="icon-left-open" id="send-icon"></i>
                     <div class="spinner-border spinner-border-sm text-light" role="status"
                          style="display: none;" id="send-spinner">
                         <span class="visually-hidden">در حال ارسال...</span>
@@ -555,33 +699,31 @@
     {% endif %}
 </div>
 
-<!-- آیکون‌ها -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 
-<!-- تعریف متغیر آدرس آپلود فایل -->
-<script>
-    const uploadFileUrl = "{% url 'chat:upload_file' %}";
-</script>
 
-<!-- WebSocket Script -->
 <script>
     const roomId = "{{ chat_room.id }}";
     const currentUserId = {{ request.user.id }};
+    const uploadFileUrl = "{% url 'chat:upload_file' %}";
 
     const wsProtocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
     const wsPath = `${wsProtocol}${window.location.host}/ws/medical-chat/${roomId}/`;
     const chatSocket = new WebSocket(wsPath);
 
-    // متغیرهای مدیریت فایل و وضعیت
     let currentFile = null;
     let isUploading = false;
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let isRecording = false;
+    let audioBlob = null;
 
-    // عناصر DOM
     const fileInput = document.getElementById('file-input');
     const filePreviewContainer = document.getElementById('file-preview-container');
     const previewFileName = document.getElementById('preview-file-name');
     const previewSendBtn = document.getElementById('preview-send-btn');
     const previewCancelBtn = document.getElementById('preview-cancel-btn');
+    const previewMedia = document.getElementById('preview-media');
     const uploadProgressBar = document.getElementById('upload-progress-bar');
     const uploadStatus = document.getElementById('upload-status');
     const sendButton = document.getElementById('send-button');
@@ -589,75 +731,23 @@
     const sendSpinner = document.getElementById('send-spinner');
     const textInput = document.getElementById('text-input');
     const attachmentButton = document.getElementById('attachment-button');
+    const voiceButton = document.getElementById('voice-button');
+    const voiceIcon = document.getElementById('voice-icon');
 
-    // توابع مدیریت modal تصاویر
-    let isZoomed = false;
-
-    function openImageModal(imageUrl) {
-        const modalImage = document.getElementById('modalImage');
-        const imageModal = document.getElementById('imageModal');
-
-        modalImage.src = imageUrl;
-        imageModal.style.display = 'block';
-        document.body.style.overflow = 'hidden';
-
-        // ریست کردن حالت زوم
-        isZoomed = false;
-        imageModal.classList.remove('zoomed');
-    }
-
-    function closeImageModal() {
-        const imageModal = document.getElementById('imageModal');
-        imageModal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-
-        // ریست کردن حالت زوم
-        isZoomed = false;
-        imageModal.classList.remove('zoomed');
-    }
-
-    function toggleZoom() {
-        const imageModal = document.getElementById('imageModal');
-        isZoomed = !isZoomed;
-
-        if (isZoomed) {
-            imageModal.classList.add('zoomed');
-        } else {
-            imageModal.classList.remove('zoomed');
-        }
-    }
-
-    // بستن modal با کلیک روی backdrop
-    document.getElementById('imageModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeImageModal();
-        }
-    });
-
-    // بستن modal با کلید Escape
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closeImageModal();
-        }
-    });
 
     function scrollToBottom() {
         const container = document.getElementById('chat-messages');
         container.scrollTop = container.scrollHeight;
     }
 
-    // فعال کردن کلیک روی تصاویر موجود
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('img.message-image').forEach(img => {
-            img.addEventListener('click', function() {
-                openImageModal(this.src);
-            });
+            img.addEventListener('click', () => openImageModal(img.src));
         });
         scrollToBottom();
         updateSendButtonState();
     });
 
-    // مدیریت WebSocket
     chatSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
         const messagesContainer = document.getElementById('chat-messages');
@@ -670,111 +760,249 @@
         if (data.message_type === 'text') {
             messageContentHtml = data.message.replace(/\n/g, '<br />');
         } else if (data.message_type === 'image' && data.file_url) {
-            messageContentHtml = `
-                <img src="${data.file_url}"
-                     alt="تصویر ارسالی"
-                     class="message-image"
-                     onclick="openImageModal('${data.file_url}')" />
-            `;
+            messageContentHtml = `<img src="${data.file_url}" class="message-image" onclick="openImageModal('${data.file_url}')" />`;
         } else if (data.message_type === 'audio' && data.file_url) {
-            messageContentHtml = `
-                <audio controls>
-                    <source src="${data.file_url}" type="audio/mpeg" />
-                    مرورگر شما از پخش صوت پشتیبانی نمی‌کند.
-                </audio>
-            `;
+            messageContentHtml = `<audio controls><source src="${data.file_url}" type="audio/mpeg" />مرورگر شما از پخش صوت پشتیبانی نمی‌کند.</audio>`;
         } else if (data.message_type === 'file' && data.file_url) {
-            messageContentHtml = `
-                <a href="${data.file_url}" target="_blank" class="file-link">
-                    دانلود فایل
-                    <i class="fas fa-file-download"></i>
-                </a>
-            `;
+            messageContentHtml = `<a href="${data.file_url}" target="_blank" class="file-link">دانلود فایل <i class="icon-download"></i></a>`;
         } else {
             messageContentHtml = '<em>پیام نامشخص</em>';
         }
 
-        messageDiv.innerHTML = `
-            <div class="message-content">${messageContentHtml}</div>
-            <div class="message-time">
-                ${new Date(data.timestamp).toLocaleTimeString('fa-IR', {hour: '2-digit', minute: '2-digit'})}
-                ${isSentByMe ? '<i class="icon-ok text-success ms-2" style="font-size: 8px;"></i>' : ''}
-            </div>
-        `;
-
+        messageDiv.innerHTML = `<div class="message-content">${messageContentHtml}</div>
+                                <div class="message-time">
+                                    ${new Date(data.timestamp).toLocaleTimeString('fa-IR', {
+            hour: '2-digit',
+            minute: '2-digit'
+        })}
+                                    ${isSentByMe ? '<i class="icon-ok text-success ms-2" style="font-size: 8px;"></i>' : ''}
+                                </div>`;
         messagesContainer.appendChild(messageDiv);
         scrollToBottom();
 
-        // فعال کردن کلیک روی تصاویر جدید
         setTimeout(() => {
             const newImages = messageDiv.querySelectorAll('img.message-image');
-            newImages.forEach(img => {
-                img.addEventListener('click', function() {
-                    openImageModal(this.src);
-                });
-            });
+            newImages.forEach(img => img.addEventListener('click', () => openImageModal(img.src)));
         }, 100);
     };
 
-    // مدیریت ارسال فرم
+    chatSocket.onclose = function (e) {
+        console.error('اتصال چت بسته شد');
+    };
+
     document.getElementById('message-form').addEventListener('submit', async function (e) {
         e.preventDefault();
-
         const messageText = textInput.value.trim();
-
         if (currentFile) {
-            // اگر فایل وجود دارد، اول فایل را آپلود کن
             await uploadAndSendFile(currentFile, messageText);
         } else if (messageText) {
-            // اگر فقط متن وجود دارد
             sendTextMessage(messageText);
         }
     });
 
-    // کلیک روی دکمه گیره کاغذ
-    attachmentButton.addEventListener('click', () => {
-        fileInput.click();
-    });
-
-    // وقتی کاربر فایل انتخاب کرد
+    attachmentButton.addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', (e) => {
         if (e.target.files.length > 0) {
-            currentFile = e.target.files[0];
-            showFilePreview(currentFile);
+            const f = e.target.files[0];
+            currentFile = f;
+            showFilePreview(f);
         }
     });
 
-    // نمایش پیش‌نمایش فایل
     function showFilePreview(file) {
-        previewFileName.textContent = file.name;
+        // === اصلاح 2: نمایش اسم فایل حذف شده ===
+        previewMedia.innerHTML = '';
+
+        if (file.type.startsWith('image/')) {
+            const img = document.createElement('img');
+            img.className = 'message-image';
+            img.alt = 'پیش‌نمایش تصویر';
+            img.src = URL.createObjectURL(file);
+            img.addEventListener('click', () => openImageModal(img.src));
+            previewMedia.appendChild(img);
+        } else if (file.type.startsWith('audio/')) {
+            const audio = document.createElement('audio');
+            audio.controls = true;
+            audio.src = URL.createObjectURL(file);
+            previewMedia.appendChild(audio);
+        } else {
+            const p = document.createElement('p');
+            p.textContent = 'فایل آماده ارسال است';
+            previewMedia.appendChild(p);
+        }
+
         filePreviewContainer.style.display = 'block';
         uploadProgressBar.style.width = '0%';
         uploadStatus.textContent = 'آماده برای ارسال';
-        textInput.focus();
+        updateSendButtonState();
     }
 
-    // ارسال فایل از طریق پیش‌نمایش
     previewSendBtn.addEventListener('click', async () => {
-        if (currentFile) {
-            const messageText = textInput.value.trim();
-            await uploadAndSendFile(currentFile, messageText);
-        }
+        if (currentFile) await uploadAndSendFile(currentFile, textInput.value.trim());
     });
-
-    // لغو آپلود از طریق پیش‌نمایش
-    previewCancelBtn.addEventListener('click', () => {
-        cancelFileUpload();
-    });
+    previewCancelBtn.addEventListener('click', cancelFileUpload);
 
     function cancelFileUpload() {
         currentFile = null;
         fileInput.value = '';
+        previewMedia.innerHTML = '';
         filePreviewContainer.style.display = 'none';
         isUploading = false;
+        uploadProgressBar.style.width = '0%';
+        uploadStatus.textContent = 'آماده برای ارسال';
         updateSendButtonState();
     }
 
-    // آپدیت وضعیت دکمه ارسال
+    // ================= ضبط صوت با کلیک =================
+    voiceButton.addEventListener('click', async () => {
+        if (!isRecording) {
+            await startRecording();
+        } else {
+            stopRecording();
+        }
+    });
+
+    async function startRecording() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+            mediaRecorder.ondataavailable = ev => audioChunks.push(ev.data);
+            mediaRecorder.onstop = () => {
+                audioBlob = new Blob(audioChunks, {type: 'audio/mpeg'});
+
+                // === اصلاح 1: فقط از file-preview-container استفاده می‌کنیم ===
+                const audioFile = new File([audioBlob], `voice_${Date.now()}.mp3`, {type: 'audio/mpeg'});
+                currentFile = audioFile;
+                showFilePreview(currentFile);
+
+                try {
+                    stream.getTracks().forEach(t => t.stop());
+                } catch (e) {
+                }
+                voiceButton.classList.remove('recording');
+                isRecording = false;
+            };
+
+            mediaRecorder.start();
+            isRecording = true;
+            voiceButton.classList.add('recording');
+            uploadStatus.textContent = 'در حال ضبط...';
+        } catch (err) {
+            console.error('خطا در دسترسی به میکروفن', err);
+            alert('برای ضبط صدا باید دسترسی میکروفن را فعال کنید.');
+        }
+    }
+
+    function stopRecording() {
+        if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
+        voiceButton.classList.remove('recording');
+        uploadStatus.textContent = 'پایان ضبط — پیش‌نمایش آماده است';
+    }
+
+
+    window.addEventListener('beforeunload', () => {
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+            try {
+                mediaRecorder.stop();
+            } catch (e) {
+            }
+        }
+    });
+
+    async function uploadAndSendFile(file, caption = '') {
+        if (isUploading) return;
+        isUploading = true;
+        updateSendButtonState();
+        uploadStatus.textContent = 'در حال آپلود...';
+
+        try {
+            const formData = new FormData();
+            formData.append('file', file, file.name);
+
+
+            simulateUploadProgress();
+
+            const response = await fetch(uploadFileUrl, {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin'
+            });
+            const data = await response.json();
+
+            if (data.file_url) {
+                uploadProgressBar.style.width = '100%';
+                uploadStatus.textContent = 'در حال ارسال پیام...';
+
+                chatSocket.send(JSON.stringify({
+                    message_type: getMessageTypeFromFile(file),
+                    file_url: data.file_url,
+                    message: caption
+                }));
+
+                resetForm();
+                uploadStatus.textContent = 'ارسال شد!';
+
+                // پاک کردن پیش‌نمایش بعد از ارسال
+                setTimeout(() => {
+                    filePreviewContainer.style.display = 'none';
+                    previewMedia.innerHTML = '';
+                }, 1000);
+
+            } else throw new Error('خطا در آپلود فایل');
+        } catch (error) {
+            uploadStatus.textContent = 'خطا در آپلود فایل';
+            uploadProgressBar.style.backgroundColor = '#f44336';
+            console.error(error);
+            alert('خطا در آپلود فایل: ' + (error.message || error));
+        } finally {
+            isUploading = false;
+            updateSendButtonState();
+        }
+    }
+
+    function simulateUploadProgress() {
+        uploadProgressBar.style.backgroundColor = '#4caf50';
+        let progress = 0;
+        const interval = setInterval(() => {
+            if (!isUploading) {
+                clearInterval(interval);
+                return;
+            }
+            if (progress >= 90) {
+                clearInterval(interval);
+                return;
+            }
+            progress += Math.random() * 15;
+            if (progress > 90) progress = 90;
+            uploadProgressBar.style.width = progress + '%';
+        }, 200);
+    }
+
+    function sendTextMessage(message) {
+        chatSocket.send(JSON.stringify({message_type: 'text', message: message}));
+        resetForm();
+    }
+
+    function resetForm() {
+        textInput.value = '';
+        currentFile = null;
+        fileInput.value = '';
+        previewMedia.innerHTML = '';
+        filePreviewContainer.style.display = 'none';
+        uploadProgressBar.style.width = '0%';
+        uploadStatus.textContent = 'آماده برای ارسال';
+        updateSendButtonState();
+    }
+
+    function getMessageTypeFromFile(file) {
+        if (!file) return 'text';
+        const type = file.type || '';
+        if (type.startsWith('image/')) return 'image';
+        if (type.startsWith('audio/')) return 'audio';
+        return 'file';
+    }
+
     function updateSendButtonState() {
         const hasText = textInput.value.trim() !== '';
         const hasFile = currentFile !== null;
@@ -792,126 +1020,67 @@
         }
     }
 
-    // تابع برای آپلود و ارسال فایل
-    async function uploadAndSendFile(file, caption = '') {
-        if (isUploading) return;
+    textInput.addEventListener('input', updateSendButtonState);
+</script>
+<script>
+    // ==================== مدیریت Modal تصویر ====================
+    let isZoomed = false;
 
-        isUploading = true;
-        updateSendButtonState();
-        uploadStatus.textContent = 'در حال آپلود...';
+    function openImageModal(imageUrl) {
+        const modalImage = document.getElementById('modalImage');
+        const imageModal = document.getElementById('imageModal');
+        modalImage.src = imageUrl;
+        imageModal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        isZoomed = false;
+        imageModal.classList.remove('zoomed');
+    }
 
-        try {
-            const formData = new FormData();
-            formData.append('file', file);
+    function closeImageModal() {
+        const imageModal = document.getElementById('imageModal');
+        imageModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        isZoomed = false;
+        imageModal.classList.remove('zoomed');
+    }
 
-            // شبیه‌سازی پیشرفت آپلود
-            simulateUploadProgress();
-
-            const response = await fetch(uploadFileUrl, {
-                method: 'POST',
-                body: formData
-            });
-
-            const data = await response.json();
-
-            if (data.file_url) {
-                uploadProgressBar.style.width = '100%';
-                uploadStatus.textContent = 'در حال ارسال پیام...';
-
-                // فایل آپلود شد، حالا از طریق WebSocket ارسال کن
-                chatSocket.send(JSON.stringify({
-                    message_type: getMessageTypeFromFile(file),
-                    file_url: data.file_url,
-                    message: caption
-                }));
-
-                // ریست کردن فرم
-                resetForm();
-                uploadStatus.textContent = 'ارسال شد!';
-
-                // مخفی کردن پیش‌نمایش بعد از تأخیر کوتاه
-                setTimeout(() => {
-                    filePreviewContainer.style.display = 'none';
-                }, 1000);
-            } else {
-                throw new Error('خطا در آپلود فایل');
-            }
-        } catch (error) {
-            uploadStatus.textContent = 'خطا در آپلود فایل';
-            uploadProgressBar.style.backgroundColor = '#f44336';
-            alert('خطا در آپلود فایل: ' + error.message);
-        } finally {
-            isUploading = false;
-            updateSendButtonState();
+    function toggleZoom() {
+        const imageModal = document.getElementById('imageModal');
+        isZoomed = !isZoomed;
+        if (isZoomed) {
+            imageModal.classList.add('zoomed');
+        } else {
+            imageModal.classList.remove('zoomed');
         }
     }
 
-    // شبیه‌سازی پیشرفت آپلود (در محیط واقعی این بخش با real progress events جایگزین می‌شود)
-    function simulateUploadProgress() {
-        let progress = 0;
-        const interval = setInterval(() => {
-            if (progress >= 90 || !isUploading) {
-                clearInterval(interval);
-                return;
-            }
-            progress += Math.random() * 15;
-            if (progress > 90) progress = 90;
-            uploadProgressBar.style.width = progress + '%';
-        }, 200);
+    document.getElementById('imageModal').addEventListener('click', function (e) {
+        if (e.target === this) {
+            closeImageModal();
+        }
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            closeImageModal();
+        }
+    });
+
+    function scrollToBottom() {
+        const container = document.getElementById('chat-messages');
+        container.scrollTop = container.scrollHeight;
     }
 
-    // تابع برای ارسال پیام متنی
-    function sendTextMessage(message) {
-        chatSocket.send(JSON.stringify({
-            message_type: 'text',
-            message: message
-        }));
-        resetForm();
-    }
 
-    // ریست کردن فرم بعد از ارسال
-    function resetForm() {
-        textInput.value = '';
-        currentFile = null;
-        fileInput.value = '';
-        updateSendButtonState();
-    }
-
-    // آپدیت وضعیت دکمه با هر تغییر در input
-    textInput.addEventListener('input', updateSendButtonState);
-
-    // تابع تشخیص نوع فایل
-    function getMessageTypeFromFile(file) {
-        const type = file.type;
-        if (type.startsWith('image/')) return 'image';
-        if (type.startsWith('audio/')) return 'audio';
-        return 'file';
-    }
-
-    chatSocket.onclose = function (e) {
-        console.error('اتصال چت بسته شد');
-    };
-</script>
-
-<!-- مدیریت سایدبار -->
-<script>
+    // مدیریت سایدبار
     const sidebar = document.getElementById('sidebar');
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const closeSidebar = document.getElementById('close-sidebar');
 
-    sidebarToggle.addEventListener('click', () => {
-        sidebar.classList.toggle('active');
-    });
-
-    closeSidebar.addEventListener('click', () => {
-        sidebar.classList.remove('active');
-    });
-
-    // بستن سایدبار هنگام کلیک خارج از آن
+    sidebarToggle.addEventListener('click', () => sidebar.classList.toggle('active'));
+    closeSidebar.addEventListener('click', () => sidebar.classList.remove('active'));
     document.addEventListener('click', (e) => {
-        if (!sidebar.contains(e.target) && e.target !== sidebarToggle) {
-            sidebar.classList.remove('active');
-        }
+        if (!sidebar.contains(e.target) && e.target !== sidebarToggle) sidebar.classList.remove('active');
     });
 </script>
 </body>

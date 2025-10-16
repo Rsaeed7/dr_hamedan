@@ -55,6 +55,8 @@ def article(request, slug):
             comment.status = 'checking'  # وضعیت پیش‌فرض کامنت
             comment.user = request.user if request.user.is_authenticated else None
             comment.save()
+            messages.success(request,
+                             'نظر شما با موفقیت ثبت شد و پس از تایید نمایش داده خواهد شد!')
             return redirect(object.get_absolute_url())  # بازگشت به صفحه مقاله
     else:
         form = CommentForm()
