@@ -98,7 +98,17 @@ else:
 
     CHANNEL_LAYERS = {
         "default": {
-            "BACKEND": "channels.layers.InMemoryChannelLayer",  # برای لوکال
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [{
+                    "host": REDIS_HOST,
+                    "port": REDIS_PORT,
+                    "password": REDIS_PASSWORD,
+                    "db": REDIS_DB,
+                }],
+                "capacity": 1500,
+                "expiry": 10,
+            },
         },
     }
 
