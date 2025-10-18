@@ -141,73 +141,13 @@
         </div>
     </div>
 
-    <!-- اسکریپت‌های ضروری -->
-    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
-    <script>
-        // مدیریت نقاشی دستی
-        let signaturePad;
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const canvas = document.getElementById('sketchpad');
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
 
-            signaturePad = new SignaturePad(canvas, {
-                backgroundColor: 'rgb(255, 255, 255)',
-                penColor: 'rgb(0, 0, 0)',
-                minWidth: 1,
-                maxWidth: 3,
-                throttle: 16
-            });
-        });
 
-        function clearCanvas() {
-            signaturePad.clear();
-            document.getElementById('sketchpadInput').value = '';
-        }
-
-        function saveCanvas() {
-            const input = document.getElementById('sketchpadInput');
-            if (!signaturePad.isEmpty()) {
-                input.value = signaturePad.toDataURL('image/jpeg', 0.8);
-                alert('دست نوشته ذخیره شد!');
-            } else {
-                input.value = '';
-            }
-        }
-
-        // نمایش/مخفی کردن جزئیات ویزیت
-        function toggleVisitDetails(id) {
-            const el = document.getElementById(id);
-            el.classList.toggle('hidden');
-        }
-
-        // جلوگیری از اسکرول هنگام نقاشی روی موبایل
-        document.getElementById('sketchpad').addEventListener('touchmove', (e) => {
-            e.preventDefault();
-        }, {passive: false});
-
-        // توابع جدید برای مدیریت modal عکس
-        function openImageModal(imageUrl) {
-            const modal = document.getElementById('imageModal');
-            const modalImage = document.getElementById('modalImage');
-
-            modalImage.src = imageUrl;
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden'; // جلوگیری از اسکرول صفحه پس زمینه
-        }
-
-        function closeImageModal() {
-            const modal = document.getElementById('imageModal');
-            modal.classList.add('hidden');
-            document.body.style.overflow = 'auto'; // فعال کردن مجدد اسکرول صفحه
-        }
-
-        // بستن modal با کلیک روی پس زمینه
-        document.getElementById('imageModal').addEventListener('click', function (e) {
-            if (e.target === this) {
-                closeImageModal();
-            }
-        });
-    </script>
 {% endblock %}
+
+
+    <!-- اسکریپت‌های ضروری -->
+    {% block extra_js %}
+        <script src="{% static 'js/dr/report.js' %}"></script>
+    {% endblock %}

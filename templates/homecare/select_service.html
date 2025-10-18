@@ -2,7 +2,11 @@
 {% load static %}
 
 {% block body %}
-{% block title %}<title>درخواست خدمت | دکتر همدان</title>{% endblock %}
+    {% block title %}<title>درخواست خدمت | دکتر همدان</title>{% endblock %}
+
+    <!-- اضافه کردن data attribute برای انتقال داده به JS -->
+    <body data-category-selected="{% if selected_category %}true{% else %}false{% endif %}">
+
     <section class=" col-12 text-center my-4 box_general">
         <p class="mb-3 fw-bold">مراحل درخواست خدمات پزشکی و پرستاری در محل</p>
 
@@ -104,38 +108,16 @@
 
     </div>
 
+    <section class="container text-center my-4 box_general bg-light-blue">
+        <p class="mb-3 fw-bold">با ثبت درخواست برای ویزیت پزشک یا دریافت خدمات پرستاری در محل، همکاران ما در «دکتر
+            همدان» در سریع‌ترین زمان ممکن با شما تماس گرفته و اقدامات لازم برای ارائه خدمات در محل مورد نظر شما را
+            هماهنگ خواهند کرد.</p>
+    </section>
 
-        <section class="container text-center my-4 box_general bg-light-blue">
-            <p class="mb-3 fw-bold">با ثبت درخواست برای ویزیت پزشک یا دریافت خدمات پرستاری در محل، همکاران ما در «دکتر همدان» در سریع‌ترین زمان ممکن با شما تماس گرفته و اقدامات لازم برای ارائه خدمات در محل مورد نظر شما را هماهنگ خواهند کرد.</p>
 
-        </section>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const citySelect = document.getElementById('city');
+{% endblock %}
 
-            // وقتی شهر انتخاب شد، اسکرول کن به بخش دسته‌بندی‌ها
-            citySelect.addEventListener('change', function () {
-                // صبر کن تا صفحه با انتخاب شهر دوباره بارگذاری بشه
-                setTimeout(() => {
-                    const categorySection = document.querySelector('.list_home');
-                    if (categorySection) {
-                        categorySection.scrollIntoView({behavior: 'smooth', block: 'start'});
-                    }
-                }, 500);
-            });
-
-            // اگر کاربر قبلاً دسته‌بندی انتخاب کرده
-            {% if selected_category %}
-                // اسکرول به بخش خدمات بعد از لود
-                setTimeout(() => {
-                    const servicesSection = document.querySelector('.row.g-3');
-                    if (servicesSection) {
-                        servicesSection.scrollIntoView({behavior: 'smooth', block: 'start'});
-                    }
-                }, 500);
-            {% endif %}
-        });
-    </script>
-
+{% block extra_js %}
+    <script src="{% static 'js/main/scroll.js' %}"></script>
 {% endblock %}

@@ -1,28 +1,28 @@
 {% extends  'base/base.html' %}
 {% load static %}
 {% block body %}
-{% load html_decode %}
-{% block title %}<title>مجله پزشکی | دکتر همدان</title>{% endblock %}
+    {% load html_decode %}
+    {% block title %}<title>مجله پزشکی | دکتر همدان</title>{% endblock %}
     <!-- Search -->
     <div class="filters_listing">
-    <div class="container">
-        <ul class="clearfix">
-            <form method="get" action="{% url 'mag:list' %}">
-                <div id="custom-search-input">
-                    <div class="input-group">
-                        <div style="display: flex; align-items: center; width: 100%;">
-                            <input type="text" name="query" id="query" value="{{ request.GET.query }}"
-                                   class="search-query" placeholder="جست و جو کنید..."
-                                   style="flex-grow: 1; border-radius: 50px; margin-right: -1px;">
+        <div class="container">
+            <ul class="clearfix">
+                <form method="get" action="{% url 'mag:list' %}">
+                    <div id="custom-search-input">
+                        <div class="input-group">
+                            <div style="display: flex; align-items: center; width: 100%;">
+                                <input type="text" name="query" id="query" value="{{ request.GET.query }}"
+                                       class="search-query" placeholder="جست و جو کنید..."
+                                       style="flex-grow: 1; border-radius: 50px; margin-right: -1px;">
 
-                            <input type="submit" class="btn_search" style="border-radius: 50px;" value="جستجو">
+                                <input type="submit" class="btn_search" style="border-radius: 50px;" value="جستجو">
+                            </div>
                         </div>
                     </div>
-                </div>
-            </form>
-        </ul>
+                </form>
+            </ul>
+        </div>
     </div>
-</div>
     <!-- /Search -->
 
 
@@ -57,15 +57,20 @@
                     </ul>
                 </div>
                 <div class="widget">
-                    <div class="widget-title">
-                        <h4><i class="icon-tags-1"></i>دسته بندی</h4>
-                    </div>
-                    <ul class="cats">
-                        {% for item in category %}
-                            <li><a href="#">{{ item.name }}</a></li>
-                        {% endfor %}
-                    </ul>
-                </div>
+    <div class="widget-title">
+        <h4><i class="icon-tags-1"></i>دسته بندی</h4>
+    </div>
+    <ul class="cats">
+    {% for item in category %}
+        <li>
+            <a href="{% url 'mag:list' %}?category={{ item.name }}"{% if selected_category == item.name %} class="active"{% endif %}>
+                {{ item.name }}
+            </a>
+        </li>
+    {% endfor %}
+    </ul>
+</div>
+
             </aside>
             <!--/aside -->
 
@@ -119,86 +124,16 @@
 
         </div>
     </div>
+
+{% endblock %}
+
+
+{% block extra_js %}
     <script>
-        function createPagination(totalPages, currentPage) {
-            var paginationContainer = document.getElementById('pagination');
-            paginationContainer.innerHTML = '';
-
-            if (totalPages <= 1) return;
-
-            var maxVisiblePages = 5;
-            var startPage, endPage;
-
-            if (totalPages <= maxVisiblePages) {
-                startPage = 1;
-                endPage = totalPages;
-            } else {
-                var maxPagesBeforeCurrentPage = Math.floor(maxVisiblePages / 2);
-                var maxPagesAfterCurrentPage = Math.ceil(maxVisiblePages / 2) - 1;
-
-                if (currentPage <= maxPagesBeforeCurrentPage) {
-                    startPage = 1;
-                    endPage = maxVisiblePages;
-                } else if (currentPage + maxPagesAfterCurrentPage >= totalPages) {
-                    startPage = totalPages - maxVisiblePages + 1;
-                    endPage = totalPages;
-                } else {
-                    startPage = currentPage - maxPagesBeforeCurrentPage;
-                    endPage = currentPage + maxPagesAfterCurrentPage;
-                }
-            }
-
-
-            if (startPage > 1) {
-                var firstPage = document.createElement('li');
-                firstPage.innerHTML = '<a class="page-link border-0 down-3" href="#" data-page="1"><i class="icon-right-open-3"></i></a>';
-                paginationContainer.appendChild(firstPage);
-
-                if (startPage > 2) {
-                    var dots = document.createElement('li');
-                    dots.innerHTML = '<p class="page-link border-0 down-2">...</p>';
-                    paginationContainer.appendChild(dots);
-                }
-            }
-
-            for (var page = startPage; page <= endPage; page++) {
-                var pageItem = document.createElement('li');
-                pageItem.classList.add('page-iter');
-                if (page === currentPage) {
-                    pageItem.classList.add('active');
-                }
-                pageItem.innerHTML = `<a class="page-link" href="#" data-page="${page}">${page}</a>`;
-                paginationContainer.appendChild(pageItem);
-            }
-
-            if (endPage < totalPages) {
-                if (endPage < totalPages - 1) {
-                    var dots = document.createElement('li');
-                    dots.innerHTML = '<p class="page-link border-0 down-2">...</p>';
-                    paginationContainer.appendChild(dots);
-                }
-
-                var lastPage = document.createElement('li');
-                lastPage.innerHTML = `<a class="page-link border-0 down-3" href="#" data-page="${totalPages}"><i class="icon-left-open-3"></i></a>`;
-                paginationContainer.appendChild(lastPage);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            var currentPage = {{ page_obj.number }}; // شماره صفحه جاری را از سرور دریافت کنید
-            var totalPages = {{ page_obj.paginator.num_pages }}; // تعداد کل صفحات را از سرور دریافت کنید
-
-            createPagination(totalPages, currentPage);
-
-            document.getElementById('pagination').addEventListener('click', function (event) {
-                if (event.target.tagName === 'A' || event.target.tagName === 'I') {
-                    event.preventDefault();
-                    var pageParam = event.target.getAttribute('data-page') || event.target.parentElement.getAttribute('data-page');
-                    var urlParams = new URLSearchParams(window.location.search);
-                    urlParams.set('page', pageParam);
-                    window.location.search = urlParams.toString();
-                }
-            });
-        });
+        window.paginationConfig = {
+            currentPage: {{ page_obj.number }},
+            totalPages: {{ page_obj.paginator.num_pages }}
+        };
     </script>
+    <script src="{% static 'js/main/pagination.js' %}"></script>
 {% endblock %}

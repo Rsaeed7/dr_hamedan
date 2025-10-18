@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}نوبت‌ها - {{ clinic.name }} - دکتر همدان{% endblock %}
 
 {% block extra_css %}
@@ -9,51 +9,51 @@
         margin-right: 0;
         margin-left: 0.75rem;
     }
-    
+
     .rtl .space-x-2 > * + * {
         margin-right: 0;
         margin-left: 0.5rem;
     }
-    
+
     .rtl .space-y-4 > * + * {
         margin-top: 1rem;
     }
-    
+
     /* Filter animation */
     .filter-form {
         transition: all 0.3s ease;
     }
-    
+
     /* Status badge hover effects */
     .status-badge {
         transition: transform 0.2s ease;
     }
-    
+
     .status-badge:hover {
         transform: scale(1.05);
     }
-    
+
     /* Better mobile responsive */
     @media (max-width: 768px) {
         .table-responsive {
             font-size: 0.875rem;
         }
-        
+
         .table-responsive td {
             padding: 0.5rem;
         }
-        
+
         .stats-grid {
             grid-template-columns: repeat(2, 1fr);
         }
     }
-    
+
     /* Search input focus styles */
     .search-input:focus {
         box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         border-color: #3b82f6;
     }
-    
+
     /* Loading state */
     .loading {
         opacity: 0.6;
@@ -65,7 +65,7 @@
 {% block content %}
 <div class="mb-8 rtl">
     <h1 class="text-3xl font-bold text-gray-800 mb-4">نوبت‌های کلینیک</h1>
-    
+
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
         <!-- Sidebar Navigation -->
         <div class="bg-white rounded-lg shadow-md p-6">
@@ -82,7 +82,7 @@
                     <p class="text-gray-600 text-sm">مدیر کلینیک</p>
                 </div>
             </div>
-            
+
             <nav>
                 <a href="{% url 'clinics:clinic_dashboard' %}" class="block py-2 px-4 rounded-md text-gray-700 hover:bg-gray-100">
                     داشبورد
@@ -98,7 +98,7 @@
                 </a>
             </nav>
         </div>
-        
+
         <!-- Main Content -->
         <div class="md:col-span-3">
             <!-- Statistics Cards -->
@@ -135,15 +135,15 @@
                         </span>
                     {% endif %}
                 </div>
-                
+
                 <form method="get" class="space-y-4">
                     <!-- Search Bar -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="md:col-span-2">
                             <label for="search" class="block text-sm font-medium text-gray-700 mb-1">جستجو در نام بیمار، شماره تلفن یا کد ملی</label>
                             <div class="relative">
-                                <input type="text" id="search" name="search" value="{{ search_query }}" 
-                                       placeholder="جستجو..." 
+                                <input type="text" id="search" name="search" value="{{ search_query }}"
+                                       placeholder="جستجو..."
                                        class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                     <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,7 +153,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div>
                             <label for="doctor_id" class="block text-sm font-medium text-gray-700 mb-1">پزشک</label>
@@ -166,7 +166,7 @@
                                 {% endfor %}
                             </select>
                         </div>
-                        
+
                         <div>
                             <label for="status" class="block text-sm font-medium text-gray-700 mb-1">وضعیت</label>
                             <select id="status" name="status" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
@@ -177,20 +177,20 @@
                                 <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>لغو شده</option>
                             </select>
                         </div>
-                        
+
                         <div>
                             <label for="date_from" class="block text-sm font-medium text-gray-700 mb-1">از تاریخ</label>
-                            <input type="date" id="date_from" name="date_from" value="{{ date_from }}" 
+                            <input type="date" id="date_from" name="date_from" value="{{ date_from }}"
                                    class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                         </div>
-                        
+
                         <div>
                             <label for="date_to" class="block text-sm font-medium text-gray-700 mb-1">تا تاریخ</label>
-                            <input type="date" id="date_to" name="date_to" value="{{ date_to }}" 
+                            <input type="date" id="date_to" name="date_to" value="{{ date_to }}"
                                    class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                         </div>
                     </div>
-                    
+
                     <div class="flex flex-wrap gap-2">
                         <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -212,7 +212,7 @@
                     </div>
                 </form>
             </div>
-            
+
             <!-- Appointments Table -->
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
@@ -224,7 +224,7 @@
                         </span>
                     {% endif %}
                 </div>
-                
+
                 {% if page_obj %}
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
@@ -294,28 +294,28 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                                             <div class="flex items-center gap-2">
                                                 {% if appointment.status == 'pending' and appointment.payment_status == 'paid' %}
-                                                    <a href="{% url 'reservations:confirm_appointment' appointment.id %}?next={% url 'clinics:clinic_appointments' %}" 
+                                                    <a href="{% url 'reservations:confirm_appointment' appointment.id %}?next={% url 'clinics:clinic_appointments' %}"
                                                        class="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-white bg-green-600 hover:bg-green-700">
                                                         تایید
                                                     </a>
                                                 {% endif %}
-                                                
+
                                                 {% if appointment.status == 'confirmed' %}
-                                                    <a href="{% url 'reservations:complete_appointment' appointment.id %}?next={% url 'clinics:clinic_appointments' %}" 
+                                                    <a href="{% url 'reservations:complete_appointment' appointment.id %}?next={% url 'clinics:clinic_appointments' %}"
                                                        class="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-white bg-blue-600 hover:bg-blue-700">
                                                         تکمیل
                                                     </a>
                                                 {% endif %}
-                                                
+
                                                 {% if appointment.status in 'pending,confirmed' %}
-                                                    <a href="{% url 'reservations:cancel_appointment' appointment.id %}?next={% url 'clinics:clinic_appointments' %}" 
+                                                    <a href="{% url 'reservations:cancel_appointment' appointment.id %}?next={% url 'clinics:clinic_appointments' %}"
                                                        class="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-white bg-red-600 hover:bg-red-700"
                                                        onclick="return confirm('آیا از لغو این نوبت اطمینان دارید؟')">
                                                         لغو
                                                     </a>
                                                 {% endif %}
-                                                
-                                                <a href="{% url 'reservations:view_appointment' appointment.id %}" 
+
+                                                <a href="{% url 'reservations:view_appointment' appointment.id %}"
                                                    class="inline-flex items-center px-2 py-1 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50">
                                                     جزئیات
                                                 </a>
@@ -326,7 +326,7 @@
                             </tbody>
                         </table>
                     </div>
-                    
+
                     <!-- Pagination -->
                     {% if page_obj.has_other_pages %}
                         <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
@@ -336,26 +336,26 @@
                                 </div>
                                 <div class="flex items-center">
                                     {% if page_obj.has_previous %}
-                                        <a href="?page=1{% if request.GET.doctor_id %}&doctor_id={{ request.GET.doctor_id }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" 
+                                        <a href="?page=1{% if request.GET.doctor_id %}&doctor_id={{ request.GET.doctor_id }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
                                            class="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                                             اول
                                         </a>
-                                        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.doctor_id %}&doctor_id={{ request.GET.doctor_id }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" 
+                                        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.doctor_id %}&doctor_id={{ request.GET.doctor_id }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
                                            class="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 mr-1">
                                             قبلی
                                         </a>
                                     {% endif %}
-                                    
+
                                     <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-blue-50 text-sm font-medium text-blue-600 mx-1">
                                         {{ page_obj.number }}
                                     </span>
-                                    
+
                                     {% if page_obj.has_next %}
-                                        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.doctor_id %}&doctor_id={{ request.GET.doctor_id }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" 
+                                        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.doctor_id %}&doctor_id={{ request.GET.doctor_id }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
                                            class="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 ml-1">
                                             بعدی
                                         </a>
-                                        <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.doctor_id %}&doctor_id={{ request.GET.doctor_id }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" 
+                                        <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.doctor_id %}&doctor_id={{ request.GET.doctor_id }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.date_from %}&date_from={{ request.GET.date_from }}{% endif %}{% if request.GET.date_to %}&date_to={{ request.GET.date_to }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
                                            class="relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                                             آخر
                                         </a>
@@ -386,185 +386,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const filterForm = document.querySelector('form[method="get"]');
-    const searchInput = document.getElementById('search');
-    const doctorSelect = document.getElementById('doctor_id');
-    const statusSelect = document.getElementById('status');
-    const dateFromInput = document.getElementById('date_from');
-    const dateToInput = document.getElementById('date_to');
-    
-    // Debounce function for search input
-    function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
-    
-    // Auto-submit form with debounce for search
-    const debouncedSubmit = debounce(() => {
-        if (filterForm) {
-            showLoading();
-            filterForm.submit();
-        }
-    }, 800);
-    
-    // Immediate submit for select changes
-    function immediateSubmit() {
-        if (filterForm) {
-            showLoading();
-            filterForm.submit();
-        }
-    }
-    
-    // Show loading state
-    function showLoading() {
-        const submitBtn = document.querySelector('button[type="submit"]');
-        if (submitBtn) {
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mx-auto"></div>';
-            submitBtn.disabled = true;
-            
-            // Restore button after timeout as fallback
-            setTimeout(() => {
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-            }, 5000);
-        }
-        
-        // Add loading class to form
-        if (filterForm) {
-            filterForm.classList.add('loading');
-        }
-    }
-    
-    // Add event listeners
-    if (searchInput) {
-        searchInput.addEventListener('input', debouncedSubmit);
-        searchInput.classList.add('search-input');
-        
-        // Clear search with Escape key
-        searchInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                this.value = '';
-                debouncedSubmit();
-            }
-        });
-    }
-    
-    if (doctorSelect) {
-        doctorSelect.addEventListener('change', immediateSubmit);
-    }
-    
-    if (statusSelect) {
-        statusSelect.addEventListener('change', immediateSubmit);
-    }
-    
-    if (dateFromInput) {
-        dateFromInput.addEventListener('change', function() {
-            // Validate date range
-            if (dateToInput.value && this.value && this.value > dateToInput.value) {
-                alert('تاریخ شروع نمی‌تواند از تاریخ پایان بزرگ‌تر باشد');
-                this.value = '';
-                return;
-            }
-            immediateSubmit();
-        });
-    }
-    
-    if (dateToInput) {
-        dateToInput.addEventListener('change', function() {
-            // Validate date range
-            if (dateFromInput.value && this.value && this.value < dateFromInput.value) {
-                alert('تاریخ پایان نمی‌تواند از تاریخ شروع کوچک‌تر باشد');
-                this.value = '';
-                return;
-            }
-            immediateSubmit();
-        });
-    }
-    
-    // Add filter form class
-    if (filterForm) {
-        filterForm.classList.add('filter-form');
-    }
-    
-    // Add status badge classes for hover effects
-    document.querySelectorAll('.px-2.inline-flex').forEach(badge => {
-        badge.classList.add('status-badge');
-    });
-    
-    // Enhanced table responsiveness
-    const table = document.querySelector('table');
-    if (table) {
-        table.classList.add('table-responsive');
-        
-        // Add mobile view enhancements
-        if (window.innerWidth <= 768) {
-            const cells = table.querySelectorAll('td, th');
-            cells.forEach(cell => {
-                if (cell.textContent.length > 20) {
-                    cell.title = cell.textContent;
-                }
-            });
-        }
-    }
-    
-    // Stats grid responsive class
-    const statsGrid = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-5');
-    if (statsGrid) {
-        statsGrid.classList.add('stats-grid');
-    }
-    
-    // Keyboard shortcuts
-    document.addEventListener('keydown', function(e) {
-        // Ctrl/Cmd + F to focus search
-        if ((e.ctrlKey || e.metaKey) && e.key === 'f' && searchInput) {
-            e.preventDefault();
-            searchInput.focus();
-        }
-    });
-    
-    // Success/Error message auto-hide
-    const messages = document.querySelectorAll('.bg-red-50, .bg-green-50, .bg-blue-50, .bg-yellow-50');
-    messages.forEach(message => {
-        setTimeout(() => {
-            message.style.transition = 'opacity 0.5s ease';
-            message.style.opacity = '0';
-            setTimeout(() => {
-                message.remove();
-            }, 500);
-        }, 5000);
-    });
-    
-    // Export functionality (optional enhancement)
-    const addExportButton = () => {
-        const filterHeader = document.querySelector('.bg-white.rounded-lg.shadow-md .flex.items-center.justify-between');
-        if (filterHeader && window.location.search) {
-            const exportBtn = document.createElement('a');
-            exportBtn.href = window.location.pathname + window.location.search + '&export=csv';
-            exportBtn.className = 'inline-flex items-center px-3 py-1 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50';
-            exportBtn.innerHTML = `
-                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
-                خروجی اکسل
-            `;
-            filterHeader.appendChild(exportBtn);
-        }
-    };
-    
-    // Add export button if there are results
-    if (document.querySelector('table')) {
-        addExportButton();
-    }
-});
-</script>
+<script src="{% static 'js/booking/clinic-filter-form.js' %}"></script>
 {% endblock %}

@@ -57,55 +57,11 @@
 		</div>
 	</main>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const phoneInput = document.getElementById('id_phone');
-        const submitBtn = document.getElementById('submit_btn');
-        const phoneError = document.getElementById('phone_error');
-        
-        // Initially disable the submit button
-        submitBtn.disabled = true;
-        
-        // Validate phone number on input change
-        phoneInput.addEventListener('input', function() {
-            validatePhoneNumber();
-        });
-        
-        function validatePhoneNumber() {
-            const value = phoneInput.value.trim();
-            
-            // Check if phone number is valid (11 digits and starts with 0)
-            const isValid = value.length === 11 && value.startsWith('0');
-            
-            if (isValid) {
-                phoneInput.classList.remove('text-alert');
-                phoneInput.classList.add('input100');
-                phoneError.textContent = '';
-                submitBtn.disabled = false;
-            } else {
-                phoneInput.classList.add('text-alert');
-                phoneInput.classList.remove('input100');
-                phoneError.textContent = value.length > 0 ? 'شماره تلفن صحیح وارد کنید!' : '';
-                submitBtn.disabled = true;
-            }
-        }
-        
-        // Form submission handler
-        document.getElementById('phone_form').addEventListener('submit', function(e) {
-            const value = phoneInput.value.trim();
-            
-            if (value.length !== 11 || !value.startsWith('0')) {
-                e.preventDefault();
-                phoneInput.classList.add('text-alert');
-                phoneError.textContent = '!!شماره تلفن صحیح وارد کنید';
-            }
-        });
-    });
-  </script>
+<script src="{% static 'js/main/otp-auth.js' %}"></script>
 
-<script src="{% static 'js/jquery-2.2.4.min.js' %}"></script>
-<script src="{% static 'js/common_scripts.min.js' %}"></script>
-<script src="{% static 'js/functions.js' %}"></script>
+<script src="{% static 'js/main/jquery-2.2.4.min.js' %}"></script>
+<script src="{% static 'js/main/common_scripts.min.js' %}"></script>
+<script src="{% static 'js/main/functions.js' %}"></script>
 
 </body>
 </html>

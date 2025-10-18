@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}مدیریت پست‌ها - دکتر همدان{% endblock %}
 {% load persian_date %}
 {% block extra_css %}
@@ -210,75 +210,10 @@
         {% endif %}
     </div>
 </div>
+
 {% endblock %}
 
 {% block extra_js %}
-<script>
-    // Post filtering
-    document.addEventListener('DOMContentLoaded', function() {
-        const showAllBtn = document.getElementById('show-all');
-        const showPublishedBtn = document.getElementById('show-published');
-        const showDraftsBtn = document.getElementById('show-drafts');
-        const posts = document.querySelectorAll('.post-card');
-
-        if (showAllBtn && showPublishedBtn && showDraftsBtn) {
-            showAllBtn.addEventListener('click', function() {
-                setActiveFilter(this);
-                posts.forEach(post => {
-                    post.style.display = 'block';
-                });
-            });
-
-            showPublishedBtn.addEventListener('click', function() {
-                setActiveFilter(this);
-                posts.forEach(post => {
-                    if (post.dataset.status === 'published') {
-                        post.style.display = 'block';
-                    } else {
-                        post.style.display = 'none';
-                    }
-                });
-            });
-
-            showDraftsBtn.addEventListener('click', function() {
-                setActiveFilter(this);
-                posts.forEach(post => {
-                    if (post.dataset.status === 'draft') {
-                        post.style.display = 'block';
-                    } else {
-                        post.style.display = 'none';
-                    }
-                });
-            });
-        }
-
-        function setActiveFilter(activeBtn) {
-            const buttons = [showAllBtn, showPublishedBtn, showDraftsBtn];
-            buttons.forEach(btn => {
-                btn.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
-                btn.classList.add('text-gray-500', 'hover:text-gray-700');
-            });
-
-            activeBtn.classList.remove('text-gray-500', 'hover:text-gray-700');
-            activeBtn.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
-        }
-    });
-
-    // Mobile sidebar toggle
-    document.addEventListener('DOMContentLoaded', function() {
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        const closeSidebar = document.getElementById('closeSidebar');
-        const sidebar = document.getElementById('sidebar');
-
-        if (sidebarToggle && closeSidebar && sidebar) {
-            sidebarToggle.addEventListener('click', function() {
-                sidebar.classList.add('active');
-            });
-
-            closeSidebar.addEventListener('click', function() {
-                sidebar.classList.remove('active');
-            });
-        }
-    });
-</script>
+    <script src="{% static 'js/dr/doctor-post.js' %}"></script>
 {% endblock %}
+

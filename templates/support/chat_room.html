@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block content %}
 <div class="container mx-auto p-4">
     <h1 class="text-3xl font-bold mb-6 text-center text-blue-700">💬 چت پشتیبانی دکتر همدان</h1>
@@ -53,89 +53,13 @@
     </form>
 </div>
 
-<script>
-const roomId = "{{ chat_room.id }}";
-if (!roomId) {
-    console.error("Room ID is missing!");
-} else {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const host = window.location.host;
-    const wsUrl = `${protocol}//${host}/ws/chat/${roomId}/`;
-
-    console.log('Connecting to WebSocket:', wsUrl);
-
-    const chatSocket = new WebSocket(wsUrl);
-
-    chatSocket.onopen = () => {
-        console.log("✅ WebSocket connection established.");
-        // Add visual indicator for connection status
-        document.getElementById('connection-status').textContent = 'متصل';
-        document.getElementById('connection-status').classList.add('text-green-500');
-        document.getElementById('connection-status').classList.remove('text-red-500');
-    };
-
-    chatSocket.onclose = (e) => {
-        console.error("WebSocket closed:", e);
-        // Add reconnection logic
-        if (e.code !== 1000) {  // Not a normal closure
-            setTimeout(() => {
-                console.log("Attempting to reconnect...");
-                location.reload();
-            }, 5000);
-        }
-        document.getElementById('connection-status').textContent = 'متصل نیست';
-        document.getElementById('connection-status').classList.add('text-red-500');
-        document.getElementById('connection-status').classList.remove('text-green-500');
-    };
-
-    chatSocket.onerror = (error) => {
-        console.error("WebSocket error:", error);
-        document.getElementById('connection-status').textContent = 'خطا';
-        document.getElementById('connection-status').classList.add('text-red-500');
-        document.getElementById('connection-status').classList.remove('text-green-500');
-    };
-
-    chatSocket.onmessage = (e) => {
-        const data = JSON.parse(e.data);
-        const chatMessages = document.getElementById('chat-messages');
-
-        const wrapper = document.createElement('div');
-        wrapper.className = `flex ${data.sender_is_admin ? 'justify-end' : 'justify-start'}`;
-
-        const bubble = document.createElement('div');
-        bubble.className = `max-w-md rounded-xl p-3 shadow ${data.sender_is_admin ? 'bg-green-100 text-right' : 'bg-blue-100 text-left'}`;
-
-        const name = document.createElement('div');
-        name.className = `font-semibold text-sm ${data.sender_is_admin ? 'text-green-800' : 'text-blue-800'}`;
-        name.textContent = data.sender;
-
-        const text = document.createElement('p');
-        text.className = 'mt-1 text-gray-800 break-words';
-        text.textContent = data.message;
-
-        const time = document.createElement('div');
-        time.className = 'text-xs mt-1 text-gray-400';
-        time.textContent = data.timestamp;
-
-        bubble.appendChild(name);
-        bubble.appendChild(text);
-        bubble.appendChild(time);
-        wrapper.appendChild(bubble);
-        chatMessages.appendChild(wrapper);
-
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    };
-
-    document.getElementById('message-form').addEventListener('submit', function (e) {
-        e.preventDefault();
-        const input = this.querySelector('input[name="content"]');
-        const content = input.value.trim();
-        if (content) {
-            chatSocket.send(JSON.stringify({ message: content }));
-            input.value = '';
-            input.focus();
-        }
-    });
-}
-</script>
 {% endblock %}
+
+{% block extra_js %}
+<!-- انتقال roomId به JavaScript -->
+{{ chat_room.id|json_script:"room-id" }}
+
+<!-- لینک به فایل JS جداگانه -->
+<script src="{% static 'js/chat/admin-chat.js' %}"></script>
+{% endblock %}
+

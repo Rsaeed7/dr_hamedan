@@ -1,12 +1,14 @@
 @media (min-width: 1550px) {
-    .header-d-container{
-        min-width: 1450px!important;
+    .header-d-container {
+        min-width: 1450px !important;
     }
-    .p-r-150-lg{
-        padding-right: 150px!important;
+
+    .p-r-150-lg {
+        padding-right: 150px !important;
     }
 
 }
+
 @media (min-width: 768px) {
     .btn_search {
         background: none !important;
@@ -21,7 +23,7 @@
 }
 
 .border-light-2 {
-  border-color: rgba(168, 168, 168, 0.26) !important;
+    border-color: rgba(168, 168, 168, 0.26) !important;
 }
 
 .hero_home .content h4 {
@@ -141,13 +143,14 @@
 .text-dr {
     color: rgba(0, 0, 0, 0.59);
 }
+
 .text-red {
-    color: rgb(255, 0, 0)!important;
+    color: rgb(255, 0, 0) !important;
 }
+
 .text-turquoise {
     color: rgb(100, 250, 255) !important;
 }
-
 
 
 @media (min-width: 768px) {
@@ -160,20 +163,21 @@
 .r {
     border-radius: 20px;
 }
+
 /*---------*/
 .box_dashboard {
-  padding: 10px;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  -ms-border-radius: 5px;
-  border-radius: 5px;
-  margin-bottom: 10px;
-  color: #555555;
-  -webkit-box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.05);
-  -moz-box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.05);
-  box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.05);
-  width: 49%;
-  margin-left: 5px;
+    padding: 10px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -ms-border-radius: 5px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    color: #555555;
+    -webkit-box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.05);
+    -moz-box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.05);
+    box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.05);
+    width: 49%;
+    margin-left: 5px;
 
 }
 
@@ -204,37 +208,36 @@ a.dr_box i {
 }
 
 
-
 .dr_bg {
     background: #384291;
     border-radius: 2px;
 }
 
-.bg-bluelight{
+.bg-bluelight {
     background: rgba(239, 251, 252, 0.47) !important;
 }
 
-.bg-light-green{
+.bg-light-green {
     background-color: #e0f9df !important;
 }
 
-.bg-light-blue{
+.bg-light-blue {
     background-color: #e5f1f9 !important;
 }
 
-.bg-light-violet{
+.bg-light-violet {
     background-color: #f6ecfb !important;
 }
 
-.bg-light-yellow{
+.bg-light-yellow {
     background-color: #f8ffc7 !important;
 }
 
-.bg-light-blue2{
+.bg-light-blue2 {
     background-color: rgba(187, 231, 243, 0.73) !important;
 }
 
-.bg-light-red{
+.bg-light-red {
     background-color: rgba(253, 154, 154, 0.8) !important;
 }
 
@@ -266,7 +269,6 @@ a.dr_box i {
     border-left: 1px solid rgba(129, 129, 129, 0.2);
     /*padding: 10px !important;*/
 }
-
 
 
 .links li {
@@ -333,9 +335,9 @@ a.dr_box i {
 
 .scroll-container {
     overflow-x: auto; /* مخفی کردن اسکرول افقی */
-    overflow-y: auto;   /* فعال کردن اسکرول عمودی */
-    -ms-overflow-style: none;  /* مخفی کردن در IE و Edge */
-    scrollbar-width: none;     /* مخفی کردن در Firefox */
+    overflow-y: auto; /* فعال کردن اسکرول عمودی */
+    -ms-overflow-style: none; /* مخفی کردن در IE و Edge */
+    scrollbar-width: none; /* مخفی کردن در Firefox */
 }
 
 .scroll-container::-webkit-scrollbar {
@@ -389,8 +391,8 @@ a.dr_box i {
 }
 
 .parent-container {
-  display: grid;
-  place-items: center; /* جادوی واقعی اینجاست! */
+    display: grid;
+    place-items: center; /* جادوی واقعی اینجاست! */
 }
 
 
@@ -431,7 +433,6 @@ a.dr_box i {
     /*.main-menu {*/
     /*    transform: translateX(100%); !* منو را به خارج از صفحه در سمت راست منتقل می‌کند *!*/
     /*}*/
-
     .border-left-pc {
         border-left: none;
     }
@@ -904,28 +905,28 @@ input#female-option:checked ~ .custom-slider {
 
 /*scroll turn*/
 .scrollable {
-  max-height: 340px;
-  overflow: auto
+    max-height: 340px;
+    overflow: auto
 }
 
 .hidden {
-  display: none;
+    display: none;
 }
 
 .w-8 {
-  width: 6.5rem;
+    width: 6.5rem;
 }
 
 .w-10 {
-  width: 8rem;
+    width: 8rem;
 }
 
 .w-11 {
-  width: 8.2rem;
+    width: 8.2rem;
 }
 
 @media (max-width: 768px) {
-    .w-11{
+    .w-11 {
         width: 4.7rem;
     }
 
@@ -933,11 +934,11 @@ input#female-option:checked ~ .custom-slider {
 
 
 .w-12 {
-  width: 10rem;
+    width: 10rem;
 }
 
 .animation {
-  animation: pulse 1000ms ease-in-out;
+    animation: pulse 1000ms ease-in-out;
 }
 
 ::-webkit-scrollbar {
@@ -960,8 +961,6 @@ input#female-option:checked ~ .custom-slider {
 ::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(45deg, #121232, #2a2a5a); /* کمی تیره‌تر هنگام هاور */
 }
-
-
 
 
 /*medal content */
@@ -1014,28 +1013,30 @@ input#female-option:checked ~ .custom-slider {
 /*contact us box*/
 
 .contact_us {
-  width: 50%;
-  float: left;
-  border-right: 1px solid #e1e8ed;
-  padding: 15px 25px;
+    width: 50%;
+    float: left;
+    border-right: 1px solid #e1e8ed;
+    padding: 15px 25px;
 }
+
 @media (max-width: 767px) {
-  .contact_us {
-    /* For less than 767px */
-    width: 100%;
-    border-right: 0;
-    padding: 0;
-  }
+    .contact_us {
+        /* For less than 767px */
+        width: 100%;
+        border-right: 0;
+        padding: 0;
+    }
 }
+
 .contact_us.last {
-  border-right: 0;
+    border-right: 0;
 }
 
 .border-story {
-  border: 2px solid;
-  border-color: #a6329e !important;
-  padding:3px;
-  font-size: 10px;
+    border: 2px solid;
+    border-color: #a6329e !important;
+    padding: 3px;
+    font-size: 10px;
 }
 
 
@@ -1142,4 +1143,137 @@ input#female-option:checked ~ .custom-slider {
         height: 40px;
         font-size: 18px;
     }
+}
+
+
+.fade-slide {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease;
+}
+
+.fade-slide.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+/* استایل سفارشی فلوتینگ آلرت */
+.floating-alert {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+    max-width: 300px;
+    padding: 15px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* استایل برای پیام‌های موفقیت */
+.floating-alert.success {
+    background-color: #ffffff;
+    border-left: 4px solid #4caf50;
+}
+
+/* استایل برای پیام‌های خطا */
+.floating-alert.error {
+    background-color: #ffebee;
+    border-left: 4px solid #f44336;
+}
+
+/* استایل برای پیام‌های اینفو */
+.floating-alert.info {
+    background-color: #f3feff;
+    border-left: 4px solid #3588bf;
+}
+
+/* استایل آیکون */
+.alert-icon {
+    margin-right: 10px;
+    font-size: 20px;
+}
+
+.success .alert-icon {
+    color: #4caf50;
+}
+
+.error .alert-icon {
+    color: #f44336;
+}
+
+.info .alert-icon {
+    color: #3588bf;
+}
+
+/* تایمر از راست پر و به چپ خالی میشود */
+.alert-timer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.alert-timer::before {
+    content: '';
+    position: absolute;
+    right: 0; /* شروع از راست */
+    top: 0;
+    height: 100%;
+    width: 100%; /* شروع با عرض کامل */
+    animation: timer 3s linear forwards;
+}
+
+.success .alert-timer::before {
+    background: #4caf50;
+}
+
+.error .alert-timer::before {
+    background: #f44336;
+}
+
+.info .alert-timer::before {
+    background: #3588bf;
+}
+
+@keyframes timer {
+    from {
+        transform: scaleX(1);
+        transform-origin: right;
+    }
+    to {
+        transform: scaleX(0);
+        transform-origin: right;
+    }
+}
+
+.fade-out {
+    opacity: 0;
+}
+
+/*article*/
+
+.article-body {
+    overflow-x: auto;
+    word-wrap: break-word;
+    font-size: 1rem;
+    line-height: 1.8;
+}
+
+.article-body img,
+.article-body iframe,
+.article-body table {
+    max-width: 100%;
+}
+
+.article-body table {
+    border-collapse: collapse;
+    width: 100%;
 }

@@ -269,7 +269,7 @@ def delete_post(request, post_id):
     
     if request.method == 'POST':
         post.delete()
-        messages.success(request, 'Your post has been deleted.')
+        messages.success(request, 'پست مورد نظر با موفقیت حذف شد')
         return redirect('docpages:doctor_posts')
     
     context = {

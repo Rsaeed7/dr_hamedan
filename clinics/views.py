@@ -62,7 +62,7 @@ def clinic_detail(request, slug):
                 rate=rating,
                 text=text,
             )
-            messages.success(request, 'نظر شما با موفقیت ثبت شد')
+            messages.success(request, 'نظر شما با موفقیت ثبت شد و پس از تایید نمایش داده میشود!')
             return redirect('clinics:clinic_detail', slug=clinic.slug)
 
     context = {

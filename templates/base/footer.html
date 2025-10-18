@@ -5,26 +5,29 @@
             <div class="row">
                 <div class="col-lg-3 col-md-12">
                     <p class="text-center">
-                        <a href="/" title="DrHamedan">
-                            <img src="{% static 'img/logo_bw_2x.png' %}" data-retina="true" alt="" width="233"
-                                 height="36"
-                                 class="img-fluid">
+                        <a href="/" title="DrHamedan" aria-label="صفحه اصلی دکتر همدان">
+                            <img src="{% static 'img/logo_bw_2x.png' %}"
+                                 alt="دکتر همدان - سامانه نوبت دهی آنلاین"
+                                 width="233" height="36" class="img-fluid">
                         </a>
                     </p>
                     <ul class="p-t-20">
-                        <li><span class="text-secondary"><img class="p-l-5"
-                                                              src="{% static 'img/pic/headphones_4936026.png' %}"
-                                                              width="25">پاسخگویی و پشتیبانی 24 ساعت 7 روز هفته</span>
+                        <li>
+                            <span class="text-secondary">
+                                <img class="p-l-5" src="{% static 'img/pic/headphones_4936026.png' %}"
+                                     alt="پشتیبانی" width="25">
+                                پاسخگویی و پشتیبانی 24 ساعت 7 روز هفته
+                            </span>
                         </li>
                     </ul>
-
                 </div>
+
                 <div class="col-lg-3 col-md-4 p-r-150">
                     <h5>لینک های مفید</h5>
                     <div class="row">
                         <div class="col-6 col-md-12">
                             <ul class="links">
-                                <li><a href="{% url 'account:register' %}">ورود </a></li>
+                                <li><a href="{% url 'account:register' %}">ورود / ثبت نام</a></li>
                                 <li><a href="{% url 'mag:list' %}">مجله سلامت</a></li>
                                 <li><a href="{% url 'doctors:specializations' %}">لیست تخصص ها</a></li>
                                 <li><a href="{% url 'doctors:doctor_list' %}">دریافت نوبت آنلاین</a></li>
@@ -48,39 +51,41 @@
                         <h5>گواهینامه ها</h5>
                         <ul>
                             <li>
-                                <a referrerpolicy='origin' target='_blank' href='https://trustseal.enamad.ir/?id=629834&Code=B52bdZDH7y1aaqMaOXsb7w4IVd4iMbY3'>
+                                <a referrerpolicy='origin' target='_blank'
+                                   href='https://trustseal.enamad.ir/?id=629834&Code=B52bdZDH7y1aaqMaOXsb7w4IVd4iMbY3'>
                                     <img referrerpolicy='origin'
                                          src='https://trustseal.enamad.ir/logo.aspx?id=629834&Code=B52bdZDH7y1aaqMaOXsb7w4IVd4iMbY3'
                                          alt='نماد اعتماد الکترونیکی'
                                          style='cursor:pointer; width: 60px; height: 60px; object-fit: contain;'
                                          code='B52bdZDH7y1aaqMaOXsb7w4IVd4iMbY3'>
-                                </a>
                             </li>
                         </ul>
                     </div>
                     <h5 class="p-t-25">راه های ارتباطی</h5>
                     <ul class="contacts">
-                        <li><a href=""><i class="icon-phone-squared"></i>{{ contact.phone_number }}</a></li>
-                        <li><a href="mailto:{{ contact.email }}">{{ contact.email }}<i
-                                class="icon_mail p-l-5"></i></a>
+                        <li><a href="tel:{{ contact.phone_number }}"><i
+                                class="icon-phone-squared"></i>{{ contact.phone_number }}</a></li>
+                        <li><a href="mailto:{{ contact.email }}"><i class="icon_mail p-l-5"></i>{{ contact.email }}</a>
                         </li>
                     </ul>
                 </div>
             </div>
+
             <div class="follow_us text-center">
                 <ul>
-                    <li><a href="{{ contact.instagram }}"><i class="icon-instagram-2"></i></a></li>
-                    <li><a href="mailto:{{ contact.email }}"><i class="icon_mail"></i></a></li>
-                    <li><a href="{{ contact.whatsapp }}"><i class="icon-chat-inv"></i></a></li>
-                    <li><a href="{{ contact.telegram }}"><i class="icon-paper-plane-1"></i></a></li>
-
-
+                    <li><a href="{{ contact.instagram }}" aria-label="اینستاگرام"><i class="icon-instagram-2"></i></a>
+                    </li>
+                    <li><a href="mailto:{{ contact.email }}" aria-label="ایمیل"><i class="icon_mail"></i></a></li>
+                    <li><a href="{{ contact.whatsapp }}" aria-label="واتس‌اپ"><i class="icon-chat-inv"></i></a></li>
+                    <li><a href="{{ contact.telegram }}" aria-label="تلگرام"><i class="icon-paper-plane-1"></i></a></li>
                 </ul>
             </div>
+
             <hr>
             <div class="row">
                 <div class="col-md-12">
-                    <div id="copy" class="text-center">〄 تمامی حقوق این وبسایت مربوط به دکتر همدان است</div>
+                    <div id="copy" class="text-center">〄 تمامی حقوق این وبسایت مربوط به دکتر همدان است
+                        © {% now "Y" %}</div>
                 </div>
             </div>
         </div>

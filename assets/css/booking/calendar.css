@@ -1,0 +1,185 @@
+.friday {
+    background-color: rgba(255, 209, 161, 0.3) !important;
+    color: #1e4460 !important;
+}
+
+.completed {
+    background-color: #ff6b6b !important;
+    color: white !important;
+}
+
+.completed-indicator {
+    color: white;
+    font-size: 0.8rem;
+    margin-top: 4px;
+}
+
+   @media (max-width: 768px) {
+            .calendar-container {
+                max-width: 100%;
+                margin: 0;
+                border-radius: 0;
+            }
+
+            .calendar-header {
+                padding: 10px 15px;
+            }
+
+            .calendar-nav-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 0.8rem;
+            }
+
+            .calendar-title {
+                font-size: 1rem;
+            }
+
+            .calendar-body {
+                grid-template-columns: repeat(7, minmax(30px, 1fr));
+                gap: 5px;
+                padding: 10px;
+            }
+
+            .calendar-body > div {
+                font-size: 0.8rem;
+                padding: 5px 0;
+            }
+
+            #time-slots-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            #time-slots-grid .col-6 {
+                padding: 0 5px;
+            }
+
+            #time-slots-grid button {
+                font-size: 0.8rem;
+                padding: 5px;
+            }
+        }
+
+        .calendar-container {
+            max-width: 600px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        }
+
+        .calendar-header {
+            background-color: #1e4460;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calendar-nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .calendar-nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .calendar-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .calendar-body {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            padding: 15px;
+            background-color: white;
+        }
+
+        .calendar-body > div {
+            text-align: center;
+            padding: 8px 0;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 576px) {
+            .modal-content {
+                width: 95%;
+                margin: 10px auto;
+            }
+
+            #booking-form .row > div {
+                margin-bottom: 10px;
+            }
+
+            #submit-btn {
+                font-size: 0.9rem;
+            }
+        }
+
+        .bg {
+            background: #00c072;
+        }
+
+        /* استایل اصلی کارت تقویم */
+        .calendar-container {
+            max-width: 600px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        }
+
+        /* هدر تقویم */
+        .calendar-header {
+            background-color: #1e4460;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calendar-nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .calendar-nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .calendar-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        /* بدنه تقویم */
+        .calendar-body {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            padding: 15px;
+            background-color: white;
+        }
