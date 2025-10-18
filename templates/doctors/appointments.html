@@ -1,344 +1,348 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load persian_date %}
 {% block title %}نوبت‌های من - دکتر همدان{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="https://unpkg.com/persian-datepicker@latest/dist/css/persian-datepicker.min.css">
-<style>
-    /* Base Styles */
-    body {
-        direction: rtl;
-        text-align: right;
-        font-family: 'Vazir', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+    <style>
+        /* Base Styles */
+        body {
+            direction: rtl;
+            text-align: right;
+            font-family: 'Vazir', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    /* Layout */
-    .appointments-container {
-        display: flex;
-        flex-direction: column;
-        min-height: calc(100vh - 4rem);
-    }
-
-    @media (min-width: 768px) {
+        /* Layout */
         .appointments-container {
-            flex-direction: row;
-        }
-    }
-
-    .main-content {
-        flex: 1;
-        padding: 1.5rem;
-        background-color: #f9fafb;
-    }
-
-    /* Cards */
-    .appointment-card {
-        transition: all 0.3s ease;
-        border-radius: 0.75rem;
-        margin-bottom: 1rem;
-        background-color: white;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    }
-
-    .appointment-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Patient Info */
-    .patient-avatar {
-        width: 3rem;
-        height: 3rem;
-        border-radius: 50%;
-        object-fit: cover;
-    }
-
-    .patient-initials {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: #e5e7eb;
-        color: #4b5563;
-        font-weight: bold;
-    }
-
-    /* Status Badges */
-    .status-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 500;
-    }
-
-    .status-pending {
-        background-color: #fef3c7;
-        color: #92400e;
-    }
-
-    .status-confirmed {
-        background-color: #dbeafe;
-        color: #1e40af;
-    }
-
-    .status-completed {
-        background-color: #d1fae5;
-        color: #065f46;
-    }
-
-    .status-cancelled {
-        background-color: #fee2e2;
-        color: #991b1b;
-    }
-
-    /* Buttons */
-    .btn {
-        padding: 0.5rem 1rem;
-        border-radius: 0.375rem;
-        font-size: 0.875rem;
-        font-weight: 500;
-        transition: all 0.2s;
-    }
-
-    .btn-confirm {
-        background-color: #2563eb;
-        color: white;
-    }
-
-    .btn-confirm:hover {
-        background-color: #1d4ed8;
-    }
-
-    .btn-complete {
-        background-color: #059669;
-        color: white;
-    }
-
-    .btn-complete:hover {
-        background-color: #047857;
-    }
-
-    .btn-cancel {
-        background-color: #dc2626;
-        color: white;
-    }
-
-    .btn-cancel:hover {
-        background-color: #b91c1c;
-    }
-
-    .btn-view {
-        background-color: #4b5563;
-        color: white;
-    }
-
-    .btn-view:hover {
-        background-color: #374151;
-    }
-
-    /* Filter Section */
-    .filter-section {
-        background-color: white;
-        border-radius: 0.75rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        margin-bottom: 1.5rem;
-    }
-
-    .filter-grid {
-        display: grid;
-        gap: 1rem;
-    }
-
-    @media (min-width: 640px) {
-        .filter-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-
-    @media (min-width: 1024px) {
-        .filter-grid {
-            grid-template-columns: repeat(4, 1fr);
-        }
-    }
-
-    /* Empty State */
-    .empty-state {
-        text-align: center;
-        padding: 2rem;
-    }
-
-    .empty-state-icon {
-        width: 3rem;
-        height: 3rem;
-        margin: 0 auto 1rem;
-        color: #9ca3af;
-    }
-
-    /* Responsive Adjustments */
-    @media (max-width: 767px) {
-        .patient-info {
+            display: flex;
             flex-direction: column;
-            align-items: flex-start;
+            min-height: calc(100vh - 4rem);
         }
 
-        .appointment-actions {
-            flex-direction: column;
-            gap: 0.5rem;
+        @media (min-width: 768px) {
+            .appointments-container {
+                flex-direction: row;
+            }
         }
 
-        .action-buttons {
-            width: 100%;
+        .main-content {
+            flex: 1;
+            padding: 1.5rem;
+            background-color: #f9fafb;
         }
 
+        /* Cards */
+        .appointment-card {
+            transition: all 0.3s ease;
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .appointment-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Patient Info */
+        .patient-avatar {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .patient-initials {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e5e7eb;
+            color: #4b5563;
+            font-weight: bold;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-confirmed {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-completed {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-cancelled {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Buttons */
         .btn {
-            width: 100%;
-            text-align: center;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
         }
-    }
-</style>
+
+        .btn-confirm {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        .btn-confirm:hover {
+            background-color: #1d4ed8;
+        }
+
+        .btn-complete {
+            background-color: #059669;
+            color: white;
+        }
+
+        .btn-complete:hover {
+            background-color: #047857;
+        }
+
+        .btn-cancel {
+            background-color: #dc2626;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background-color: #b91c1c;
+        }
+
+        .btn-view {
+            background-color: #4b5563;
+            color: white;
+        }
+
+        .btn-view:hover {
+            background-color: #374151;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        @media (min-width: 640px) {
+            .filter-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .filter-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .empty-state-icon {
+            width: 3rem;
+            height: 3rem;
+            margin: 0 auto 1rem;
+            color: #9ca3af;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 767px) {
+            .patient-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .appointment-actions {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .action-buttons {
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
-<div class="">
-    <!-- Main Content -->
     <div class="">
-        <div class="mb-6">
-            <h1 class="text-2xl font-bold text-gray-800">نوبت‌های من</h1>
-            <p class="text-gray-600 mt-1">مدیریت و مشاهده تمام نوبت‌های شما</p>
-        </div>
-
-        <!-- Filter Section -->
-        <div class="filter-section p-6">
-            <h2 class="text-lg font-medium text-gray-800 mb-4">فیلتر نوبت‌ها</h2>
-            <form method="get" action="{% url 'doctors:doctor_appointments' %}" class="filter-grid">
-                <div>
-                    <label for="status" class="block text-sm font-medium text-gray-700 mb-1">وضعیت</label>
-                    <select id="status" name="status" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                        <option value="all" {% if status == 'all' %}selected{% endif %}>همه وضعیت‌ها</option>
-                        <option value="pending" {% if status == 'pending' %}selected{% endif %}>در انتظار</option>
-                        <option value="confirmed" {% if status == 'confirmed' %}selected{% endif %}>تأیید شده</option>
-                        <option value="completed" {% if status == 'completed' %}selected{% endif %}>تکمیل شده</option>
-                        <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>لغو شده</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label for="date_from" class="block text-sm font-medium text-gray-700 mb-1">از تاریخ</label>
-                    <input type="text" id="date_from" name="date_from" value="{{ date_from|date:'Y-m-d' }}"
-                           class="jalali-datepicker w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                </div>
-
-                <div>
-                    <label for="date_to" class="block text-sm font-medium text-gray-700 mb-1">تا تاریخ</label>
-                    <input type="text" id="date_to" name="date_to" value="{{ date_to|date:'Y-m-d' }}"
-                           class="jalali-datepicker w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                </div>
-
-                <div class="flex items-end">
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150 m-b-8">
-                        اعمال فیلترها
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <!-- Appointments List -->
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center">
-                <h2 class="text-lg font-medium text-gray-800">
-                    {% if status != 'all' %}
-                        نوبت‌های {% if status == 'pending' %}در انتظار{% endif %}
-                        {% if status == 'confirmed' %}تایید شده{% endif %}
-                        {% if status == 'completed' %}تکمیل شده{% endif %}
-                        {% if status == 'cancelled' %}لغو شده{% endif %}
-                    {% else %}
-                        همه نوبت‌ها
-                    {% endif %}
-                </h2>
-                <span class="text-sm text-gray-500 mt-1 md:mt-0">
-                    {{ appointments.count }} نوبت
-                </span>
+        <!-- Main Content -->
+        <div class="">
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">نوبت‌های من</h1>
+                <p class="text-gray-600 mt-1">مدیریت و مشاهده تمام نوبت‌های شما</p>
             </div>
 
-            {% if appointments %}
-                <div class="divide-y divide-gray-200">
-                    {% for appointment in appointments %}
-                        <div class="p-6 appointment-card">
-                            <div class="flex flex-col md:flex-row md:justify-between">
-                                <!-- Patient Info -->
-                                <div class="flex items-start mb-4 md:mb-0">
-                                    {% if appointment.patient and appointment.patient.user %}
-                                        {% if appointment.patient.profile_image %}
-                                            <img src="{{ appointment.patient.profile_image.url }}"
-                                                 alt="{{ appointment.patient.user.get_full_name }}"
-                                                 class="patient-avatar ml-4">
-                                        {% else %}
-                                            <div class="patient-avatar patient-initials ml-4">
-                                                {% if appointment.patient.user.first_name %}
-                                                    {{ appointment.patient.user.first_name|first }}{{ appointment.patient.user.last_name|first }}
-                                                {% else %}
-                                                    {{ appointment.patient.user.phone|first|upper }}
-                                                {% endif %}
-                                            </div>
-                                        {% endif %}
-                                    {% else %}
-                                        <div class="patient-avatar patient-initials ml-4">م</div>
-                                    {% endif %}
+            <!-- Filter Section -->
+            <div class="filter-section p-6">
+                <h2 class="text-lg font-medium text-gray-800 mb-4">فیلتر نوبت‌ها</h2>
+                <form method="get" action="{% url 'doctors:doctor_appointments' %}" class="filter-grid">
+                    <div>
+                        <label for="status" class="block text-sm font-medium text-gray-700 mb-1">وضعیت</label>
+                        <select id="status" name="status"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            <option value="all" {% if status == 'all' %}selected{% endif %}>همه وضعیت‌ها</option>
+                            <option value="pending" {% if status == 'pending' %}selected{% endif %}>در انتظار</option>
+                            <option value="confirmed" {% if status == 'confirmed' %}selected{% endif %}>تأیید شده
+                            </option>
+                            <option value="completed" {% if status == 'completed' %}selected{% endif %}>تکمیل شده
+                            </option>
+                            <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>لغو شده</option>
+                        </select>
+                    </div>
 
-                                    <div class="patient-info">
-                                        <h3 class="text-base font-medium text-gray-800">
-                                            {% if appointment.patient and appointment.patient.user %}
-                                                {{ appointment.patient.user.get_full_name }}
+                    <div>
+                        <label for="date_from" class="block text-sm font-medium text-gray-700 mb-1">از تاریخ</label>
+                        <input type="text" id="date_from" name="date_from" value="{{ date_from|date:'Y-m-d' }}"
+                               class="jalali-datepicker w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+
+                    <div>
+                        <label for="date_to" class="block text-sm font-medium text-gray-700 mb-1">تا تاریخ</label>
+                        <input type="text" id="date_to" name="date_to" value="{{ date_to|date:'Y-m-d' }}"
+                               class="jalali-datepicker w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+
+                    <div class="flex items-end">
+                        <button type="submit"
+                                class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150 m-b-8">
+                            اعمال فیلترها
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Appointments List -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center">
+                    <h2 class="text-lg font-medium text-gray-800">
+                        {% if status != 'all' %}
+                            نوبت‌های {% if status == 'pending' %}در انتظار{% endif %}
+                            {% if status == 'confirmed' %}تایید شده{% endif %}
+                            {% if status == 'completed' %}تکمیل شده{% endif %}
+                            {% if status == 'cancelled' %}لغو شده{% endif %}
+                        {% else %}
+                            همه نوبت‌ها
+                        {% endif %}
+                    </h2>
+                    <span class="text-sm text-gray-500 mt-1 md:mt-0">
+                    {{ appointments.count }} نوبت
+                </span>
+                </div>
+
+                {% if appointments %}
+                    <div class="divide-y divide-gray-200">
+                        {% for appointment in appointments %}
+                            <div class="p-6 appointment-card">
+                                <div class="flex flex-col md:flex-row md:justify-between">
+                                    <!-- Patient Info -->
+                                    <div class="flex items-start mb-4 md:mb-0">
+                                        {% if appointment.patient and appointment.patient.user %}
+                                            {% if appointment.patient.profile_image %}
+                                                <img src="{{ appointment.patient.profile_image.url }}"
+                                                     alt="{{ appointment.patient.user.get_full_name }}"
+                                                     class="patient-avatar ml-4">
                                             {% else %}
-                                                بیمار مهمان
+                                                <div class="patient-avatar patient-initials ml-4">
+                                                    {% if appointment.patient.user.first_name %}
+                                                        {{ appointment.patient.user.first_name|first }}{{ appointment.patient.user.last_name|first }}
+                                                    {% else %}
+                                                        {{ appointment.patient.user.phone|first|upper }}
+                                                    {% endif %}
+                                                </div>
                                             {% endif %}
-                                        </h3>
-                                        <p class="text-sm text-gray-500">{{ appointment.phone }}</p>
-
-                                        {% if appointment.notes %}
-                                            <p class="mt-2 text-sm text-gray-600 bg-gray-50 p-2 rounded">{{ appointment.notes }}</p>
+                                        {% else %}
+                                            <div class="patient-avatar patient-initials ml-4">م</div>
                                         {% endif %}
 
-                                        <!-- Medical Record Actions -->
-                                        <div class="flex flex-wrap gap-2 mt-3">
-                                            {% if appointment.medical_record %}
-                                                <a href="{% url 'patients:record-detail' appointment.medical_record.id %}"
-                                                   class="btn btn-complete">
-                                                    مشاهده پرونده
-                                                </a>
-                                                <a href="{% url 'patients:create_report' appointment.patient.id %}"
-                                                   class="btn bg-yellow-100 hover:bg-blue-200">
-                                                    تایپ ریپورت
-                                                </a>
-                                            {% else %}
-                                                {% if appointment.patient and appointment.patient.id %}
-                                                    <a href="{% url 'patients:create-record' appointment.patient.id %}"
-                                                       class="btn bg-green-600 hover:bg-green-700 text-white">
-                                                        ایجاد پرونده
+                                        <div class="patient-info">
+                                            <h3 class="text-base font-medium text-gray-800">
+                                                {% if appointment.patient and appointment.patient.user %}
+                                                    {{ appointment.patient.user.get_full_name }}
+                                                {% else %}
+                                                    بیمار مهمان
+                                                {% endif %}
+                                            </h3>
+                                            <p class="text-sm text-gray-500">{{ appointment.phone }}</p>
+
+                                            {% if appointment.notes %}
+                                                <p class="mt-2 text-sm text-gray-600 bg-gray-50 p-2 rounded">{{ appointment.notes }}</p>
+                                            {% endif %}
+
+                                            <!-- Medical Record Actions -->
+                                            <div class="flex flex-wrap gap-2 mt-3">
+                                                {% if appointment.medical_record %}
+                                                    <a href="{% url 'patients:record-detail' appointment.medical_record.id %}"
+                                                       class="btn btn-complete">
+                                                        مشاهده پرونده
+                                                    </a>
+                                                    <a href="{% url 'patients:create_report' appointment.patient.id %}"
+                                                       class="btn bg-yellow-100 hover:bg-blue-200">
+                                                        تایپ ریپورت
                                                     </a>
                                                 {% else %}
-                                                    <span class="btn bg-gray-300 text-gray-600 cursor-not-allowed">
+                                                    {% if appointment.patient and appointment.patient.id %}
+                                                        <a href="{% url 'patients:create-record' appointment.patient.id %}"
+                                                           class="btn bg-green-600 hover:bg-green-700 text-white">
+                                                            ایجاد پرونده
+                                                        </a>
+                                                    {% else %}
+                                                        <span class="btn bg-gray-300 text-gray-600 cursor-not-allowed">
                                                         بیمار نامشخص
                                                     </span>
+                                                    {% endif %}
                                                 {% endif %}
-                                            {% endif %}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <!-- Appointment Details & Actions -->
-                                <div class="flex flex-col md:items-end">
-                                    <div class="text-left md:text-right mb-3 md:mb-0">
-                                        <p class="text-sm font-medium text-gray-600">
-                                            {{ appointment.day.date|persian_weekday }}
-                                            {{ appointment.day.date|date:'j' }}
-                                            {{ appointment.day.date|persian_month_name }}
-                                        </p>
-                                        <p class="text-lg font-semibold text-gray-800">
-                                            {{ appointment.time|time:"H:i" }}
-                                        </p>
-                                        <span class="status-badge
+                                    <!-- Appointment Details & Actions -->
+                                    <div class="flex flex-col md:items-end">
+                                        <div class="text-left md:text-right mb-3 md:mb-0">
+                                            <p class="text-sm font-medium text-gray-600">
+                                                {{ appointment.day.date|persian_weekday }}
+                                                {{ appointment.day.date|date:'j' }}
+                                                {{ appointment.day.date|persian_month_name }}
+                                            </p>
+                                            <p class="text-lg font-semibold text-gray-800">
+                                                {{ appointment.time|time:"H:i" }}
+                                            </p>
+                                            <span class="status-badge
                                             {% if appointment.status == 'confirmed' %}status-confirmed
                                             {% elif appointment.status == 'completed' %}status-completed
                                             {% elif appointment.status == 'cancelled' %}status-cancelled
@@ -353,140 +357,105 @@
                                                 در انتظار
                                             {% endif %}
                                         </span>
-                                    </div>
+                                        </div>
 
-                                    <div class="appointment-actions flex flex-wrap gap-2 mt-3 md:mt-2">
-                                        {% if appointment.status == 'pending' %}
-                                            <form method="post" action="{% url 'doctors:confirm_appointment' appointment.id %}">
-                                                {% csrf_token %}
-                                                <button type="submit" class="btn btn-confirm">
-                                                    تأیید نوبت
-                                                </button>
-                                            </form>
+                                        <div class="appointment-actions flex flex-wrap gap-2 mt-3 md:mt-2">
+                                            {% if appointment.status == 'pending' %}
+                                                <form method="post"
+                                                      action="{% url 'doctors:confirm_appointment' appointment.id %}">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-confirm">
+                                                        تأیید نوبت
+                                                    </button>
+                                                </form>
 
-                                            <form method="post" action="{% url 'doctors:cancel_appointment' appointment.id %}">
-                                                {% csrf_token %}
-                                                <button type="submit" class="btn btn-cancel" onclick="return confirm('آیا از لغو این نوبت مطمئن هستید؟');">
-                                                    لغو نوبت
-                                                </button>
-                                            </form>
-                                        {% elif appointment.status == 'confirmed' %}
-                                            <form method="post" action="{% url 'doctors:complete_appointment' appointment.id %}">
-                                                {% csrf_token %}
-                                                <button type="submit" class="btn btn-complete">
-                                                    تکمیل نوبت
-                                                </button>
-                                            </form>
+                                                <form method="post"
+                                                      action="{% url 'doctors:cancel_appointment' appointment.id %}">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-cancel"
+                                                            onclick="return confirm('آیا از لغو این نوبت مطمئن هستید؟');">
+                                                        لغو نوبت
+                                                    </button>
+                                                </form>
+                                            {% elif appointment.status == 'confirmed' %}
+                                                <form method="post"
+                                                      action="{% url 'doctors:complete_appointment' appointment.id %}">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-complete">
+                                                        تکمیل نوبت
+                                                    </button>
+                                                </form>
 
-                                            <form method="post" action="{% url 'doctors:cancel_appointment' appointment.id %}">
-                                                {% csrf_token %}
-                                                <button type="submit" class="btn btn-cancel" onclick="return confirm('آیا از لغو این نوبت مطمئن هستید؟');">
-                                                    لغو نوبت
-                                                </button>
-                                            </form>
-                                        {% endif %}
+                                                <form method="post"
+                                                      action="{% url 'doctors:cancel_appointment' appointment.id %}">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-cancel"
+                                                            onclick="return confirm('آیا از لغو این نوبت مطمئن هستید؟');">
+                                                        لغو نوبت
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    {% endfor %}
-                </div>
+                        {% endfor %}
+                    </div>
 
-                <!-- Pagination -->
-                {% if is_paginated %}
-                    <div class="px-6 py-4 border-t border-gray-200 flex flex-col md:flex-row items-center justify-between">
-                        <div class="mb-3 md:mb-0">
-                            <p class="text-sm text-gray-700">
-                                نمایش <span class="font-medium">{{ page_obj.start_index }}</span> تا
-                                <span class="font-medium">{{ page_obj.end_index }}</span> از
-                                <span class="font-medium">{{ paginator.count }}</span> نوبت
-                            </p>
-                        </div>
-                        <div>
-                            <nav class="flex items-center space-x-3 space-x-reverse">
-                                {% if page_obj.has_previous %}
-                                    <a href="?{% if status != 'all' %}status={{ status }}&{% endif %}{% if date_from %}date_from={{ date_from|date:'Y-m-d' }}&{% endif %}{% if date_to %}date_to={{ date_to|date:'Y-m-d' }}&{% endif %}page={{ page_obj.previous_page_number }}"
-                                       class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                                        قبلی
-                                    </a>
-                                {% endif %}
+                    <!-- Pagination -->
+                    {% if is_paginated %}
+                        <div class="px-6 py-4 border-t border-gray-200 flex flex-col md:flex-row items-center justify-between">
+                            <div class="mb-3 md:mb-0">
+                                <p class="text-sm text-gray-700">
+                                    نمایش <span class="font-medium">{{ page_obj.start_index }}</span> تا
+                                    <span class="font-medium">{{ page_obj.end_index }}</span> از
+                                    <span class="font-medium">{{ paginator.count }}</span> نوبت
+                                </p>
+                            </div>
+                            <div>
+                                <nav class="flex items-center space-x-3 space-x-reverse">
+                                    {% if page_obj.has_previous %}
+                                        <a href="?{% if status != 'all' %}status={{ status }}&{% endif %}{% if date_from %}date_from={{ date_from|date:'Y-m-d' }}&{% endif %}{% if date_to %}date_to={{ date_to|date:'Y-m-d' }}&{% endif %}page={{ page_obj.previous_page_number }}"
+                                           class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                            قبلی
+                                        </a>
+                                    {% endif %}
 
-                                {% if page_obj.has_next %}
-                                    <a href="?{% if status != 'all' %}status={{ status }}&{% endif %}{% if date_from %}date_from={{ date_from|date:'Y-m-d' }}&{% endif %}{% if date_to %}date_to={{ date_to|date:'Y-m-d' }}&{% endif %}page={{ page_obj.next_page_number }}"
-                                       class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                                        بعدی
-                                    </a>
-                                {% endif %}
-                            </nav>
+                                    {% if page_obj.has_next %}
+                                        <a href="?{% if status != 'all' %}status={{ status }}&{% endif %}{% if date_from %}date_from={{ date_from|date:'Y-m-d' }}&{% endif %}{% if date_to %}date_to={{ date_to|date:'Y-m-d' }}&{% endif %}page={{ page_obj.next_page_number }}"
+                                           class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                            بعدی
+                                        </a>
+                                    {% endif %}
+                                </nav>
+                            </div>
                         </div>
+                    {% endif %}
+                {% else %}
+                    <div class="empty-state">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="empty-state-icon" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <h3 class="text-lg font-medium text-gray-900">نوبتی یافت نشد</h3>
+                        <p class="mt-1 text-sm text-gray-500">
+                            {% if status != 'all' or date_from or date_to %}
+                                معیارهای فیلتر را تغییر دهید تا نتایج بیشتری ببینید.
+                            {% else %}
+                                هنوز هیچ نوبتی ندارید.
+                            {% endif %}
+                        </p>
                     </div>
                 {% endif %}
-            {% else %}
-                <div class="empty-state">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="empty-state-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
-                    <h3 class="text-lg font-medium text-gray-900">نوبتی یافت نشد</h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                        {% if status != 'all' or date_from or date_to %}
-                            معیارهای فیلتر را تغییر دهید تا نتایج بیشتری ببینید.
-                        {% else %}
-                            هنوز هیچ نوبتی ندارید.
-                        {% endif %}
-                    </p>
-                </div>
-            {% endif %}
+            </div>
         </div>
     </div>
-</div>
-{% endblock %}
 
-{% block extra_js %}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://unpkg.com/persian-date@latest/dist/persian-date.min.js"></script>
-<script src="https://unpkg.com/persian-datepicker@latest/dist/js/persian-datepicker.min.js"></script>
-<script>
-    $(document).ready(function () {
-        // گرفتن تاریخ امروز به‌صورت جلالی
-        const today = new persianDate().format('YYYY/MM/DD');
+    {% block extra_js %}
 
-        // مقداردهی اولیه به ورودی‌ها در صورت نبود پارامتر URL
-        function getUrlParameter(name) {
-            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-            var results = regex.exec(location.search);
-            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-        }
-
-        const dateFromParam = getUrlParameter('date_from');
-        const dateToParam = getUrlParameter('date_to');
-
-        // مقدار پیش‌فرض امروز برای ورودی‌ها (اگر پارامتر URL نبود)
-        if (!dateFromParam) {
-            $('#date_from').val(today);
-        }
-        if (!dateToParam) {
-            $('#date_to').val(today);
-        }
-
-        // فعال‌سازی تقویم جلالی روی ورودی‌ها
-        $('.jalali-datepicker').persianDatepicker({
-            format: 'YYYY/MM/DD',
-            altFormat: 'YYYY-MM-DD',
-            observer: true,
-            autoClose: true,
-            initialValue: false  // چون ما دستی مقدار رو می‌ذاریم
-        });
-
-        // اگر پارامتر URL وجود داشت، مقدار ورودی رو override می‌کنیم
-        if (dateFromParam) {
-            $('#date_from').val(dateFromParam);
-        }
-        if (dateToParam) {
-            $('#date_to').val(dateToParam);
-        }
-    });
-</script>
+    {% endblock %}
 
 
 {% endblock %}
+

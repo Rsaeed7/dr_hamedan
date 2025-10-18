@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block content %}
     <div class="min-h-screen bg-gray-50 rtl">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -121,7 +121,7 @@
                                             </p>
                                         </div>
                                         <div class="flex sm:flex-col gap-2 sm:gap-1">
-                                            <button onclick="handleRequest({{ req.id }}, 'approve')"
+                                            <button data-request-id="{{ req.id }}" data-request-action="approve"
                                                     class="px-3 py-1.5 bg-green-50 text-green-800 rounded-lg text-sm hover:bg-green-100 transition-colors flex items-center">
                                                 <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor"
                                                      viewBox="0 0 24 24">
@@ -130,7 +130,7 @@
                                                 </svg>
                                                 تایید
                                             </button>
-                                            <button onclick="handleRequest({{ req.id }}, 'reject')"
+                                            <button data-request-id="{{ req.id }}" data-request-action="reject"
                                                     class="px-3 py-1.5 bg-red-50 text-red-800 rounded-lg text-sm hover:bg-red-100 transition-colors flex items-center">
                                                 <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor"
                                                      viewBox="0 0 24 24">
@@ -198,7 +198,7 @@
                                     </div>
                                 </a>
                                 <div class="flex justify-end -mt-3">
-                                    <button onclick="handleRequest({{ room.request.id }}, 'finished')"
+                                    <button data-request-id="{{ room.request.id }}" data-request-action="finished"
                                             class="px-3 py-1.5 bg-gray-100 text-gray-800 rounded-lg text-sm hover:bg-gray-200 transition-colors flex items-center">
                                         <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -305,89 +305,16 @@
         </div>
     </div>
 
+
+{% endblock %}
+
+{% block extra_js %}
+    <!-- اضافه کردن کانفیگ و اسکریپت -->
     <script>
-        // تغییر وضعیت آنلاین/آفلاین
-        document.getElementById('toggle-availability').addEventListener('click', function () {
-            fetch("{% url 'chat:toggle_availability' %}", {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',
-                    'Content-Type': 'application/json'
-                },
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        const statusElement = document.getElementById('availability-status');
-                        const button = document.getElementById('toggle-availability');
-
-                        if (data.is_available) {
-                            statusElement.innerHTML = '<span class="inline-flex items-center text-green-600"><span class="w-2 h-2 rounded-full bg-green-500 mr-1 m-l-2"></span> آنلاین</span>';
-                            button.textContent = 'تغییر به آفلاین';
-                            button.classList.remove('bg-green-50', 'text-green-800', 'hover:bg-green-100');
-                            button.classList.add('bg-red-50', 'text-red-800', 'hover:bg-red-100');
-                        } else {
-                            statusElement.innerHTML = '<span class="inline-flex items-center text-red-600"><span class="w-2 h-2 rounded-full bg-red-500 mr-1 m-l-2"></span> آفلاین</span>';
-                            button.textContent = 'تغییر به آنلاین';
-                            button.classList.remove('bg-red-50', 'text-red-800', 'hover:bg-red-100');
-                            button.classList.add('bg-green-50', 'text-green-800', 'hover:bg-green-100');
-                        }
-                    }
-                });
-        });
-
-        // مدیریت درخواست‌های چت
-        function handleRequest(requestId, action) {
-            if (action === 'finished' && !confirm("آیا مطمئن هستید که می‌خواهید مکالمه را پایان دهید؟")) {
-                return;
-            }
-
-            fetch(`/chat-visit/requests/${requestId}/${action}/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',
-                    'Content-Type': 'application/json'
-                },
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'approved') {
-                        window.location.href = `/chat-visit/room/${data.room_id}/`;
-                    } else if (data.status === 'rejected' || data.status === 'finished') {
-                        // حذف آیتم از لیست
-                        const requestElement = document.querySelector(`[onclick*="${requestId}"]`).closest('.border');
-                        if (requestElement) {
-                            requestElement.style.opacity = '0';
-                            setTimeout(() => requestElement.remove(), 300);
-                        }
-
-                        // نمایش پیام موفقیت
-                        const message = action === 'finished' ? 'مکالمه با موفقیت پایان یافت' :
-                            action === 'approve' ? 'درخواست با موفقیت تایید شد' :
-                                'درخواست با موفقیت رد شد';
-
-                        showToast(message, 'success');
-                    }
-                })
-                .catch(error => {
-                    console.error("خطا در پردازش درخواست:", error);
-                    showToast('خطا در پردازش درخواست', 'error');
-                });
-        }
-
-        // نمایش پیام toast
-        function showToast(message, type) {
-            const toast = document.createElement('div');
-            toast.className = `fixed top-4 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg shadow-lg text-white font-medium ${
-                type === 'success' ? 'bg-green-500' : 'bg-red-500'
-            }`;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
+        window.doctorChatConfig = {
+            toggleUrl: "{% url 'chat:toggle_availability' %}",
+            csrfToken: "{{ csrf_token }}"
+        };
     </script>
+    <script src="{% static 'js/chat/doctor-chat-management.js' %}"></script>
 {% endblock %}

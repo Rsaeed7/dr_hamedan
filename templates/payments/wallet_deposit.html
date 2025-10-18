@@ -1,85 +1,161 @@
 {% extends 'base/base.html' %}
+{% load static %}
 {% load jformat %}
 
-{% block title %}شارژ کیف پول{% endblock %}
+{% block title %}<title>افزایش موجودی | دکتر همدان</title>{% endblock %}
 
 {% block body %}
-<div class="container p-t-30 p-b-30">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-body p-4">
-                    <h1 class="card-title text-center h3 mb-4">شارژ کیف پول</h1>
+    <div class="bg-light">
+        <div class="container margin_120_95">
+            <div class="row">
+                {% include 'patients/dashbord_sidebar.html' %}
 
-                    {% if messages %}
-                    <div class="mb-4">
-                        {% for message in messages %}
-                        <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
+                <div class="col-lg-8 ml-auto">
+                    <div class="box_general_3 border-0">
+                        <div class="row">
+                            <div class="col-md-12 p-t-10">
+                                <div>
+                                    <h4 class="mb-4">افزودن موجودی</h4>
+                                    <p class="text-muted mb-4">موجودی به کیف پول خود اضافه کنید تا برای نوبت‌ها و خدمات
+                                        پرداخت کنید.</p>
 
-                    <form method="post">
-                        {% csrf_token %}
+                                    {% if messages %}
+                                        {% for message in messages %}
+                                            <div class="alert alert-{% if message.tags == 'success' %}success{% elif message.tags == 'error' %}danger{% else %}info{% endif %} mb-4">
+                                                {{ message }}
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
 
-                        <div class="mb-3">
-                            <label for="amount" class="form-label">مبلغ (تومان)</label>
-                            <input
-                                type="number"
-                                id="amount"
-                                name="amount"
-                                value="{{ suggested_amount|default:'' }}"
-                                min="{{ min_amount }}"
-                                max="{{ max_amount }}"
-                                step="1000"
-                                class="form-control"
-                                placeholder="مبلغ را وارد کنید"
-                                required
-                            >
-                            <div class="form-text">حداقل: {{ min_amount }} تومان - حداکثر: {{ max_amount }} تومان</div>
-                        </div>
+                                    <!-- Balance Card -->
+                                    <div class="card mb-4">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-light-green bg-opacity-10 p-3 rounded-circle me-3">
+                                                    <i class="icon-wallet"></i>
+                                                </div>
+                                                <div>
+                                                    <p class="text-muted mb-1">موجودی فعلی</p>
+                                                    <h4 class="mb-0">{{ wallet.balance|default:0 }} تومان</h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                        <div class="mb-4">
-                            <label class="form-label">درگاه پرداخت</label>
-                            {% for gateway in active_gateways %}
-                            <div class="form-check mb-2">
-                                <input
-                                    class="form-check-input m-l-10 m-r-10"
-                                    type="radio"
-                                    name="gateway_type"
-                                    value="{{ gateway.gateway_type }}"
-                                    id="gateway{{ forloop.counter }}"
-                                    {% if forloop.first %}checked{% endif %}
-                                >
-                                <label class="form-check-label" for="gateway{{ forloop.counter }}">
-                                    {{ gateway.name }}
-                                </label>
+                                    <form method="post" action="{% url 'wallet:deposit' %}">
+                                        {% csrf_token %}
+
+                                        <div class="mb-4">
+                                            <label for="amount" class="form-label">مبلغ واریزی</label>
+                                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                                <button type="button" class="btn btn-scroll2 p-1 m-l-5 amount-btn"
+                                                        data-amount="50000">50,000 تومان
+                                                </button>
+                                                <button type="button" class="btn btn-scroll2 p-1 m-l-5 amount-btn"
+                                                        data-amount="100000">100,000 تومان
+                                                </button>
+                                                <button type="button" class="btn btn-scroll2 p-1 m-l-5 amount-btn"
+                                                        data-amount="500000">500,000 تومان
+                                                </button>
+                                                <button type="button" class="btn btn-scroll2 p-1 m-l-5 amount-btn"
+                                                        data-amount="1000000">1000,000 تومان
+                                                </button>
+                                            </div>
+                                            <div class="input-group">
+                                                <input
+                                                        type="number"
+                                                        name="amount"
+                                                        id="amount"
+                                                        value="{{ suggested_amount|default:'' }}"
+                                                        class="form-control"
+                                                        placeholder="مبلغ دلخواه خود را وارد کنید"
+                                                        min="{{ min_amount }}"
+                                                        max="{{ max_amount }}"
+                                                        step="1000"
+                                                        required
+                                                >
+                                                <span class="input-group-text">تومان</span>
+                                            </div>
+                                            <small class="text-muted">حداقل مبلغ واریزی: {{ min_amount }} تومان -
+                                                حداکثر: {{ max_amount }} تومان</small>
+                                        </div>
+
+                                        <div class="mb-4">
+                                            <h5 class="mb-3">روش پرداخت</h5>
+                                            <div class="row g-3">
+                                                {% for gateway in active_gateways %}
+                                                    <div class="col-md-4">
+                                                        <div class="form-check">
+                                                            <input
+                                                                    class="auto-submit custom-radio"
+                                                                    type="radio"
+                                                                    name="gateway_type"
+                                                                    id="gateway{{ forloop.counter }}"
+                                                                    value="{{ gateway.gateway_type }}"
+                                                                    {% if forloop.first %}checked{% endif %}
+                                                            >
+                                                            <label class="form-check-label"
+                                                                   for="gateway{{ forloop.counter }}">
+                                                                <span class="fs-16">{{ gateway.name }}</span>
+                                                                <span class="text-muted d-block">{{ gateway.description|default:"پرداخت امن" }}</span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                {% empty %}
+                                                    <div class="col-12">
+                                                        <p class="text-muted small">هیچ درگاه پرداختی فعال نیست</p>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+
+                                        <!-- Payment Gateway Details -->
+                                        {% for gateway in active_gateways %}
+                                            <div id="{{ gateway.gateway_type }}-details"
+                                                 class="mb-4 {% if not forloop.first %}d-none{% endif %}">
+                                                {% if gateway.gateway_type == 'zarinpal' %}
+                                                    <div class="alert alert-info">
+                                                        <i class="fas fa-info-circle me-2"></i>
+                                                        پس از ارسال این فرم، به درگاه زرین‌پال هدایت خواهید شد تا پرداخت
+                                                        خود را تکمیل کنید.
+                                                    </div>
+                                                {% elif gateway.gateway_type == 'saman' %}
+                                                    <div class="alert alert-info">
+                                                        <i class="fas fa-info-circle me-2"></i>
+                                                        پرداخت از طریق درگاه امن سامان
+                                                    </div>
+                                                {% else %}
+                                                    <div class="alert alert-info">
+                                                        <i class="fas fa-info-circle me-2"></i>
+                                                        پرداخت امن از طریق {{ gateway.name }}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+
+                                        <div class="text-left">
+                                            <button
+                                                    type="submit"
+                                                    class="btn btn-success col-lg-12"
+                                                    {% if not active_gateways %}disabled{% endif %}
+                                            >
+                                                پرداخت و افزایش موجودی
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
-                            {% empty %}
-                            <p class="text-muted small">هیچ درگاه پرداختی فعال نیست</p>
-                            {% endfor %}
                         </div>
-
-                        <button
-                            type="submit"
-                            class="btn btn-primary w-100"
-                            {% if not active_gateways %}disabled{% endif %}
-                        >
-                            پرداخت
-                        </button>
-                    </form>
-
-                    <div class="text-center mt-3">
-                        <a href="{% url 'wallet:wallet_dashboard' %}" class="btn btn-link text-decoration-none">
-                            بازگشت به کیف پول
-                        </a>
                     </div>
+                    <a href="{% url 'wallet:wallet_dashboard' %}" class="text_dr_3">&larr; برگشت به کیف پول</a>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/wallet/deposit.js' %}"></script>
 {% endblock %}

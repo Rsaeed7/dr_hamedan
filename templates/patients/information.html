@@ -2,7 +2,9 @@
 {% load static %}
 
 {% block body %}
-{% block title %}<title>اطلاعات کاربری | دکتر همدان</title>{% endblock %}
+
+
+    {% block title %}<title>اطلاعات کاربری | دکتر همدان</title>{% endblock %}
     <div class="filters_listing d-lg-none">
         <div class="container">
             <a href="{% url 'patients:patient_dashboard' %}" class="text-dr"><i class="icon-right-open"></i> داشبورد</a>
@@ -37,7 +39,8 @@
                                     <div class="form-group">
                                         <label>کد ملی<span class="text-danger">*</span></label>
                                         <input type="text" id="national_id" name="national_id" required
-                                               value="{{ patient.national_id|default:'' }}" class="form-control required"
+                                               value="{{ patient.national_id|default:'' }}"
+                                               class="form-control required"
                                                placeholder="کد ملی خود را وارد کنید">
                                     </div>
                                 </div>
@@ -76,7 +79,8 @@
                                     <div class="form-group">
                                         <label>تاریخ تولد</label>
                                         <input type="text" id="birthdate_display" class="form-control"
-                                               placeholder="تاریخ تولد خود را وارد کنید" value="{{ patient.birthdate|date:'Y-m-d' }}">
+                                               placeholder="تاریخ تولد خود را وارد کنید"
+                                               value="{{ patient.birthdate|date:'Y-m-d' }}">
                                         <input type="hidden" id="birthdate" name="birthdate"
                                                value="{{ patient.birthdate|date:'Y-m-d' }}">
 
@@ -111,23 +115,14 @@
         </div>
     </section>
 
-    <!-- Persian Datepicker -->
-    <link rel="stylesheet" href="https://unpkg.com/persian-datepicker@latest/dist/css/persian-datepicker.min.css"/>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://unpkg.com/persian-date@latest/dist/persian-date.min.js"></script>
-    <script src="https://unpkg.com/persian-datepicker@latest/dist/js/persian-datepicker.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            $('#birthdate_display').persianDatepicker({
-                format: 'YYYY/MM/DD',
-                altField: '#birthdate',
-                altFormat: 'YYYY-MM-DD',
-                observer: true,
-                initialValue: !!'{{ birthdate }}',
-                initialValueType: 'persian',
-                autoClose: true
-            });
-        });
 
-    </script>
+
+
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'js/persian-date.min.js' %}"></script>
+    <script src="{% static 'js/persian-datepicker.min.js' %}"></script>
+    <script src="{% static 'js/main/p-date.js' %}"></script>
 {% endblock %}

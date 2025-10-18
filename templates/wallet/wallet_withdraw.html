@@ -1,5 +1,6 @@
 {% extends 'base/base.html' %}
 {% load static %}
+{% block title %}<title>برداشت پول | دکتر همدان</title>{% endblock %}
 {% block body %}
     <div class="bg-light">
         <div class="container margin_120_95">
@@ -42,10 +43,18 @@
                                         <div class="mb-4">
                                             <label for="id_amount" class="form-label">مبلغ برداشت</label>
                                             <div class="d-flex flex-wrap gap-2 mb-3">
-                                                <button type="button" class="btn btn-scroll2 p-1 m-l-5 amount-btn" data-amount="50000">50,000 تومان</button>
-                                                <button type="button" class="btn btn-scroll2 p-1 m-l-5 amount-btn" data-amount="100000">100,000 تومان</button>
-                                                <button type="button" class="btn btn-scroll2 p-1 m-l-5 amount-btn" data-amount="500000">500,000 تومان</button>
-                                                <button type="button" class="btn btn-scroll2 p-1 m-l-5 amount-btn" data-amount="1000000">1000,000 تومان</button>
+                                                <button type="button" class="btn btn-scroll2 p-1 m-l-5 amount-btn"
+                                                        data-amount="50000">50,000 تومان
+                                                </button>
+                                                <button type="button" class="btn btn-scroll2 p-1 m-l-5 amount-btn"
+                                                        data-amount="100000">100,000 تومان
+                                                </button>
+                                                <button type="button" class="btn btn-scroll2 p-1 m-l-5 amount-btn"
+                                                        data-amount="500000">500,000 تومان
+                                                </button>
+                                                <button type="button" class="btn btn-scroll2 p-1 m-l-5 amount-btn"
+                                                        data-amount="1000000">1000,000 تومان
+                                                </button>
                                             </div>
                                             <div class="input-group">
                                                 <input type="number" name="amount" id="id_amount"
@@ -67,8 +76,10 @@
                                             <h5 class="mb-3">مشخصات حساب بانکی</h5>
                                             <div class="row g-3">
                                                 <div class="col-md-6">
-                                                    <label for="account_holder_name" class="form-label">نام صاحب حساب</label>
-                                                    <input type="text" name="account_holder_name" id="account_holder_name"
+                                                    <label for="account_holder_name" class="form-label">نام صاحب
+                                                        حساب</label>
+                                                    <input type="text" name="account_holder_name"
+                                                           id="account_holder_name"
                                                            class="form-control" required>
                                                 </div>
                                                 <div class="col-md-6">
@@ -91,7 +102,8 @@
 
                                         <div class="mb-4">
                                             <div class="form-check">
-                                                <input class="custom-checkbox auto-submit" type="checkbox" id="terms" required>
+                                                <input class="custom-checkbox auto-submit" type="checkbox" id="terms"
+                                                       required>
                                                 <label for="terms">
                                                     اطلاعات حساب ارائه شده صحیح بوده و این برداشت را تأیید می‌کنم.
                                                 </label>
@@ -113,48 +125,11 @@
             </div>
         </div>
     </div>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Set amount when buttons are clicked
-        document.querySelectorAll('.amount-btn').forEach(function(btn) {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                const amount = this.getAttribute('data-amount');
-                document.getElementById('id_amount').value = amount;
 
-                document.querySelectorAll('.amount-btn').forEach(b => {
-                    b.classList.remove('active');
-                });
-                this.classList.add('active');
-            });
-        });
 
-        // Form validation
-        document.getElementById('withdraw-form').addEventListener('submit', function(e) {
-            const amount = parseFloat(document.getElementById('id_amount').value);
-            const balance = parseFloat({{ wallet.balance|default:0 }});
-
-            if (amount < 10000) {
-                e.preventDefault();
-                alert('حداقل مبلغ برداشت 10,000 تومان می‌باشد');
-                document.getElementById('id_amount').focus();
-            } else if (amount > balance) {
-                e.preventDefault();
-                alert('مبلغ درخواستی بیشتر از موجودی کیف پول شماست');
-                document.getElementById('id_amount').focus();
-            }
-        });
-
-        // Format account number
-        document.getElementById('account_number').addEventListener('input', function() {
-            this.value = this.value.replace(/\D/g, '');
-        });
-
-        // Format Sheba number
-        document.getElementById('routing_number').addEventListener('input', function() {
-            this.value = this.value.toUpperCase().replace(/[^IR0-9]/g, '');
-        });
-    });
-</script>
 {% endblock %}
 
+{% block extra_js %}
+    <!-- اضافه کردن فایل JS جدا -->
+    <script src="{% static 'js/wallet/withdraw.js' %}"></script>
+{% endblock %}

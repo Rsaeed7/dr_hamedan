@@ -1,48 +1,50 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mx-auto p-6">
-    <div class="mb-6">
-        <h1 class="text-3xl font-bold text-gray-800 border-b pb-2">
-            مدیریت پشتیبانی آنلاین
-        </h1>
-        <p class="text-sm text-gray-500 mt-1">لیست گفتگوهای فعال پشتیبانی</p>
-    </div>
+    <div class="container mx-auto p-6">
+        <div class="mb-6">
+            <h1 class="text-3xl font-bold text-gray-800 border-b pb-2">
+                مدیریت پشتیبانی آنلاین
+            </h1>
+            <p class="text-sm text-gray-500 mt-1">لیست گفتگوهای فعال پشتیبانی</p>
+        </div>
 
-    {% if chats %}
-        <div class="grid gap-4">
-            {% for chat in chats %}
-                <a href="{% url 'support:chat_room' chat.id %}"
-                   class="block bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 p-4">
-                    <div class="flex justify-between items-center mb-2">
-                        <h5 class="text-lg font-semibold text-gray-800">{{ chat.title }}</h5>
-                        <small> آخرین پیام : {{ chat.messages.last.content }}</small>
-                        <span class="text-xs text-gray-400">
+        {% if chats %}
+            <div class="grid gap-4">
+                {% for chat in chats %}
+                    <a href="{% url 'support:chat_room' chat.id %}"
+                       class="block bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 p-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <h5 class="text-lg font-semibold text-gray-800">{{ chat.title }}</h5>
+                            <small> آخرین پیام : {{ chat.messages.last.content }}</small>
+                            <span class="text-xs text-gray-400">
                             {{ chat.last_activity|date:"Y/m/d H:i" }}
                         </span>
 
-                    </div>
-                    <p class="text-sm text-gray-600">
-                        {% if is_admin %}
-                            👤 کاربر: <span class="font-medium">{{ chat.customer.name }}</span>
-                        {% else %}
-                            🛠️ ادمین: <span class="font-medium">{{ chat.admin.username }}</span>
-                        {% endif %}
-                    </p>
-                </a>
-            {% endfor %}
-        </div>
-    {% else %}
-        <div class="text-center mt-10 text-gray-500">
-            <i class="fas fa-comment-slash text-4xl mb-3"></i>
-            <p class="text-lg">هیچ گفتگویی فعال نیست.</p>
-        </div>
-    {% endif %}
-</div>
-    <script>
-    setTimeout(function() {
-        location.reload();
-    }, 10000); // رفرش هر 5 ثانیه
-</script>
+                        </div>
+                        <p class="text-sm text-gray-600">
+                            {% if is_admin %}
+                                👤 کاربر: <span class="font-medium">{{ chat.customer.name }}</span>
+                            {% else %}
+                                🛠️ ادمین: <span class="font-medium">{{ chat.admin.username }}</span>
+                            {% endif %}
+                        </p>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center mt-10 text-gray-500">
+                <i class="fas fa-comment-slash text-4xl mb-3"></i>
+                <p class="text-lg">هیچ گفتگویی فعال نیست.</p>
+            </div>
+        {% endif %}
+    </div>
 
+{% endblock %}
+
+
+{% block extra_js %}
+    setTimeout(function() {
+    location.reload();
+    }, 10000); // رفرش هر 5 ثانیه
 {% endblock %}

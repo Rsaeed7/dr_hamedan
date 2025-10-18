@@ -1,6 +1,7 @@
 {% extends  'base/base.html' %}
 {% load static %}
 {% load persian_date %}
+{% block title %}<title>همه تراکنش ها | دکتر همدان</title>{% endblock %}
 {% block body %}
     <div class="filters_listing d-lg-none">
         <div class="container">
@@ -18,7 +19,7 @@
                                 <div>
                                     <h4 class="text-white"> موجودی فعلی: <br><br><span
                                             class="font-weight-bold p-r-40 text_dr_2">
-                            {{ balance}} تومان </span></h4>
+                            {{ balance }} تومان </span></h4>
                                 </div>
                             </div>
 
@@ -28,7 +29,8 @@
                                     </p>
                                     <p class="btn btn-light col-5 m-t-10">در انتظار <br> {{ pending_count }}</p>
                                 </div>
-                                <a class="text-white icon-right font-weight-light" href="{% url 'wallet:wallet_dashboard' %}">بازگشت به کیف پول</a>
+                                <a class="text-white icon-right font-weight-light"
+                                   href="{% url 'wallet:wallet_dashboard' %}">بازگشت به کیف پول</a>
                             </div>
                         </div>
                     </div>
@@ -204,50 +206,14 @@
     </div>
 
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const autoInputs = document.querySelectorAll('.auto-submit');
-            autoInputs.forEach(input => {
-                input.addEventListener('change', function () {
-                    document.getElementById('filterForm').submit();
-                });
-            });
-        });
-    </script>
-    <link rel="stylesheet" href="https://unpkg.com/persian-datepicker@latest/dist/css/persian-datepicker.min.css"/>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://unpkg.com/persian-date@latest/dist/persian-date.min.js"></script>
-    <script src="https://unpkg.com/persian-datepicker@latest/dist/js/persian-datepicker.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            // فیلتر از تاریخ
-            $('#from_display').persianDatepicker({
-                format: 'YYYY/MM/DD',
-                altField: '#from',
-                altFormat: 'YYYY-MM-DD',
-                observer: true,
-                initialValue: !!'{{ from }}',
-                initialValueType: 'persian',
-                autoClose: true,
-                onSelect: function () {
-                    $('#filterForm').submit();
-                }
-            });
 
-            // فیلتر تا تاریخ
-            $('#to_display').persianDatepicker({
-                format: 'YYYY/MM/DD',
-                altField: '#to',
-                altFormat: 'YYYY-MM-DD',
-                observer: true,
-                initialValue: !!'{{ to }}',
-                initialValueType: 'persian',
-                autoClose: true,
-                onSelect: function () {
-                    $('#filterForm').submit();
-                }
-            });
-        });
-    </script>
 
+
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'js/persian-date.min.js' %}"></script>
+    <script src="{% static 'js/persian-datepicker.min.js' %}"></script>
+    <script src="{% static 'js/main/p-date.js' %}"></script>
 {% endblock %}

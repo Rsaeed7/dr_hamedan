@@ -60,18 +60,18 @@ def explore(request):
     from django.core.paginator import Paginator
     from django.http import JsonResponse
     from django.template.loader import render_to_string
-    
+
     # Get filter parameters
     search_query = request.GET.get('search', '').strip()
     media_type = request.GET.get('media_type', 'all')  # all, image, video, none
     specialty = request.GET.get('specialty', '')
     page = request.GET.get('page', 1)
-    
+
     # Base queryset - published posts with related data
     posts = Post.objects.filter(status='published').select_related(
         'doctor', 'doctor__user'
     ).prefetch_related('medical_lenses', 'post_likes')
-    
+
     # Apply search filter
     if search_query:
         from django.db import models as db_models
@@ -82,29 +82,29 @@ def explore(request):
             db_models.Q(doctor__user__last_name__icontains=search_query) |
             db_models.Q(medical_lenses__name__icontains=search_query)
         ).distinct()
-    
+
     # Apply media type filter
     if media_type != 'all':
         posts = posts.filter(media_type=media_type)
-    
+
     # Apply specialty filter
     if specialty:
         posts = posts.filter(doctor__specialization__icontains=specialty)
-    
+
     # Order by creation date (newest first)
     posts = posts.order_by('-created_at')
-    
+
     # Paginate results (12 posts per page for grid layout)
-    paginator = Paginator(posts, 12)
+    paginator = Paginator(posts, 36)
     posts_page = paginator.get_page(page)
-    
+
     # Handle AJAX requests for lazy loading
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         posts_html = render_to_string(
-            'index/explore_posts_partial.html', 
+            'index/explore_posts_partial.html',
             {'posts': posts_page, 'request': request}
         )
-        
+
         return JsonResponse({
             'success': True,
             'posts_html': posts_html,
@@ -114,11 +114,11 @@ def explore(request):
             'current_page': posts_page.number,
             'total_pages': paginator.num_pages
         })
-    
+
     # Get specializations for filter dropdown
     from doctors.models import Doctor
     specializations = Doctor.objects.values_list('specialization', flat=True).distinct().order_by('specialization')
-    
+
     # Get statistics
     stats = {
         'total_posts': Post.objects.filter(status='published').count(),
@@ -126,7 +126,7 @@ def explore(request):
         'image_posts': Post.objects.filter(status='published', media_type='image').count(),
         'doctors_count': Doctor.objects.count()
     }
-    
+
     context = {
         'posts': posts_page,
         'search_query': search_query,
@@ -293,7 +293,7 @@ def doctor_detail(request, slug):
             # اتصال مستقیم بر اساس IDها
             comment.tips.set(tips_ids)
 
-            messages.success(request, 'نظر شما با موفقیت ثبت شد')
+            messages.success(request, 'نظر شما با موفقیت ثبت شد و پس از تایید نمایش داده میشود!')
             return redirect('doctors:doctor_detail', slug=doctor.slug)
 
     # استفاده از سرویس برای دریافت روزهای آزاد
@@ -1113,7 +1113,7 @@ class SendMessageView(DoctorMessageMixin, CreateView):
     model = Email
     form_class = EmailForm
     template_name = 'email/send.html'
-    success_url = reverse_lazy('doctors:inbox')
+    success_url = reverse_lazy('doctors:sent_messages')
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -1648,7 +1648,7 @@ def notifications_page(request):
         unread_only=False
     )
     
-    paginator = Paginator(notifications, 20)
+    paginator = Paginator(notifications, 150)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     

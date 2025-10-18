@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block body %}
-{% block title %}<title>ثبت درخواست خدمت | دکتر همدان</title>{% endblock %}
+    {% block title %}<title>ثبت درخواست خدمت | دکتر همدان</title>{% endblock %}
     <section class="box_general col-12 text-center my-4">
         <p class="mb-3 fw-bold">مراحل درخواست خدمات پزشکی و پرستاری در محل</p>
 
@@ -91,25 +91,14 @@
             <button type="submit" class="btn btn-primary">ثبت درخواست</button>
         </form>
     </section>
-    <!-- Persian Datepicker -->
-    <link rel="stylesheet" href="https://unpkg.com/persian-datepicker@latest/dist/css/persian-datepicker.min.css"/>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://unpkg.com/persian-date@latest/dist/persian-date.min.js"></script>
-    <script src="https://unpkg.com/persian-datepicker@latest/dist/js/persian-datepicker.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            $('#date_display').persianDatepicker({
-                format: 'YYYY/MM/DD',
-                altField: '#id_requested_date',
-                altFormat: 'YYYY-MM-DD',
-                observer: true,
-                initialValue: !!'{{ id_requested_date }}',
-                initialValueType: 'persian',
-                autoClose: true
-            });
-        });
-
-    </script>
 
 
+
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'js/persian-date.min.js' %}"></script>
+    <script src="{% static 'js/persian-datepicker.min.js' %}"></script>
+    <script src="{% static 'js/main/p-date.js' %}"></script>
 {% endblock %}

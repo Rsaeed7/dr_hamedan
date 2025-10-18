@@ -1,196 +1,14 @@
 {% extends  'base/base.html' %}
 {% load static %}
-
+{% block title %}<title> دکتر {{ doctor.user.get_full_name }} | دکتر همدان</title>{% endblock %}
+{% block style %}
+<link href="{% static 'css/dr/detail.css' %}" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/leaflet.css' %}"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% endblock %}
+{% load persian_date %}
 {% block body %}
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    {% load persian_date %}
-    <style>
-        .masonry-container-gallery {
-            column-count: 2;
-            column-gap: 1rem;
-        }
-
-        .masonry-item-gallery {
-            break-inside: avoid;
-            margin-bottom: 1rem;
-        }
-
-        @media (min-width: 768px) {
-            .masonry-container-gallery {
-                column-count: 3;
-            }
-        }
-
-        .recommendation-options {
-            display: flex;
-            gap: 25px;
-            margin-top: 10px;
-            margin-bottom: 20px;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-        }
-
-        .recommend-option {
-            position: relative;
-        }
-
-        .recommend-label {
-            padding: 8px 45px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid #676767;
-        }
-
-        .recommend-yes {
-            background-color: #ffffff;
-            color: #333;
-        }
-
-        .recommend-no {
-            background-color: #ffffff;
-            color: #333;
-        }
-
-        input[type="radio"]:checked + .recommend-yes {
-            background-color: #4CAF50;
-            color: white;
-            border-color: #4CAF50;
-        }
-
-        input[type="radio"]:checked + .recommend-no {
-            background-color: #F44336;
-            color: white;
-            border-color: #F44336;
-        }
-
-        .form-check-input {
-            position: absolute;
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-    </style>
-    <style>
-        .star-ratings {
-            white-space: nowrap;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            justify-content: center;
-            width: 100%;
-            direction: ltr;
-        }
-
-        .star-ratings [type="radio"] {
-            appearance: none;
-            position: absolute;
-            opacity: 0;
-        }
-
-        .star-ratings i {
-            font-size: 1.5em;
-            transition: 0.3s;
-            cursor: pointer;
-            color: #ddd; /* رنگ پیش‌فرض ستاره‌ها */
-        }
-
-        .star-ratings label:hover i,
-        .star-ratings label:hover ~ label i {
-            color: #fffdba;
-            transform: scale(1.35);
-        }
-
-        .star-ratings [type="radio"]:checked ~ label i,
-        .star-ratings [type="radio"]:checked ~ label ~ label i {
-            color: #faec1b;
-            text-shadow: 0 0 2px #ffffff, 0 0 10px #ffee58;
-        }
-
-        .star-ratings label {
-            position: relative;
-            display: inline-block;
-        }
-
-        @keyframes jump {
-            0%, 50% {
-                transform: translateY(0) scale(1.35);
-            }
-            100% {
-                transform: translateY(-15%) scale(1.35);
-            }
-        }
-    </style>
-    <style>
-        .compact-tips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 8px;
-            justify-content: center; /* مرکزچینی کل آیتم‌ها */
-        }
-
-        .compact-tip {
-            display: inline-flex;
-            position: relative;
-            border: 1px solid #e0e0e0;
-            border-radius: 15px;
-            background: white;
-            cursor: pointer;
-            transition: all 0.2s;
-            overflow: hidden;
-        }
-
-        .tip-input {
-            position: absolute;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
-
-        .tip-content {
-            display: inline-block;
-            padding: 5px 12px;
-            font-size: 10px;
-            text-align: center; /* متن وسط‌چین */
-            width: 100%;
-        }
-
-        .tip-input:checked + .tip-content {
-            background: #e3f2fd;
-            color: #1976d2;
-            border-color: #90caf9;
-        }
-
-
-        .compact-tip:hover {
-            border-color: #90caf9;
-        }
-
-
-        @media (min-width: 768px) {
-            .compact-tip {
-                flex: 0 0 calc(20% - 6px);
-            }
-        }
-
-        @media (max-width: 767px) {
-            .compact-tip {
-                flex: 0 0 calc(25% - 6px); /* 4 آیتم در هر ردیف */
-            }
-        }
-
-
-    </style>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        {% block title %}<title> دکتر {{ doctor.user.get_full_name }} | دکتر همدان</title>{% endblock %}
     <!-- Search -->
     {% include  'base/search.html' %}
     <!-- /Search -->
@@ -213,7 +31,7 @@
                                             <a class="dr_box2">
                                                 <div class="dr_img d-flex align-items-center justify-content-center bg-light text-muted"
                                                      style="width: 100%; height: 200px; font-size: 48px;">
-                                                    <i class="fas fa-user-md"></i>
+                                                    <i class="icon-user-md"></i>
                                                 </div>
                                                 <i class="icon-star-5 text-primary"><small>{{ doctor.comment_rate }}</small></i>
                                             </a>
@@ -290,7 +108,7 @@
                                 <!-- /tab_1 -->
                                 <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address-tab">
                                     <div>
-                                        <h4>مطب دکتر {{ doctor.user.get_full_name }}</h4>
+                                        <h4> مطب دکتر {{ doctor.user.get_full_name }}</h4>
                                         <div class="indent_title_in m-t-15 border-0" style="padding-left: 0!important;">
                                             <i class="pe-7s-map-2"></i>
                                             {% if doctor.latitude and doctor.longitude %}
@@ -629,8 +447,7 @@
                                     <label for="patient_national_id" class="form-label">کد ملی</label>
                                     <input type="text" id="patient_national_id" name="patient_national_id"
                                            class="form-control"
-                                           value="
-                                                   {% if user.patient.national_id %}{{ user.patient.national_id }}{% endif %}">
+                                           value="{% if user.patient.national_id %}{{ user.patient.national_id }}{% endif %}">
                                     <small class="text-danger font-weight-light"
                                            id="national_id_alarm"></small>
                                 </div>
@@ -678,7 +495,8 @@
                                             </label>
                                         </div>
                                         <div class="payment-option">
-                                            <input type="radio" id="payment_wallet" name="payment_method" value="wallet">
+                                            <input type="radio" id="payment_wallet" name="payment_method"
+                                                   value="wallet">
                                             <label class="payment-option-label" for="payment_wallet">
                                                 <div class="payment-option-content">
                                                     <div class="payment-option-icon">
@@ -713,166 +531,30 @@
         </div>
     </div>
 
-    <script>
-        document.getElementById('scrollButton').addEventListener('click', function () {
-            const asideElement = document.getElementById('aside');
-            const offsetTop = asideElement.getBoundingClientRect().top + window.scrollY - 150; // 100 پیکسل بالاتر
-            window.scrollTo({top: offsetTop, behavior: 'smooth'});
-        });
 
+    <div id="doctor-data"
+         data-doctor-id="{{ doctor.id }}"
+         data-doctor-name="{{ doctor.user.get_full_name|escapejs }}"
+         data-online-fee="{{ doctor.online_visit_fee }}"
+         data-chat-url="{% url 'chat:request_chat' doctor.id %}"
+         data-register-url="{% url 'account:register' %}"
+         data-is-authenticated="{% if user.is_authenticated %}true{% else %}false{% endif %}">
+    </div>
+
+
+{% endblock %}
+
+{% block extra_js %}
+    <!-- برای tips و سایر داده‌های داینامیک -->
+    <script id="tips-data" type="application/json">
+        [
+        {% for tip in tips %}
+            {
+                "id": "{{ tip.id }}",
+            "text": "{{ tip.tip|escapejs }}"
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+        ]
     </script>
-
-    <script>
-        function showFormModal() {
-            {% if user.is_authenticated %}
-                document.getElementById("formModal").classList.remove("hidden");
-            {% else %}
-                const nextUrl = window.location.pathname;
-                window.location.href = "{% url 'account:register' %}?next=" + encodeURIComponent(nextUrl);
-            {% endif %}
-        }
-
-        function closeFormModal() {
-            document.getElementById("formModal").classList.add("hidden");
-        }
-    </script>
-    <script>
-        function showFormChat() {
-            document.getElementById("information").classList.remove("hidden");
-
-        }
-
-        function closeFormChat() {
-            document.getElementById("information").classList.add("hidden");
-        }
-
-
-    </script>
-    <script>
-
-
-        function validateForm() {
-            const name = document.getElementById('patient_name').value.trim();
-            const last_name = document.getElementById('patient_last_name').value.trim();
-            const phone = document.getElementById('phone').value.trim();
-            const national_code = document.getElementById('patient_national_id').value.trim();
-
-            // Reset errors
-            document.getElementById('name_alarm').textContent = '';
-            document.getElementById('last_name_alarm').textContent = '';
-            document.getElementById('phone_alarm').textContent = '';
-            document.getElementById('national_id_alarm').textContent = '';
-
-            document.getElementById('patient_name').classList.remove('border-danger');
-            document.getElementById('patient_last_name').classList.remove('border-danger');
-            document.getElementById('phone').classList.remove('border-danger');
-            document.getElementById('patient_national_id').classList.remove('border-danger');
-
-            let isValid = true;
-
-            // Validate name
-            if (name.length < 3) {
-                document.getElementById('patient_name').classList.add('border-danger');
-                document.getElementById('name_alarm').textContent = 'نام باید حداقل ۳ حرف باشد.';
-                isValid = false;
-            }
-
-            // Validate last name
-            if (last_name.length < 3) {
-                document.getElementById('patient_last_name').classList.add('border-danger');
-                document.getElementById('last_name_alarm').textContent = 'نام خانوادگی باید حداقل ۳ حرف باشد.';
-                isValid = false;
-            }
-
-            // Validate phone (if not disabled)
-            if (!phone.match(/^0\d{10}$/) && !document.getElementById('phone').disabled) {
-                document.getElementById('phone').classList.add('border-danger');
-                document.getElementById('phone_alarm').textContent = 'شماره تلفن باید با ۰ شروع شود و ۱۱ رقم باشد.';
-                isValid = false;
-            }
-
-            // Validate national code (if provided)
-            if (national_code && !national_code.match(/^\d{10}$/)) {
-                document.getElementById('patient_national_id').classList.add('border-danger');
-                document.getElementById('national_id_alarm').textContent = 'کد ملی باید ۱۰ رقم باشد.';
-                isValid = false;
-            }
-
-            return isValid;
-        }
-
-        // اضافه کردن رویدادهای اعتبارسنجی
-        document.addEventListener('DOMContentLoaded', function () {
-            document.getElementById('patient_name').addEventListener('input', validateForm);
-            document.getElementById('patient_last_name').addEventListener('input', validateForm);
-            document.getElementById('phone').addEventListener('input', validateForm);
-            document.getElementById('patient_national_id').addEventListener('input', validateForm);
-
-            document.getElementById('booking-form').addEventListener('submit', function (e) {
-                if (!validateForm()) {
-                    e.preventDefault();
-                    // اسکرول به اولین فیلد دارای خطا
-                    const firstError = document.querySelector('.border-danger');
-                    if (firstError) {
-                        firstError.scrollIntoView({behavior: 'smooth', block: 'center'});
-                    }
-                }
-            });
-        });
-    </script>
-    <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const params = new URLSearchParams(window.location.search);
-    if (!params.has('open_booking')) return;
-
-    // اگر مقدار fee هم فرستاده شده بگیر
-    const fee = params.get('fee');
-
-    // 1) اگر تو قالب فانکشن‌های باز کننده وجود داره، اول اونها رو امتحان کن
-    try {
-        // اگر فانکشن showDynamicForm تعریف شده و ما می‌تونیم doctor.id و action url را فراهم کنیم، استفاده کن
-        if (typeof showDynamicForm === 'function' && typeof {{ doctor.id|default:"null" }} === 'number') {
-            const doctorId = {{ doctor.id }}; // مقدار از template
-            const actionUrl = "{% url 'chat:request_chat' doctor.id %}";
-            const doctorName = "{{ doctor.user.get_full_name|escapejs }}";
-            // اگر fee خالی نیست از اون استفاده کن، در غیر این صورت از مقدار موجود در صفحه استفاده می‌شود
-            showDynamicForm(doctorId, fee || "{{ doctor.online_visit_fee }}", actionUrl, doctorName);
-            return;
-        }
-
-        // اگر فانکشن showFormChat وجود داره (modal ساده باز می‌کنه) صدا بزن
-        if (typeof showFormChat === 'function') {
-            showFormChat();
-            // اگر لازم بود مقدار fee رو هم ست کن:
-            if (fee) {
-                const feeEl = document.getElementById('visit-fee') || document.querySelector('#visit-fee');
-                if (feeEl) feeEl.textContent = fee;
-            }
-            return;
-        }
-    } catch (e) {
-        console.warn('خطا هنگام تلاش برای استفاده از فانکشن‌های بازکننده:', e);
-    }
-
-    // 2) fallback: پاک کردن کلاس مخفی از کانتینرهای مرسوم modal
-    const possibleIds = ['information-modal', 'information', 'formModal', 'booking-form-modal', 'modal-booking'];
-    for (let id of possibleIds) {
-        const el = document.getElementById(id);
-        if (el) {
-            el.classList.remove('hidden');
-            // بعضی استایل‌ها ممکنه از display:none استفاده کنند؛ در این صورت:
-            el.style.display = (el.style.display === 'none' || window.getComputedStyle(el).display === 'none') ? 'block' : el.style.display;
-            // اگر modal نیاز به focus یا scroll داره:
-            el.scrollIntoView({behavior: 'smooth', block: 'center'});
-            break;
-        }
-    }
-
-    // 3) set fee text if present
-    if (fee) {
-        const feeEl = document.getElementById('visit-fee') || document.querySelector('#visit-fee');
-        if (feeEl) feeEl.textContent = fee;
-    }
-});
-</script>
+    <script src="{% static 'js/booking/booking-system.js' %}"></script>
 {% endblock %}

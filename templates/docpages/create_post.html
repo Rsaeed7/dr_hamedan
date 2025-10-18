@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}ایجاد پست جدید - دکتر همدان{% endblock %}
 
 {% block extra_css %}
@@ -64,9 +64,6 @@
         margin-right: 0.5rem;
     }
 
-    .sidebar {
-        height: calc(100vh - 4rem);
-    }
 
     .main-content {
         height: calc(100vh - 4rem);
@@ -74,9 +71,10 @@
     }
 
     @media (max-width: 768px) {
-        .sidebar, .main-content {
-            height: auto;
-        }
+    .media-preview {
+        max-width: 130px!important;
+        max-height: 80px!important;
+    }
     }
 
     /* Add help tooltip styles */
@@ -108,30 +106,7 @@
         opacity: 1;
     }
 
-    /* Mobile sidebar toggle */
-    .mobile-sidebar-toggle {
-        display: none;
-    }
 
-    @media (max-width: 768px) {
-        .mobile-sidebar-toggle {
-            display: block;
-        }
-
-        .sidebar {
-            display: none;
-        }
-
-        .sidebar.active {
-            display: block;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            z-index: 50;
-        }
-    }
 
     /* New styles for enhanced features */
     .media-upload-section {
@@ -391,210 +366,12 @@
         </div>
     </div>
 </div>
+
 {% endblock %}
 
 {% block extra_js %}
-<script>
-    function setAction(action) {
-        document.getElementById('action').value = action;
-        document.getElementById('postForm').submit();
-    }
 
-    // Mobile sidebar toggle
-    document.addEventListener('DOMContentLoaded', function() {
-        const toggleButton = document.getElementById('sidebarToggle');
-        const closeButton = document.getElementById('closeSidebar');
-        const sidebar = document.getElementById('sidebar');
+<script src="{% static 'js/dr/doctor-post.js' %}"></script>
 
-        if (toggleButton && closeButton && sidebar) {
-            toggleButton.addEventListener('click', function() {
-                sidebar.classList.add('active');
-            });
-
-            closeButton.addEventListener('click', function() {
-                sidebar.classList.remove('active');
-            });
-        }
-
-        // Enhanced functionality
-        const imageInput = document.getElementById('image');
-        const videoInput = document.getElementById('video');
-        const imagePreview = document.getElementById('image-preview');
-        const videoPreview = document.getElementById('video-preview');
-        const imageSection = document.getElementById('image-upload-section');
-        const videoSection = document.getElementById('video-upload-section');
-        const lensSearch = document.getElementById('lens-search');
-        const lensSuggestions = document.getElementById('lens-suggestions');
-        const selectedLensesContainer = document.getElementById('selected-lenses');
-        const lensInputsContainer = document.getElementById('lens-inputs');
-
-        let selectedLenses = [];
-        let searchTimeout;
-
-        // Media upload handling
-        imageInput.addEventListener('change', function(e) {
-            if (e.target.files && e.target.files[0]) {
-                // Clear video if image is selected
-                videoInput.value = '';
-                videoPreview.classList.add('hidden');
-                videoSection.classList.remove('has-file');
-                videoSection.classList.remove('disabled');
-
-                const file = e.target.files[0];
-                const reader = new FileReader();
-
-                reader.onload = function(e) {
-                    document.getElementById('image-preview-img').src = e.target.result;
-                    imagePreview.classList.remove('hidden');
-                    imageSection.classList.add('has-file');
-                    videoSection.classList.add('disabled');
-                };
-
-                reader.readAsDataURL(file);
-            }
-        });
-
-        videoInput.addEventListener('change', function(e) {
-            if (e.target.files && e.target.files[0]) {
-                // Clear image if video is selected
-                imageInput.value = '';
-                imagePreview.classList.add('hidden');
-                imageSection.classList.remove('has-file');
-                imageSection.classList.remove('disabled');
-
-                const file = e.target.files[0];
-                const url = URL.createObjectURL(file);
-
-                document.getElementById('video-source').src = url;
-                document.getElementById('video-preview-video').load();
-                videoPreview.classList.remove('hidden');
-                videoSection.classList.add('has-file');
-                imageSection.classList.add('disabled');
-            }
-        });
-
-        // Medical lens search
-        lensSearch.addEventListener('input', function() {
-            const query = this.value.trim();
-
-            clearTimeout(searchTimeout);
-
-            if (query.length < 2) {
-                lensSuggestions.style.display = 'none';
-                return;
-            }
-
-            searchTimeout = setTimeout(() => {
-                fetch(`/docpages/ajax/search-medical-lenses/?q=${encodeURIComponent(query)}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            displayLensSuggestions(data.lenses);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                    });
-            }, 300);
-        });
-
-        function displayLensSuggestions(lenses) {
-            lensSuggestions.innerHTML = '';
-
-            if (lenses.length === 0) {
-                lensSuggestions.style.display = 'none';
-                return;
-            }
-
-            lenses.forEach(lens => {
-                // Skip already selected lenses
-                if (selectedLenses.find(selected => selected.id === lens.id)) {
-                    return;
-                }
-
-                const suggestion = document.createElement('div');
-                suggestion.className = 'medical-lens-suggestion';
-                suggestion.innerHTML = `
-                    <div class="medical-lens-color" style="background-color: ${lens.color};"></div>
-                    <div>
-                        <div class="font-medium">${lens.name}</div>
-                        <div class="text-sm text-gray-500">${lens.description}</div>
-                    </div>
-                `;
-
-                suggestion.addEventListener('click', () => {
-                    selectLens(lens);
-                    lensSearch.value = '';
-                    lensSuggestions.style.display = 'none';
-                });
-
-                lensSuggestions.appendChild(suggestion);
-            });
-
-            lensSuggestions.style.display = 'block';
-        }
-
-        function selectLens(lens) {
-            if (selectedLenses.find(selected => selected.id === lens.id)) {
-                return;
-            }
-
-            selectedLenses.push(lens);
-            updateSelectedLensesDisplay();
-        }
-
-        window.removeLens = function(lensId) {
-            selectedLenses = selectedLenses.filter(lens => lens.id !== lensId);
-            updateSelectedLensesDisplay();
-        }
-
-        function updateSelectedLensesDisplay() {
-            // Update visual display
-            selectedLensesContainer.innerHTML = '';
-
-            selectedLenses.forEach(lens => {
-                const lensElement = document.createElement('div');
-                lensElement.className = 'selected-lens';
-                lensElement.style.backgroundColor = lens.color;
-                lensElement.innerHTML = `
-                    <span class="remove-lens" onclick="removeLens(${lens.id})">&times;</span>
-                    ${lens.name}
-                `;
-                selectedLensesContainer.appendChild(lensElement);
-            });
-
-            // Update hidden inputs
-            lensInputsContainer.innerHTML = '';
-
-            selectedLenses.forEach(lens => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'medical_lenses';
-                input.value = lens.id;
-                lensInputsContainer.appendChild(input);
-            });
-        }
-
-        // Hide suggestions when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.medical-lens-input')) {
-                lensSuggestions.style.display = 'none';
-            }
-        });
-    });
-
-    function removeImage() {
-        document.getElementById('image').value = '';
-        document.getElementById('image-preview').classList.add('hidden');
-        document.getElementById('image-upload-section').classList.remove('has-file');
-        document.getElementById('video-upload-section').classList.remove('disabled');
-    }
-
-    function removeVideo() {
-        document.getElementById('video').value = '';
-        document.getElementById('video-preview').classList.add('hidden');
-        document.getElementById('video-upload-section').classList.remove('has-file');
-        document.getElementById('image-upload-section').classList.remove('disabled');
-    }
-</script>
 {% endblock %}
+

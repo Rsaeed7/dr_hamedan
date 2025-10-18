@@ -72,86 +72,11 @@
 		</div>
 	</main>
 
-<script>
-// Timer variables
-const initialTime = 180; // 3 minutes
-const phoneNumber = "{{ phone }}"; // شماره تلفن از context
-const storageKey = `otpStartTime_${phoneNumber}`;
+<script src="{% static 'js/main/otp-auth.js' %}"></script>
 
-// Start timer when page loads
-window.onload = function() {
-    const startTime = localStorage.getItem(storageKey);
-
-    if (!startTime) {
-        localStorage.setItem(storageKey, Date.now()); // ذخیره زمان شروع به صورت میلی‌ثانیه
-    }
-
-    updateTimer();
-};
-
-function updateTimer() {
-    const startTime = parseInt(localStorage.getItem(storageKey));
-    const elapsedTime = Math.floor((Date.now() - startTime) / 1000); // محاسبه زمان سپری شده
-    const remainingTime = Math.max(initialTime - elapsedTime, 0);
-
-    if (remainingTime <= 0) {
-        clearInterval(timerInterval);
-        document.getElementById('minutes').value = "00";
-        document.getElementById('seconds').value = "00";
-    } else {
-        document.getElementById('minutes').value = Math.floor(remainingTime / 60);
-        document.getElementById('seconds').value = remainingTime % 60 < 10 ? "0" + (remainingTime % 60) : remainingTime % 60;
-        setTimeout(updateTimer, 1000);
-    }
-}
-
-function updateTimerDisplay() {
-    const minutes = Math.floor(remainingTime / 60);
-    const seconds = remainingTime % 60;
-    
-    document.getElementById('minutes').value = minutes;
-    document.getElementById('seconds').value = seconds < 10 ? '0' + seconds : seconds;
-    
-    // تغییر رنگ وقتی کمتر از 1 دقیقه باقی مانده
-    if (remainingTime < 60) {
-        document.getElementById('minutes').style.color = "red";
-        document.getElementById('seconds').style.color = "red";
-    }
-}
-
-function validateCode() {
-    const codeInput = document.getElementById('id_code');
-    const codeError = document.getElementById('code_error');
-    const submitBtn = document.getElementById('submit_btn');
-    const value = codeInput.value.trim();
-    
-    if (value.length !== 4 || !/^\d+$/.test(value)) {
-        codeInput.classList.add('text-alert');
-        codeInput.classList.remove('input100');
-        codeError.textContent = value.length > 0 ? '!!کد تایید باید 4 رقم باشد' : '';
-        submitBtn.disabled = true;
-        return false;
-    } else {
-        codeInput.classList.remove('text-alert');
-        codeInput.classList.add('input100');
-        codeError.textContent = '';
-        submitBtn.disabled = false;
-        return true;
-    }
-}
-
-function submitForm() {
-    if (validateCode()) {
-        // قبل از ارسال فرم، تایمر را برای این شماره پاک کنید
-        localStorage.removeItem(storageKey);
-        document.getElementById('code_form').submit();
-    }
-}
-</script>
-
-<script src="{% static 'js/jquery-2.2.4.min.js' %}"></script>
-<script src="{% static 'js/common_scripts.min.js' %}"></script>
-<script src="{% static 'js/functions.js' %}"></script>
+<script src="{% static 'js/main/jquery-2.2.4.min.js' %}"></script>
+<script src="{% static 'js/main/common_scripts.min.js' %}"></script>
+<script src="{% static 'js/main/functions.js' %}"></script>
 
 </body>
 </html>

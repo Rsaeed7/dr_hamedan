@@ -12,12 +12,11 @@ from django.db.models import Q
 class MagView(ListView):
     model = MagArticle
     paginate_by = 3
-    queryset = MagArticle.objects.filter(published=True)
 
     def get_queryset(self):
         queryset = MagArticle.objects.filter(published=True)
 
-        # دریافت پارامتر جستجو از URL
+        # جستجو
         search_query = self.request.GET.get('query', '')
         if search_query:
             queryset = queryset.filter(
@@ -25,23 +24,20 @@ class MagView(ListView):
                 Q(description__icontains=search_query)
             )
 
+        # فیلتر بر اساس نام دسته‌بندی
+        category_name = self.request.GET.get('category', None)
+        if category_name:
+            queryset = queryset.filter(category__name=category_name)
+
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['category'] = Category.objects.all()
         context['articles_last'] = MagArticle.objects.filter(published=True).order_by("-date")[:3]
-
-        # اضافه کردن پارامتر جستجو به context برای نمایش در تمپلیت
-        context['search_query'] = self.request.GET.get('q', '')
+        context['search_query'] = self.request.GET.get('query', '')
+        context['selected_category'] = self.request.GET.get('category', '')
         return context
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['category'] = Category.objects.all()
-        context['articles_last'] = MagArticle.objects.filter(published=True).order_by("-date")[:3]
-        return context
-
 
 def article(request, slug):
     object = get_object_or_404(MagArticle, slug=slug)

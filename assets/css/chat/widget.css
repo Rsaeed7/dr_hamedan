@@ -1,0 +1,64 @@
+#chat-widget {
+    position: fixed;
+    bottom: 1px;
+    left: 0px;
+    z-index: 1050;
+}
+
+#chat-icon {
+    width: 50px;
+    height: 45px;
+    background: none;
+    background-color: rgba(30, 68, 96, 0.82);
+    color: #fdfdfd;
+    border-bottom-right-radius: 20px;
+    border-top-right-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    font-size: 24px;
+    transition: all 0.3s ease;
+}
+
+#chat-content {
+    display: none;
+    margin-top: 10px;
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.2s ease;
+}
+
+#chat-content.show {
+    display: block;
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.card {
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+#chat-container {
+    transition: all 0.3s ease;
+}
+
+@media (max-width: 767px) {
+    #chat-widget {
+        bottom: 73px;
+    }
+}
+
+.rounded_pill {
+    border-radius: 50px !important;
+}
+
+.rounded50 {
+    border-radius: 50%;
+}
+
+.dr_bg {
+    background-color: #1e4460;
+}

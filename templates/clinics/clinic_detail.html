@@ -1,128 +1,16 @@
 {% extends  'base/base.html' %}
 {% load static %}
+{% block title %}<title> {{ clinic.name }} | دکتر همدان</title>{% endblock %}
+{% block style %}
+<link href="{% static 'css/dr/detail.css' %}" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/leaflet.css' %}"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% endblock %}
 {% block body %}
 {% load persian_date %}
-    <style>
-        .masonry-container-gallery {
-            column-count: 2;
-            column-gap: 1rem;
-        }
 
-        .masonry-item-gallery {
-            break-inside: avoid;
-            margin-bottom: 1rem;
-        }
-
-        @media (min-width: 768px) {
-            .masonry-container-gallery {
-                column-count: 3;
-            }
-        }
-
-        .recommendation-options {
-            display: flex;
-            gap: 25px;
-            margin-top: 10px;
-            margin-bottom: 20px;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-        }
-
-        .recommend-option {
-            position: relative;
-        }
-
-        .recommend-label {
-            padding: 8px 45px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid #676767;
-        }
-
-        .recommend-yes {
-            background-color: #ffffff;
-            color: #333;
-        }
-
-        .recommend-no {
-            background-color: #ffffff;
-            color: #333;
-        }
-
-        input[type="radio"]:checked + .recommend-yes {
-            background-color: #4CAF50;
-            color: white;
-            border-color: #4CAF50;
-        }
-
-        input[type="radio"]:checked + .recommend-no {
-            background-color: #F44336;
-            color: white;
-            border-color: #F44336;
-        }
-
-        .form-check-input {
-            position: absolute;
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-    </style>
-    <style>
-        .star-ratings {
-            white-space: nowrap;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            justify-content: center;
-            width: 100%;
-            direction: ltr;
-        }
-
-        .star-ratings [type="radio"] {
-            appearance: none;
-            position: absolute;
-            opacity: 0;
-        }
-
-        .star-ratings i {
-            font-size: 1.5em;
-            transition: 0.3s;
-            cursor: pointer;
-            color: #ddd; /* رنگ پیش‌فرض ستاره‌ها */
-        }
-
-        .star-ratings label:hover i,
-        .star-ratings label:hover ~ label i {
-            color: #fffdba;
-            transform: scale(1.35);
-        }
-
-        .star-ratings [type="radio"]:checked ~ label i,
-        .star-ratings [type="radio"]:checked ~ label ~ label i {
-            color: #faec1b;
-            text-shadow: 0 0 2px #ffffff, 0 0 10px #ffee58;
-        }
-
-        .star-ratings label {
-            position: relative;
-            display: inline-block;
-        }
-
-        @keyframes jump {
-            0%, 50% {
-                transform: translateY(0) scale(1.35);
-            }
-            100% {
-                transform: translateY(-15%) scale(1.35);
-            }
-        }
-    </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Search -->
-{% block title %}<title> {{ clinic.name }} | دکتر همدان</title>{% endblock %}
+
 <div class="filters_listing">
     <div class="container">
         <ul class="clearfix">
@@ -155,7 +43,7 @@
                                 <div class="col-lg-12 col-md-4">
                                     <figure>
                                         {% if clinic.logo %}
-                                            <a class="clinic_box"><img src="{{ clinic.logo.url }}" alt=""
+                                            <a class="clinic_box"><img src="{{ clinic.logo.url }}" alt="{{ clinic.name }}"
                                                                        class="clinic_img">
                                         {% endif %}
                                         <i class="icon-eye-1"><small>{{ clinic.view_count }}</small></i></a>
@@ -437,45 +325,17 @@
             <!-- /asdide -->
         </div>
     </div>
+<!-- بعد از تگ <div id="section_1"> این خط رو اضافه کن -->
+<div id="clinic-data"
+     data-clinic-id="{{ clinic.id }}"
+     data-clinic-name="{{ clinic.name|escapejs }}"
+     data-register-url="{% url 'account:register' %}"
+     data-is-authenticated="{% if user.is_authenticated %}true{% else %}false{% endif %}">
+</div>
 
-                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-$(document).ready(function() {
-    // وقتی رادیو باتن تغییر کرد
-    $('.treatment-input').change(function() {
-        const specialId = $(this).data('special-id');
+{% endblock %}
 
-        // همه لیست‌های دکترها را مخفی کن
-        $('.doctor-list').hide();
-
-        // فقط لیست دکترهای مربوط به تخصص انتخاب‌شده را نمایش بده
-        $(`.doctor-list[data-special-id="${specialId}"]`).show();
-    });
-});
-</script>
-
-    <script>
-        document.getElementById('scrollButton').addEventListener('click', function () {
-            const asideElement = document.getElementById('aside');
-            const offsetTop = asideElement.getBoundingClientRect().top + window.scrollY - 150; // 100 پیکسل بالاتر
-            window.scrollTo({top: offsetTop, behavior: 'smooth'});
-        });
-
-    </script>
-
-    <script>
-        function showFormModal() {
-            {% if user.is_authenticated %}
-                document.getElementById("formModal").classList.remove("hidden");
-            {% else %}
-               const nextUrl = window.location.pathname;
-                window.location.href = "{% url 'account:register' %}?next=" + encodeURIComponent(nextUrl);
-            {% endif %}
-        }
-
-        function closeFormModal() {
-            document.getElementById("formModal").classList.add("hidden");
-        }
-    </script>
-
+{% block extra_js %}
+	<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+	<script src="{% static 'js/booking/clinic.js' %}"></script>
 {% endblock %}

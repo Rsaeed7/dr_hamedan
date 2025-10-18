@@ -1,91 +1,74 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
-<div class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
-    <h1 class="text-2xl font-bold mb-4">تنظیمات قالب پزشک</h1>
 
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="space-y-4">
-            <label class="block">
-                <span class="font-semibold">تصویر پس‌زمینه:</span>
-                {{ form.background_image }}
-            </label>
-        </div>
+    <style>
+        .a4-preview {
+            width: 100%;
+            max-width: 21cm;
+            height: auto; /* تغییر ارتفاع متناسب با صفحه */
+            aspect-ratio: 21 / 29.7; /* تناسب اندازه‌ی A4 */
+            border: 1px solid #ccc;
+            position: relative;
+            margin-top: 20px;
+            overflow: hidden;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
 
-        <button type="submit" class="mt-4 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
-            ذخیره تغییرات
-        </button>
-    </form>
+        .hidden {
+            display: none;
+        }
 
-    <!-- پیش‌نمایش زنده -->
-    <h2 class="text-xl font-bold mt-6 hidden" id="preview-title">پیش‌نمایش:</h2>
-    <div class="a4-preview hidden" id="preview-container">
-        <div id="preview-background"></div>
-        <div class="preview-content">
+        #preview-background {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-size: cover; /* تصویر پس‌زمینه دقیقا اندازه‌ی دیویژن */
+            background-position: center;
+            background-repeat: no-repeat;
+        {#z-index: -1;#}
+        }
 
+        .preview-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 50px;
+        }
+    </style>
+
+    <div class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
+        <h1 class="text-2xl font-bold mb-4">تنظیمات قالب پزشک</h1>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="space-y-4">
+                <label class="block">
+                    <span class="font-semibold">تصویر پس‌زمینه:</span>
+                    {{ form.background_image }}
+                </label>
+            </div>
+
+            <button type="submit" class="mt-4 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+                ذخیره تغییرات
+            </button>
+        </form>
+
+        <!-- پیش‌نمایش زنده -->
+        <h2 class="text-xl font-bold mt-6 hidden" id="preview-title">پیش‌نمایش:</h2>
+        <div class="a4-preview hidden" id="preview-container">
+            <div id="preview-background"></div>
+            <div class="preview-content">
+
+            </div>
         </div>
     </div>
-</div>
 
-<!-- اسکریپت برای نمایش پیش‌نمایش فقط هنگام انتخاب تصویر -->
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        let bgInput = document.querySelector("input[name='background_image']");
-        let previewBg = document.getElementById("preview-background");
-        let previewContainer = document.getElementById("preview-container");
-        let previewTitle = document.getElementById("preview-title");
 
-        bgInput.addEventListener("change", function (event) {
-            let file = event.target.files[0];
-            if (file) {
-                let reader = new FileReader();
-                reader.onload = function (e) {
-                    previewBg.style.backgroundImage = "url(" + e.target.result + ")";
-                    previewContainer.classList.remove("hidden");
-                    previewTitle.classList.remove("hidden");
-                };
-                reader.readAsDataURL(file);
-            } else {
-                previewContainer.classList.add("hidden");
-                previewTitle.classList.add("hidden");
-            }
-        });
-    });
-</script>
 
-<style>
-    .a4-preview {
-        width: 100%;
-        max-width: 21cm;
-        height: auto; /* تغییر ارتفاع متناسب با صفحه */
-        aspect-ratio: 21 / 29.7; /* تناسب اندازه‌ی A4 */
-        border: 1px solid #ccc;
-        position: relative;
-        margin-top: 20px;
-        overflow: hidden;
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    }
+{% endblock %}
 
-    .hidden {
-        display: none;
-    }
 
-    #preview-background {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background-size: cover; /* تصویر پس‌زمینه دقیقا اندازه‌ی دیویژن */
-        background-position: center;
-        background-repeat: no-repeat;
-        {#z-index: -1;#}
-    }
-
-    .preview-content {
-        position: relative;
-        z-index: 1;
-        text-align: center;
-        padding: 50px;
-    }
-</style>
+{% block extra_js %}
+    <script src="{% static 'js/dr/report.js' %}"></script>
 {% endblock %}

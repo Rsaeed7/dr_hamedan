@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}پیش‌نمایش پست - دکتر همدان{% endblock %}
 {% load persian_date %}
 {% block extra_css %}
@@ -261,25 +261,10 @@
         </div>
     </div>
 </div>
+
 {% endblock %}
 
+
 {% block extra_js %}
-<script>
-    // Mobile sidebar toggle
-    document.addEventListener('DOMContentLoaded', function() {
-        const toggleButton = document.getElementById('sidebarToggle');
-        const closeButton = document.getElementById('closeSidebar');
-        const sidebar = document.getElementById('sidebar');
-        
-        if (toggleButton && closeButton && sidebar) {
-            toggleButton.addEventListener('click', function() {
-                sidebar.classList.add('active');
-            });
-            
-            closeButton.addEventListener('click', function() {
-                sidebar.classList.remove('active');
-            });
-        }
-    });
-</script>
-{% endblock %} 
+    <script src="{% static 'js/dr/doctor-post.js' %}"></script>
+{% endblock %}

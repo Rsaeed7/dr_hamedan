@@ -1,3 +1,6 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/leaflet.css' %}" />
+
 <!-- Location Management -->
 <div class="bg-white rounded-lg shadow-md p-6 mb-6">
     <h2 class="text-lg font-medium text-gray-800 mb-4">مدیریت موقعیت جغرافیایی</h2>
@@ -56,9 +59,10 @@
 </div>
 
 <!-- Leaflet CSS and JS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+{#<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />#}
+{#<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>#}
 
+<script src="{% static 'js/libs/leaflet.js' %}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     let previewMap = null;
@@ -77,7 +81,15 @@ document.addEventListener('DOMContentLoaded', function() {
             attribution: '© OpenStreetMap contributors'
         }).addTo(previewMap);
 
-        marker = L.marker([lat, lng], { draggable: true }).addTo(previewMap);
+        const myIcon = L.icon({
+            iconUrl: '{% static "img/map-marker-contacts.png" %}', // مسیر تصویر خودت
+            iconSize: [32, 32],      // اندازه
+            iconAnchor: [16, 32],    // نقطه اتصال به مختصات
+            popupAnchor: [0, -32]    // محل باز شدن popup
+        });
+
+        marker = L.marker([lat, lng], {draggable: true, icon: myIcon}).addTo(previewMap);
+
 
         // کلیک روی نقشه
         previewMap.on('click', function(e) {
